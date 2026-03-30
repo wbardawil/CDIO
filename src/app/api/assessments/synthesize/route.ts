@@ -6,8 +6,9 @@ import {
   detectDivergencePoints,
   prioritizeModules,
 } from "@/lib/scoring/maturity";
+import { generateDecisionPackage } from "@/lib/agents/assessment";
 import { MODULE_NAMES } from "@/types";
-import type { AssessmentSynthesis, PriorityClass } from "@/types";
+import type { AssessmentSynthesis, PriorityClass, OrgSize, Industry } from "@/types";
 import { z } from "zod";
 
 const SynthesizeSchema = z.object({
@@ -96,16 +97,43 @@ export async function POST(request: NextRequest) {
         const stakeA = stakeholderMap.get(div.stakeholder_a.id);
         const stakeB = stakeholderMap.get(div.stakeholder_b.id);
 
+        // Generate AI-powered Decision Package if Anthropic key available
+        let frameworkRec = `Divergence detected on ${MODULE_NAMES[moduleNumber]}: ${div.stakeholder_a.name} scored Level ${div.stakeholder_a.score}, ${div.stakeholder_b.name} scored Level ${div.stakeholder_b.score}. The evidence-based assessment suggests reviewing the diagnostic criteria together to align on the actual state.`;
+        let projectedRoi = "To be calculated";
+
+        if (process.env.ANTHROPIC_API_KEY) {
+          try {
+            const { data: org } = await db
+              .from("organizations")
+              .select("size_category, industry, employee_count")
+              .eq("id", input.org_id)
+              .single();
+
+            const aiPackage = await generateDecisionPackage(
+              moduleNumber,
+              MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`,
+              { name: div.stakeholder_a.name, role: stakeA?.role ?? "Unknown", score: div.stakeholder_a.score, evidence: div.stakeholder_a.evidence },
+              { name: div.stakeholder_b.name, role: stakeB?.role ?? "Unknown", score: div.stakeholder_b.score, evidence: div.stakeholder_b.evidence },
+              { size: (org?.size_category ?? "medium") as OrgSize, industry: (org?.industry ?? "other") as Industry, employee_count: org?.employee_count ?? 100 }
+            );
+            frameworkRec = aiPackage.framework_recommendation;
+            projectedRoi = aiPackage.projected_roi;
+          } catch (aiErr) {
+            console.warn("AI decision package failed, using fallback:", aiErr);
+          }
+        }
+
         allDivergences.push({
           assessment_id: input.assessment_id,
           module_number: div.module_number,
           stakeholder_a_id: div.stakeholder_a.id,
           stakeholder_b_id: div.stakeholder_b.id,
           score_gap: div.score_gap,
-          framework_recommendation: `Divergence detected on ${MODULE_NAMES[moduleNumber]}: ${div.stakeholder_a.name} scored Level ${div.stakeholder_a.score}, ${div.stakeholder_b.name} scored Level ${div.stakeholder_b.score}. The evidence-based assessment suggests reviewing the diagnostic criteria together to align on the actual state.`,
+          framework_recommendation: frameworkRec,
           decision_package: {
             stakeholder_a: { ...div.stakeholder_a, role: stakeA?.role },
             stakeholder_b: { ...div.stakeholder_b, role: stakeB?.role },
+            projected_roi: projectedRoi,
           },
         });
       }
