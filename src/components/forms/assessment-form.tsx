@@ -6,12 +6,15 @@ import { getModuleQuestions, type DiagnosticQuestion } from "@/lib/playbook/diag
 
 interface AssessmentFormProps {
   moduleNumber: number;
-  onSubmit: (responses: {
-    question_text: string;
-    answer: "yes" | "no" | "partial";
-    evidence?: string;
-  }[]) => void;
-  onBusinessImpact: (rating: number) => void;
+  onSubmit: (
+    responses: {
+      question_text: string;
+      answer: "yes" | "no" | "partial";
+      evidence?: string;
+    }[],
+    businessImpact: number
+  ) => void;
+  onBusinessImpact?: (rating: number) => void;
 }
 
 export function AssessmentForm({ moduleNumber, onSubmit, onBusinessImpact }: AssessmentFormProps) {
@@ -44,8 +47,8 @@ export function AssessmentForm({ moduleNumber, onSubmit, onBusinessImpact }: Ass
       answer: responses[q.id]?.answer ?? "no",
       evidence: responses[q.id]?.evidence || undefined,
     }));
-    onBusinessImpact(impactRating);
-    onSubmit(formattedResponses);
+    onBusinessImpact?.(impactRating);
+    onSubmit(formattedResponses, impactRating);
   };
 
   const answeredCount = Object.keys(responses).length;

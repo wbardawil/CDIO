@@ -55,6 +55,7 @@ create table stakeholders (
 create table assessments (
   id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
+  domain text not null default 'cdio' check (domain in ('cdio', 'strategist', 'ome')),
   type text not null default 'initial' check (type in ('initial', 'quarterly', 'annual')),
   status text not null default 'draft' check (status in ('draft', 'in_progress', 'completed', 'archived')),
   created_at timestamptz not null default now(),
@@ -84,9 +85,9 @@ create table assessment_synthesis (
   id uuid primary key default gen_random_uuid(),
   assessment_id uuid not null references assessments(id) on delete cascade,
   module_number integer not null check (module_number between 1 and 16),
-  consensus_score numeric(3,2) not null,       -- weighted avg (1.00-4.00)
-  divergence_score numeric(3,2) not null,      -- std deviation
-  business_impact numeric(4,2) not null,       -- 1-10 weighted
+  consensus_score decimal(3,2) not null,       -- weighted avg (1.00-4.00)
+  divergence_score decimal(3,2) not null,      -- std deviation
+  business_impact decimal(4,2) not null,       -- 1-10 weighted
   priority_rank integer not null,              -- 1-16
   priority_class text not null check (priority_class in (
     'top_priority', 'strategic_bet', 'quick_win', 'maintain', 'defer'
@@ -119,6 +120,7 @@ create table divergence_points (
 create table roadmaps (
   id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
+  domain text not null default 'cdio' check (domain in ('cdio', 'strategist', 'ome')),
   assessment_id uuid not null references assessments(id),
   type text not null check (type in ('90_day', '6_month', '12_month')),
   status text not null default 'draft' check (status in ('draft', 'approved', 'active', 'completed')),
@@ -157,6 +159,7 @@ create table initiatives (
 create table decisions (
   id uuid primary key default gen_random_uuid(),
   org_id uuid not null references organizations(id) on delete cascade,
+  domain text not null default 'cdio' check (domain in ('cdio', 'strategist', 'ome')),
   assessment_id uuid references assessments(id),
   topic text not null,
   stakeholder_positions jsonb not null default '[]',
@@ -164,7 +167,7 @@ create table decisions (
   actual_decision text,
   projected_outcome text,
   actual_outcome text,
-  outcome_accuracy numeric(3,2),  -- 0.00-1.00
+  outcome_accuracy decimal(3,2),
   decided_at timestamptz,
   outcome_measured_at timestamptz,
   created_at timestamptz not null default now()
@@ -198,7 +201,7 @@ create table agent_logs (
   input_summary text,
   output_summary text,
   token_count integer,
-  cost_usd numeric(8,4),
+  cost_usd decimal(8,4),
   duration_ms integer,
   created_at timestamptz not null default now()
 );
