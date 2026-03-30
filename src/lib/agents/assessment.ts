@@ -5,6 +5,7 @@
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
+import { getModuleContext } from "@/lib/playbook/retrieve";
 import type {
   MaturityLevel,
   DiagnosticResponse,
@@ -70,10 +71,18 @@ export async function scoreModule(
 }> {
   const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
 
+  // Retrieve playbook context for this module via RAG
+  let playbookContext = "";
+  try {
+    playbookContext = await getModuleContext(moduleNumber);
+  } catch {
+    // RAG retrieval is optional — continue without it
+  }
+
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
-    system: ASSESSMENT_SYSTEM_PROMPT,
+    system: ASSESSMENT_SYSTEM_PROMPT + (playbookContext ? `\n\n## Playbook Reference for This Module\n${playbookContext.substring(0, 3000)}` : ""),
     messages: [
       {
         role: "user",

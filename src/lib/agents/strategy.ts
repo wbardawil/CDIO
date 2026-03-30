@@ -5,6 +5,7 @@
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
+import { getRoadmapContext } from "@/lib/playbook/retrieve";
 import type {
   AssessmentSynthesis,
   OrgSize,
@@ -88,10 +89,19 @@ export async function generate90DayRoadmap(
   );
   const topPriorities = prioritized.slice(0, 5);
 
+  // Retrieve playbook context for roadmap via RAG
+  let playbookContext = "";
+  try {
+    const topModules = topPriorities.map((s) => s.module_number);
+    playbookContext = await getRoadmapContext(topModules, orgContext.size, orgContext.industry);
+  } catch {
+    // RAG is optional
+  }
+
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 4096,
-    system: STRATEGY_SYSTEM_PROMPT,
+    system: STRATEGY_SYSTEM_PROMPT + (playbookContext ? `\n\n## Playbook Reference Material\nUse the following playbook content to ground your recommendations in proven frameworks and templates:\n${playbookContext.substring(0, 4000)}` : ""),
     messages: [
       {
         role: "user",
