@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Engagement Orchestrator
+// AI-CDIO — Engagement Orchestrator
 // Manages the state machine per client engagement:
 // ONBOARDING → ASSESSMENT → ANALYSIS → STRATEGY → REVIEW
 // ============================================================

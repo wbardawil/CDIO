@@ -88,7 +88,7 @@ export default function OnboardingPage() {
       <div className="max-w-2xl mx-auto px-6 py-16">
         {/* Logo / Header */}
         <div className="text-center mb-12">
-          <h1 className="text-3xl font-bold text-gray-900">Virtual CDIO</h1>
+          <h1 className="text-3xl font-bold text-gray-900">AI-CDIO</h1>
           <p className="text-gray-500 mt-2">
             Objective, data-driven digital strategy for your organization
           </p>

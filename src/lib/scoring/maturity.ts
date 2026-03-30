@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Maturity Scoring & Prioritization Engine
+// AI-CDIO — Maturity Scoring & Prioritization Engine
 // Implements the playbook's assessment and prioritization logic
 // ============================================================
 

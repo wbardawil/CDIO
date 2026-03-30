@@ -1,5 +1,5 @@
 -- ============================================================
--- Virtual CDIO — Database Schema
+-- AI-CDIO — Database Schema
 -- Run this in Supabase SQL Editor
 -- ============================================================
 

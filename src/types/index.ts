@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Core Type Definitions
+// AI-CDIO — Core Type Definitions
 // ============================================================
 
 // --- Organization ---

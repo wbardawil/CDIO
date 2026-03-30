@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Assessment Agent
+// AI-CDIO — Assessment Agent
 // Runs the 16-module maturity diagnostic, scores responses,
 // and detects divergence between stakeholders
 // ============================================================
@@ -18,7 +18,7 @@ const anthropic = new Anthropic();
 
 // --- System prompt encoding the playbook's assessment logic ---
 
-const ASSESSMENT_SYSTEM_PROMPT = `You are the Assessment Agent of the Virtual CDIO system. Your role is to objectively evaluate an organization's digital maturity across 16 competency modules.
+const ASSESSMENT_SYSTEM_PROMPT = `You are the Assessment Agent of the AI-CDIO system. Your role is to objectively evaluate an organization's digital maturity across 16 competency modules.
 
 ## Your Assessment Framework
 

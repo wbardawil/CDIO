@@ -7,7 +7,7 @@ export default function Home() {
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
-            Virtual CDIO
+            AI-CDIO
           </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Objective, data-driven digital strategy for your organization.

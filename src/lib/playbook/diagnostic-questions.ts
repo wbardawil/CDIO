@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Diagnostic Questions
+// AI-CDIO — Diagnostic Questions
 // Structured from the Playbook Assessment Framework
 // Each module has 2-3 subcategories with 3-4 questions each
 // ============================================================

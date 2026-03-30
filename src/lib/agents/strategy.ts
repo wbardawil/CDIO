@@ -1,5 +1,5 @@
 // ============================================================
-// Virtual CDIO — Strategy Agent
+// AI-CDIO — Strategy Agent
 // Generates roadmaps, applies prioritization algorithms,
 // and recommends module stacks based on org profile
 // ============================================================
@@ -22,7 +22,7 @@ import {
 
 const anthropic = new Anthropic();
 
-const STRATEGY_SYSTEM_PROMPT = `You are the Strategy Agent of the Virtual CDIO system. Your role is to generate actionable roadmaps and strategic recommendations based on assessment data.
+const STRATEGY_SYSTEM_PROMPT = `You are the Strategy Agent of the AI-CDIO system. Your role is to generate actionable roadmaps and strategic recommendations based on assessment data.
 
 ## Your Decision Frameworks
 
