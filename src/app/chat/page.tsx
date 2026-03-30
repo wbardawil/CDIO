@@ -225,12 +225,20 @@ export default function ChatPage() {
           onSubmit={handleSubmit}
           className="max-w-2xl mx-auto flex gap-2"
         >
-          <input
-            type="text"
+          <textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                if (input.trim() && !loading) sendMessage(input);
+              }
+            }}
             placeholder="Ask me anything about your technology..."
-            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-400"
+            rows={1}
+            className="flex-1 border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-900 placeholder-gray-400 bg-white focus:outline-none focus:border-blue-400 resize-none min-h-[44px] max-h-[120px]"
+            style={{ height: "auto", overflow: "hidden" }}
+            ref={(el) => { if (el) { el.style.height = "auto"; el.style.height = Math.min(el.scrollHeight, 120) + "px"; } }}
             disabled={loading}
           />
           <button
