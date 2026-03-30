@@ -61,12 +61,12 @@ export default function Home() {
             ))}
           </div>
           <Link
-            href="/chat"
+            href="/scan"
             className="inline-block px-8 py-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors text-lg"
           >
-            Talk to AI-CDIO
+            Start Your Health Check
           </Link>
-          <p className="text-xs text-gray-400 mt-3">Free. No signup required. Get answers in 5 minutes.</p>
+          <p className="text-xs text-gray-400 mt-3">Free. No signup required. See your results build in real-time.</p>
         </div>
 
         {/* How it works */}
@@ -131,12 +131,20 @@ export default function Home() {
           <p className="text-gray-500 mb-4">
             90% of SMBs have no technology leadership. AI-CDIO changes that.
           </p>
-          <Link
-            href="/chat"
-            className="inline-block px-8 py-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
-          >
-            Start a Conversation
-          </Link>
+          <div className="flex gap-4 justify-center">
+            <Link
+              href="/scan"
+              className="inline-block px-8 py-4 bg-blue-600 text-white font-medium rounded-xl hover:bg-blue-700 transition-colors"
+            >
+              Start Your Health Check
+            </Link>
+            <Link
+              href="/chat"
+              className="inline-block px-8 py-4 border border-gray-200 text-gray-700 font-medium rounded-xl hover:bg-gray-50 transition-colors"
+            >
+              Just Chat
+            </Link>
+          </div>
         </div>
       </div>
     </div>
