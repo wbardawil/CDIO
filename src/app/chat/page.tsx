@@ -241,9 +241,19 @@ export default function ChatPage() {
             Send
           </button>
         </form>
-        <p className="text-center text-xs text-gray-400 mt-2">
-          AI-CDIO is vendor-agnostic. Recommendations are based on your business needs, not commissions.
-        </p>
+        <div className="flex items-center justify-center gap-4 mt-2">
+          <p className="text-xs text-gray-400">
+            AI-powered advice — verify recommendations with qualified professionals before implementation.
+          </p>
+          {messages.length > 0 && (
+            <a
+              href="/onboarding"
+              className="text-xs text-blue-500 hover:text-blue-700 font-medium whitespace-nowrap"
+            >
+              Full assessment →
+            </a>
+          )}
+        </div>
       </div>
     </div>
   );
