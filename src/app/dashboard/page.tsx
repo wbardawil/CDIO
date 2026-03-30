@@ -1,69 +1,164 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback, Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { SpiderChart } from "@/components/charts/spider-chart";
 import { PriorityMatrix } from "@/components/charts/priority-matrix";
 import { DivergenceReport } from "@/components/charts/divergence-report";
 import { MODULE_NAMES } from "@/types";
-import type { AssessmentSynthesis, DivergencePoint, PriorityClass, RoadmapContent } from "@/types";
+import type { AssessmentSynthesis, DivergencePoint, PriorityClass } from "@/types";
 
-// Demo data for initial development — will be replaced with Supabase queries
-const DEMO_SYNTHESES: AssessmentSynthesis[] = [
-  { id: "1", assessment_id: "demo", module_number: 1, consensus_score: 2.0, divergence_score: 0.5, business_impact: 6, priority_rank: 8, priority_class: "maintain", recommended_actions: [] },
-  { id: "2", assessment_id: "demo", module_number: 2, consensus_score: 1.5, divergence_score: 1.2, business_impact: 9, priority_rank: 1, priority_class: "top_priority", recommended_actions: [] },
-  { id: "3", assessment_id: "demo", module_number: 3, consensus_score: 1.0, divergence_score: 0.8, business_impact: 7, priority_rank: 3, priority_class: "top_priority", recommended_actions: [] },
-  { id: "4", assessment_id: "demo", module_number: 4, consensus_score: 2.5, divergence_score: 0.3, business_impact: 7, priority_rank: 5, priority_class: "strategic_bet", recommended_actions: [] },
-  { id: "5", assessment_id: "demo", module_number: 5, consensus_score: 1.5, divergence_score: 1.5, business_impact: 9, priority_rank: 2, priority_class: "top_priority", recommended_actions: [] },
-  { id: "6", assessment_id: "demo", module_number: 6, consensus_score: 1.0, divergence_score: 0.0, business_impact: 5, priority_rank: 10, priority_class: "strategic_bet", recommended_actions: [] },
-  { id: "7", assessment_id: "demo", module_number: 7, consensus_score: 2.0, divergence_score: 0.0, business_impact: 4, priority_rank: 12, priority_class: "defer", recommended_actions: [] },
-  { id: "8", assessment_id: "demo", module_number: 8, consensus_score: 1.5, divergence_score: 0.5, business_impact: 8, priority_rank: 4, priority_class: "top_priority", recommended_actions: [] },
-  { id: "9", assessment_id: "demo", module_number: 9, consensus_score: 3.0, divergence_score: 0.0, business_impact: 6, priority_rank: 9, priority_class: "quick_win", recommended_actions: [] },
-  { id: "10", assessment_id: "demo", module_number: 10, consensus_score: 2.5, divergence_score: 0.8, business_impact: 5, priority_rank: 11, priority_class: "maintain", recommended_actions: [] },
-  { id: "11", assessment_id: "demo", module_number: 11, consensus_score: 2.0, divergence_score: 0.3, business_impact: 6, priority_rank: 7, priority_class: "maintain", recommended_actions: [] },
-  { id: "12", assessment_id: "demo", module_number: 12, consensus_score: 1.0, divergence_score: 0.5, business_impact: 8, priority_rank: 6, priority_class: "top_priority", recommended_actions: [] },
-  { id: "13", assessment_id: "demo", module_number: 13, consensus_score: 2.0, divergence_score: 0.0, business_impact: 5, priority_rank: 13, priority_class: "maintain", recommended_actions: [] },
-  { id: "14", assessment_id: "demo", module_number: 14, consensus_score: 1.5, divergence_score: 0.0, business_impact: 6, priority_rank: 14, priority_class: "strategic_bet", recommended_actions: [] },
-  { id: "15", assessment_id: "demo", module_number: 15, consensus_score: 1.0, divergence_score: 0.0, business_impact: 7, priority_rank: 15, priority_class: "strategic_bet", recommended_actions: [] },
-  { id: "16", assessment_id: "demo", module_number: 16, consensus_score: 2.0, divergence_score: 0.0, business_impact: 4, priority_rank: 16, priority_class: "defer", recommended_actions: [] },
-];
+type Tab = "overview" | "stakeholders" | "divergences" | "roadmap";
 
-const DEMO_DIVERGENCES: DivergencePoint[] = [
-  {
-    module_number: 2,
-    module_name: "IT/Digital Transformation Strategy",
-    stakeholder_a: { id: "a", name: "Sarah Chen", score: 3, evidence: "We have a documented strategy from 2024 that aligns with our 3-year business plan. Regular quarterly reviews happen." },
-    stakeholder_b: { id: "b", name: "Mike Torres", score: 1, evidence: "The strategy document exists but nobody follows it. Technology decisions are made reactively based on immediate needs." },
-    score_gap: 2,
-    framework_recommendation: "The diagnostic evidence points to Level 1-2 maturity. While a strategy document exists (supporting Level 2), the lack of consistent execution and reactive decision-making suggests the organization has not yet achieved reliable strategy execution. For a medium-sized technology company, this module should be a top priority.",
-    projected_roi: "Implementing a living digital strategy with quarterly review cadence typically yields 150-300% ROI within 12 months through reduced redundant technology investments and better resource allocation.",
-  },
-  {
-    module_number: 5,
-    module_name: "Cybersecurity, Risk Management & Compliance",
-    stakeholder_a: { id: "a", name: "Sarah Chen", score: 1, evidence: "We have basic antivirus and passwords but no formal security program or policies." },
-    stakeholder_b: { id: "c", name: "James Park", score: 3, evidence: "We implemented MFA last year, have a firewall, run quarterly vulnerability scans, and our compliance consultant reviews us annually." },
-    score_gap: 2,
-    framework_recommendation: "The evidence suggests maturity between Level 2-3. MFA implementation and vulnerability scanning are Level 3 indicators, but the lack of a documented security policy and formal risk framework suggests the program is not yet comprehensive. For this organization's size and industry, establishing a security baseline should be prioritized within the first 90 days.",
-    projected_roi: "A structured security program reduces breach risk by 60-80%. The average SMB data breach costs $120K-200K. Investment in security foundations typically yields 300-500% risk-adjusted ROI.",
-  },
-];
+interface StakeholderStatus {
+  id: string;
+  name: string;
+  role: string;
+  email: string;
+  assessment_token: string;
+  completed_modules: number[];
+  total_modules: number;
+}
 
-type Tab = "overview" | "divergences" | "roadmap";
+interface DashboardData {
+  org: { id: string; name: string; size_category: string; industry: string; employee_count: number };
+  assessment: { id: string; status: string } | null;
+  stakeholders: StakeholderStatus[];
+  syntheses: AssessmentSynthesis[];
+  divergences: any[];
+  roadmap: any;
+  completion: { total: number; completed: number; percentage: number };
+}
 
 export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>}>
+      <DashboardContent />
+    </Suspense>
+  );
+}
+
+function DashboardContent() {
+  const searchParams = useSearchParams();
+  const orgId = searchParams.get("org");
   const [activeTab, setActiveTab] = useState<Tab>("overview");
+  const [data, setData] = useState<DashboardData | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [synthesizing, setSynthesizing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const spiderScores = DEMO_SYNTHESES.map((s) => ({
-    module_number: s.module_number,
-    score: s.consensus_score,
+  const fetchData = useCallback(async () => {
+    if (!orgId) {
+      setLoading(false);
+      return;
+    }
+    try {
+      const res = await fetch(`/api/dashboard/${orgId}`);
+      if (!res.ok) throw new Error("Failed to load dashboard");
+      const json = await res.json();
+      setData(json);
+    } catch (err) {
+      setError("Failed to load dashboard data");
+    } finally {
+      setLoading(false);
+    }
+  }, [orgId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const handleSynthesize = async () => {
+    if (!data?.assessment) return;
+    setSynthesizing(true);
+    try {
+      const res = await fetch("/api/assessments/synthesize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          org_id: data.org.id,
+          assessment_id: data.assessment.id,
+        }),
+      });
+      if (!res.ok) {
+        const errData = await res.json();
+        throw new Error(errData.error || "Synthesis failed");
+      }
+      await fetchData(); // Refresh
+    } catch (err: any) {
+      alert(err.message || "Synthesis failed");
+    } finally {
+      setSynthesizing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (!orgId) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md text-center">
+          <h2 className="text-xl font-semibold mb-2">No Organization Selected</h2>
+          <p className="text-gray-500 mb-4">
+            Start by onboarding your organization.
+          </p>
+          <a href="/onboarding" className="text-blue-600 hover:text-blue-800 font-medium">
+            Go to Onboarding
+          </a>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="bg-white rounded-xl border border-red-200 p-8 max-w-md text-center">
+          <h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
+          <p className="text-gray-600">{error || "Failed to load data"}</p>
+        </div>
+      </div>
+    );
+  }
+
+  const hasSynthesis = data.syntheses.length > 0;
+  const assessmentStatus = data.assessment?.status ?? "none";
+  const allStakeholdersDone = data.stakeholders.every(
+    (s) => s.completed_modules.length >= s.total_modules
+  );
+
+  // Map divergences to DivergencePoint format for the component
+  const divergencePoints: DivergencePoint[] = (data.divergences ?? []).map((d: any) => ({
+    module_number: d.module_number,
+    module_name: MODULE_NAMES[d.module_number] ?? `Module ${d.module_number}`,
+    stakeholder_a: d.decision_package?.stakeholder_a ?? { id: d.stakeholder_a_id, name: "Stakeholder A", score: 1, evidence: "" },
+    stakeholder_b: d.decision_package?.stakeholder_b ?? { id: d.stakeholder_b_id, name: "Stakeholder B", score: 1, evidence: "" },
+    score_gap: d.score_gap,
+    framework_recommendation: d.framework_recommendation,
+    projected_roi: d.decision_package?.projected_roi ?? "To be calculated",
   }));
 
-  const matrixModules = DEMO_SYNTHESES.map((s) => ({
+  const spiderScores = data.syntheses.map((s: any) => ({
     module_number: s.module_number,
-    consensus_score: s.consensus_score,
-    business_impact: s.business_impact,
-    priority_class: s.priority_class,
+    score: Number(s.consensus_score),
   }));
+
+  const matrixModules = data.syntheses.map((s: any) => ({
+    module_number: s.module_number,
+    consensus_score: Number(s.consensus_score),
+    business_impact: Number(s.business_impact),
+    priority_class: s.priority_class as PriorityClass,
+  }));
+
+  const avgMaturity = spiderScores.length > 0
+    ? (spiderScores.reduce((a, b) => a + b.score, 0) / spiderScores.length).toFixed(1)
+    : "—";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -72,12 +167,25 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
             <h1 className="text-xl font-bold text-gray-900">AI-CDIO</h1>
-            <p className="text-sm text-gray-500">Demo Organization Assessment</p>
+            <p className="text-sm text-gray-500">{data.org.name} — {data.org.size_category} / {data.org.industry}</p>
           </div>
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-xs font-medium">
-              Assessment Complete
+          <div className="flex items-center gap-3">
+            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+              assessmentStatus === "completed"
+                ? "bg-green-100 text-green-700"
+                : assessmentStatus === "in_progress"
+                  ? "bg-amber-100 text-amber-700"
+                  : "bg-gray-100 text-gray-600"
+            }`}>
+              {assessmentStatus === "completed" ? "Assessment Complete" :
+               assessmentStatus === "in_progress" ? "Assessment In Progress" :
+               "Assessment Draft"}
             </span>
+            {data.completion.total > 0 && (
+              <span className="text-xs text-gray-400">
+                {data.completion.percentage}% responses collected
+              </span>
+            )}
           </div>
         </div>
       </header>
@@ -87,10 +195,11 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex gap-8">
             {([
-              { key: "overview", label: "Maturity Overview" },
-              { key: "divergences", label: `Alignment (${DEMO_DIVERGENCES.length})` },
-              { key: "roadmap", label: "90-Day Roadmap" },
-            ] as { key: Tab; label: string }[]).map((tab) => (
+              { key: "stakeholders" as Tab, label: "Team Progress" },
+              { key: "overview" as Tab, label: "Maturity Overview" },
+              { key: "divergences" as Tab, label: `Alignment (${divergencePoints.length})` },
+              { key: "roadmap" as Tab, label: "90-Day Roadmap" },
+            ]).map((tab) => (
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
@@ -109,88 +218,213 @@ export default function DashboardPage() {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto px-6 py-8">
-        {activeTab === "overview" && (
-          <div className="space-y-8">
-            {/* Summary cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <p className="text-sm text-gray-500">Average Maturity</p>
-                <p className="text-3xl font-bold text-gray-900 mt-1">
-                  {(DEMO_SYNTHESES.reduce((a, b) => a + b.consensus_score, 0) / DEMO_SYNTHESES.length).toFixed(1)}
-                  <span className="text-lg text-gray-400">/4</span>
-                </p>
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <p className="text-sm text-gray-500">Top Priorities</p>
-                <p className="text-3xl font-bold text-red-600 mt-1">
-                  {DEMO_SYNTHESES.filter((s) => s.priority_class === "top_priority").length}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <p className="text-sm text-gray-500">Divergences</p>
-                <p className="text-3xl font-bold text-amber-600 mt-1">
-                  {DEMO_DIVERGENCES.length}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-5">
-                <p className="text-sm text-gray-500">Quick Wins</p>
-                <p className="text-3xl font-bold text-green-600 mt-1">
-                  {DEMO_SYNTHESES.filter((s) => s.priority_class === "quick_win").length}
-                </p>
-              </div>
+
+        {/* Stakeholders Tab */}
+        {activeTab === "stakeholders" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold">Stakeholder Assessment Progress</h2>
+              {allStakeholdersDone && !hasSynthesis && (
+                <button
+                  onClick={handleSynthesize}
+                  disabled={synthesizing}
+                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
+                >
+                  {synthesizing ? "Synthesizing..." : "Run Synthesis"}
+                </button>
+              )}
+              {data.completion.completed > 0 && !allStakeholdersDone && (
+                <button
+                  onClick={handleSynthesize}
+                  disabled={synthesizing}
+                  className="px-6 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 disabled:bg-gray-300 transition-colors text-sm"
+                >
+                  {synthesizing ? "Synthesizing..." : "Synthesize (partial data)"}
+                </button>
+              )}
             </div>
 
-            {/* Charts */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <SpiderChart
-                  scores={spiderScores}
-                  title="Digital Maturity Radar"
-                />
-              </div>
-              <div className="bg-white rounded-xl border border-gray-200 p-6">
-                <PriorityMatrix modules={matrixModules} />
-              </div>
-            </div>
+            {data.stakeholders.map((s) => {
+              const progress = s.total_modules > 0 ? (s.completed_modules.length / s.total_modules) * 100 : 0;
+              const assessLink = `${typeof window !== "undefined" ? window.location.origin : ""}/assess/${s.assessment_token}`;
+
+              return (
+                <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-medium text-gray-900">{s.name}</p>
+                      <p className="text-sm text-gray-500">{s.role} — {s.email}</p>
+                    </div>
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      progress === 100
+                        ? "bg-green-100 text-green-700"
+                        : progress > 0
+                          ? "bg-amber-100 text-amber-700"
+                          : "bg-gray-100 text-gray-500"
+                    }`}>
+                      {progress === 100 ? "Complete" : progress > 0 ? `${Math.round(progress)}%` : "Not started"}
+                    </span>
+                  </div>
+                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+                    <div
+                      className="h-full bg-blue-500 rounded-full transition-all"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <p className="text-xs text-gray-400">
+                      {s.completed_modules.length} of {s.total_modules} modules completed
+                    </p>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(assessLink);
+                        alert("Assessment link copied!");
+                      }}
+                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                    >
+                      Copy assessment link
+                    </button>
+                  </div>
+                </div>
+              );
+            })}
           </div>
         )}
 
-        {activeTab === "divergences" && (
-          <DivergenceReport divergences={DEMO_DIVERGENCES} />
+        {/* Overview Tab */}
+        {activeTab === "overview" && (
+          <div className="space-y-8">
+            {!hasSynthesis ? (
+              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">No Synthesis Yet</h3>
+                <p className="text-gray-500 mb-4">
+                  Collect stakeholder assessments, then run synthesis to see the maturity overview.
+                </p>
+                <button onClick={() => setActiveTab("stakeholders")} className="text-blue-600 hover:text-blue-800 font-medium">
+                  View stakeholder progress
+                </button>
+              </div>
+            ) : (
+              <>
+                {/* Summary cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                  <div className="bg-white rounded-xl border border-gray-200 p-5">
+                    <p className="text-sm text-gray-500">Average Maturity</p>
+                    <p className="text-3xl font-bold text-gray-900 mt-1">
+                      {avgMaturity}<span className="text-lg text-gray-400">/4</span>
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-xl border border-gray-200 p-5">
+                    <p className="text-sm text-gray-500">Top Priorities</p>
+                    <p className="text-3xl font-bold text-red-600 mt-1">
+                      {data.syntheses.filter((s: any) => s.priority_class === "top_priority").length}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-xl border border-gray-200 p-5">
+                    <p className="text-sm text-gray-500">Divergences</p>
+                    <p className="text-3xl font-bold text-amber-600 mt-1">
+                      {divergencePoints.length}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-xl border border-gray-200 p-5">
+                    <p className="text-sm text-gray-500">Quick Wins</p>
+                    <p className="text-3xl font-bold text-green-600 mt-1">
+                      {data.syntheses.filter((s: any) => s.priority_class === "quick_win").length}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Charts */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="bg-white rounded-xl border border-gray-200 p-6">
+                    <SpiderChart scores={spiderScores} title="Digital Maturity Radar" />
+                  </div>
+                  <div className="bg-white rounded-xl border border-gray-200 p-6">
+                    <PriorityMatrix modules={matrixModules} />
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
         )}
 
+        {/* Divergences Tab */}
+        {activeTab === "divergences" && (
+          hasSynthesis ? (
+            <DivergenceReport divergences={divergencePoints} />
+          ) : (
+            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
+              <p className="text-gray-500">Run synthesis first to see alignment analysis.</p>
+            </div>
+          )
+        )}
+
+        {/* Roadmap Tab */}
         {activeTab === "roadmap" && (
           <div className="bg-white rounded-xl border border-gray-200 p-8">
             <h2 className="text-xl font-semibold mb-4">90-Day Roadmap</h2>
-            <p className="text-gray-500">
-              Roadmap generation will be connected once the assessment pipeline is
-              live with real Supabase data. The Strategy Agent will produce a
-              customized plan based on your assessment results.
-            </p>
-            <div className="mt-6 space-y-4">
-              {[
-                { phase: "Weeks 1-4", title: "Foundation & Quick Wins", items: ["Complete stakeholder assessment", "Establish governance cadence", "Identify top 3 quick wins"] },
-                { phase: "Weeks 5-8", title: "Strategic Initiatives", items: ["Launch top 2-3 strategic initiatives", "Begin addressing top priority modules", "First value check-in"] },
-                { phase: "Weeks 9-12", title: "Scale & Measure", items: ["Progress initiatives to 50%+", "Measure ROI on quick wins", "Plan next quarter priorities"] },
-              ].map((phase) => (
-                <div key={phase.phase} className="border border-gray-100 rounded-lg p-5">
-                  <div className="flex items-center gap-3 mb-2">
-                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
-                      {phase.phase}
-                    </span>
-                    <h3 className="font-medium">{phase.title}</h3>
+            {data.roadmap ? (
+              <div className="space-y-4">
+                {data.roadmap.content?.executive_summary && (
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <p className="text-sm text-blue-900 whitespace-pre-wrap">
+                      {data.roadmap.content.executive_summary}
+                    </p>
                   </div>
-                  <ul className="ml-4 space-y-1">
-                    {phase.items.map((item, i) => (
-                      <li key={i} className="text-sm text-gray-600 flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-gray-300 rounded-full" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
+                )}
+                {data.roadmap.content?.quick_wins?.map((qw: any, i: number) => (
+                  <div key={i} className="border border-gray-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Quick Win</span>
+                      <h3 className="font-medium text-sm">{qw.title}</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">{qw.description}</p>
+                    {qw.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {qw.expected_roi}</p>}
+                  </div>
+                ))}
+                {data.roadmap.content?.strategic_initiatives?.map((si: any, i: number) => (
+                  <div key={i} className="border border-gray-100 rounded-lg p-4">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">Strategic</span>
+                      <h3 className="font-medium text-sm">{si.title}</h3>
+                    </div>
+                    <p className="text-sm text-gray-600">{si.description}</p>
+                    {si.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {si.expected_roi}</p>}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-gray-500 mb-4">
+                  {hasSynthesis
+                    ? "Synthesis complete. Generate a roadmap based on the assessment results."
+                    : "Complete the assessment and run synthesis first."}
+                </p>
+                {hasSynthesis && (
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res = await fetch("/api/roadmaps", {
+                          method: "POST",
+                          headers: { "Content-Type": "application/json" },
+                          body: JSON.stringify({
+                            org_id: data.org.id,
+                            assessment_id: data.assessment!.id,
+                          }),
+                        });
+                        if (!res.ok) throw new Error("Failed to generate roadmap");
+                        await fetchData();
+                      } catch (err) {
+                        alert("Roadmap generation failed. Check your Anthropic API key.");
+                      }
+                    }}
+                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                  >
+                    Generate 90-Day Roadmap
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </main>
