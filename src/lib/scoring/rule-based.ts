@@ -33,11 +33,12 @@ export function scoreModuleFromResponses(
   // Calculate weighted score (yes=1, partial=0.5, no=0)
   const weightedScore = (yes + partial * 0.5) / total;
 
-  // Map to maturity level
+  // Map to 5-level maturity scale
   let maturity_score: MaturityLevel;
-  if (weightedScore >= 0.85) maturity_score = 4;
-  else if (weightedScore >= 0.6) maturity_score = 3;
-  else if (weightedScore >= 0.35) maturity_score = 2;
+  if (weightedScore >= 0.9) maturity_score = 5;
+  else if (weightedScore >= 0.7) maturity_score = 4;
+  else if (weightedScore >= 0.5) maturity_score = 3;
+  else if (weightedScore >= 0.3) maturity_score = 2;
   else maturity_score = 1;
 
   // Build evidence summary

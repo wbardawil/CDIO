@@ -30,7 +30,7 @@ const PRIORITY_COLORS: Record<string, string> = {
 
 // Simple action card suggestions based on module + score
 function generateQuickAction(module: number, score: number): { title: string; why: string; impact: string } | null {
-  if (score >= 3) return null; // No urgent action needed
+  if (score >= 4) return null; // No urgent action needed (Level 4-5 are managed/optimizing)
 
   const actions: Record<number, { title: string; why: string; impact: string }> = {
     1: { title: "Define a technology leadership role", why: "Without clear ownership, tech decisions are reactive", impact: "Faster, more aligned technology decisions" },
@@ -217,7 +217,7 @@ export default function ScanPage() {
                   Health Check Complete
                 </h2>
                 <p className="text-gray-500 mb-4">
-                  Average maturity: {avgScore}/4 across {completedCount} modules
+                  Average maturity: {avgScore}/5 across {completedCount} modules
                 </p>
                 <div className="flex gap-3 justify-center">
                   <a
@@ -281,7 +281,7 @@ export default function ScanPage() {
               <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
                 <p className="text-xs text-gray-500">Avg Maturity</p>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {avgScore}<span className="text-sm text-gray-400">/4</span>
+                  {avgScore}<span className="text-sm text-gray-400">/5</span>
                 </p>
               </div>
               <div className="bg-white rounded-xl border border-gray-200 p-4 text-center">
@@ -333,7 +333,7 @@ export default function ScanPage() {
                         {MODULE_NAMES[r.module]}
                       </span>
                       <span className="text-xs text-gray-400">
-                        Level {r.score}/4
+                        Level {r.score}/5
                       </span>
                     </div>
                   ))}

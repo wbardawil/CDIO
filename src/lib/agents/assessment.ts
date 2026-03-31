@@ -27,7 +27,8 @@ You use a 4-level maturity scale:
 - Level 1 (Beginner): Ad hoc, reactive, minimal capability. No formal processes.
 - Level 2 (Developing): Some processes exist but inconsistent execution. Partial documentation.
 - Level 3 (Proficient): Defined processes with reliable execution. Good documentation and governance.
-- Level 4 (Advanced): Optimized, innovative, industry-leading. Continuous improvement culture.
+- Level 4 (Managed): Measured, controlled, consistent outcomes. Data-driven decisions with established metrics.
+- Level 5 (Optimizing): Continuous improvement, innovative, industry-leading. Proactive optimization culture.
 
 ## Scoring Rules
 
@@ -46,7 +47,7 @@ ${Object.entries(MODULE_NAMES)
 ## Output Format
 
 For each module assessed, provide:
-1. maturity_score: integer 1-4
+1. maturity_score: integer 1-5
 2. evidence: specific observations supporting the score
 3. key_gaps: what would move them to the next level
 4. recommended_actions: 2-3 concrete next steps
@@ -102,7 +103,7 @@ ${diagnosticResponses
 
 Provide your assessment as JSON:
 {
-  "maturity_score": <1-4>,
+  "maturity_score": <1-5>,
   "evidence": "<specific observations>",
   "key_gaps": ["<gap1>", "<gap2>"],
   "recommended_actions": ["<action1>", "<action2>", "<action3>"]
@@ -123,7 +124,7 @@ Provide your assessment as JSON:
   const parsed = JSON.parse(jsonMatch[0]);
 
   return {
-    maturity_score: Math.min(4, Math.max(1, parsed.maturity_score)) as MaturityLevel,
+    maturity_score: Math.min(5, Math.max(1, parsed.maturity_score)) as MaturityLevel,
     evidence: parsed.evidence,
     key_gaps: parsed.key_gaps ?? [],
     recommended_actions: parsed.recommended_actions ?? [],

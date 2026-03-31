@@ -65,7 +65,14 @@ export interface Assessment {
 
 // --- Module Scores ---
 
-export type MaturityLevel = 1 | 2 | 3 | 4;
+export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
+
+// Maturity Level Definitions (standardized across AI-CDIO, AI-Strategist, AI-OME)
+// Level 1: Initial — Ad hoc, reactive, minimal capability
+// Level 2: Developing — Some processes, inconsistent execution
+// Level 3: Defined — Documented processes, reliable execution
+// Level 4: Managed — Measured, controlled, consistent outcomes
+// Level 5: Optimizing — Continuous improvement, innovative, industry-leading
 
 export interface DiagnosticResponse {
   question_id: string;
@@ -93,7 +100,7 @@ export interface AssessmentSynthesis {
   id: string;
   assessment_id: string;
   module_number: number;
-  consensus_score: number;          // weighted avg across stakeholders (1.0-4.0)
+  consensus_score: number;          // weighted avg across stakeholders (1.0-5.0)
   divergence_score: number;         // std deviation — high = disagreement
   business_impact: number;          // 1-10 from stakeholder ratings
   priority_rank: number;            // 1-16 ordering

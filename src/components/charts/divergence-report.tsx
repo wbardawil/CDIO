@@ -62,7 +62,7 @@ export function DivergenceReport({ divergences }: DivergenceReportProps) {
                 </div>
                 <div>
                   <p className="font-medium text-sm">{d.stakeholder_a.name}</p>
-                  <p className="text-xs text-gray-500">Level {d.stakeholder_a.score}/4</p>
+                  <p className="text-xs text-gray-500">Level {d.stakeholder_a.score}/5</p>
                 </div>
               </div>
               <p className="text-sm text-gray-600">{d.stakeholder_a.evidence}</p>
@@ -77,7 +77,7 @@ export function DivergenceReport({ divergences }: DivergenceReportProps) {
                 </div>
                 <div>
                   <p className="font-medium text-sm">{d.stakeholder_b.name}</p>
-                  <p className="text-xs text-gray-500">Level {d.stakeholder_b.score}/4</p>
+                  <p className="text-xs text-gray-500">Level {d.stakeholder_b.score}/5</p>
                 </div>
               </div>
               <p className="text-sm text-gray-600">{d.stakeholder_b.evidence}</p>

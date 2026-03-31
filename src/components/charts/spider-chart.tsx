@@ -29,7 +29,7 @@ export function SpiderChart({ scores, targetScores, title }: SpiderChartProps) {
       module: shortName,
       fullName,
       current: s.score,
-      target: target?.score ?? 4,
+      target: target?.score ?? 5,
     };
   });
 
@@ -47,9 +47,9 @@ export function SpiderChart({ scores, targetScores, title }: SpiderChartProps) {
           />
           <PolarRadiusAxis
             angle={90}
-            domain={[0, 4]}
+            domain={[0, 5]}
             tick={{ fontSize: 10, fill: "#9ca3af" }}
-            tickCount={5}
+            tickCount={6}
           />
           {targetScores && (
             <Radar
