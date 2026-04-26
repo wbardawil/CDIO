@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { chat } from "@/lib/agents/conversation";
 import { createServiceClient } from "@/lib/db/supabase";
+import { rateLimit } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const ChatSchema = z.object({
@@ -18,6 +19,15 @@ const ChatSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const ip = request.headers.get("x-forwarded-for") ?? "anonymous";
+  const { ok, remaining } = rateLimit(ip);
+  if (!ok) {
+    return NextResponse.json(
+      { error: "Too many requests. Please wait a moment." },
+      { status: 429, headers: { "Retry-After": "60", "X-RateLimit-Remaining": "0" } }
+    );
+  }
+
   try {
     const body = await request.json();
     const input = ChatSchema.parse(body);

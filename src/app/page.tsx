@@ -1,9 +1,14 @@
 import Link from "next/link";
+import { AuthHeader } from "@/components/auth-header";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
-      <div className="max-w-4xl mx-auto px-6 py-24">
+      <header className="max-w-4xl mx-auto px-6 py-4 flex items-center justify-between">
+        <span className="text-lg font-bold text-gray-900">AI-CDIO</span>
+        <AuthHeader />
+      </header>
+      <div className="max-w-4xl mx-auto px-6 py-16">
         {/* Hero */}
         <div className="text-center mb-16">
           <h1 className="text-5xl font-bold text-gray-900 mb-4">
