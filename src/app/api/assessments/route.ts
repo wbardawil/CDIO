@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
 import { scoreModuleFromResponses } from "@/lib/scoring/rule-based";
 import { scoreModule } from "@/lib/agents/assessment";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 import type { OrgSize, Industry } from "@/types";
 
@@ -21,6 +22,12 @@ const SubmitSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`assess:${ip}`, 20);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const input = SubmitSchema.parse(body);
@@ -90,11 +97,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.issues },
+        { error: "Validation failed" },
         { status: 400 }
       );
     }
-    console.error("Assessment submission error:", error);
+    console.error("Assessment submission error:", error instanceof Error ? error.message : "Unknown");
     return NextResponse.json(
       { error: "Failed to process assessment" },
       { status: 500 }

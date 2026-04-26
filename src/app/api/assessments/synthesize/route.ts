@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
+import { verifyOrgAccess } from "@/lib/auth/verify-org";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import {
   calculateConsensusScore,
   calculateDivergenceScore,
@@ -17,10 +19,34 @@ const SynthesizeSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`synth:${ip}`, 5);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
     const body = await request.json();
     const input = SynthesizeSchema.parse(body);
+
+    const { authorized } = await verifyOrgAccess(input.org_id);
+    if (!authorized) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const db = createServiceClient();
+
+    // Verify assessment belongs to this org (prevent cross-org data leak)
+    const { data: assessment } = await db
+      .from("assessments")
+      .select("id")
+      .eq("id", input.assessment_id)
+      .eq("org_id", input.org_id)
+      .single();
+
+    if (!assessment) {
+      return NextResponse.json({ error: "Assessment not found for this organization" }, { status: 404 });
+    }
 
     // Get all scores for this assessment
     const { data: scores, error: scoresError } = await db
@@ -179,11 +205,11 @@ export async function POST(request: NextRequest) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.issues },
+        { error: "Validation failed" },
         { status: 400 }
       );
     }
-    console.error("Synthesis error:", error);
+    console.error("Synthesis error:", error instanceof Error ? error.message : "Unknown");
     return NextResponse.json(
       { error: "Failed to synthesize assessment" },
       { status: 500 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
+import { verifyOrgAccess } from "@/lib/auth/verify-org";
 
 export async function GET(
   request: NextRequest,
@@ -7,6 +8,12 @@ export async function GET(
 ) {
   try {
     const { orgId } = await params;
+
+    const { authorized } = await verifyOrgAccess(orgId);
+    if (!authorized) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+
     const db = createServiceClient();
 
     // Get organization

@@ -53,7 +53,7 @@ export class EngagementOrchestrator {
     employee_count: number;
     industry: Industry;
     stakeholders: { name: string; email: string; role: string }[];
-  }) {
+  }, clerkUserId?: string) {
     // Determine org size
     let size_category: OrgSize;
     if (input.employee_count <= 50) size_category = "small";
@@ -85,6 +85,7 @@ export class EngagementOrchestrator {
         industry: input.industry,
         engagement_model: engagement.model,
         monthly_hours: engagement.hours,
+        ...(clerkUserId ? { clerk_org_id: clerkUserId } : {}),
       })
       .select()
       .single();

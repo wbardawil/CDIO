@@ -10,7 +10,7 @@ import { getModuleQuestions } from "@/lib/playbook/diagnostic-questions";
 import { PAIN_POINT_MODULES } from "@/lib/agents/pain-points";
 import { MODULE_NAMES } from "@/types";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ timeout: 30_000 });
 
 const CONVERSATION_SYSTEM_PROMPT = `You are the AI-CDIO — an AI-powered Chief Digital and Information Officer for small and medium businesses.
 

@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EngagementOrchestrator } from "@/lib/agents/orchestrator";
+import { requireAuth, AuthError } from "@/lib/auth/verify-org";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 import { z } from "zod";
 
 const OnboardSchema = z.object({
@@ -20,19 +22,29 @@ const OnboardSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const ip = getClientIp(request);
+  const { ok } = rateLimit(`org:${ip}`, 5);
+  if (!ok) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+  }
+
   try {
+    const userId = await requireAuth();
     const body = await request.json();
     const input = OnboardSchema.parse(body);
 
     const orgId = crypto.randomUUID();
     const orchestrator = new EngagementOrchestrator(orgId);
-    const result = await orchestrator.onboard(input);
+    const result = await orchestrator.onboard(input, userId);
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {
+    if (error instanceof AuthError) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: "Validation failed", details: error.issues },
+        { error: "Validation failed" },
         { status: 400 }
       );
     }

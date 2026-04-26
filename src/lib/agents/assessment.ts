@@ -15,7 +15,7 @@ import type {
 } from "@/types";
 import { MODULE_NAMES } from "@/types";
 
-const anthropic = new Anthropic();
+const anthropic = new Anthropic({ timeout: 30_000 });
 
 // --- System prompt encoding the playbook's assessment logic ---
 
