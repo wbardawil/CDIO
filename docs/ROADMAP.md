@@ -1,155 +1,193 @@
-# AI-CDIO: Product Roadmap
+# AI-CDIO: Build Roadmap
 
-## Current State (What's Built)
+## Current State (April 2026)
 
-### Core Engine (Complete)
-- [x] 16-module diagnostic framework (70+ questions)
-- [x] AI-powered maturity scoring (Claude Sonnet)
-- [x] Rule-based scoring fallback
-- [x] Prioritization engine (Value vs Effort, Module Stack Recommender)
-- [x] Divergence detection (multi-stakeholder)
-- [x] AI Decision Packages with projected ROI
-- [x] RAG layer (1,154 playbook chunks from 30 files)
+### Built
+- Assessment Engine (16 modules, 5-level maturity, AI scoring)
+- Roadmap Engine (25% of playbook vision)
+- Conversation Agent (chat-first entry, RAG-grounded)
+- Quick Scan UI (live spider chart + action cards)
+- Dashboard (priority matrix, divergence detection, Decision Packages)
+- RAG layer (1,154 playbook chunks indexed)
+- Supabase backend (10 tables, multi-tenant by org_id)
+- 5-level maturity scale standardized
 
-### Assessment Pipeline (Complete)
-- [x] Onboarding flow (org + stakeholders)
-- [x] Stakeholder assessment forms (unique token links)
-- [x] Multi-stakeholder synthesis
-- [x] 90-day roadmap generation (AI Strategy Agent)
-
-### Chat Layer (Complete)
-- [x] Conversation Agent with pain-point routing
-- [x] Chat API endpoint
-- [x] Chat UI with grouped pain-point chips
-- [x] Problem, Aspirational, and Discovery entry paths
-- [x] AI disclosure in chat footer
-
-### Dashboard (Complete)
-- [x] Spider chart (maturity radar)
-- [x] Priority matrix (business impact vs maturity)
-- [x] Divergence report with Decision Packages
-- [x] Team progress tracking
-- [x] Live Supabase data (no demo data)
-
-### Infrastructure (Complete)
-- [x] Next.js 15 + TypeScript + Tailwind
-- [x] Supabase (PostgreSQL + RLS)
-- [x] pgvector for RAG
-- [x] GitHub repo (wbardawil/CDIO)
-- [x] Anthropic API integration
+### NOT Built (Critical for Real Use)
+- Authentication (Clerk in deps but not wired)
+- Practitioner workspace (multi-client portfolio)
+- Rate limiting (any kind)
+- Background jobs (synthesis runs synchronously, will time out at scale)
+- Status Report Generator
+- QBR Deck Generator
+- Templates Library
+- Stripe billing
+- Vercel deployment
 
 ---
 
-## Phase 1: Alpha Launch (Weeks 1-2)
+## Phase 1: FOUNDER TOOL (Weeks 1-6)
 
-### Must-Have for Alpha
-- [ ] Deploy to Vercel (live URL)
-- [ ] Waitlist landing page
-- [ ] Invite code system (simple: codes in DB, validate on entry)
-- [ ] Action Card UI component (Done/Help/Skip)
-- [ ] Basic error handling for AI failures
+### Week 1 — Foundation (P0 ship-blockers)
 
-### Nice-to-Have for Alpha
-- [ ] Streaming chat responses
-- [ ] Mobile-responsive chat
+**Goal:** Make it safe to put real client data in the platform.
 
----
+| Day | Task | Outcome |
+|-----|------|---------|
+| 1 | Add Clerk auth + middleware on every API route | No more anonymous IDOR |
+| 2 | Add `practitioners` + `practitioner_clients` tables | Multi-client data model |
+| 3 | Practitioner workspace UI: list of all clients | Portfolio view |
+| 4 | Strip `assessment_token` from dashboard response, derive IDs server-side | Token security |
+| 5 | Upstash Redis rate limiting on `/api/chat` and `/api/assessments` | Cost protection |
+| 6 | Wrap synthesis delete-then-insert in transaction | Data integrity |
+| 7 | Migrate founder's 1-3 real clients into platform | First real use |
 
-## Phase 2: Beta Launch (Weeks 3-6)
+**Done = Founder logs in, sees portfolio, drills into Client A, runs existing engines.**
 
-### Must-Have for Beta
-- [ ] User authentication (Clerk)
-- [ ] Conversation persistence across sessions
-- [ ] Rate limiting on all API routes
-- [ ] Terms of Service
-- [ ] Privacy Policy
-- [ ] AI disclaimer (formal legal)
-- [ ] Error monitoring (Sentry)
-- [ ] LLM observability (Langfuse)
-- [ ] Basic customer support (email)
-- [ ] Onboarding sequence for new users
-- [ ] Analytics dashboard (for admin)
+### Week 2 — First Real Engine: Status Report Generator
 
-### Nice-to-Have for Beta
-- [ ] Response caching
-- [ ] Automated tests (scoring engine)
-- [ ] Cookie consent
-- [ ] Feedback collection mechanism
+**Goal:** The first deliverable beyond assessment + roadmap. Highest-frequency, highest-time-saved.
 
----
+| Day | Task | Outcome |
+|-----|------|---------|
+| 8-9 | `status_reports` table + API routes | Persistence |
+| 10-11 | Status Report Generator engine (pulls assessment + roadmap + decisions + value) | Core logic |
+| 12 | AI narrative draft (Claude Sonnet, structured prompt) | Generated text |
+| 13 | Markdown editor + PDF export | Practitioner edits |
+| 14 | Send-to-client email button (Resend) | Delivery |
 
-## Phase 3: Early Access (Weeks 7-12)
+**Done = Founder generates one client's monthly status report in <10 minutes (was 1-2 hours).**
 
-### Must-Have
-- [ ] Billing system (Stripe)
-- [ ] Credit/usage tracking + limits
-- [ ] MSP partner portal (basic white-label)
-- [ ] Initiative tracking UI
-- [ ] Issue reporting through chat
-- [ ] Progress visualization for users
-- [ ] Quality monitoring for AI responses
-- [ ] "Need Help" escalation path
-- [ ] Case studies from Beta users
+### Week 3-4 — Roadmap Engine to 100% + Trust Infra
 
-### Nice-to-Have
-- [ ] Annual pricing option
-- [ ] Referral program
-- [ ] Industry benchmarks (static)
-- [ ] PDF report export
-- [ ] Email digest (weekly action + insight)
+| Week | Task |
+|------|------|
+| 3 | Roadmap Engine upgrades: 30/60/90 templated, financial models, dependencies, governance section |
+| 3 | Move synthesis + roadmap to Inngest background jobs |
+| 3 | Add Anthropic prompt caching (system prompt + RAG context) |
+| 4 | Sentry error monitoring + Langfuse LLM observability |
+| 4 | Action cards invalidate on resynthesis (assessment_id + score_at_creation) |
+| 4 | Bridge chat `implicit_scores` → `module_scores` |
 
----
+**Done = Roadmap matches playbook vision. Cost-controlled. Observable.**
 
-## Phase 4: Open Launch (Month 4+)
+### Week 5-6 — Polish + Validation Prep
 
-### Must-Have
-- [ ] Proven unit economics from Early Access
-- [ ] CI/CD pipeline
-- [ ] SEO + content strategy
-- [ ] MSP partner onboarding kit
-- [ ] Competitive positioning page
-- [ ] Anti-abuse measures
-- [ ] IP protection for playbook content
-- [ ] LLM abstraction layer (multi-provider)
+| Week | Task |
+|------|------|
+| 5 | Use platform for THIS WEEK's actual deliverables across all founder's clients |
+| 5 | Document patterns: which engines used most, which features missing |
+| 5 | Terms of Service + Privacy Policy + AI disclaimer (legal review) |
+| 6 | Founder LinkedIn post: "I'm building this. Want early access?" |
+| 6 | First 30 LinkedIn DMs (15 fractional + 15 director) |
+| 6 | Discovery calls scheduled |
 
-### Nice-to-Have
-- [ ] Multi-language support
-- [ ] GDPR compliance + data residency
-- [ ] Multi-region deployment
-- [ ] Community features
-- [ ] Marketplace listing (AWS/Azure)
+**Done = Founder uses platform daily. Outreach starts. Validation Phase 2 begins.**
 
 ---
 
-## Phase 5: Platform (Month 6+)
+## Phase 2: VALIDATED PRODUCT (Weeks 7-12)
 
-- [ ] AI-Strategist agent (business strategy)
-- [ ] AI-OME agent (operational excellence)
-- [ ] Cross-agent intelligence (shared context)
-- [ ] Meta-orchestrator for AI C-Suite
-- [ ] Multi-company portfolio dashboard
-- [ ] Cross-client anonymized benchmarking
-- [ ] Custom playbook support
-- [ ] Partner API
-- [ ] White-label mobile app
+### Week 7-8 — First External Pilots
+
+| Task |
+|------|
+| Onboard 5 design partners (3 fractional + 2 director) for free |
+| Watch them use it. Bug fixes + UX iterations from observation. |
+| Build QBR Deck Generator (Engine #2) |
+| Add credit/usage tracking + per-tier limits (Stripe metadata) |
+
+### Week 9-10 — First Paying Customers
+
+| Task |
+|------|
+| Stripe billing integration |
+| Convert pilots to paid ($199-599 based on segment) |
+| First case studies (with permission) |
+| Community Slack for paying users |
+
+### Week 11-12 — Engine #3 + Scale Prep
+
+| Task |
+|------|
+| Build Value/ROI Tracker (commit → deliver → prove) |
+| Module-level improvement chat (Starter+ feature) |
+| First 20-30 paying customers |
+| Founder content: 3-5 LinkedIn posts/week |
+
+**Phase 2 done = $8-12K MRR, two engines beyond assessment + roadmap, validated PMF.**
 
 ---
 
-## Initiative, Issue & Problem Lifecycle
+## Phase 3: BUSINESS ON ITS OWN (Months 4-12)
 
-```
-ISSUES (reactive)          INITIATIVES (proactive)
-  ↓                              ↓
-  AI triages                 AI breaks into phases
-  ↓                              ↓
-  └───────→ ACTION CARDS ←───────┘
-            Done / Help / Skip
-                  ↓
-            Score updates → Next action → ROI tracked
-```
+### Month 4 — Engine #4 + #5
 
-### Implementation Order
-1. Action Cards (Phase 1)
-2. Initiative tracking (Phase 3)
-3. Issue reporting + triage (Phase 3)
-4. Full lifecycle automation (Phase 4)
+- Templates Library (Charter, M&A DD, Vendor Playbook, Risk Register)
+- Engagement Lifecycle (Phase 1→2→3 progression UI)
+
+### Month 5 — Document Upload + AI Analysis (Growth tier)
+
+- Image upload (security dashboard screenshots, etc.)
+- Document upload (vendor contracts, policies)
+- Claude Vision + document parsing
+- AI evidence analysis feeds into module scoring
+
+### Month 6 — First MSP Partner
+
+- White-label client portal (co-branded)
+- MSP onboarding kit (deck, training video, first-deal playbook)
+- Pilot with one MSP (50+ end clients)
+
+### Month 7-9 — Resource Planner + Lifecycle
+
+- Resource & Capacity Planner (per-practitioner hours allocation)
+- Engagement Lifecycle automation (auto-progression P1→P2 with conversion gates)
+- Annual pricing option (20% discount)
+
+### Month 10-12 — Content + Community
+
+- Content marketing kicks in (SEO, podcast, original research)
+- "State of the Fractional CDIO 2026" report (data-driven)
+- Referral program (Cello.so or built-in)
+- Hire first part-time CSM
+- 100 paying customers, $30K+ MRR
+
+---
+
+## Phase 4: PLATFORM (Year 2+)
+
+| Quarter | Focus |
+|---------|-------|
+| Q5 | AI-Strategist (parallel agent for business strategy) |
+| Q6 | AI-OME (operational excellence, 82-point operating model) |
+| Q7 | Cross-agent intelligence (shared client context across CDIO+Strategist+OME) |
+| Q8 | Multi-language (Spanish first — Latin American SMBs) |
+| Q9+ | Custom playbook support (white-label methodologies) |
+| Q10+ | Mobile app |
+
+---
+
+## Build Order Decision Criteria
+
+When choosing what to build next, apply this in order:
+
+1. **Does it save the founder time on a real client engagement THIS WEEK?** → Highest priority
+2. **Does it unblock a paying customer who's complained?** → High priority
+3. **Does it close a sale that's stalled at "yes if you build X"?** → High priority
+4. **Does it reduce cost (LLM, infra, support)?** → Medium priority
+5. **Does it open a new segment/channel?** → Medium priority
+6. **Is it nice-to-have or competitive feature parity?** → Low priority
+
+If a feature is none of the above, defer it.
+
+---
+
+## The Kill Switch
+
+**Day 90 review criteria:**
+- 5+ paying customers at $199+ → continue, accelerate
+- 1-4 paying customers → continue, slow burn, validate more
+- 0 paying customers + 0 commitments → STOP. Reframe or shelve.
+- Founder using platform daily and saving 5+ hrs/client/mo → continue regardless
+
+The kill switch protects against sunk-cost spiral.

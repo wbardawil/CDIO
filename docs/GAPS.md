@@ -1,108 +1,99 @@
-# AI-CDIO: Gap Analysis & Open Items
+# AI-CDIO: Gap Analysis
 
-Status: Updated 2026-03-30
+Status: Updated for Fractional Executive OS framing.
 
-## A. Product Gaps
+## Priority Tiers
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| P1 | No user authentication implemented | CRITICAL | Before Beta | Not started |
-| P2 | No rate limiting on API endpoints | CRITICAL | Before Beta | Not started |
-| P3 | No conversation memory across browser sessions | HIGH | Before Beta | Session-only currently |
-| P4 | Chat doesn't persist after browser close | HIGH | Needs auth | Blocked by P1 |
-| P5 | No "Need Help" escalation path from action cards | MEDIUM | Before Early Access | Not started |
-| P6 | No progress tracking visualization for users | MEDIUM | Before Early Access | Not started |
-| P7 | Action Card UI (Done/Help/Skip) not built | HIGH | Next sprint | Not started |
-| P8 | No streaming chat responses (SSE/WebSocket) | MEDIUM | Before Beta | Not started |
-| P9 | Assessment form not mobile-optimized | MEDIUM | Before Open Launch | Not started |
-| P10 | No way to undo/edit assessment answers | LOW | Before Open Launch | Not started |
-| P11 | No dark mode | LOW | Nice-to-have | Not started |
-| P12 | No multi-language support | MEDIUM | Before international | Not planned |
-| P13 | No mobile-first chat design | MEDIUM | Before Open Launch | Not started |
-| P14 | No offline/async between conversations | MEDIUM | Before Open Launch | Weekly digest planned |
+- **P0 (Tier 0)** — Existential. Blocks any usage with real client data.
+- **P1 (High)** — Required for paying customers.
+- **P2 (Medium)** — Required to scale beyond founder + first 5 customers.
+- **P3 (Low)** — Quality of life.
 
-## B. Business Model Gaps
+---
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| B1 | No billing/payment system (Stripe) | CRITICAL | Before charging | Not started |
-| B2 | No terms of service | CRITICAL | Before Beta | Not written |
-| B3 | No privacy policy | CRITICAL | Before Beta | Not written |
-| B4 | Credit/usage tracking not implemented | HIGH | Before Early Access | Not started |
-| B5 | No cancellation/refund policy | MEDIUM | Before charging | Not defined |
-| B6 | No annual pricing option | MEDIUM | Before Open Launch | Not designed |
-| B7 | No definition of "1M impacted" metric | MEDIUM | Before reporting | Not defined |
-| B8 | No competitive positioning page/FAQ | LOW | Before Open Launch | Not started |
-| B9 | MSP partner agreement/contract template | HIGH | Before MSP outreach | Not written |
-| B10 | Multi-currency pricing for global market | MEDIUM | Before international | Not considered |
-| B11 | Churn prevention strategy not designed | HIGH | Before Open Launch | Not started |
-| B12 | Expansion revenue path (cross-sell AI-Strategist/AI-OME) | MEDIUM | Future | Conceptual only |
+## P0 — Foundation (Week 1, Must Ship Before Real Use)
 
-## C. Technical Gaps
+| # | Gap | Why Existential | Effort |
+|---|-----|-----------------|--------|
+| P0-1 | No authentication (Clerk) | Cannot put real client data into unauthenticated app | 8h |
+| P0-2 | API routes accept arbitrary `org_id` (IDOR) | Anyone with a UUID reads any org's data | 4h |
+| P0-3 | `assessment_token` returned in dashboard response | Permanent unrevokable backdoor | 1h |
+| P0-4 | No rate limiting on `/api/chat`, `/api/assessments` | Cost burn risk; DoS surface | 4h |
+| P0-5 | No practitioner workspace (multi-client) | Architecture assumes 1 org per user; founder has 3-8 clients | 12h |
+| P0-6 | Synthesis uses `delete-then-insert` without transaction | Real data loss risk on retry | 2h |
+| P0-7 | `conversations` table not in `schema.sql` (only schema-v2) | Chat fails on fresh deploy | 1h |
+| P0-8 | Service-role client used in every API route | Bypasses RLS; multi-tenancy enforced only in TS code | 6h (combined w/ P0-1) |
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| T1 | Zero automated tests | HIGH | Ongoing | Not started |
-| T2 | No error monitoring (Sentry or similar) | HIGH | Before Beta | Not started |
-| T3 | No LLM observability (Langfuse or similar) | HIGH | Before Beta | Not started |
-| T4 | No CI/CD pipeline (tests, lint, type-check) | MEDIUM | Before Early Access | Not started |
-| T5 | No database backup verification | MEDIUM | Verify Supabase handles | Not verified |
-| T6 | Anthropic SDK not abstracted (vendor lock-in) | MEDIUM | Before Open Launch | Direct dependency |
-| T7 | No response caching for repeated questions | HIGH | Before Beta | Not started |
-| T8 | No graceful degradation when Anthropic is down | MEDIUM | Before Beta | Rule-based fallback exists |
-| T9 | No multi-region deployment | LOW | Before international | Not started |
-| T10 | Supabase migrations not automated | MEDIUM | Next sprint | Manual SQL currently |
+**Tier 0 total: ~38h / ~1 week of focused work**
 
-## D. Legal/Regulatory Gaps
+---
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| L1 | Terms of Service | CRITICAL | Before Beta | Not written |
-| L2 | Privacy Policy | CRITICAL | Before Beta | Not written |
-| L3 | AI disclaimer (formal legal version) | CRITICAL | Before Beta | Informal footer only |
-| L4 | Cookie consent mechanism | HIGH | Before Beta | Not implemented |
-| L5 | GDPR data handling procedures | MEDIUM | Before EU users | Not designed |
-| L6 | Data processing agreement for MSP partners | MEDIUM | Before partnerships | Not written |
-| L7 | Intellectual property protection for playbook | MEDIUM | Before open launch | Not implemented |
-| L8 | Professional liability insurance assessment | LOW | Before scaling | Not assessed |
-| L9 | Data retention policy | MEDIUM | Before Beta | Not defined |
+## P1 — First Real Engine + Trust (Week 2-4)
 
-## E. Operational Gaps
+| # | Gap | Why High | Effort |
+|---|-----|----------|--------|
+| P1-1 | Status Report Generator (the first deliverable engine beyond assessment + roadmap) | Highest-frequency deliverable per client; founder uses immediately | 16h |
+| P1-2 | Chat implicit_scores never feed into module_scores | "Chat-first" promise broken until bridged | 6h |
+| P1-3 | Action cards become stale on resynthesis | Stale advice forever | 4h |
+| P1-4 | Roadmap engine at 25% of playbook vision | Templated 30/60/90, financial models, dependencies, governance still missing | 16h |
+| P1-5 | Synthesis can fire 96 LLM calls per HTTP request | Times out on Vercel; runaway cost | 12h (move to background job) |
+| P1-6 | No prompt caching | -70% input tokens; required for unit economics | 4h |
+| P1-7 | Terms of Service / Privacy Policy / AI disclaimer (formal legal) | Required before any non-founder user | $2-5K legal review |
+| P1-8 | Sentry + Langfuse (error monitoring + LLM observability) | Cannot see when AI gives bad advice | 2h |
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| O1 | No customer support system | HIGH | Before Beta | Not started |
-| O2 | No onboarding sequence for new users | HIGH | Before Beta | Not designed |
-| O3 | No feedback collection mechanism | MEDIUM | Before Beta | Not started |
-| O4 | No quality monitoring for AI responses | MEDIUM | Before Early Access | Not started |
-| O5 | No incident response plan for bad AI advice | MEDIUM | Before Early Access | Not designed |
-| O6 | No process for updating playbook content | LOW | Before Open Launch | Manual currently |
-| O7 | No analytics/metrics dashboard for admin | MEDIUM | Before Beta | Not started |
+**Tier 1 total: ~60h + legal**
 
-## F. Growth/Marketing Gaps
+---
 
-| # | Gap | Severity | When to Solve | Status |
-|---|-----|----------|---------------|--------|
-| G1 | No SEO strategy or content plan | MEDIUM | Before Open Launch | Not started |
-| G2 | No social media presence | MEDIUM | Start during Beta | Not started |
-| G3 | No case studies or testimonials | HIGH | Collect during Alpha/Beta | None yet |
-| G4 | No referral program mechanics | MEDIUM | Before Early Access | Not built |
-| G5 | No MSP partner onboarding kit | HIGH | Before MSP outreach | Not created |
-| G6 | No competitive comparison content | LOW | Before Open Launch | Not started |
-| G7 | No email nurture sequence for waitlist | MEDIUM | Before waitlist launch | Not designed |
-| G8 | No viral loop designed | MEDIUM | Before Open Launch | Not designed |
-| G9 | No community strategy (SMB owners) | LOW | Future | Not planned |
+## P2 — Second Engine + Scale (Week 5-12)
 
-## Summary
+| # | Gap | Why Medium | Effort |
+|---|-----|-----------|--------|
+| P2-1 | QBR Deck Generator | Quarterly deliverable, highest time-saved per use | 24h |
+| P2-2 | Value/ROI tracker (commit → deliver → prove) | Differentiator vs every consulting tool | 16h |
+| P2-3 | Engagement Lifecycle (Phase 1 → 2 → 3) | Drives upgrades and renewals | 12h |
+| P2-4 | Templates Library (charter, M&A DD, vendor playbook) | Long tail of repeatable artifacts | Ongoing |
+| P2-5 | Document/image evidence upload + AI analysis | Growth tier feature | 24h |
+| P2-6 | Module-level improvement chat | Starter+ tier feature | 16h |
+| P2-7 | Stripe billing + subscription management | Cannot charge without it | 12h |
+| P2-8 | Credit/usage tracking + per-tier limits | Cost control at scale | 8h |
+| P2-9 | Response caching (24h hash on user message + context) | -30-50% LLM calls | 6h |
+| P2-10 | Output guardrail for security-domain AI advice | Liability mitigation | 6h |
+| P2-11 | Strip diagnostic questions out of system prompt | Prevent IP extraction | 8h |
+| P2-12 | Bridge `session_id` → `clerk_user_id` (claim flow) | Conversation memory across sessions | 6h |
 
-| Category | Critical | High | Medium | Low | Total |
-|----------|----------|------|--------|-----|-------|
-| Product | 2 | 4 | 6 | 2 | 14 |
-| Business Model | 3 | 3 | 4 | 2 | 12 |
-| Technical | 0 | 4 | 5 | 1 | 10 |
-| Legal | 3 | 1 | 4 | 1 | 9 |
-| Operational | 0 | 3 | 3 | 1 | 7 |
-| Growth | 0 | 2 | 4 | 2 | 8 |
-| **TOTAL** | **8** | **17** | **26** | **9** | **60** |
+---
 
-**8 CRITICAL items must be resolved before Beta launch.**
+## P3 — Polish (Month 4+)
+
+- Mobile-optimized chat + assessment forms
+- Dark mode
+- Multi-language support
+- GDPR data residency options
+- Annual pricing option
+- Referral program mechanics
+- MSP partner onboarding kit
+- Co-branded client portal
+- White-label for MSPs
+- API for partners
+
+---
+
+## Summary by Category
+
+| Category | P0 | P1 | P2 | P3 |
+|----------|---|---|---|---|
+| Security & Auth | 4 | 1 | 1 | 0 |
+| Product/Engines | 1 | 4 | 6 | 5 |
+| Scale/Infrastructure | 0 | 2 | 4 | 4 |
+| Legal/Compliance | 0 | 1 | 1 | 1 |
+| **Total** | **8** | **8** | **12** | **10** |
+
+**38 total gaps. 8 are existential blockers for Week 1.**
+
+## What This Means for Build Order
+
+1. **Week 1:** All 8 P0 items — foundation for safe real-data use
+2. **Week 2-4:** P1 items in order — first real value engine (Status Report) + trust infra
+3. **Week 5-12:** P2 items — scale beyond founder + first 5 customers
+4. **Month 4+:** P3 items — quality of life

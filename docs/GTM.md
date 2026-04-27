@@ -1,86 +1,179 @@
 # AI-CDIO: Go-To-Market Strategy
 
-## Launch Strategy: Invitation-Only
+## The Three-Phase Strategy: Tool → Product → Business
 
-### Why Invitation-Only
+### Phase 1: FOUNDER TOOL (Weeks 1-6)
+**Goal:** Customer #0 is the founder. Use it for real fractional engagements. Improve the founder's service before anyone else sees it.
 
-| Benefit | Impact |
-|---------|--------|
-| Cost control | Cap LLM spend by controlling user volume |
-| Quality control | Handpick users matching ICP for signal, not noise |
-| Exclusivity = demand | Waitlists convert 25-85% vs 2-4% open signup |
-| Feedback density | 50 engaged users > 5,000 drive-bys |
-| Social proof | "Join 500+ SMB leaders on the waitlist" |
-| Pricing validation | Test willingness to pay with different cohorts |
-| MSP leverage | "We're invite-only, but your MSP can get you in" |
+**Activities:**
+- Build Week 1 foundation (auth, multi-client workspace)
+- Migrate 1-3 active fractional clients into the platform
+- Use the platform for THIS WEEK's actual deliverables (status reports, decisions, value tracking)
+- Run 2-3 client engagements fully on the platform
 
-### Phase Rollout
+**Success Metric:** "I save 5+ hours/month per client AND my deliverables are visibly better."
 
-| Wave | Size | Who | Purpose | Duration |
-|------|------|-----|---------|----------|
-| **Alpha** | 10-20 | Existing clients + network | Validate chat-to-action flow | Weeks 1-2 |
-| **Beta** | 50-100 | Waitlist + alpha referrals | Test at scale, pricing experiments | Weeks 3-6 |
-| **Early Access** | 500-1,000 | Waitlist + 2-3 MSP partners | Validate MSP channel, credit system | Weeks 7-12 |
-| **Open Launch** | Unlimited | Public | Only after unit economics proven | Month 4+ |
+**Investment:** Founder time only. ~$50-100/mo infra. Already covered by fractional revenue.
 
-### Waitlist Mechanics
-1. Landing page: "AI-CDIO is in private beta. Join the waitlist."
-2. Email capture + 3 qualifying questions: industry, employee count, biggest tech challenge
-3. Referral system: share link → move up queue → top referrers get in first
-4. Weekly "state of the waitlist" email (size, testimonials, progress updates)
-5. Invite codes: each accepted user gets 3 codes to share
+---
 
-### What Invitation-Only Eliminates
-- No Stripe/billing needed until Beta
-- No rate limiting needed until Early Access (small user base)
-- No runaway LLM costs (you control who gets in)
-- Built-in feedback loop (every user is hand-picked)
+### Phase 2: VALIDATED PRODUCT (Weeks 4-12, runs in parallel)
+**Goal:** Prove the product works for users who aren't the founder.
 
-## Distribution Channels
+**Activities:**
+- Week 4: LinkedIn outreach starts (15 fractional CIOs + 15 internal IT directors)
+- Week 6: Onboard 5 free design partners (3 fractional + 2 director)
+- Week 8: Convert pilots → first 5 paying customers
+- Week 12: 20-30 paying customers, $8-12K MRR
 
-| Channel | CAC | LTV:CAC | Time to Scale | Priority |
-|---------|-----|---------|---------------|----------|
-| **PLG / Freemium** | $5-20 | 15:1+ | 6-12 months | HIGH |
-| **MSP Channel** | $200-500/MSP | 50:1+ | 3-6 months/partner | HIGH |
-| **Content Marketing** | $10-30/lead | 10:1 | 3-6 months | MEDIUM |
-| **Accountant/Advisor Referral** | $100-300 | 20:1 | 6-12 months | MEDIUM |
-| **Direct Sales** | $500-2,000 | 3:1 | Immediate | LOW |
-| **Marketplace (AWS/Azure)** | $50-100/lead | 8:1 | 6-12 months | FUTURE |
+**Success Metric:** ">50% of pilots convert to paid + NPS >50 + zero blocking bugs in production."
 
-**Launch focus:** PLG + 3 MSP partners. Don't try all channels at once.
+**Investment:** ~10 hrs/week of founder time on outreach + customer success. No paid marketing.
+
+---
+
+### Phase 3: BUSINESS ON ITS OWN (Months 4-12)
+**Goal:** The product earns the right to be a real business.
+
+**Activities:**
+- Hire first part-time customer success person
+- Content marketing: founder LinkedIn (3-5 posts/week), pain-point SEO articles
+- Pursue 100 paying customers
+- Establish first MSP partnership (white-label pilot)
+
+**Success Metric:** $30K+ MRR, sales not dependent on founder's personal time.
+
+**Investment:** Reinvested revenue. No outside capital needed at this scale.
+
+---
+
+## Two Customer Segments — Validate in Parallel
+
+### Track A: Fractional CDIO/CTO (Primary, Founder-Market Fit)
+
+**Why first:**
+- Founder IS one (perfect founder-market fit)
+- LinkedIn search returns 5,000+ profiles in US
+- High willingness to pay (tied to billable revenue)
+- Solo decision-makers (no procurement)
+- Sales cycle: days
+
+**Where to find them:**
+- LinkedIn (search "fractional CIO" + "fractional CTO")
+- [Fortium Partners](https://www.fortiumpartners.com) network
+- Vistage, SIM, MSP Alliance communities
+- "Fractional Executive Network" LinkedIn group (30K+ members)
+
+**Discovery script (7 questions, 30 min max):**
+1. How many active client engagements do you have?
+2. What's your time mix — unique advisory vs repeatable deliverables?
+3. What deliverables do you produce monthly or quarterly per client?
+4. What tools do you use today? (Spreadsheets, Notion, PSA, custom?)
+5. If you could automate ONE deliverable, which saves the most time?
+6. What's your billable rate? What would 5 hrs saved/client/mo be worth in dollars?
+7. Would you pay $400-600/month for a tool that delivered that?
+
+### Track B: Internal IT Director (Secondary, Larger TAM)
+
+**Why second (in parallel):**
+- 50-100x larger TAM (~500K-1M in US)
+- Higher TAM = bigger long-term business
+- Slightly slower sales cycle (some procurement) but $99 personal tier is below approval threshold
+- They become future fractional CDIOs (career flywheel)
+
+**Where to find them:**
+- LinkedIn search: "Director of IT" / "Head of IT" at 50-500 employee companies
+- IT industry communities (CIO Network, HMG Strategy)
+- CIO/CTO conferences (smaller regional ones)
+- Career development communities (anyone learning to become a CIO)
+
+**Discovery script:**
+1. How do you currently prepare board/exec presentations on technology?
+2. What does your annual IT planning process look like?
+3. If you could automate ONE thing about strategic IT planning, what would it be?
+4. What would help you grow toward a CIO role?
+5. What tools do you use for strategy/planning today?
+6. Would you pay $99/month personally for a tool that helped with all of that?
+7. Would your company pay $499-1,500/month for a team plan?
+
+---
+
+## Distribution Channels (Priority Order)
+
+| Channel | When | CAC Estimate | LTV:CAC | Priority |
+|---------|------|-------------|---------|----------|
+| **Founder LinkedIn outreach** | Week 1+ | $0 (founder time) | ∞ | HIGH — first 30 customers |
+| **Founder LinkedIn content** | Week 1+ | $0 (founder time) | High | HIGH — compound effect |
+| **Referrals from happy customers** | Month 2+ | $50-100 | 30:1+ | HIGH — once 10+ customers |
+| **Fractional executive communities** | Month 2+ | $100-200 | 20:1 | MEDIUM — slower but compounds |
+| **Pain-point SEO articles** | Month 3+ | $20-50 per lead | 10:1 | MEDIUM — long-tail |
+| **MSP channel partnerships** | Month 6+ | $500/MSP (each brings 50-100 SMBs) | 50:1+ | FUTURE — Phase 4 |
+| **Paid ads (LinkedIn, Google)** | Month 9+ | $200-500 | 5:1 | LOW — last resort |
+
+**Launch focus:** Founder-led sales for first 30-100 customers. Other channels stack later.
+
+---
 
 ## Competitive Positioning
 
-| | Mastercard V-CSuite | Human vCIO/MSP | AI-CDIO |
-|-|---------------------|----------------|---------|
-| Domain | Finance/payments only | Technology (biased) | Technology (objective) |
-| Entry | Through banks | Sales call, $3K+/mo | Free chat, 5 minutes |
-| Data | 175B transactions | One consultant | 1M org assessments + playbook |
-| Conflict of interest | Payments ecosystem | Sells what they recommend | Vendor-agnostic |
-| Scale | Bank distribution | 3-8 clients/person | Unlimited |
+| | ScalePad LMX | Fractional Marketplaces | Generic PSA | AI-CDIO |
+|-|-------------|----------------------|-------------|---------|
+| Target | MSPs running vCIO | Match candidates ↔ companies | Any professional services firm | Solo fractionals + IT directors |
+| Pricing | $15/client + base | $3-5K referral fee or 10% markup | $50-150/user | $99-1,500 |
+| AI-generated deliverables | Limited | None | Limited | YES (the differentiator) |
+| Encodes CDIO methodology | No | No | No | YES (the IP) |
+| Founder-market fit | MSP-led | Marketplace-led | Generic | YES — built by a fractional CDIO |
 
-**Where to play:** Technology leadership void for SMBs — where Mastercard won't go and human vCIOs can't scale.
+**Where to play:** The white space between MSP-only (ScalePad) and pure marketplaces (Shiny, Fractional Jobs). Built by a practitioner, for practitioners.
 
-**How to win:** Free value first, vendor-agnostic, MSP channel multiplier, data moat from assessments.
+**How to win:**
+1. Speed to first usable version (you ship in weeks, ScalePad in quarters)
+2. Specificity (CDIO playbook depth that generic tools can't replicate)
+3. Founder credibility (you do this work; competitors describe it)
+4. AI-native generation vs templates + data
+5. Direct to solo fractional (ScalePad won't go here — too small per customer for them)
 
-## Market Sizing
+---
 
-| Level | Size | Notes |
-|-------|------|-------|
-| TAM | ~400M SMBs worldwide | Global SMBs 1-999 employees |
-| SAM | ~50M SMBs with digital needs | Excluding micro-businesses < 5 employees |
-| SOM Year 1 | 5K-10K free, 500-1K paid | PLG + 2-3 MSPs |
-| SOM Year 3 | 100K free, 10K paid | Scaled MSP channel |
-| 1M Target | 1M free, 50K-100K paid | 500+ MSP partners + viral |
+## The 14-Day Validation Sprint
 
-vCIO market: $600M-$14B, growing 4.6-18% annually.
+**Day 1-2:**
+- Update LinkedIn headline/about to "Building the operating system every fractional CDIO needs"
+- Post the manifesto: "I'm building this for myself. Want to see it?"
+- DM 30 prospects (15 fractional + 15 internal director)
 
-## Growth Gaps (To Address)
+**Day 3-7:**
+- Take 15 calls. Use scripts above.
+- Track per call: pain confirmed, willingness to pay, segment, key insight
+- Post 3 LinkedIn updates sharing what you're learning
 
-- [ ] Viral loop: how does one user bring another?
-- [ ] Referral program: "share assessment, both get free month"
-- [ ] Community: SMB owners helping each other
-- [ ] Content strategy: blog, YouTube, LinkedIn
-- [ ] MSP partner onboarding kit
-- [ ] Case studies from Alpha/Beta users
-- [ ] Email nurture for waitlist
+**Day 8-10:**
+- Take remaining 15 calls
+- Show working tool to the most engaged 8-10
+- Watch them try it (real-time observation = best signal)
+
+**Day 11-14:**
+- Convert 5 commitments (free pilot, 30-day trial → paid at $X)
+- Get 5 written "yes I'll pay $X on launch" via Stripe pre-pay or email
+- Document conversion rate by segment, by price point
+
+**Decision criteria for Day 14:**
+- 5+ commitments at $399+ from fractionals → lead with practitioner segment
+- 5+ commitments at $99 from directors → lead with director segment
+- Both → run both, prioritize whichever moves faster
+
+If you can't get 5 commitments from 30 conversations, the framing is wrong, the price is wrong, or the product spec is wrong. Better to learn it in 2 weeks than 6 months.
+
+---
+
+## Growth Gaps to Address (As You Scale)
+
+- [ ] Viral loop: "share assessment, both get free month"
+- [ ] Referral program with Cello.so or built-in
+- [ ] Community Slack for paying practitioners (network effects)
+- [ ] Founder-led podcast or video series
+- [ ] Original research report ("State of Fractional CDIO 2026" from anonymized data)
+- [ ] MSP partner onboarding kit (Phase 4)
+- [ ] Co-branded SMB client portal (Phase 4 — path to 1M SMBs goal)
+
+These compound after Phase 2. Don't build them early.

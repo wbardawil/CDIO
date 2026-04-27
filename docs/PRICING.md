@@ -1,103 +1,158 @@
 # AI-CDIO: Pricing & Unit Economics
 
-## Pricing Tiers
+## Two Customer Segments, Five Tiers
 
-| Tier | Price | What's Included | Target |
-|------|-------|----------------|--------|
-| **Free Chat** | $0 | 50 credits/mo (chat only), 3 module deep-dives, basic actions | Lead gen, try-before-buy |
-| **Starter** | $99/mo | 1,000 credits, full assessment, action queue, weekly digest, unlimited users | 10-50 employees |
-| **Growth** | $299/mo | 5,000 credits, multi-user, divergence detection, reports, benchmarks, unlimited users | 50-250 employees |
-| **Portfolio** | $199/mo + $29/company | Cross-company dashboard, benchmarks, roll-up reporting | Holdings, family offices (5-10 cos) |
-| **Fund** | $499/mo + $24/company | Due diligence tools, post-acquisition playbooks | PE/VC (10-50 cos) |
-| **MSP Partner** | $299/mo + $19-49/client | White-label portal, API, unlimited users per client | MSPs serving 10-100+ clients |
+### Fractional CDIO/CTO (Practitioner Segment)
 
-### MSP Volume Discounts
-- 25+ clients: $24/mo per client
-- 50+ clients: $19/mo per client
-- 100+ clients: $15/mo per client (minimum floor)
+| Tier | Price | Clients | Target |
+|------|-------|---------|--------|
+| **Free / Founder** | $0 (founder + first 5 design partners) | Unlimited during pilot | You + 5 hand-picked beta users |
+| **Solo** | $199/mo | Up to 3 clients | Brand new fractionals (year 1) |
+| **Pro** | $399/mo | Up to 8 clients | Established practitioners |
+| **Practice** | $1,499/mo | Up to 30 clients, 5 practitioners | Multi-practitioner firms |
 
-### All tiers: unlimited users per organization.
+### Internal IT Director (Director Segment)
 
-## Credit System
+| Tier | Price | Scope | Target |
+|------|-------|-------|--------|
+| **Personal** | $99/mo | 1 org, individual user | IT Director self-expensed (below approval threshold) |
+| **Team** | $499/mo | 1 org, up to 5 users | IT Director + their team, CFO-approved |
+| **Enterprise** | $1,500/mo | 1 org, unlimited users + custom playbook | Mid-market VP IT, procurement-driven |
 
-| Activity | Credits |
-|----------|---------|
-| Chat message | 1 |
-| Module scoring (AI) | 5 |
-| Synthesis run | 10 |
-| Roadmap generation | 20 |
-| Decision Package | 10 |
+### MSP / Channel (Phase 2)
 
-**Overage:** Free tier stops hard. Paid tiers warn at 80%, option to buy $10/500 credits.
+| Tier | Price | Scope |
+|------|-------|-------|
+| **MSP Partner** | $299/mo platform + $30/end-client/mo | White-label client portal, unlimited users per client |
+| Volume discounts: 25+ clients $25/mo, 50+ $20/mo, 100+ $18/mo (floor) | | |
+
+---
+
+## Anchors (Validated by Market Research)
+
+| Anchor | What It Means For Pricing |
+|--------|---------------------------|
+| ScalePad Lifecycle Manager X: $15/client/mo (MSP) | Floor for vCIO workflow tools at volume |
+| Generic PSA tools (Productive, Kantata, BigTime): $50-150/user/mo | Comparable for professional services platforms |
+| Fractional CDIO billable rate: $200-500/hour | Tool payback = 1-2 hrs saved/client/mo justifies $200-1,000 |
+| IT Director US median salary: $191-203K | Personal expense threshold ~$100/mo without approval |
+| SMB security tools spend: $43K/year (50-250 emp) | Existing willingness to pay for IT tools |
+
+## The ROI Math (How to Sell)
+
+**For a Pro fractional ($399/mo) with 5 clients at $300/hr billable rate:**
+- Time saved: 5 clients × 5 hrs/mo = 25 hrs/mo
+- Recovered billable value: 25 × $300 = **$7,500/mo**
+- Tool cost: $399/mo
+- **ROI: 18.8x. Pays for itself in ~1.6 hours.**
+
+**For an IT Director on Personal ($99/mo):**
+- Career growth + better board presentations + automated strategic planning
+- Time saved on board prep alone: 8-12 hrs/quarter
+- At their loaded cost ($150/hr): $1,200-1,800/quarter recovered
+- Tool cost: $300/quarter
+- **ROI: 4-6x.**
+
+---
 
 ## Unit Economics
 
-### LLM Cost Per User Per Month
+### LLM Cost Per Customer Per Month
 
-| Activity | Model | Tokens | Cost |
-|----------|-------|--------|------|
-| Chat (30 msgs/mo) | Haiku | ~90K | ~$0.60 |
-| Module scoring (1) | Sonnet | ~3K | ~$0.03 |
-| Synthesis (1 run) | Haiku | ~4K | ~$0.01 |
-| Decision Package (1) | Sonnet | ~4K | ~$0.04 |
-| Roadmap generation (1) | Sonnet | ~8K | ~$0.10 |
-| **Light user** | | | **~$0.78/mo** |
-| **Heavy user** | | | **~$3.50/mo** |
-| **Power user** | | | **~$8.00/mo** |
+| Persona | Activity Profile | LLM Cost |
+|---------|-----------------|----------|
+| Fractional Solo (3 clients) | 3 assessments × 1, 3 monthly status × 1, 1 QBR/quarter, ~20 chats/week | ~$45/mo |
+| Fractional Pro (8 clients) | 8 status reports/mo, 8 QBRs/quarter, heavy chat | ~$120/mo |
+| Fractional Practice (30 clients × 5 practitioners) | Heavy parallel use | ~$400-600/mo |
+| Director Personal (1 org) | Light: occasional roadmap, board prep | ~$8/mo |
+| Director Team (1 org, 5 users) | Moderate use across team | ~$25/mo |
+| Director Enterprise (1 org) | Heavy: integrations, multiple stakeholders | ~$80/mo |
 
 ### Margin Analysis
 
-| Tier | Revenue | Avg LLM Cost | Gross Margin |
-|------|---------|-------------|-------------|
-| Free | $0 | $0.50-2.00 | -100% (loss leader) |
-| Starter ($99) | $99 | $2-5 | **94-97%** |
-| Growth ($299) | $299 | $5-15 | **94-97%** |
-| MSP/client ($19-49) | $19-49 | $2-8 | **72-95%** |
-| MSP/client ($15 min) | $15 | $8 (heavy) | **47%** (risk) |
+| Tier | Revenue | LLM Cost | Infra Share | Gross Margin |
+|------|---------|----------|-------------|--------------|
+| Solo ($199) | $199 | $45 | $5 | **75%** |
+| Pro ($399) | $399 | $120 | $8 | **68%** |
+| Practice ($1,499) | $1,499 | $500 | $25 | **65%** |
+| Personal ($99) | $99 | $8 | $2 | **90%** |
+| Team ($499) | $499 | $25 | $5 | **94%** |
+| Enterprise ($1,500) | $1,500 | $80 | $10 | **94%** |
+
+**Healthy margins across all tiers.** The practitioner tiers run thinner because of higher LLM intensity per customer (3-30 clients per practitioner each generating LLM calls).
 
 ### Where We Lose Money
-1. **Free tier power users** — 50 msgs/day = ~$5/mo. Fix: 10 msg/day cap.
-2. **MSP $15/client floor** — Heavy user = 47% margin. Fix: $19 minimum or feature caps.
-3. **Roadmap regeneration abuse** — Cache roadmaps, cap regenerations.
-4. **Anthropic price hikes** — Abstract LLM layer, use Haiku aggressively.
 
-### Where We Make Most Money
-1. Starter tier ($99) — 94-97% margin, cash cow
-2. Growth tier ($299) — Same margins, higher absolute $
-3. MSP platform fee ($299) — Near-zero marginal cost
-4. Cross-sell AI-Strategist & AI-OME — Same infrastructure, additive revenue
+1. **Free founder tier** — $0 revenue, ~$120/mo LLM cost (you using all 8 clients heavily). This is a marketing investment in dogfooding.
+2. **Free design partners (5 customers, first 90 days)** — ~$500/mo LLM cost for $0. Investment in feedback + case studies.
+3. **Practice tier with 30 active clients** — if 5 practitioners hit max, $500-700/mo LLM cost vs $1,499 revenue. Still 53-67% margin. OK.
 
-## Break-Even Analysis
+### Where We Make the Most Money
 
-| Scenario | Monthly Fixed | Users to Break Even |
-|----------|--------------|---------------------|
-| Solo founder | ~$200 | 3 Starter users |
-| Small team (2 people) | ~$8,000 | 80 Starter or 27 Growth |
-| Scaled (5 people) | ~$30,000 | 300 Starter or 100 Growth |
-
-## Hidden Costs
-
-- Stripe processing: 2.9% + $0.30/transaction (~$3.17 per $99 charge)
-- Churn replacement: 5% monthly churn = 5% new users needed just to stay flat
-- Support: even 1 ticket/user/month at $10/ticket = $10/user
-- Legal: ToS, privacy policy, AI disclaimer review = $2K-5K one-time
-- LLM observability tooling: ~$50-200/mo
+1. **Director Team & Enterprise tiers** — 94% margin, low LLM intensity (1 org, fewer integrations).
+2. **Practitioner Pro at $399** — 68% margin × volume = the cash cow.
+3. **MSP platform fee** — pure margin (the $299 base, separate from per-client LLM costs).
 
 ## Revenue Projections
 
-| Scenario | Free | Paid | Monthly LLM | Monthly Revenue | Net |
-|----------|------|------|------------|----------------|-----|
-| Early | 100 | 10 | ~$150 | ~$1,500 | +$1,350 |
-| Growing | 1K | 100 | ~$1,200 | ~$15,000 | +$13,800 |
-| Scale | 10K | 1K | ~$10,000 | ~$150,000 | +$140,000 |
-| Target | 100K | 10K | ~$80,000 | ~$1,500,000 | +$1,420,000 |
+### Year 1 (Conservative)
 
-## Compared to Alternatives
+| Source | # Customers | Avg ARPU | Monthly Rev | Annual |
+|--------|------------|----------|-------------|--------|
+| Practitioners | 50 | $339 | $17K | $204K |
+| Directors | 30 | $139 | $4K | $50K |
+| **Total Y1** | **80** | | **$21K/mo** | **$254K ARR** |
 
-| | AI-CDIO | Human Fractional CIO | MSP vCIO |
-|-|---------|---------------------|----------|
-| Monthly cost | $99-299 | $3,000-10,000 | $1,000-5,000 |
-| Margin | 94-97% | 50-65% | 30-50% |
-| Scale limit | Unlimited | 3-8 clients | 10-20 clients |
-| Bias | Vendor-agnostic | Varies | Sells own services |
-| Availability | 24/7 | Business hours | Business hours |
+LLM + infra: ~$2.5K/mo. **Net: +$18K/mo from Month 3.**
+
+### Year 2 (Realistic with founder-led sales)
+
+| Source | # Customers | Avg ARPU | Monthly Rev | Annual |
+|--------|------------|----------|-------------|--------|
+| Practitioners | 200 | $709 (mix-shift to Practice tier) | $142K | $1.7M |
+| Directors | 300 | $269 | $81K | $968K |
+| **Total Y2** | **500** | | **$223K/mo** | **$2.7M ARR** |
+
+LLM + infra: ~$29K/mo. **Net: +$194K/mo.**
+
+### Year 3 (Both segments scaling)
+
+| Source | # Customers | Avg ARPU | Monthly Rev | Annual |
+|--------|------------|----------|-------------|--------|
+| Practitioners | 1,000 | $689 | $689K | $8.3M |
+| Directors | 2,000 | $359 | $718K | $8.6M |
+| **Total Y3** | **3,000** | | **$1.4M/mo** | **$17M ARR** |
+
+LLM + infra + team: ~$300K/mo. **Net: +$1.1M/mo.**
+
+## Break-Even Analysis
+
+| Scenario | Monthly Fixed | Customers to Break Even |
+|----------|--------------|-------------------------|
+| Solo founder, minimal infra | ~$200 | 1-2 customers |
+| Founder + 1 part-time CSM | ~$5K | 15 Pro practitioners or 50 Personal directors |
+| Founder + small team (3 people) | ~$30K | 80 Pro practitioners or 300 Personal directors |
+
+**Year 1 break-even: ~3-5 paying customers. Reachable in Month 2.**
+
+## Pricing Experiments to Run (Validation Phase)
+
+In the first 30 LinkedIn discovery calls:
+
+1. **Practitioner price elasticity** — Test $299, $399, $599 for Pro tier. Where does enthusiasm drop?
+2. **Director procurement threshold** — Test $99 (self-expense), $199 (still self-expense), $299 (needs approval). Conversion rate by tier.
+3. **Annual discount** — 20% off if paid annually. How many take it?
+4. **MSP volume math** — Test $30/client for 25 clients ($750/mo) vs $20/client for 50 clients ($1K/mo). Which model wins?
+
+The data from these conversations sets your final pricing. Don't lock in until you have signal.
+
+## Hidden Costs Often Missed
+
+- Stripe processing: 2.9% + $0.30 per transaction (~$3.17 on $99 charge = 3.2%)
+- Churn replacement: 5% monthly churn = need 5% new MRR each month to stay flat
+- Support: 1 ticket/customer/month at $10/ticket = $10/customer/mo
+- Legal: ToS, Privacy Policy, AI disclaimer review = $2-5K one-time
+- LLM observability tooling (Langfuse, Sentry): $50-200/mo
+- Background job hosting (Inngest/QStash): $30-100/mo
+
+Build into projections from Month 3.
