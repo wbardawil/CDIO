@@ -150,9 +150,26 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
           <p className="text-gray-600 mb-4">
             Thank you, {stakeholder?.name}. Your responses have been recorded.
           </p>
-          <p className="text-sm text-gray-400">
-            The AI-CDIO system will synthesize all stakeholder inputs and generate
-            an objective assessment report with prioritized recommendations.
+          <p className="text-sm text-gray-500 mb-8">
+            Once all stakeholders submit, run synthesis to compute consensus
+            scores, surface divergences, and generate the roadmap.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <a
+              href={stakeholder?.org_id ? `/clients/${stakeholder.org_id}` : "/clients"}
+              className="inline-flex items-center justify-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+            >
+              Return to client workspace →
+            </a>
+            <a
+              href={stakeholder?.org_id ? `/dashboard?org=${stakeholder.org_id}` : "/clients"}
+              className="inline-flex items-center justify-center px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+            >
+              Open full dashboard
+            </a>
+          </div>
+          <p className="text-xs text-gray-400 mt-6">
+            If you&apos;re a stakeholder (not the practitioner), you can close this tab — the practitioner will be notified.
           </p>
         </div>
       </div>
