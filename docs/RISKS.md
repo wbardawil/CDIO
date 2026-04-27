@@ -10,14 +10,14 @@
 ### OPEN — Don't compete here
 - Fractional executive market is exploding (2K → 110K LinkedIn fractionals in 2 years)
 - AI can generate decent strategic content
-- 16-module CDIO methodology exists publicly (CMU base)
+- 16-module CDIO methodology exists publicly (source curriculum)
 - ScalePad, Fortium, Shiny operate in adjacent space
 - Internal IT directors lack tools and want to look strategic
 
 **Implication:** No competitive advantage in the obvious facts. Don't waste pitches on "explaining the market."
 
 ### HIDDEN — Your unfair advantage (lean into it)
-- Your specific 30-file synthesis (vs CMU's 18 + your annotations)
+- Your specific 30-file synthesis (vs the source 18 + your annotations)
 - Real fractional engagement experience — judgment calls not in any document
 - Patterns across YOUR clients — which problems repeat, which interventions work
 - The integration of assessment → roadmap → deliverable as ONE flow
