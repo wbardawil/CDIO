@@ -9,7 +9,7 @@ import {
 import { generateDecisionPackage } from "@/lib/agents/assessment";
 import { MODULE_NAMES } from "@/types";
 import type { AssessmentSynthesis, PriorityClass, OrgSize, Industry } from "@/types";
-import { requireAuth } from "@/lib/auth/require-auth";
+import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
 import { z } from "zod";
 
 const SynthesizeSchema = z.object({
@@ -18,12 +18,13 @@ const SynthesizeSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const { response: authResponse } = await requireAuth();
-  if (authResponse) return authResponse;
-
   try {
     const body = await request.json();
     const input = SynthesizeSchema.parse(body);
+
+    const ownership = await assertPractitionerOwnsOrg(input.org_id);
+    if (ownership.response) return ownership.response;
+
     const db = createServiceClient();
 
     // Get all scores for this assessment

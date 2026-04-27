@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EngagementOrchestrator } from "@/lib/agents/orchestrator";
-import { requireAuth } from "@/lib/auth/require-auth";
+import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
+import { createServiceClient } from "@/lib/db/supabase";
 import { z } from "zod";
 
 const OnboardSchema = z.object({
@@ -21,8 +22,10 @@ const OnboardSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const { response: authResponse } = await requireAuth();
-  if (authResponse) return authResponse;
+  const practitioner = await ensurePractitioner();
+  if (!practitioner) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
 
   try {
     const body = await request.json();
@@ -31,6 +34,21 @@ export async function POST(request: NextRequest) {
     const orgId = crypto.randomUUID();
     const orchestrator = new EngagementOrchestrator(orgId);
     const result = await orchestrator.onboard(input);
+
+    // Map this client to the practitioner that created it.
+    const db = createServiceClient();
+    const { error: mapError } = await db.from("practitioner_clients").insert({
+      practitioner_id: practitioner.id,
+      org_id: orgId,
+      role: "owner",
+    });
+    if (mapError) {
+      console.error("practitioner_clients insert failed:", mapError);
+      return NextResponse.json(
+        { error: "Org created but ownership mapping failed", details: mapError.message },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(result, { status: 201 });
   } catch (error) {

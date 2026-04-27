@@ -95,6 +95,7 @@
 | Watch them use it. Bug fixes + UX iterations from observation. |
 | Build QBR Deck Generator (Engine #2) |
 | Add credit/usage tracking + per-tier limits (Stripe metadata) |
+| **Ship AI-CDIO MCP server** — expose engines (`generate_status_report`, `generate_qbr_deck`, `query_client_data`, `propose_decision_package`, `draft_renewal_proposal`) as MCP tools so founder can call them from Claude.ai or Claude Code (~2 days work once web-app API stabilizes) |
 
 ### Week 9-10 — First Paying Customers
 

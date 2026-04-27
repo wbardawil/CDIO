@@ -1,16 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
-import { requireAuth } from "@/lib/auth/require-auth";
+import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orgId: string }> }
 ) {
-  const { response: authResponse } = await requireAuth();
-  if (authResponse) return authResponse;
+  const { orgId } = await params;
+  const ownership = await assertPractitionerOwnsOrg(orgId);
+  if (ownership.response) return ownership.response;
 
   try {
-    const { orgId } = await params;
     const db = createServiceClient();
 
     // Get organization

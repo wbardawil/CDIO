@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EngagementOrchestrator } from "@/lib/agents/orchestrator";
-import { requireAuth } from "@/lib/auth/require-auth";
+import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
 import { z } from "zod";
 
 const RoadmapSchema = z.object({
@@ -9,12 +9,12 @@ const RoadmapSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
-  const { response: authResponse } = await requireAuth();
-  if (authResponse) return authResponse;
-
   try {
     const body = await request.json();
     const input = RoadmapSchema.parse(body);
+
+    const ownership = await assertPractitionerOwnsOrg(input.org_id);
+    if (ownership.response) return ownership.response;
 
     const orchestrator = new EngagementOrchestrator(input.org_id);
     const result = await orchestrator.generateRoadmap(input.assessment_id);

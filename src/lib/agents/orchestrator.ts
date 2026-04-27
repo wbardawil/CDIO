@@ -85,6 +85,8 @@ export class EngagementOrchestrator {
         industry: input.industry,
         engagement_model: engagement.model,
         monthly_hours: engagement.hours,
+        // Seed scope from the recommended module stack; practitioner can adjust in UI
+        active_modules: stack.modules,
       })
       .select()
       .single();
