@@ -61,10 +61,15 @@ alter table practitioners enable row level security;
 alter table practitioner_clients enable row level security;
 
 -- ---------- RLS POLICIES ----------
--- These define INTENT. They activate Day 8 when we move off service-role
--- to a per-request Supabase client that passes the Clerk JWT.
--- Until then, service-role bypasses RLS and ownership is enforced
--- via assertPractitionerOwnsOrg() in the API layer.
+-- ⚠ DOCUMENTATION OF INTENT, NOT ACTIVE PROTECTION ⚠
+-- These policies reference auth.jwt() ->> 'sub', which only resolves
+-- when the request carries a Clerk JWT issued via Supabase's JWT template.
+-- Today we use the service-role client in every API route, which BYPASSES
+-- RLS entirely. Ownership is enforced exclusively by
+-- src/lib/auth/assert-owns-org.ts at the application layer.
+-- These policies activate on Day 8 (P0-8 in docs/GAPS.md) when we move
+-- to a per-request Supabase client. Do not rely on them as a security
+-- boundary until then.
 
 -- Drop+recreate so the file is idempotent
 drop policy if exists "Practitioners read own row" on practitioners;

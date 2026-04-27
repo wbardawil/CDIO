@@ -30,6 +30,8 @@ export interface Organization {
   industry: Industry;
   engagement_model: EngagementModel;
   monthly_hours: number;
+  /** Subset of the 16 modules in scope for this engagement. Empty = full scope. */
+  active_modules: number[];
   created_at: string;
   updated_at: string;
 }

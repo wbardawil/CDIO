@@ -40,6 +40,19 @@ export async function ensurePractitioner(): Promise<Practitioner | null> {
     .select("id, clerk_user_id, name, email, plan")
     .single();
 
-  if (error) throw error;
+  if (error) {
+    // 23505 = unique_violation. Another concurrent request raced us
+    // (rare; only happens for two requests on the same brand-new user
+    // arriving in the same millisecond). Re-read the row they inserted.
+    if ((error as { code?: string }).code === "23505") {
+      const { data: retry } = await db
+        .from("practitioners")
+        .select("id, clerk_user_id, name, email, plan")
+        .eq("clerk_user_id", userId)
+        .single();
+      if (retry) return retry as Practitioner;
+    }
+    throw error;
+  }
   return data as Practitioner;
 }

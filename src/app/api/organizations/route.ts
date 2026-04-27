@@ -43,9 +43,12 @@ export async function POST(request: NextRequest) {
       role: "owner",
     });
     if (mapError) {
-      console.error("practitioner_clients insert failed:", mapError);
+      // Roll back the org so we don't leave an orphan owned by no one.
+      // ON DELETE CASCADE on stakeholders + assessments cleans those up.
+      console.error("practitioner_clients insert failed; rolling back org:", mapError);
+      await db.from("organizations").delete().eq("id", orgId);
       return NextResponse.json(
-        { error: "Org created but ownership mapping failed", details: mapError.message },
+        { error: "Failed to register client", details: mapError.message },
         { status: 500 }
       );
     }

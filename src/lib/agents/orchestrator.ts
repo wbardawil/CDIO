@@ -74,6 +74,19 @@ export class EngagementOrchestrator {
       engagement.hours
     );
 
+    // Preserve any manual scope choices the practitioner already made
+    // by reading the current active_modules before the upsert.
+    const { data: existingOrg } = await this.db
+      .from("organizations")
+      .select("active_modules")
+      .eq("id", this.orgId)
+      .maybeSingle();
+
+    const preservedModules =
+      existingOrg?.active_modules && existingOrg.active_modules.length > 0
+        ? existingOrg.active_modules
+        : stack.modules;
+
     // Create or update organization
     const { data: org, error: orgError } = await this.db
       .from("organizations")
@@ -85,8 +98,9 @@ export class EngagementOrchestrator {
         industry: input.industry,
         engagement_model: engagement.model,
         monthly_hours: engagement.hours,
-        // Seed scope from the recommended module stack; practitioner can adjust in UI
-        active_modules: stack.modules,
+        // Seed scope from the recommended stack on first onboard;
+        // preserve practitioner's manual scope on re-onboard.
+        active_modules: preservedModules,
       })
       .select()
       .single();
