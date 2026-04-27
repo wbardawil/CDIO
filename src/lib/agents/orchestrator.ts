@@ -464,16 +464,55 @@ export class EngagementOrchestrator {
   }
 
   // --- Helper: Assign relevant modules by role ---
-
+  //
+  // Order matters — most specific patterns first. CDIO/CISO/CDO must be checked
+  // before generic CTO/CIO/IT branches because "ciso", "cdio", "cdo" don't share
+  // substrings with "cio" or "cto" but ordering still keeps reasoning clear.
   private assignModulesByRole(role: string): number[] {
     const r = role.toLowerCase();
 
-    if (r.includes("ceo") || r.includes("owner") || r.includes("president")) {
+    // CISO — security-first executive
+    if (r.includes("ciso") || r.includes("chief information security")) {
+      return [5, 4, 11, 13]; // Cyber, Cloud (security implications), Org structure, Vendor mgmt
+    }
+
+    // CDIO — Chief Digital & Information Officer (covers both digital and IT)
+    if (r.includes("cdio") || r.includes("chief digital and information")) {
+      return [2, 3, 4, 5, 6, 7, 8, 10, 11, 14, 16];
+      // Strategy, Architecture, Cloud, Cyber, Data/AI, Platforms, Analytics,
+      // Leadership, Org structure, Agile/DevOps, Future of Work
+    }
+
+    // CDO — Chief Data Officer or Chief Digital Officer (data + digital products)
+    if (
+      r.includes("chief data") ||
+      r.includes("chief digital officer") ||
+      r === "cdo" ||
+      r.includes(" cdo") ||
+      r.includes("head of data")
+    ) {
+      return [6, 7, 8, 5, 9]; // Data/AI, Platforms, Analytics, Cyber, HCD
+    }
+
+    // CEO / President / Owner — strategic
+    if (r.includes("ceo") || r.includes("owner") || r.includes("president") || r.includes("founder")) {
       return [1, 2, 10, 12, 16]; // Role, Strategy, Leadership, Financial, Change
     }
-    if (r.includes("cto") || r.includes("cio") || r.includes("it")) {
-      return [2, 3, 4, 5, 6, 14]; // Strategy, Architecture, Cloud, Security, Data, DevOps
+
+    // CTO / CIO / Head of IT / IT Director — traditional technology leadership
+    if (
+      r.includes("cto") ||
+      r.includes("cio") ||
+      r.includes("head of it") ||
+      r.includes("head of technology") ||
+      r.includes("it director") ||
+      r.includes("it manager") ||
+      r.includes("vp engineering") ||
+      r.includes("vp it")
+    ) {
+      return [2, 3, 4, 5, 6, 14]; // Strategy, Architecture, Cloud, Cyber, Data, DevOps
     }
+
     if (r.includes("cfo") || r.includes("finance")) {
       return [12, 13, 2]; // Financial, Portfolio, Strategy
     }
@@ -481,13 +520,13 @@ export class EngagementOrchestrator {
       return [11, 15, 13]; // Organization, Process, Portfolio
     }
     if (r.includes("marketing") || r.includes("product") || r.includes("sales")) {
-      return [7, 8, 9]; // Platforms, Analytics, Design
+      return [7, 8, 9]; // Platforms, Analytics, Design/CX
     }
     if (r.includes("hr") || r.includes("people")) {
       return [16, 11]; // Future of Work, Organization
     }
 
-    // Default: all modules
+    // Default: all modules — used when role is unrecognized
     return Array.from({ length: 16 }, (_, i) => i + 1);
   }
 }

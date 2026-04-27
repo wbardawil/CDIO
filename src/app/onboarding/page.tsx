@@ -21,7 +21,26 @@ const INDUSTRIES: { value: Industry; label: string }[] = [
   { value: "other", label: "Other" },
 ];
 
-const COMMON_ROLES = ["CEO", "CTO", "CFO", "COO", "IT Director", "VP Engineering", "VP Operations", "Product Director"];
+const COMMON_ROLES = [
+  "CEO",
+  "President",
+  "Owner / Founder",
+  "COO",
+  "CFO",
+  "CIO",
+  "CTO",
+  "CDIO",
+  "CDO",
+  "CISO",
+  "IT Director",
+  "Head of IT",
+  "VP Engineering",
+  "VP Operations",
+  "VP Product",
+  "Product Director",
+  "Head of Data",
+  "Head of People",
+];
 
 export default function OnboardingPage() {
   const router = useRouter();
