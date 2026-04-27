@@ -1,11 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
+// Public routes: stakeholder token flow (clients don't have Clerk accounts),
+// anonymous discovery funnels (chat, scan), and Clerk's own pages.
+// /onboarding is NOT public — it creates a client owned by the signed-in
+// practitioner, so the practitioner must be authenticated first.
 const isPublicRoute = createRouteMatcher([
   "/",
   "/scan(.*)",
   "/chat(.*)",
   "/assess/:token",
-  "/onboarding(.*)",
   "/sign-in(.*)",
   "/sign-up(.*)",
   "/api/chat",

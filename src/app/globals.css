@@ -12,15 +12,24 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/*
+ * NOTE: We intentionally DO NOT honor `prefers-color-scheme: dark` yet.
+ * The app's UI uses bg-white cards with no explicit text-color classes,
+ * so flipping body color to near-white on dark-mode systems made every
+ * form unreadable. Proper dark-mode support is a Phase 4 polish task —
+ * until then we render light-mode regardless of the OS preference.
+ */
 
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Form controls inherit the foreground color explicitly so any future
+   ancestor-level color override doesn't bleed into them. */
+input,
+select,
+textarea {
+  color: var(--foreground);
 }

@@ -54,8 +54,11 @@ export default function OnboardingPage() {
     }
   };
 
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
   const handleSubmit = async () => {
     setLoading(true);
+    setErrorMsg(null);
     try {
       const response = await fetch("/api/organizations", {
         method: "POST",
@@ -68,13 +71,30 @@ export default function OnboardingPage() {
         }),
       });
 
-      if (!response.ok) throw new Error("Failed to create organization");
+      if (!response.ok) {
+        // Surface the real reason instead of a generic message
+        let detail = `HTTP ${response.status}`;
+        try {
+          const body = await response.json();
+          if (body?.error) detail = body.error;
+          if (body?.details) detail += ` — ${typeof body.details === "string" ? body.details : JSON.stringify(body.details)}`;
+        } catch {
+          /* response wasn't JSON — keep the HTTP code */
+        }
+        if (response.status === 401) {
+          setErrorMsg("You need to sign in before onboarding a client. Redirecting…");
+          setTimeout(() => router.push(`/sign-in?redirect_url=${encodeURIComponent("/onboarding")}`), 1200);
+          return;
+        }
+        throw new Error(detail);
+      }
 
       const data = await response.json();
-      router.push(`/dashboard?org=${data.organization.id}&assessment=${data.assessment.id}`);
+      router.push(`/clients/${data.organization.id}`);
     } catch (error) {
+      const message = error instanceof Error ? error.message : "Something went wrong";
       console.error("Onboarding error:", error);
-      alert("Something went wrong. Please try again.");
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }
@@ -237,6 +257,13 @@ export default function OnboardingPage() {
             >
               + Add another team member
             </button>
+
+            {errorMsg && (
+              <div className="mt-6 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <p className="font-medium">Onboarding failed</p>
+                <p className="text-red-600 mt-1">{errorMsg}</p>
+              </div>
+            )}
 
             <div className="flex gap-3 mt-8">
               <button
