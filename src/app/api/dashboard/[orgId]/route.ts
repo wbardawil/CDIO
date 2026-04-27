@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
+import { requireAuth } from "@/lib/auth/require-auth";
 
 export async function GET(
   request: NextRequest,
   { params }: { params: Promise<{ orgId: string }> }
 ) {
+  const { response: authResponse } = await requireAuth();
+  if (authResponse) return authResponse;
+
   try {
     const { orgId } = await params;
     const db = createServiceClient();

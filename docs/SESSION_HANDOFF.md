@@ -25,14 +25,16 @@ AI-CDIO is the **Fractional Executive Operating System** — built first as a to
 - Roadmap Engine (25% of playbook vision)
 - RAG layer (1,154 playbook chunks indexed)
 - Supabase backend (10 tables, schema-v3 maturity-5 applied)
+- Clerk auth + Next 16 proxy on practitioner-only API routes (Week 1 Day 1 — P0-1 closed)
 
 ### Critical Gaps (Block Real Use)
-- No authentication (Clerk in deps but not wired)
-- No multi-client practitioner workspace
-- No rate limiting
-- API routes accept arbitrary `org_id` (IDOR vulnerability)
-- Synthesis runs synchronously, will time out on Vercel
-- 8 P0 ship-blockers documented in `docs/GAPS.md`
+- No multi-client practitioner workspace (`practitioners` + `practitioner_clients` tables — Day 2)
+- API routes accept arbitrary `org_id` (IDOR — Day 2-3, after practitioner schema lands)
+- `assessment_token` returned in dashboard response (Day 4)
+- No rate limiting (Day 5)
+- Synthesis `delete-then-insert` not in a transaction (Day 6)
+- Service-role Supabase client bypasses RLS in every API route (Day 8, after practitioner schema + RLS)
+- 7 P0 ship-blockers remaining (down from 8) — see `docs/GAPS.md`
 
 ### Not Yet Built
 - Status Report Generator (the FIRST engine to build next)

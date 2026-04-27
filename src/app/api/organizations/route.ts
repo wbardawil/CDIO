@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EngagementOrchestrator } from "@/lib/agents/orchestrator";
+import { requireAuth } from "@/lib/auth/require-auth";
 import { z } from "zod";
 
 const OnboardSchema = z.object({
@@ -20,6 +21,9 @@ const OnboardSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  const { response: authResponse } = await requireAuth();
+  if (authResponse) return authResponse;
+
   try {
     const body = await request.json();
     const input = OnboardSchema.parse(body);
