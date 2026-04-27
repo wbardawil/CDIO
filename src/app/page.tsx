@@ -1,8 +1,37 @@
 import Link from "next/link";
+import { Show, UserButton } from "@clerk/nextjs";
 
 export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+      {/* Auth nav */}
+      <nav className="absolute top-0 right-0 p-6 flex items-center gap-3">
+        {/* Clerk 7 replaced <SignedIn>/<SignedOut> with <Show when="..."> */}
+        <Show when="signed-in">
+          <Link
+            href="/clients"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Open Portfolio →
+          </Link>
+          <UserButton />
+        </Show>
+        <Show when="signed-out">
+          <Link
+            href="/sign-in"
+            className="px-4 py-2 text-sm font-medium text-gray-700 hover:text-gray-900"
+          >
+            Sign in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Sign up
+          </Link>
+        </Show>
+      </nav>
+
       <div className="max-w-4xl mx-auto px-6 py-24">
         {/* Hero */}
         <div className="text-center mb-16">
