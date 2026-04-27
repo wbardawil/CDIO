@@ -18,7 +18,6 @@ interface StakeholderInfo {
 export default function AssessPage({ params }: { params: Promise<{ token: string }> }) {
   const [token, setToken] = useState<string>("");
   const [stakeholder, setStakeholder] = useState<StakeholderInfo | null>(null);
-  const [currentModuleIndex, setCurrentModuleIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,13 +44,23 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
       });
   }, [token]);
 
+  // Pending = modules not yet completed. Always work the FIRST pending module —
+  // a separate index would walk against this filter as completions arrive
+  // and produce undefined → blank page after Next.
   const pendingModules = stakeholder
     ? stakeholder.relevant_modules.filter(
         (m) => !stakeholder.completed_modules.includes(m)
       )
     : [];
 
-  const currentModule = pendingModules[currentModuleIndex];
+  const currentModule = pendingModules[0];
+
+  // If everything's complete on first load (e.g. resumed assessment), surface "done".
+  useEffect(() => {
+    if (stakeholder && pendingModules.length === 0) {
+      setDone(true);
+    }
+  }, [stakeholder, pendingModules.length]);
 
   const handleSubmit = useCallback(
     async (
@@ -79,31 +88,31 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
           }),
         });
 
-        if (!res.ok) throw new Error("Failed to submit assessment");
-
-        // Mark module as completed locally
-        setStakeholder((prev) =>
-          prev
-            ? {
-                ...prev,
-                completed_modules: [...prev.completed_modules, currentModule],
-              }
-            : prev
-        );
-
-        // Move to next module or finish
-        if (currentModuleIndex + 1 < pendingModules.length) {
-          setCurrentModuleIndex((i) => i + 1);
-        } else {
-          setDone(true);
+        if (!res.ok) {
+          let detail = `HTTP ${res.status}`;
+          try {
+            const body = await res.json();
+            if (body?.error) detail = body.error;
+            if (body?.details) detail += ` — ${typeof body.details === "string" ? body.details : JSON.stringify(body.details)}`;
+          } catch { /* not JSON */ }
+          throw new Error(detail);
         }
+
+        const newCompleted = [...stakeholder.completed_modules, currentModule];
+        const isDone = newCompleted.length >= stakeholder.relevant_modules.length;
+
+        setStakeholder((prev) =>
+          prev ? { ...prev, completed_modules: newCompleted } : prev
+        );
+        if (isDone) setDone(true);
       } catch (err) {
-        setError("Failed to submit. Please try again.");
+        const message = err instanceof Error ? err.message : "Failed to submit";
+        setError(`Failed to submit: ${message}`);
       } finally {
         setSubmitting(false);
       }
     },
-    [stakeholder, currentModule, currentModuleIndex, pendingModules.length]
+    [stakeholder, currentModule]
   );
 
   if (loading) {
