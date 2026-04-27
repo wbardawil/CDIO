@@ -321,8 +321,18 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
                             ? `${pct}% — ${done}/${total}`
                             : "Not started"}
                       </span>
-                      {link && (
-                        <CopyLinkButton link={link} label="Copy assessment link" />
+                      {link && status !== "done" && (
+                        <>
+                          <a
+                            href={link}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700"
+                          >
+                            Open assessment ↗
+                          </a>
+                          <CopyLinkButton link={link} label="Copy link" />
+                        </>
                       )}
                     </div>
                   </div>
