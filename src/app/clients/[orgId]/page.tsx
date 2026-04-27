@@ -332,54 +332,20 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
           </div>
         )}
 
-        {/* Bottom row: full dashboard + roadmap of features */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-2">Engagement engines</h3>
-            <p className="text-sm text-gray-500 mb-4">
-              The full assessment, synthesis, and roadmap workflows live in the legacy dashboard. The new tabbed workspace ports them in over Weeks 2–6.
+        {/* Quiet secondary action — always available, never the hero */}
+        <div className="flex items-center justify-between mt-2">
+          <Link
+            href={`/dashboard?org=${org.id}`}
+            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
+          >
+            Open full dashboard →
+          </Link>
+          {activeModules.length > 0 && (
+            <p className="text-xs text-gray-400 text-right max-w-2xl">
+              In scope: {activeModules.map((n) => MODULE_NAMES[n]).filter(Boolean).join(" · ")}
             </p>
-            <Link
-              href={`/dashboard?org=${org.id}`}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
-            >
-              Open full dashboard →
-            </Link>
-          </div>
-
-          <div className="bg-white rounded-xl border border-gray-200 p-6">
-            <h3 className="text-base font-semibold text-gray-900 mb-3">Coming soon to this workspace</h3>
-            <ul className="space-y-2 text-sm text-gray-600">
-              <li className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">Week 2</span>
-                Status Report Generator (Engine #2)
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">Week 4</span>
-                Decisions log + Decision Packages
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">Week 5</span>
-                QBR Deck Generator
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">Week 6+</span>
-                Value / ROI tracker
-              </li>
-              <li className="flex items-center gap-2">
-                <span className="px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">Week 8</span>
-                MCP server — call engines from Claude.ai
-              </li>
-            </ul>
-          </div>
+          )}
         </div>
-
-        {/* Module-in-scope footer */}
-        {activeModules.length > 0 && (
-          <p className="text-xs text-gray-500 mt-6">
-            Modules in scope: {activeModules.map((n) => MODULE_NAMES[n]).filter(Boolean).join(" · ")}
-          </p>
-        )}
       </main>
     </div>
   );

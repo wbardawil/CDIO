@@ -23,10 +23,10 @@ export async function GET(
       );
     }
 
-    // Get organization name
+    // Get organization name + the engagement's active module scope
     const { data: org } = await db
       .from("organizations")
-      .select("name")
+      .select("name, active_modules")
       .eq("id", stakeholder.org_id)
       .single();
 
@@ -58,6 +58,18 @@ export async function GET(
       (s) => s.module_number
     );
 
+    // Effective modules = role-relevant ∩ engagement-in-scope.
+    // - If the engagement defines active_modules, restrict to that scope.
+    // - Otherwise (rare; legacy data), fall back to role-relevant.
+    // - Stakeholders whose role intersects nothing in scope get an empty list,
+    //   which surfaces as "0 modules to answer" — clearer than asking out-of-scope questions.
+    const roleRelevant: number[] = stakeholder.relevant_modules ?? [];
+    const orgActive: number[] = org?.active_modules ?? [];
+    const effectiveModules =
+      orgActive.length > 0
+        ? roleRelevant.filter((m) => orgActive.includes(m))
+        : roleRelevant;
+
     return NextResponse.json({
       id: stakeholder.id,
       name: stakeholder.name,
@@ -65,7 +77,12 @@ export async function GET(
       org_name: org?.name ?? "Unknown Organization",
       org_id: stakeholder.org_id,
       assessment_id: assessment.id,
-      relevant_modules: stakeholder.relevant_modules,
+      // Effective scope for the assessment UI
+      relevant_modules: effectiveModules,
+      // Surface the originals so the UI can explain "5 of your 6 role modules
+      // are not in this engagement's scope" if needed
+      role_relevant_modules: roleRelevant,
+      org_active_modules: orgActive,
       completed_modules,
     });
   } catch (error) {
