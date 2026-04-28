@@ -1,99 +1,112 @@
 # AI-CDIO: Gap Analysis
 
-Status: Updated for Fractional Executive OS framing.
+> **Refreshed:** 2026-04-27 (Day 3 of Phase 1). Reflects practitioner-first re-prioritization in `docs/STRATEGY-2026.md` and the strategic shifts captured in `docs/ROADMAP.md`.
 
 ## Priority Tiers
 
 - **P0 (Tier 0)** — Existential. Blocks any usage with real client data.
-- **P1 (High)** — Required for paying customers.
-- **P2 (Medium)** — Required to scale beyond founder + first 5 customers.
+- **P1 (High)** — Required for paying customers + methodology depth.
+- **P2 (Medium)** — Required to scale beyond founder + first 10 customers.
 - **P3 (Low)** — Quality of life.
 
 ---
 
-## P0 — Foundation (Week 1, Must Ship Before Real Use)
+## P0 — Foundation (status as of Day 3)
 
-| # | Gap | Why Existential | Effort |
-|---|-----|-----------------|--------|
-| P0-1 | No authentication (Clerk) | Cannot put real client data into unauthenticated app | 8h |
-| P0-2 | API routes accept arbitrary `org_id` (IDOR) | Anyone with a UUID reads any org's data | 4h |
-| P0-3 | `assessment_token` returned in dashboard response | Permanent unrevokable backdoor | 1h |
-| P0-4 | No rate limiting on `/api/chat`, `/api/assessments` | Cost burn risk; DoS surface | 4h |
-| P0-5 | No practitioner workspace (multi-client) | Architecture assumes 1 org per user; founder has 3-8 clients | 12h |
-| P0-6 | Synthesis uses `delete-then-insert` without transaction | Real data loss risk on retry | 2h |
-| P0-7 | `conversations` table not in `schema.sql` (only schema-v2) | Chat fails on fresh deploy | 1h |
-| P0-8 | Service-role client used in every API route | Bypasses RLS; multi-tenancy enforced only in TS code | 6h (combined w/ P0-1) |
+| # | Gap | Status | Closed by |
+|---|-----|--------|-----------|
+| P0-1 | No authentication (Clerk) | ✅ **CLOSED** | Day 1, commit `a304e01` |
+| P0-2 | API routes accept arbitrary `org_id` (IDOR) | ✅ **CLOSED** | Day 2, commit `0a2e922` (assertPractitionerOwnsOrg) |
+| P0-3 | `assessment_token` returned in dashboard response | ⏳ Open — Phase 1B Day 5 | Pending |
+| P0-4 | No rate limiting on `/api/chat`, `/api/assessments` | ⏳ Open — Phase 1B Day 5 | Pending |
+| P0-5 | No practitioner workspace (multi-client) | ✅ **CLOSED** | Day 2 schema + Day 3 UI |
+| P0-6 | Synthesis uses `delete-then-insert` without transaction | ⏳ Open — Phase 1B Day 6 | Pending |
+| P0-7 | `conversations` table missing on fresh deploys | ✅ **CLOSED** | Schema-v2 already applied; documented |
+| P0-8 | Service-role client bypasses RLS in API routes | ⚠ Mitigated — Phase 4 to fully close | TS-layer enforcement via assertPractitionerOwnsOrg works today; RLS policies pre-wired for Day 30+ |
 
-**Tier 0 total: ~38h / ~1 week of focused work**
-
----
-
-## P1 — First Real Engine + Trust (Week 2-4)
-
-| # | Gap | Why High | Effort |
-|---|-----|----------|--------|
-| P1-1 | Status Report Generator (the first deliverable engine beyond assessment + roadmap) | Highest-frequency deliverable per client; founder uses immediately | 16h |
-| P1-2 | Chat implicit_scores never feed into module_scores | "Chat-first" promise broken until bridged | 6h |
-| P1-3 | Action cards become stale on resynthesis | Stale advice forever | 4h |
-| P1-4 | Roadmap engine at 25% of playbook vision | Templated 30/60/90, financial models, dependencies, governance still missing | 16h |
-| P1-5 | Synthesis can fire 96 LLM calls per HTTP request | Times out on Vercel; runaway cost | 12h (move to background job) |
-| P1-6 | No prompt caching | -70% input tokens; required for unit economics | 4h |
-| P1-7 | Terms of Service / Privacy Policy / AI disclaimer (formal legal) | Required before any non-founder user | $2-5K legal review |
-| P1-8 | Sentry + Langfuse (error monitoring + LLM observability) | Cannot see when AI gives bad advice | 2h |
-
-**Tier 1 total: ~60h + legal**
+**Phase 1A closed 4 of 8 P0 items. Phase 1B (Days 4-7) closes P0-3, P0-4, P0-6. P0-8 stays mitigated until per-user JWT lands.**
 
 ---
 
-## P2 — Second Engine + Scale (Week 5-12)
+## P1 — First Real Engines + Methodology Depth (Phase 1C-1D)
+
+| # | Gap | Why High | Effort | Phase |
+|---|-----|----------|--------|-------|
+| P1-1 | **Methodology depth (level-5 indicators, framework citations, narrative scoring)** for Module 5 + 12 + 15 | The app underseels the playbook today; this is the perceived-value gap | 7 days | **1C — Days 8-14** |
+| P1-2 | **Decision Package surfacing** as standalone artifact in workspace | The "what should I do" output that wins prospects | 1 day | 1C — Day 11 |
+| P1-3 | Quick Scan output upgrade — board-memo quality (cited, narrative, 3 named quick wins, projected ROI) | Sales-conversion engine | 2 days | 1C — Days 14-15 |
+| P1-4 | Framework citations layer — every score links to NIST/CMMI/TOGAF/etc. | Methodology authority visible everywhere | 2 days | 1C — Days 16-17 |
+| P1-5 | Status Report Generator (Engine #2) | 90 min → 12 min savings per client per month | 4 days | **1D — Days 18-21** |
+| P1-6 | Engagement Cadence (shareable read-only) | Practitioner-as-trusted-partner differentiator | 3 days | 1D — Days 22-24 |
+| P1-7 | MCP Server foundation (auth + tool registry + first 3 tools) | Distribution: practitioners use AI surfaces they already trust | 1 day | 1D — Day 25 |
+| P1-8 | Stakeholder edit UI + email send (Resend) | Closes manual-SQL-edit workaround the founder hit during dogfood | 2 days | **1B — Day 4** |
+| P1-9 | Sentry + Langfuse | Cannot see when AI gives bad advice | 1 day | 1B — Day 6 |
+| P1-10 | Roadmap engine to 100% (financial models, dependencies, governance section) | Closes the 25% gap | 4 days | Phase 4 — Days 91-120 |
+| P1-11 | Anthropic prompt caching (system prompt + RAG context) | -70% input tokens; required for unit economics | 1 day | Phase 2 — Day 28 |
+| P1-12 | Terms of Service + Privacy Policy + AI disclaimer (legal review) | Required before any non-founder user | $2-5K legal | Phase 2 — Day 30 |
+| P1-13 | Bridge chat `implicit_scores` → `module_scores` | "Chat-first" promise broken until bridged | 1 day | Phase 2 — Day 28 |
+| P1-14 | Action cards invalidate on resynthesis | Stale advice forever | 0.5 day | Phase 2 — Day 29 |
+
+---
+
+## P2 — Scale + Polish (Phase 3 + early 4)
 
 | # | Gap | Why Medium | Effort |
 |---|-----|-----------|--------|
-| P2-1 | QBR Deck Generator | Quarterly deliverable, highest time-saved per use | 24h |
-| P2-2 | Value/ROI tracker (commit → deliver → prove) | Differentiator vs every consulting tool | 16h |
-| P2-3 | Engagement Lifecycle (Phase 1 → 2 → 3) | Drives upgrades and renewals | 12h |
-| P2-4 | Templates Library (charter, M&A DD, vendor playbook) | Long tail of repeatable artifacts | Ongoing |
-| P2-5 | Document/image evidence upload + AI analysis | Growth tier feature | 24h |
-| P2-6 | Module-level improvement chat | Starter+ tier feature | 16h |
-| P2-7 | Stripe billing + subscription management | Cannot charge without it | 12h |
-| P2-8 | Credit/usage tracking + per-tier limits | Cost control at scale | 8h |
-| P2-9 | Response caching (24h hash on user message + context) | -30-50% LLM calls | 6h |
-| P2-10 | Output guardrail for security-domain AI advice | Liability mitigation | 6h |
-| P2-11 | Strip diagnostic questions out of system prompt | Prevent IP extraction | 8h |
-| P2-12 | Bridge `session_id` → `clerk_user_id` (claim flow) | Conversation memory across sessions | 6h |
+| P2-1 | Stripe billing + subscription management | Cannot charge without it | 12h |
+| P2-2 | Vercel production deploy + custom domain | First public URL | 4h |
+| P2-3 | Synthesis to background jobs (Inngest or QStash) | Times out on Vercel; runaway cost | 12h |
+| P2-4 | QBR Deck Generator (Engine #4) | Quarterly deliverable, highest time-saved per use | 24h |
+| P2-5 | Value/ROI Tracker (Engine #3) — commit→deliver→prove | Differentiator vs every consulting tool | 16h |
+| P2-6 | Templates Library (charters, vendor playbook, M&A DD, risk register) | Long-tail repeatable artifacts | Ongoing |
+| P2-7 | Document/image evidence upload + AI Vision analysis | Growth tier feature | 24h |
+| P2-8 | Module-level improvement chat | Starter+ tier feature | 16h |
+| P2-9 | Engagement Lifecycle (Phase 1→2→3 progression UI) | Drives upgrades and renewals | 12h |
+| P2-10 | Customize stakeholder modules per-engagement (override role default) | Promised in dogfood feedback | 4h |
+| P2-11 | Output guardrail for security-domain AI advice | Liability mitigation | 6h |
+| P2-12 | Strip diagnostic questions out of system prompt | Prevent IP extraction | 8h |
+| P2-13 | Bridge `session_id` → `clerk_user_id` (claim flow) | Conversation memory across sessions | 6h |
+| P2-14 | Response caching (24h hash on user message + context) | -30-50% LLM calls | 6h |
+| P2-15 | Audit log surfaced in `agent_logs` table | SOC2 / compliance prep | 4h |
 
 ---
 
-## P3 — Polish (Month 4+)
+## P3 — Polish (Phase 4-5)
 
 - Mobile-optimized chat + assessment forms
-- Dark mode
-- Multi-language support
+- Dark mode (system-aware, properly designed)
+- Multi-language support (Spanish first if Latin American demand)
 - GDPR data residency options
-- Annual pricing option
-- Referral program mechanics
+- Annual pricing option (20% discount)
+- Referral program mechanics (Cello.so or built-in)
 - MSP partner onboarding kit
-- Co-branded client portal
+- Co-branded client portal (replaces Cadence Share for some uses)
 - White-label for MSPs
-- API for partners
+- Public API for partners
+- Mobile app
 
 ---
 
-## Summary by Category
+## Summary by Status
 
-| Category | P0 | P1 | P2 | P3 |
-|----------|---|---|---|---|
-| Security & Auth | 4 | 1 | 1 | 0 |
-| Product/Engines | 1 | 4 | 6 | 5 |
-| Scale/Infrastructure | 0 | 2 | 4 | 4 |
-| Legal/Compliance | 0 | 1 | 1 | 1 |
-| **Total** | **8** | **8** | **12** | **10** |
+| Status | Count |
+|---|---|
+| ✅ Closed | 4 (P0-1, P0-2, P0-5, P0-7) |
+| ⚠ Mitigated | 1 (P0-8) |
+| ⏳ Open in Phase 1B (Days 4-7) | 4 (P0-3, P0-4, P0-6, P1-8 + P1-9) |
+| ⏳ Open in Phase 1C (Days 8-17) | 4 (P1-1 through P1-4) |
+| ⏳ Open in Phase 1D (Days 18-25) | 3 (P1-5, P1-6, P1-7) |
+| ⏳ Open in Phase 2 (Days 26-35) | 4 (P1-11, P1-12, P1-13, P1-14) |
+| ⏳ Open in Phase 3 (Days 36-60) | 7 (P2-1, P2-2, P2-3, P2-5, P2-10, P2-15, etc.) |
+| ⏳ Open in Phase 4+ (Days 61-180) | 12+ (P1-10, P2-4, P2-6 through P2-14, all P3) |
 
-**38 total gaps. 8 are existential blockers for Week 1.**
+---
 
 ## What This Means for Build Order
 
-1. **Week 1:** All 8 P0 items — foundation for safe real-data use
-2. **Week 2-4:** P1 items in order — first real value engine (Status Report) + trust infra
-3. **Week 5-12:** P2 items — scale beyond founder + first 5 customers
-4. **Month 4+:** P3 items — quality of life
+1. **Phase 1B (Days 4-7):** P0-3, P0-4, P0-6, P1-8, P1-9 — close remaining safety + practitioner-ops friction
+2. **Phase 1C (Days 8-17):** P1-1, P1-2, P1-3, P1-4 — methodology depth (the practitioner-first promise)
+3. **Phase 1D (Days 18-25):** P1-5, P1-6, P1-7 — recurring deliverables + MCP
+4. **Phase 2 (Days 26-35):** P1-11, P1-12, P1-13, P1-14, P2-2 — validation prep + first pilots
+5. **Phase 3 (Days 36-60):** P2-1, P2-3, P2-5 — monetization
+6. **Phase 4+ (Days 61-180):** everything else, demand-driven

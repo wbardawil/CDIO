@@ -1,5 +1,7 @@
 # AI-CDIO: Risks, Blind Spots & Open Questions
 
+> **Refreshed:** 2026-04-27 (Day 3 of Phase 1). Adds 2026-specific competitor velocity + MCP fragmentation risks. Older risks remain valid.
+
 ## Johari Window Applied to AI-CDIO
 
 |  | **Known to YOU** | **Unknown to YOU** |
@@ -69,6 +71,8 @@
 | Fractional growth is recession-driven (laid-off execs), not secular | Talk to 2018 fractional hirers — are they still using? | GTM |
 | Platform itself becomes the "fractional CDIO" replacement | Reframe as feature, not bug — but means buyer changes | Strategy |
 | LinkedIn supply (110K fractionals) is supply-side fad | Validate demand: companies hiring fractionals, not just calling themselves fractional | GTM |
+| **Vertical AI consultants emerging fast** (Ema, Glean Agents, Devin, etc. — 2026 wave) | 12-month window to claim "fractional executive OS" position. Methodology depth + cited authority is the moat — speed of vertical-specific build matters. | Speed |
+| **MCP standard fragmentation** — multiple competing schemas (Anthropic MCP vs OpenAI Functions vs Google A2A) | Build adapter layer; treat MCP as one distribution channel among several; don't bet exclusively | Engineering |
 
 ### 3. EXECUTION RISK — "Can you actually deliver?"
 
@@ -89,8 +93,10 @@
 | Should be ACQUIRED by ScalePad, not compete | Build to compete OR build to be acquired = different products. Decide by Month 6. | Strategy |
 | Should be OPEN SOURCE + paid services | Linux model: free engine, paid expertise. 10x distribution. Risk: monetization harder. | Strategy |
 | Should be info-product, not software | The playbook IS the product. Software is delivery. Different pricing, different markets. | Strategy |
+| **Should be MCP-toolkit-first, webapp-second** (2026 reframe) | Practitioners already work in Claude.ai / Cursor / Codex — meet them there. Webapp becomes one surface among several. **Decision: hybrid (MCP foundation Day 25, webapp ongoing).** | Strategy |
+| **1M-SMB North Star is misleading** — re-baselined to "50K fractional + 200K IT director SAM, 1% capture in 3 yrs = 2,500-3,500 paying" | Recalibrated in `docs/STRATEGY-2026.md`. Old "1M SMB" language remains in `docs/GTM.md` until that doc is also refreshed. | Strategy |
 
-**The blind spot:** "SaaS" is one of many monetization models. Validate the CHOICE before locking in.
+**The blind spot:** "SaaS" is one of many monetization models. Validate the CHOICE before locking in. **2026 update:** AI-native distribution channels (MCP, agent marketplaces) are now real and matter for positioning.
 
 ### 5. PERSONAL/STRUCTURAL RISK — "Are you set up to win?"
 
@@ -153,10 +159,13 @@
 | LLM costs exceed revenue at scale | Medium | High | >100 free users without rate limits |
 | Low conversion (<1% from discovery calls) | Medium | High | Day 14 of validation sprint |
 | ScalePad pivots to attack | Low | High | Watch their roadmap announcements |
+| **Vertical AI consultants (Ema, Glean Agents, etc.) ship a competitor** | **Medium** | **High** | Watch Anthropic / OpenAI / Glean release cadence |
 | AI gives bad/dangerous advice (liability) | Low | Very High | Any user complaint about safety |
 | User data breach | Low | Very High | Pre-launch security review |
 | Anthropic API price hike or deprecation | Medium | High | API announcements |
 | Founder burnout / fractional clients suffer | High | High | Personal energy management |
 | Regulatory changes (AI governance) | Medium | Medium | Watch EU AI Act updates |
+| **App underseels playbook depth** (the actual concern surfaced Day 3) | **Was High → now Medium** | **Very High** | Mitigated by Phase 1C methodology depth pivot |
+| **MCP standard fragmentation** (multiple competing agent protocols) | Low-Medium | Medium | Watch Anthropic / OpenAI / Google interop announcements |
 
-The first three are the ones to actively defend against. The last five are watchful waiting.
+The first four are the ones to actively defend against. The remaining are watchful waiting.

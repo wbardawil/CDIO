@@ -1,169 +1,150 @@
 # AI-CDIO: Build Roadmap
 
+> **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
+> **Last refreshed:** 2026-04-27 (Day 3 of Phase 1).
+
 ## Current State (April 2026)
 
-### Built
-- Assessment Engine (16 modules, 5-level maturity, AI scoring)
-- Roadmap Engine (25% of playbook vision)
-- Conversation Agent (chat-first entry, RAG-grounded)
-- Quick Scan UI (live spider chart + action cards)
-- Dashboard (priority matrix, divergence detection, Decision Packages)
-- RAG layer (1,154 playbook chunks indexed)
-- Supabase backend (10 tables, multi-tenant by org_id)
-- 5-level maturity scale standardized
+### Built (Phase 1A — Days 1-3, ✅ done)
+- Quick Scan UI (`/scan`) with live spider chart + action cards
+- Full Assessment Pipeline (`/onboarding` + `/assess/[token]`) with multi-stakeholder
+- Chat-first conversational entry (`/chat`)
+- Legacy Dashboard with priority matrix + divergence detection + AI Decision Packages
+- Assessment Engine (16 modules, 5-level maturity, AI scoring) — though level-5 indicator content is incomplete (see Phase 1C)
+- Roadmap Engine (~25% of playbook vision)
+- RAG layer (1,152 playbook chunks, CMU/Carnegie attribution stripped)
+- Supabase backend (15 tables, schema-v4 practitioners applied)
+- **Clerk auth + Next 16 proxy** — practitioner-only API routes gated
+- **Practitioner workspace data model** — `practitioners` + `practitioner_clients` (N:N) + `organizations.active_modules`
+- **IDOR fix** — `assertPractitionerOwnsOrg` enforces ownership at handler layer (RLS policies pre-wired for Day 30)
+- **Portfolio + Client Workspace shell** — `/clients` (table) + `/clients/[orgId]` (6-tab shell, Overview wired)
+- **Onboarding hardening** — auth-gated, error display, role dropdown extended to CIO/CDIO/CDO/CISO
+- **Assessment scope intersection** — stakeholder relevant_modules ∩ org active_modules
+- Migration tooling (`scripts/migrate.js`, `inspect-db.js`, `verify-cmu-purge.js`)
+- Local dev hardening (`docs/LOCAL_DEV.md`, orphan lockfile removed)
 
-### NOT Built (Critical for Real Use)
-- Authentication (Clerk in deps but not wired)
-- Practitioner workspace (multi-client portfolio)
-- Rate limiting (any kind)
-- Background jobs (synthesis runs synchronously, will time out at scale)
-- Status Report Generator
-- QBR Deck Generator
-- Templates Library
-- Stripe billing
-- Vercel deployment
+### NOT Built (the remaining Phase 1 work)
+- Methodology depth (level-5 indicators, framework citations, narrative scoring) — Phase 1C
+- Decision Package surfacing as standalone artifact — Phase 1C
+- Stakeholder edit/email/reminders UI — Phase 1B
+- Status Report Generator — Phase 1D
+- Engagement Cadence (shareable read-only) — Phase 1D
+- Value Tracker — Phase 1D
+- MCP Server foundation — Phase 1D
+- Rate limiting, synthesis transaction wrapping — Phase 1B safety
+- Background jobs framework — Phase 2 if needed
+- Stripe billing — Phase 3
+- Vercel deployment — Phase 2
 
 ---
 
-## Phase 1: FOUNDER TOOL (Weeks 1-6)
+## Phase 1: PRACTITIONER TOOL (Days 1-25)
 
-### Week 1 — Foundation (P0 ship-blockers)
+The single goal: by Day 25 the founder runs the **full Quick Win Stack engagement** end-to-end on Ambar Capital + 1-2 more real clients, and the platform is demo-quality for design-partner pilots.
 
-**Goal:** Make it safe to put real client data in the platform.
+### Phase 1A — Foundation ✅ Days 1-3 (done)
+
+Closed P0-1 (auth), P0-2 (IDOR), P0-5 (practitioner workspace), P0-7 (conversations table). 8 commits. See `git log`.
+
+### Phase 1B — Practitioner Operations + Safety (Days 4-7)
+
+**Goal:** close the manual-workaround friction the founder hit during dogfood + finish remaining safety items.
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 1 | Add Clerk auth + middleware on every API route | No more anonymous IDOR |
-| 2 | Add `practitioners` + `practitioner_clients` tables | Multi-client data model |
-| 3 | Practitioner workspace UI: list of all clients | Portfolio view |
-| 4 | Strip `assessment_token` from dashboard response, derive IDs server-side | Token security |
-| 5 | Upstash Redis rate limiting on `/api/chat` and `/api/assessments` | Cost protection |
-| 6 | Wrap synthesis delete-then-insert in transaction | Data integrity |
-| 7 | Migrate founder's 1-3 real clients into platform | First real use |
+| 4 | Stakeholder edit UI (role + relevant_modules + influence_level) + email send via Resend (assessment links + reminders) | No more SQL-edit-by-hand |
+| 5 | Upstash Redis rate limiting on `/api/chat` + `/api/assessments` | Closes P0-4. Cost protection. |
+| 5 | Strip `assessment_token` from dashboard response, derive IDs server-side | Closes P0-3. |
+| 6 | Wrap synthesis delete-then-insert in a transaction | Closes P0-6. |
+| 6 | Sentry error monitoring + Langfuse LLM observability | Visibility before depth work |
+| 7 | Confirm Ambar Capital is real-engagement data (or sandbox) + backfill founder mapping for any pre-existing test orgs | Phase 1C dogfood reliability |
 
-**Done = Founder logs in, sees portfolio, drills into Client A, runs existing engines.**
+**Done = Founder onboards / edits / emails / monitors clients without manual workarounds.**
 
-### Week 2 — First Real Engine: Status Report Generator
+### Phase 1C — Methodology Depth: Quick Win Stack (Days 8-17)
 
-**Goal:** The first deliverable beyond assessment + roadmap. Highest-frequency, highest-time-saved.
+**Goal:** The methodology becomes visible. Module 5 + 12 + 15 (the playbook's named "Quick Win Stack", 200-400% ROI in 90 days) get full depth so an assessment produces real diagnostic output, not just scores.
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 8-9 | `status_reports` table + API routes | Persistence |
-| 10-11 | Status Report Generator engine (pulls assessment + roadmap + decisions + value) | Core logic |
-| 12 | AI narrative draft (Claude Sonnet, structured prompt) | Generated text |
-| 13 | Markdown editor + PDF export | Practitioner edits |
-| 14 | Send-to-client email button (Resend) | Delivery |
+| 8-10 | **Module 5 deep** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area) | Proof of pattern. Dogfood on Ambar before scaling. **Stop and review.** |
+| 11 | **Decision Package surface** — standalone artifact, not buried in synthesis. Hero-level UI in workspace. | The "what should I do" output that wins prospects |
+| 12-13 | **Module 12 deep (Financial Acumen)** + **Module 15 deep (Process Automation)** — replicate Module 5 pattern | Quick Win Stack assessment is demo-quality |
+| 14-15 | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI) | The sales-conversion engine |
+| 16-17 | **Framework citations layer** — every score, every recommendation links to the named framework + playbook excerpt | Methodology authority visible everywhere |
 
-**Done = Founder generates one client's monthly status report in <10 minutes (was 1-2 hours).**
+**Done = Founder runs an assessment on a fresh client and the output makes the playbook's depth visible. Demo-quality.**
 
-### Week 3-4 — Roadmap Engine to 100% + Trust Infra
+### Phase 1D — Recurring Deliverables + MCP (Days 18-25)
 
-| Week | Task |
-|------|------|
-| 3 | Roadmap Engine upgrades: 30/60/90 templated, financial models, dependencies, governance section |
-| 3 | Move synthesis + roadmap to Inngest background jobs |
-| 3 | Add Anthropic prompt caching (system prompt + RAG context) |
-| 4 | Sentry error monitoring + Langfuse LLM observability |
-| 4 | Action cards invalidate on resynthesis (assessment_id + score_at_creation) |
-| 4 | Bridge chat `implicit_scores` → `module_scores` |
+**Goal:** The platform produces the practitioner's recurring artifacts and is callable from Claude.ai.
 
-**Done = Roadmap matches playbook vision. Cost-controlled. Observable.**
+| Day | Task | Outcome |
+|-----|------|---------|
+| 18-21 | **Status Report Generator (Engine #2)** — table + API + AI narrative + Markdown editor + PDF export + Resend send | Month-2 retention proof. 90 min → 12 min savings. |
+| 22-24 | **Engagement Cadence** — milestones (commitments, target dates, deliverable types), auto-populated from roadmap + status + decisions, **shareable read-only link** (token-based, no portal) | Practitioner-as-trusted-partner differentiator. Client-facing without portal complexity. |
+| 25 | **MCP Server foundation** — auth, tool registry, first 3 tools (`generate_status_report`, `query_client_data`, `propose_decision_package`). Expand per-engine as we build going forward. | Practitioner can call AI-CDIO from Claude.ai / Cursor / Codex. |
 
-### Week 5-6 — Polish + Validation Prep
-
-| Week | Task |
-|------|------|
-| 5 | Use platform for THIS WEEK's actual deliverables across all founder's clients |
-| 5 | Document patterns: which engines used most, which features missing |
-| 5 | Terms of Service + Privacy Policy + AI disclaimer (legal review) |
-| 6 | Founder LinkedIn post: "I'm building this. Want early access?" |
-| 6 | First 30 LinkedIn DMs (15 fractional + 15 director) |
-| 6 | Discovery calls scheduled |
-
-**Done = Founder uses platform daily. Outreach starts. Validation Phase 2 begins.**
+**Done = Founder runs full Quick Win engagement on Ambar end-to-end (assessment → cadence → status reports → decision packages) using the platform, including from Claude.ai via MCP.**
 
 ---
 
-## Phase 2: VALIDATED PRODUCT (Weeks 7-12)
+## Phase 2: VALIDATION (Days 26-35)
 
-### Week 7-8 — First External Pilots
+**Goal:** Prove the practitioner-first promise on real engagements. Onboard 5 design partners.
 
-| Task |
-|------|
-| Onboard 5 design partners (3 fractional + 2 director) for free |
-| Watch them use it. Bug fixes + UX iterations from observation. |
-| Build QBR Deck Generator (Engine #2) |
-| Add credit/usage tracking + per-tier limits (Stripe metadata) |
-| **Ship AI-CDIO MCP server** — expose engines (`generate_status_report`, `generate_qbr_deck`, `query_client_data`, `propose_decision_package`, `draft_renewal_proposal`) as MCP tools so founder can call them from Claude.ai or Claude Code (~2 days work once web-app API stabilizes) |
+| Day | Task |
+|-----|------|
+| 26-28 | Founder uses platform daily on Ambar + 1-2 more real clients. Document time savings explicitly ("this report took 12 min, used to take 90"). |
+| 26-28 | Asset library built: differentiator one-pager, 3-5 min demo video, anonymized Ambar case study, three LinkedIn post templates |
+| 29-30 | Vercel deploy (production environment). DNS. Custom domain. |
+| 30-32 | LinkedIn post: "I'm building this. Want early access?" Cadence ramps to 3 posts/week. First 30 DMs (15 fractional + 15 director). |
+| 33-35 | 5 design-partner pilots onboarded free. 14-day pilot structure. Discovery → demo → pilot funnel weekly slots. |
 
-### Week 9-10 — First Paying Customers
-
-| Task |
-|------|
-| Stripe billing integration |
-| Convert pilots to paid ($199-599 based on segment) |
-| First case studies (with permission) |
-| Community Slack for paying users |
-
-### Week 11-12 — Engine #3 + Scale Prep
-
-| Task |
-|------|
-| Build Value/ROI Tracker (commit → deliver → prove) |
-| Module-level improvement chat (Starter+ feature) |
-| First 20-30 paying customers |
-| Founder content: 3-5 LinkedIn posts/week |
-
-**Phase 2 done = $8-12K MRR, two engines beyond assessment + roadmap, validated PMF.**
+**Done = Founder uses platform daily. 5 design partners actively running engagements on it. LinkedIn cadence active.**
 
 ---
 
-## Phase 3: BUSINESS ON ITS OWN (Months 4-12)
+## Phase 3: MONETIZATION (Days 36-60)
 
-### Month 4 — Engine #4 + #5
+**Goal:** Convert pilots to paid. Hit Day 90 kill-switch criteria with margin.
 
-- Templates Library (Charter, M&A DD, Vendor Playbook, Risk Register)
-- Engagement Lifecycle (Phase 1→2→3 progression UI)
+| Days | Task |
+|---|---|
+| 36-40 | Stripe billing integration. Tiers: Starter $199, Growth $399, Scale $599. |
+| 41-45 | Convert pilots to paid at Day 14/30/60 of their engagement. First 3-5 paying customers. |
+| 46-50 | First case studies published (with permission). LinkedIn cadence to 5 posts/week. DM cadence to 30/week. |
+| 51-55 | Value/ROI Tracker (Engine #3) — commit→deliver→prove cycle | Renewal engine for first paying cohort |
+| 56-60 | First original research draft: "State of the Fractional CDIO 2026" — aggregate anonymized data. Quarterly publication target. |
 
-### Month 5 — Document Upload + AI Analysis (Growth tier)
+**Done = 5-8 paying customers, $1.5-4K MRR, retained pilots, public case studies, LinkedIn momentum.**
 
-- Image upload (security dashboard screenshots, etc.)
-- Document upload (vendor contracts, policies)
-- Claude Vision + document parsing
-- AI evidence analysis feeds into module scoring
-
-### Month 6 — First MSP Partner
-
-- White-label client portal (co-branded)
-- MSP onboarding kit (deck, training video, first-deal playbook)
-- Pilot with one MSP (50+ end clients)
-
-### Month 7-9 — Resource Planner + Lifecycle
-
-- Resource & Capacity Planner (per-practitioner hours allocation)
-- Engagement Lifecycle automation (auto-progression P1→P2 with conversion gates)
-- Annual pricing option (20% discount)
-
-### Month 10-12 — Content + Community
-
-- Content marketing kicks in (SEO, podcast, original research)
-- "State of the Fractional CDIO 2026" report (data-driven)
-- Referral program (Cello.so or built-in)
-- Hire first part-time CSM
-- 100 paying customers, $30K+ MRR
+**Day 90 review hits at Day 60 + 30 = Day 90. Kill switch criteria evaluated.**
 
 ---
 
-## Phase 4: PLATFORM (Year 2+)
+## Phase 4: SCALE & DEEPEN (Days 61-180)
+
+| Days | Task |
+|---|---|
+| 61-90 | QBR Deck Generator (Engine #4) · Templates Library (charters, vendor playbook, M&A DD, risk register) · Knowledge Reuse panel ("I solved this at Client X") · Module-level improvement chat |
+| 91-120 | Document/image upload + AI Vision evidence analysis · Engagement Lifecycle (Phase 1→2→3 progression UI) · Annual pricing option |
+| 121-150 | First MSP partner pilot (one MSP, 50+ end clients) · Co-branded client portal (lightweight, opt-in, replacing some Cadence Share use cases) |
+| 151-180 | Resource & capacity planner · Referral program · Hire first part-time CSM · 100+ paying customers, $30K+ MRR |
+
+---
+
+## Phase 5: PLATFORM (Year 2+)
+
+Only if Phase 1-4 has delivered clear PMF. None of these are commitments.
 
 | Quarter | Focus |
 |---------|-------|
-| Q5 | AI-Strategist (parallel agent for business strategy) |
-| Q6 | AI-OME (operational excellence, 82-point operating model) |
+| Q5 | AI-Strategist sibling (parallel methodology toolkit on shared MCP infrastructure) |
+| Q6 | AI-OME sibling |
 | Q7 | Cross-agent intelligence (shared client context across CDIO+Strategist+OME) |
-| Q8 | Multi-language (Spanish first — Latin American SMBs) |
-| Q9+ | Custom playbook support (white-label methodologies) |
+| Q8 | Multi-language (Spanish first if Latin American demand emerges) |
+| Q9+ | Custom playbook support (white-label methodologies for partner consultancies) |
 | Q10+ | Mobile app |
 
 ---
@@ -173,11 +154,12 @@
 When choosing what to build next, apply this in order:
 
 1. **Does it save the founder time on a real client engagement THIS WEEK?** → Highest priority
-2. **Does it unblock a paying customer who's complained?** → High priority
-3. **Does it close a sale that's stalled at "yes if you build X"?** → High priority
-4. **Does it reduce cost (LLM, infra, support)?** → Medium priority
-5. **Does it open a new segment/channel?** → Medium priority
-6. **Is it nice-to-have or competitive feature parity?** → Low priority
+2. **Does it close a sale that's stalled at "yes if you build X"?** → High priority
+3. **Does it unblock a paying customer who's complained?** → High priority
+4. **Does it expose methodology depth that's currently hidden?** → High priority (NEW — practitioner-first)
+5. **Does it reduce cost (LLM, infra, support)?** → Medium priority
+6. **Does it open a new segment/channel?** → Medium priority
+7. **Is it nice-to-have or competitive feature parity?** → Low priority
 
 If a feature is none of the above, defer it.
 
@@ -187,8 +169,8 @@ If a feature is none of the above, defer it.
 
 **Day 90 review criteria:**
 - 5+ paying customers at $199+ → continue, accelerate
-- 1-4 paying customers → continue, slow burn, validate more
-- 0 paying customers + 0 commitments → STOP. Reframe or shelve.
-- Founder using platform daily and saving 5+ hrs/client/mo → continue regardless
+- 1-4 paying customers + founder using daily → continue, slow burn
+- 0 paying + 0 commitments + founder NOT using daily → STOP. Reframe or shelve.
+- Founder using daily and saving 5+ hrs/client/mo, even at 0 paid → continue. The tool is the product.
 
-The kill switch protects against sunk-cost spiral.
+The kill switch protects against sunk-cost spiral. It does not punish slow paying-customer ramp if the dogfood loop is healthy.
