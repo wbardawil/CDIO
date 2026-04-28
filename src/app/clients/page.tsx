@@ -13,6 +13,7 @@ interface ClientRow {
   engagement_model: string;
   monthly_hours: number;
   active_modules: number[];
+  is_sandbox: boolean;
   role: string;
   created_at: string;
 }
@@ -45,7 +46,7 @@ export default async function ClientsPage() {
       role,
       organizations:org_id (
         id, name, size_category, industry, employee_count,
-        engagement_model, monthly_hours, active_modules, created_at
+        engagement_model, monthly_hours, active_modules, is_sandbox, created_at
       )
     `)
     .eq("practitioner_id", practitioner.id);
@@ -157,6 +158,11 @@ export default async function ClientsPage() {
                       >
                         {c.name}
                       </Link>
+                      {c.is_sandbox && (
+                        <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-semibold uppercase tracking-wider">
+                          Sandbox
+                        </span>
+                      )}
                     </td>
                     <td className="px-6 py-4 text-sm text-gray-600">
                       {INDUSTRY_LABELS[c.industry] ?? c.industry}

@@ -19,6 +19,7 @@ const OnboardSchema = z.object({
       role: z.string().min(1),
     })
   ).min(1),
+  is_sandbox: z.boolean().optional().default(false),
 });
 
 export async function POST(request: NextRequest) {
@@ -34,6 +35,14 @@ export async function POST(request: NextRequest) {
     const orgId = crypto.randomUUID();
     const orchestrator = new EngagementOrchestrator(orgId);
     const result = await orchestrator.onboard(input);
+
+    // Persist is_sandbox flag on the freshly-created org. Doing this as a
+    // post-step keeps the orchestrator's onboard() signature stable for now;
+    // we'll fold this into the upsert if it becomes a recurring pattern.
+    if (input.is_sandbox) {
+      const dbForFlag = createServiceClient();
+      await dbForFlag.from("organizations").update({ is_sandbox: true }).eq("id", orgId);
+    }
 
     // Map this client to the practitioner that created it.
     const db = createServiceClient();

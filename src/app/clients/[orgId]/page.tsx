@@ -5,6 +5,7 @@ import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { MODULE_NAMES } from "@/types";
 import { CopyLinkButton } from "@/components/copy-link-button";
+import { ResetAssessmentButton } from "@/components/reset-assessment-button";
 import { headers } from "next/headers";
 
 interface PageProps {
@@ -62,7 +63,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       role,
       organizations:org_id (
         id, name, size_category, industry, employee_count,
-        engagement_model, monthly_hours, active_modules
+        engagement_model, monthly_hours, active_modules, is_sandbox
       )
     `)
     .eq("practitioner_id", practitioner.id)
@@ -79,6 +80,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
     engagement_model: string;
     monthly_hours: number;
     active_modules: number[];
+    is_sandbox: boolean;
   };
 
   // Stakeholders + assessment + scores in parallel
@@ -171,10 +173,15 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       </header>
 
       {/* Org meta */}
-      <div className="bg-white border-b border-gray-200">
+      <div className={`border-b border-gray-200 ${org.is_sandbox ? "bg-amber-50" : "bg-white"}`}>
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-baseline gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-gray-900">{org.name}</h2>
+            {org.is_sandbox && (
+              <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded text-[11px] font-semibold uppercase tracking-wider">
+                Sandbox
+              </span>
+            )}
             <span className="text-sm text-gray-500">
               {INDUSTRY_LABELS[org.industry] ?? org.industry} · {org.employee_count} employees · {org.monthly_hours} hrs/mo
             </span>
@@ -356,6 +363,23 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             </p>
           )}
         </div>
+
+        {/* Sandbox-only tools — visible only on sandbox-flagged clients */}
+        {org.is_sandbox && (
+          <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-5">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded text-[10px] font-semibold uppercase tracking-wider">
+                Sandbox
+              </span>
+              <h3 className="text-sm font-semibold text-amber-900">Sandbox tools</h3>
+            </div>
+            <p className="text-xs text-amber-800 mb-3">
+              This client is flagged for testing. You can wipe assessment data and
+              re-run flows freely. These actions never appear on real engagements.
+            </p>
+            <ResetAssessmentButton orgId={org.id} orgName={org.name} />
+          </div>
+        )}
       </main>
     </div>
   );

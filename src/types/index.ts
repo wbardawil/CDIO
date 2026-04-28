@@ -32,6 +32,8 @@ export interface Organization {
   monthly_hours: number;
   /** Subset of the 16 modules in scope for this engagement. Empty = full scope. */
   active_modules: number[];
+  /** True for test/dummy clients. Sandbox-flagged orgs allow assessment-data reset; real orgs do not. */
+  is_sandbox: boolean;
   created_at: string;
   updated_at: string;
 }

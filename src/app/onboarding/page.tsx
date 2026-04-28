@@ -51,6 +51,7 @@ export default function OnboardingPage() {
   const [orgName, setOrgName] = useState("");
   const [employeeCount, setEmployeeCount] = useState<number>(50);
   const [industry, setIndustry] = useState<Industry>("technology");
+  const [isSandbox, setIsSandbox] = useState(false);
 
   // Step 2: Stakeholders
   const [stakeholders, setStakeholders] = useState<StakeholderInput[]>([
@@ -86,6 +87,7 @@ export default function OnboardingPage() {
           name: orgName,
           employee_count: employeeCount,
           industry,
+          is_sandbox: isSandbox,
           stakeholders: stakeholders.filter((s) => s.name && s.email && s.role),
         }),
       });
@@ -205,6 +207,21 @@ export default function OnboardingPage() {
                   ))}
                 </select>
               </div>
+
+              <label className="flex items-start gap-3 p-3 rounded-lg border border-gray-200 hover:border-amber-300 cursor-pointer transition-colors">
+                <input
+                  type="checkbox"
+                  checked={isSandbox}
+                  onChange={(e) => setIsSandbox(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                />
+                <span className="text-sm">
+                  <span className="font-medium text-gray-900">This is a sandbox / test client</span>
+                  <span className="block text-xs text-gray-500 mt-0.5">
+                    Sandbox clients are visually flagged in your portfolio and allow you to wipe assessment data for repeated testing. Use this for trying out new features without polluting real engagement data.
+                  </span>
+                </span>
+              </label>
             </div>
 
             <button
