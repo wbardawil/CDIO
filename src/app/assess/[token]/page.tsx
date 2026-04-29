@@ -29,7 +29,7 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
 
   useEffect(() => {
     if (!token) return;
-    fetch(`/api/stakeholders/${token}`)
+    fetch(`/api/stakeholders/by-token/${token}`)
       .then((r) => {
         if (!r.ok) throw new Error("Invalid or expired assessment link");
         return r.json();

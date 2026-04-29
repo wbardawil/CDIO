@@ -4,8 +4,8 @@ import { UserButton } from "@clerk/nextjs";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { MODULE_NAMES } from "@/types";
-import { CopyLinkButton } from "@/components/copy-link-button";
 import { ResetAssessmentButton } from "@/components/reset-assessment-button";
+import { StakeholderRowActions } from "@/components/stakeholder-row-actions";
 import { headers } from "next/headers";
 
 interface PageProps {
@@ -44,6 +44,7 @@ interface Stakeholder {
   name: string;
   email: string;
   role: string;
+  influence_level: string | null;
   assessment_token: string | null;
   relevant_modules: number[] | null;
   completed_modules: number[];
@@ -87,7 +88,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
   const [stakeholdersRes, latestAssessmentRes] = await Promise.all([
     db
       .from("stakeholders")
-      .select("id, name, email, role, assessment_token, relevant_modules")
+      .select("id, name, email, role, influence_level, assessment_token, relevant_modules")
       .eq("org_id", orgId)
       .order("created_at", { ascending: true }),
     db
@@ -307,41 +308,34 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
                 const link = s.assessment_token ? `${origin}/assess/${s.assessment_token}` : null;
 
                 return (
-                  <div key={s.id} className="px-6 py-4 flex items-center justify-between gap-4">
+                  <div key={s.id} className="px-6 py-4 flex items-start justify-between gap-4 flex-wrap">
                     <div className="min-w-0 flex-1">
                       <p className="text-sm font-medium text-gray-900 truncate">{s.name}</p>
-                      <p className="text-xs text-gray-500 truncate">{s.role} · {s.email}</p>
+                      <p className="text-xs text-gray-500 truncate">
+                        {s.role}
+                        {s.influence_level && (
+                          <span className="ml-1 text-gray-400">· {s.influence_level.replace("_", " ")}</span>
+                        )}
+                        <span className="ml-1">· {s.email}</span>
+                      </p>
                     </div>
-                    <div className="flex items-center gap-4 flex-shrink-0">
-                      <span
-                        className={`px-2.5 py-1 rounded-full text-xs font-medium ${
-                          status === "done"
-                            ? "bg-green-100 text-green-700"
-                            : status === "partial"
-                              ? "bg-amber-100 text-amber-700"
-                              : "bg-gray-100 text-gray-600"
-                        }`}
-                      >
-                        {status === "done"
-                          ? "Submitted"
-                          : status === "partial"
-                            ? `${pct}% — ${done}/${total}`
-                            : "Not started"}
-                      </span>
-                      {link && status !== "done" && (
-                        <>
-                          <a
-                            href={link}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded-md hover:bg-blue-700"
-                          >
-                            Open assessment ↗
-                          </a>
-                          <CopyLinkButton link={link} label="Copy link" />
-                        </>
-                      )}
-                    </div>
+                    <StakeholderRowActions
+                      stakeholder={{
+                        id: s.id,
+                        name: s.name,
+                        email: s.email,
+                        role: s.role,
+                        influence_level: s.influence_level,
+                        relevant_modules: s.relevant_modules ?? [],
+                        assessment_token: s.assessment_token,
+                        completed_modules: s.completed_modules,
+                      }}
+                      status={status}
+                      pct={pct}
+                      done={done}
+                      total={total}
+                      link={link}
+                    />
                   </div>
                 );
               })}
