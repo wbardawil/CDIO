@@ -29,6 +29,12 @@ Phase 1C now includes **role/area question-level segmentation + universal N/A es
 
 **Other strategic context:** practitioner-first principle is explicit. Methodology depth (Phase 1C) outranks horizontal expansion. MCP server is an architectural choice, not a Year-1 headline. See `docs/STRATEGY-2026.md`.
 
+**Two new strategic decisions locked 2026-04-29 (afternoon):**
+
+1. **Production deploy promoted to NEW Phase 1.5 (Days 18-19)** — `L3` level: Vercel + custom domain + verified email domain. Reasoning: methodology depth (just shipped Phase 1C) must land INTO production, not into a localhost shell. Real Ambar exec emails need a verified-domain sender for the Phase 1C dogfood loop. Custom domain decision pending founder.
+
+2. **AI Accelerator Engine added as NEW Phase 2.5 (Days 38-47)** — the "AI-as-buy-trigger" thesis. Practitioners who can credibly deliver "AI implementation as a service" to CEO clients buy AI-CDIO. Engine includes: AI Maturity Model, AI Use-Case Library (industry × function catalog), AI Roadmap Generator (90/180/360-day), Build-vs-Buy Advisor, Governance Scaffolding (EU AI Act, NIST AI RMF), public `/ai-readiness` Quick Scan as top-of-funnel lead magnet for practitioners. Practitioner-first preserved — CEOs never get a paid AI-CDIO account. Phases 3+4 shifted +12 days; Day 90 review still hits at Day 90 (now Day 72 + 18). See `docs/ROADMAP.md` Phase 2.5 + `docs/STRATEGY-2026.md` AI-as-buy-trigger thesis.
+
 ---
 
 ## Required Reading (in order)
@@ -75,11 +81,13 @@ Phase 1C now includes **role/area question-level segmentation + universal N/A es
 | 1C | **Role/area question-level segmentation + N/A escape (per-module + per-question) + thin-coverage warning** | Built Day 8-13 alongside Module 5/12/15 depth rewrite — same effort, two outcomes |
 | 1C | Decision Package surfacing as standalone artifact | Hero output |
 | 1C | Module 12 + 15 deep | Quick Win Stack complete |
-| 1C | Quick Scan output upgrade (board-memo quality) | Sales-conversion engine |
+| 1C | Quick Scan output upgrade (board-memo quality) **+ AI lens** | Sales-conversion engine + AI Accelerator top-of-funnel |
 | 1C | Framework citations layer | Cited authority everywhere |
-| 1D | Status Report Generator | Engine #2 |
-| 1D | Engagement Cadence (shareable read-only) | Practitioner-as-trusted-partner differentiator |
-| 1D | MCP Server foundation | Day 25 |
+| **1.5 (NEW)** | **Production deploy L3** — Vercel + custom domain + verified email | App goes online Day 18-19; methodology depth ships INTO production |
+| 1D | Status Report Generator | Engine #2 (Days 20-23) |
+| 1D | Engagement Cadence (shareable read-only) | Practitioner-as-trusted-partner differentiator (Days 24-26) |
+| 1D | MCP Server foundation | Day 27 |
+| **2.5 (NEW)** | **AI Accelerator Engine** — AI Maturity Model, AI Use-Case Library, AI Roadmap Generator, Build-vs-Buy Advisor, Governance Scaffolding, public `/ai-readiness` Quick Scan, AI deliverable surfacing across workspace | The buy-trigger flagship engine (Days 38-47) |
 
 ---
 
@@ -96,7 +104,10 @@ Per `docs/ROADMAP.md`:
    - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (free tier at upstash.com)
    - `SENTRY_DSN` (free tier at sentry.io)
    - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (cloud.langfuse.com)
-3. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth, **and now also the proof-of-pattern for role/area question-level segmentation + N/A**. See `docs/ROADMAP.md` Phase 1C section for the full role → tag mapping table and N/A behavior.
+3. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth, **and now also the proof-of-pattern for role/area question-level segmentation + N/A**. See `docs/ROADMAP.md` Phase 1C section for the full role → tag mapping table and N/A behavior. **Days 14-15 also add the AI lens to the Quick Scan** as top-of-funnel for the future AI Accelerator.
+4. **Phase 1.5 lands Day 18-19** — production deploy with custom domain + verified email. Custom domain decision (e.g., `ai-cdio.com`) pending founder before Day 18.
+5. **Phase 1D Days 20-27** — Status Report Generator, Engagement Cadence, MCP. Now ships INTO a live production environment.
+6. **Phase 2.5 Days 38-47** — AI Accelerator Engine (the buy-trigger). See `docs/STRATEGY-2026.md` AI-as-buy-trigger thesis + `docs/ROADMAP.md` Phase 2.5 section.
 
 **Day 7 audit findings (locked 2026-04-29):**
 - Practitioners: 1 (Wadi Bardawil, `wadi.bardawil@arkiva.mx`, plan: `starter`)

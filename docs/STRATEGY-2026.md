@@ -1,7 +1,7 @@
 # AI-CDIO: Strategy 2026
 
 **Status:** Active strategic source of truth. Supersedes any conflicting language in older docs.
-**Last refreshed:** 2026-04-27 (Day 3 of build, post-dogfood feedback session)
+**Last refreshed:** 2026-04-29 (Day 6 of build — AI-as-buy-trigger thesis added, production deploy promoted to Day 18, AI Accelerator engine slotted in as Phase 2.5)
 
 ---
 
@@ -18,6 +18,18 @@ Practitioner-first. Platform-second. The 1M-SMB aspiration is a 5-year footnote,
 > *"ScalePad manages IT inventory. Fortium gives you a fractional CIO body. ChatGPT gives you a generalist. AI-CDIO is the only platform that turns a 30-file CDIO methodology into deliverables in the surfaces you already use — your AI assistant, your client calls, your weekly rhythm. Faster than ChatGPT because it's domain-deep. Better than Fortium because it scales with you. More specific than ScalePad because it's about strategy, not tickets."*
 
 This is the elevator pitch. It survives until customer feedback proves it wrong.
+
+## The AI-as-Buy-Trigger Thesis (added 2026-04-29)
+
+CEOs and Owners are searching urgently for: *"How do we implement AI faster in our business?"* They don't want generic ChatGPT advice. They want a fractional CDIO who can run an AI Readiness assessment, build an AI roadmap, evaluate build-vs-buy, navigate governance — and prove ROI quarterly.
+
+**AI-CDIO equips the practitioner to be that advisor.** The platform's depth on Modules 5 + 6 + 8 + 12 + 15, combined with a flagship AI Accelerator engine (Phase 2.5), means a fractional CDIO using AI-CDIO walks into a CEO conversation already armed with: an AI maturity model, a pre-built AI use-case library, a 90/180/360-day roadmap generator, a build-vs-buy advisor, a governance scaffolding kit, and quarterly re-assessment cadence.
+
+**This becomes the buy-trigger:** practitioners who can credibly deliver "AI implementation as a service" to their CEO clients buy AI-CDIO. Practitioners who can't, lose the client to someone who can.
+
+**Practitioner-first is preserved.** The CEO never gets a paid AI-CDIO account. They receive deliverables (AI Readiness Report, AI Roadmap, AI Decision Package) via the practitioner's Engagement Cadence — same channel as everything else. A public anonymous `/ai-readiness` Quick Scan exists as a top-of-funnel lead magnet — but it routes prospects to *practitioners*, not to direct CEO subscriptions.
+
+**Architectural note:** The AI Accelerator follows the same Engine pattern as every other engine (Assessment, Roadmap, Status Report, Decision Package). No new product paradigm — just a high-leverage new engine that pulls AI-curious CEOs into the practitioner ecosystem.
 
 ---
 
@@ -103,13 +115,15 @@ The original "1M SMBs by Year 3" is replaced by realistic targets that compound.
 
 | Choice | Why |
 |---|---|
-| **MCP-first server alongside webapp** | Distribution. Practitioners use AI surfaces they already trust. Build foundation Day 25, expand per-engine. |
+| **MCP-first server alongside webapp** | Distribution. Practitioners use AI surfaces they already trust. Build foundation Day 27, expand per-engine. |
 | **Long-context + RAG hybrid** | Cohesive reasoning + cited retrieval. Sonnet 4.5+ for everything until cost demands otherwise. |
 | **Cadence-as-primitive** | Every artifact has a cadence link. Differentiator and lock-in mechanism. |
 | **Token-based read-only sharing** | No portal. No accounts for clients. Signed URLs, revocable. |
 | **Service-role with TS-layer ownership checks today; per-user JWT + RLS later** | Ship speed now, security depth Day 30+. |
 | **No background-jobs framework yet** | Synchronous engines until 5+ paying customers reveal scale needs. |
 | **Single Supabase project, single Clerk app** | One environment until Phase 3. |
+| **Production deploy at Day 18 (not Day 30 as originally planned)** | Methodology depth ships INTO production, not into a shell. Real Ambar exec emails route through verified domain when Phase 1C dogfood begins. Demo URL exists for design-partner conversations starting Phase 2. |
+| **AI Accelerator as a flagship engine, NOT a separate product** | Practitioner-first preserved. Public `/ai-readiness` Quick Scan is a top-of-funnel lead magnet for practitioners, not a direct CEO subscription. |
 
 ---
 
