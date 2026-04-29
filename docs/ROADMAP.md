@@ -1,7 +1,7 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-04-28 (Day 4 of Phase 1, end of Phase 1B kickoff).
+> **Last refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6 — Test/Real architectural primitive scoped + role/area question-level segmentation locked into Phase 1C).
 
 ## Current State (April 2026)
 
@@ -55,27 +55,76 @@ Closed P0-1 (auth), P0-2 (IDOR), P0-5 (practitioner workspace), P0-7 (conversati
 | 4 | Stakeholder edit UI (role + relevant_modules + influence_level) | No more SQL-edit-by-hand | ✅ commit `a95c829` |
 | 4 | Email send via Resend (assessment links + reminders) | No more copy-paste | ✅ commit `a95c829` |
 | 4 | Sandbox flag (deferred to Day 3 evening) | Real-vs-test boundary | ✅ commit `3e61c40` |
-| 5 | Strip `assessment_token` from dashboard response | Closes P0-3 | ⏳ in progress |
-| 5 | Wrap synthesis delete-then-insert in atomic stored proc | Closes P0-6 | ⏳ in progress |
+| 5 | Strip `assessment_token` from dashboard response | Closes P0-3 | ✅ commit `46339e5` |
+| 5 | Wrap synthesis delete-then-insert in atomic stored proc | Closes P0-6 | ✅ commit `46339e5` |
 | 5 | Upstash Redis rate limiting on `/api/chat` + `/api/assessments` | Closes P0-4 — needs `UPSTASH_*` env vars | ⏸ pending creds |
 | 6 | Sentry error monitoring + Langfuse LLM observability | Visibility before depth work | ⏸ pending creds (`SENTRY_DSN`, `LANGFUSE_*`) |
-| 7 | Confirm Ambar Capital is real-engagement data + backfill if needed | Phase 1C dogfood reliability | ⏸ user-decision |
+| 7 | **Test/Real architectural primitive — `is_sandbox` becomes load-bearing across all surfaces** (workspace banner, assessment-page banner, email-routing safety, delete-org one-click, AI output tone). Orphan orgs (no `practitioner_clients` mapping) auto-defaulted to Test. Ambar confirmed real (`is_sandbox=false`, properly mapped). | Closes the Test-vs-Real triage problem permanently. No more per-org cleanup. | ⏳ design locked, ready to build |
 
-**Done = Founder onboards / edits / emails / monitors clients without manual workarounds.**
+**Day 7 architectural call (locked 2026-04-29):**
+- TestCo (legacy, no mapping) → auto-flipped to Test + assigned to founder
+- Ambar Capital → confirmed real-engagement; `active_modules = [5, 15, 4]` left as-is (founder's call as fractional CIO)
+- Founder's role at Ambar: **fractional CIO** (drives the role-default mapping)
+
+**Done = Founder onboards / edits / emails / monitors clients without manual workarounds. Test and Real clients are visually + behaviorally distinct everywhere.**
 
 ### Phase 1C — Methodology Depth: Quick Win Stack (Days 8-17)
 
-**Goal:** The methodology becomes visible. Module 5 + 12 + 15 (the playbook's named "Quick Win Stack", 200-400% ROI in 90 days) get full depth so an assessment produces real diagnostic output, not just scores.
+**Goal:** The methodology becomes visible. Module 5 + 12 + 15 (the playbook's named "Quick Win Stack", 200-400% ROI in 90 days) get full depth so an assessment produces real diagnostic output, not just scores. AND the assessment becomes role-aware at the **question** level — a CEO no longer sees the same questions as a CTO inside a given module.
+
+**New product principle baked into Phase 1C: question-level role/area segmentation + N/A escape (locked 2026-04-29).**
+
+#### The two-layer question tagging system (added Day 8 alongside Module 5 rewrite)
+
+Every diagnostic question gets tagged on two axes:
+
+**Layer 1 — Executive function tags** (who's qualified to answer):
+- `strategic` (governance, vision, business alignment)
+- `financial` (budget, ROI, vendor cost)
+- `technical` (architecture, implementation, controls)
+- `operational` (processes, day-to-day execution)
+- `risk` (compliance, threat, mitigation)
+
+**Layer 2 — Business area tags** (which part of the company the question applies to):
+- `operations`, `sales`, `IT`, `finance`, `marketing`, `other`
+
+**Role → tag combinations:**
+
+| Role | Sees questions tagged |
+|---|---|
+| CEO / Founder / Owner / President | strategic |
+| CFO | strategic + financial |
+| COO | strategic + operational |
+| CIO / CDIO | strategic + financial + technical + operational |
+| CTO | strategic + technical + operational |
+| CISO | strategic + technical + risk |
+| Director / Manager — Operations | `operations` area + operational |
+| Director / Manager — Sales | `sales` area |
+| Director / Manager — IT | `IT` area + technical + operational |
+| Director / Manager — Finance | `finance` area + financial |
+| Director / Manager — Marketing | `marketing` area |
+| Director / Manager — Other | curated minimum (Module 1 leadership/governance) + lean on N/A |
+
+#### N/A escape hatch (universal — every respondent, every question)
+
+- **Per-module N/A** — gate at start of each module: *"Can you speak to this area?"* — N/A skips entire module
+- **Per-question N/A** — text-link style ("I can't answer this") on each question — nudges effort but no shame for honest answers
+- **Synthesis treats N/A as missing data, never as score 1** — average is computed only from given responses
+- **New practitioner-side warning** in workspace Overview: *"Module X has thin coverage — fewer than 2 stakeholders answered, or below 50% of expected responses. Assign someone with visibility."*
+
+#### Build order
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 8-10 | **Module 5 deep** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area) | Proof of pattern. Dogfood on Ambar before scaling. **Stop and review.** |
+| 8-10 | **Module 5 deep + role/area tagging + N/A** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area). **Tag every question with executive function + business area.** **Wire N/A button (text-link) on each question + module-gate.** **Wire thin-coverage warning to practitioner.** | Proof of pattern. Dogfood on Ambar (Wadi as fractional CIO) before scaling. **Stop and review.** |
 | 11 | **Decision Package surface** — standalone artifact, not buried in synthesis. Hero-level UI in workspace. | The "what should I do" output that wins prospects |
-| 12-13 | **Module 12 deep (Financial Acumen)** + **Module 15 deep (Process Automation)** — replicate Module 5 pattern | Quick Win Stack assessment is demo-quality |
+| 12-13 | **Module 12 deep (Financial Acumen)** + **Module 15 deep (Process Automation)** — replicate Module 5 pattern, **including role/area tagging + N/A** | Quick Win Stack assessment is demo-quality, role-aware, N/A-safe |
 | 14-15 | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI) | The sales-conversion engine |
 | 16-17 | **Framework citations layer** — every score, every recommendation links to the named framework + playbook excerpt | Methodology authority visible everywhere |
 
-**Done = Founder runs an assessment on a fresh client and the output makes the playbook's depth visible. Demo-quality.**
+**Done = Founder runs an assessment on a fresh client and the output makes the playbook's depth visible. CEOs answer 5x fewer questions than CTOs inside the same modules. N/A is a first-class option. Thin-coverage gaps surface automatically. Demo-quality.**
+
+**Note:** Modules 1-4, 6-11, 13-14, 16 stay on today's module-level segmentation until they get a depth pass in later phases. Quick Win Stack is the demonstrable proof unit.
 
 ### Phase 1D — Recurring Deliverables + MCP (Days 18-25)
 

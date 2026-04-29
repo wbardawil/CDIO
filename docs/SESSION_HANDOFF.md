@@ -8,15 +8,26 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-04-28, end of Day 4):**
+**Current state (2026-04-29, end of Day 6):**
 - ✅ **Phase 1A — Foundation** complete (auth, practitioner schema, IDOR fix, Portfolio + Workspace shell)
 - ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) underway
-  - ✅ Day 4: stakeholder edit UI + email send via Resend (closes manual SQL + copy-paste workarounds)
   - ✅ Day 3.5 bonus: Sandbox flag for safe testing alongside real engagements
-  - ⏳ Day 5: P0-3 (strip token from dashboard) + P0-6 (synthesis transaction) — landing this commit
-  - ⏸ Day 5/6: Upstash + Sentry + Langfuse — waiting on env vars
+  - ✅ Day 4: stakeholder edit UI + email send via Resend (closes manual SQL + copy-paste workarounds)
+  - ✅ Day 5: P0-3 (token strip) + P0-6 (atomic synthesis stored proc)
+  - ⏸ Day 5/6: Upstash rate limiting + Sentry + Langfuse — waiting on env vars
+  - ⏳ Day 7: **Test/Real architectural primitive** — `is_sandbox` becomes load-bearing across all surfaces (workspace banner, assessment-page banner, email-routing safety, sandbox-only delete, AI tone). Orphan orgs auto-defaulted to Test. **Design locked 2026-04-29, ready to build.**
 
-**Key strategic shift since the original handoff:** practitioner-first principle is now explicit. Methodology depth (Phase 1C) outranks horizontal expansion. MCP server is an architectural choice, not a Year-1 headline. See `docs/STRATEGY-2026.md`.
+**Key product decision locked 2026-04-29 (Phase 1C scope expansion):**
+
+Phase 1C now includes **role/area question-level segmentation + universal N/A escape**, baked in alongside the Module 5/12/15 depth rewrite (no extra days). Today CEO and CTO answer identical questions inside a module — wrong methodologically. Going forward:
+
+- **Two-layer question tags:** Layer 1 = executive function (`strategic`, `financial`, `technical`, `operational`, `risk`); Layer 2 = business area (`operations`, `sales`, `IT`, `finance`, `marketing`, `other`)
+- **Role → tag mapping** (full table in `docs/ROADMAP.md` Phase 1C section): CEO → strategic only; CFO → strategic + financial; CTO → strategic + technical + operational; CISO → strategic + technical + risk; Director/Manager → their area + operational
+- **Per-module N/A** (gate: "Can you speak to this area?") + **per-question N/A** (text-link style)
+- **N/A treated as missing data**, never as score 1 — protects synthesis math
+- **Thin-coverage warning** to practitioner when fewer than 2 stakeholders answered a module or below 50% of expected responses arrived
+
+**Other strategic context:** practitioner-first principle is explicit. Methodology depth (Phase 1C) outranks horizontal expansion. MCP server is an architectural choice, not a Year-1 headline. See `docs/STRATEGY-2026.md`.
 
 ---
 
@@ -56,12 +67,12 @@ AI-CDIO is the **methodology operating system for fractional CDIOs**. Built firs
 
 | Phase | Capability | Notes |
 |---|---|---|
-| 1B (in progress) | Strip assessment_token from dashboard response | P0-3 — landing this commit |
-| 1B (in progress) | Synthesis transaction wrapping | P0-6 — landing this commit |
+| 1B (Day 7 — next) | **Test/Real architectural primitive** | `is_sandbox` load-bearing across all surfaces (banner, email safety, delete, AI tone); orphan orgs auto-default to Test |
 | 1B | Upstash rate limit on /api/chat + /api/assessments | Cost protection — needs `UPSTASH_*` env vars |
 | 1B | Sentry + Langfuse | Observability — needs `SENTRY_DSN` + `LANGFUSE_*` |
 | 1B | Add/remove stakeholder UI + bulk reminder | Day 4 spillover; user only had pencil-edit must-have |
 | 1C | Module 5 deep (questions, framework citations, narrative scoring, level-5 indicators) | Quick Win Stack starts here |
+| 1C | **Role/area question-level segmentation + N/A escape (per-module + per-question) + thin-coverage warning** | Built Day 8-13 alongside Module 5/12/15 depth rewrite — same effort, two outcomes |
 | 1C | Decision Package surfacing as standalone artifact | Hero output |
 | 1C | Module 12 + 15 deep | Quick Win Stack complete |
 | 1C | Quick Scan output upgrade (board-memo quality) | Sales-conversion engine |
@@ -72,22 +83,30 @@ AI-CDIO is the **methodology operating system for fractional CDIOs**. Built firs
 
 ---
 
-## What to Build Next (Day 5+ — Phase 1B continues)
+## What to Build Next (Day 7+ — Phase 1B continues)
 
 Per `docs/ROADMAP.md`:
 
-1. **Token strip + synthesis transaction** — both landing in the current commit alongside this doc maintenance.
-2. **Day 5/6 (pending creds):** Upstash rate limiting + Sentry + Langfuse — ask founder for these env vars first:
+1. **Day 7 (next session):** Build the Test/Real architectural primitive. Scope locked:
+   - One migration: any org with no `practitioner_clients` mapping → flip `is_sandbox = true` + assign to the lone practitioner. (TestCo cleaned automatically; Ambar untouched.)
+   - Sandbox banner component on workspace header + `/assess/[token]` page.
+   - Email gating in `send-assessment-email.ts`: if Test, route to practitioner only with `[TEST]` subject prefix.
+   - Sandbox-only delete-org endpoint (no UI on Real orgs).
+2. **Day 5/6 (pending creds):** Upstash rate limiting + Sentry + Langfuse — ask founder if these env vars are set:
    - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (free tier at upstash.com)
    - `SENTRY_DSN` (free tier at sentry.io)
    - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (cloud.langfuse.com)
-3. **Day 7:** confirm Ambar real-vs-sandbox + any backfill needed.
-4. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth.
+3. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth, **and now also the proof-of-pattern for role/area question-level segmentation + N/A**. See `docs/ROADMAP.md` Phase 1C section for the full role → tag mapping table and N/A behavior.
+
+**Day 7 audit findings (locked 2026-04-29):**
+- Practitioners: 1 (Wadi Bardawil, `wadi.bardawil@arkiva.mx`, plan: `starter`)
+- Real orgs: **Ambar Capital** — `is_sandbox=false`, properly mapped to founder as `owner`, `active_modules = [5, 15, 4]` (Cybersecurity + Process Automation + Cloud — founder's call as fractional CIO; intentional variant from the canonical Quick Win Stack `[5, 15, 12]`)
+- Test orgs (post-migration): **TestCo Industries** — pre-Phase-1A legacy, will be auto-flipped to Test via Day 7 migration rule
+- Founder's role at Ambar: **fractional CIO**
 
 Open the next session by reading `docs/STRATEGY-2026.md` first, then `docs/ROADMAP.md`, then ask the founder these:
-- Are the Upstash + Sentry + Langfuse env vars set?
-- Is Ambar real or sandbox? (affects how aggressively we polish for it)
-- Any new dogfood surprises since Day 4?
+- Are the Upstash + Sentry + Langfuse env vars set? (If yes, those close in <1hr each.)
+- Run preview-based QA on every UI commit (the discipline committed Day 3) — banner work is UI, screenshots required before claiming done.
 
 ---
 

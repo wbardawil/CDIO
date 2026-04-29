@@ -1,6 +1,6 @@
 # AI-CDIO: Gap Analysis
 
-> **Refreshed:** 2026-04-28 (Day 4 of Phase 1, end of Phase 1B Day 4). Reflects practitioner-first re-prioritization in `docs/STRATEGY-2026.md` and Day 4's stakeholder ops + email shipping.
+> **Refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6). Adds Day 7 Test/Real architectural primitive scope and locks role/area question-level segmentation + universal N/A into Phase 1C.
 
 ## Priority Tiers
 
@@ -35,6 +35,7 @@
 | # | Gap | Why High | Effort | Phase |
 |---|-----|----------|--------|-------|
 | P1-1 | **Methodology depth (level-5 indicators, framework citations, narrative scoring)** for Module 5 + 12 + 15 | The app underseels the playbook today; this is the perceived-value gap | 7 days | **1C — Days 8-14** |
+| P1-1b | **Role/area question-level segmentation + universal N/A escape (per-module + per-question) + thin-coverage warning** | Today CEO and CTO answer the same questions inside a module — methodologically wrong. N/A as missing-data (not score 1) is required to keep synthesis honest. Thin-coverage warning surfaces engagement gaps to the practitioner. | included in P1-1 (no extra days) | **1C — Days 8-13** (built alongside Module 5/12/15 depth rewrite) |
 | P1-2 | **Decision Package surfacing** as standalone artifact in workspace | The "what should I do" output that wins prospects | 1 day | 1C — Day 11 |
 | P1-3 | Quick Scan output upgrade — board-memo quality (cited, narrative, 3 named quick wins, projected ROI) | Sales-conversion engine | 2 days | 1C — Days 14-15 |
 | P1-4 | Framework citations layer — every score links to NIST/CMMI/TOGAF/etc. | Methodology authority visible everywhere | 2 days | 1C — Days 16-17 |
@@ -65,6 +66,7 @@
 | P2-8 | Module-level improvement chat | Starter+ tier feature | 16h |
 | P2-9 | Engagement Lifecycle (Phase 1→2→3 progression UI) | Drives upgrades and renewals | 12h |
 | P2-10 | Customize stakeholder modules per-engagement (override role default) | Promised in dogfood feedback | 4h |
+| P2-1a | **Test/Real architectural primitive — `is_sandbox` load-bearing across all surfaces** (workspace banner, assessment-page banner, email-routing safety, sandbox-only delete-org, AI output tone) + auto-default any orphan org (no `practitioner_clients` mapping) to Test | Today only the portfolio badge differs — easy to accidentally email a real person from a half-built test flow. Architecture promotes the Test/Real binary to a first-class concept. | 0.5 day | **1B — Day 7** |
 | P2-11 | Output guardrail for security-domain AI advice | Liability mitigation | 6h |
 | P2-12 | Strip diagnostic questions out of system prompt | Prevent IP extraction | 8h |
 | P2-13 | Bridge `session_id` → `clerk_user_id` (claim flow) | Conversation memory across sessions | 6h |
@@ -106,8 +108,8 @@
 
 ## What This Means for Build Order
 
-1. **Phase 1B (Days 4-7):** P0-3, P0-4, P0-6, P1-8, P1-9 — close remaining safety + practitioner-ops friction
-2. **Phase 1C (Days 8-17):** P1-1, P1-2, P1-3, P1-4 — methodology depth (the practitioner-first promise)
+1. **Phase 1B (Days 4-7):** P0-3, P0-4, P0-6, P1-8, P1-9, **P2-1a (Test/Real primitive — Day 7)** — close remaining safety + practitioner-ops friction
+2. **Phase 1C (Days 8-17):** P1-1, **P1-1b (role/area segmentation + N/A)**, P1-2, P1-3, P1-4 — methodology depth (the practitioner-first promise)
 3. **Phase 1D (Days 18-25):** P1-5, P1-6, P1-7 — recurring deliverables + MCP
 4. **Phase 2 (Days 26-35):** P1-11, P1-12, P1-13, P1-14, P2-2 — validation prep + first pilots
 5. **Phase 3 (Days 36-60):** P2-1, P2-3, P2-5 — monetization
