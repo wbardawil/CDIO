@@ -1,6 +1,6 @@
 # AI-CDIO: Gap Analysis
 
-> **Refreshed:** 2026-04-27 (Day 3 of Phase 1). Reflects practitioner-first re-prioritization in `docs/STRATEGY-2026.md` and the strategic shifts captured in `docs/ROADMAP.md`.
+> **Refreshed:** 2026-04-28 (Day 4 of Phase 1, end of Phase 1B Day 4). Reflects practitioner-first re-prioritization in `docs/STRATEGY-2026.md` and Day 4's stakeholder ops + email shipping.
 
 ## Priority Tiers
 
@@ -17,14 +17,16 @@
 |---|-----|--------|-----------|
 | P0-1 | No authentication (Clerk) | ✅ **CLOSED** | Day 1, commit `a304e01` |
 | P0-2 | API routes accept arbitrary `org_id` (IDOR) | ✅ **CLOSED** | Day 2, commit `0a2e922` (assertPractitionerOwnsOrg) |
-| P0-3 | `assessment_token` returned in dashboard response | ⏳ Open — Phase 1B Day 5 | Pending |
-| P0-4 | No rate limiting on `/api/chat`, `/api/assessments` | ⏳ Open — Phase 1B Day 5 | Pending |
+| P0-3 | `assessment_token` returned in dashboard response | ✅ **CLOSED** | Already-stripped from `/api/dashboard/[orgId]` SELECT (verified Day 5) |
+| P0-4 | No rate limiting on `/api/chat`, `/api/assessments` | ⏸ Pending Upstash creds | Phase 1B Day 5/6 |
 | P0-5 | No practitioner workspace (multi-client) | ✅ **CLOSED** | Day 2 schema + Day 3 UI |
-| P0-6 | Synthesis uses `delete-then-insert` without transaction | ⏳ Open — Phase 1B Day 6 | Pending |
+| P0-6 | Synthesis uses `delete-then-insert` without transaction | ✅ **CLOSED** | Day 5, schema-v6 stored procedure `replace_assessment_synthesis` (atomic) |
 | P0-7 | `conversations` table missing on fresh deploys | ✅ **CLOSED** | Schema-v2 already applied; documented |
 | P0-8 | Service-role client bypasses RLS in API routes | ⚠ Mitigated — Phase 4 to fully close | TS-layer enforcement via assertPractitionerOwnsOrg works today; RLS policies pre-wired for Day 30+ |
 
-**Phase 1A closed 4 of 8 P0 items. Phase 1B (Days 4-7) closes P0-3, P0-4, P0-6. P0-8 stays mitigated until per-user JWT lands.**
+**Phase 1A closed 4 of 8 P0 items. Phase 1B Day 5 closes P0-3 + P0-6 (this commit). P0-4 closes when Upstash creds land. P0-8 stays mitigated until per-user JWT.**
+
+**As of this commit: 6 of 8 P0 items fully closed, 1 mitigated, 1 pending creds.**
 
 ---
 
@@ -39,8 +41,8 @@
 | P1-5 | Status Report Generator (Engine #2) | 90 min → 12 min savings per client per month | 4 days | **1D — Days 18-21** |
 | P1-6 | Engagement Cadence (shareable read-only) | Practitioner-as-trusted-partner differentiator | 3 days | 1D — Days 22-24 |
 | P1-7 | MCP Server foundation (auth + tool registry + first 3 tools) | Distribution: practitioners use AI surfaces they already trust | 1 day | 1D — Day 25 |
-| P1-8 | Stakeholder edit UI + email send (Resend) | Closes manual-SQL-edit workaround the founder hit during dogfood | 2 days | **1B — Day 4** |
-| P1-9 | Sentry + Langfuse | Cannot see when AI gives bad advice | 1 day | 1B — Day 6 |
+| P1-8 | Stakeholder edit UI + email send (Resend) | Closes manual-SQL-edit workaround the founder hit during dogfood | 2 days | ✅ **CLOSED Day 4** (`a95c829`) |
+| P1-9 | Sentry + Langfuse | Cannot see when AI gives bad advice | 1 day | 1B — Day 6 (pending creds) |
 | P1-10 | Roadmap engine to 100% (financial models, dependencies, governance section) | Closes the 25% gap | 4 days | Phase 4 — Days 91-120 |
 | P1-11 | Anthropic prompt caching (system prompt + RAG context) | -70% input tokens; required for unit economics | 1 day | Phase 2 — Day 28 |
 | P1-12 | Terms of Service + Privacy Policy + AI disclaimer (legal review) | Required before any non-founder user | $2-5K legal | Phase 2 — Day 30 |
@@ -91,9 +93,9 @@
 
 | Status | Count |
 |---|---|
-| ✅ Closed | 4 (P0-1, P0-2, P0-5, P0-7) |
+| ✅ Closed | 8 (P0-1, P0-2, P0-3, P0-5, P0-6, P0-7, P1-8, plus the Sandbox bonus) |
 | ⚠ Mitigated | 1 (P0-8) |
-| ⏳ Open in Phase 1B (Days 4-7) | 4 (P0-3, P0-4, P0-6, P1-8 + P1-9) |
+| ⏸ Pending creds | 2 (P0-4 Upstash, P1-9 Sentry+Langfuse) |
 | ⏳ Open in Phase 1C (Days 8-17) | 4 (P1-1 through P1-4) |
 | ⏳ Open in Phase 1D (Days 18-25) | 3 (P1-5, P1-6, P1-7) |
 | ⏳ Open in Phase 2 (Days 26-35) | 4 (P1-11, P1-12, P1-13, P1-14) |

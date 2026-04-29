@@ -44,10 +44,15 @@ export async function GET(
       });
     }
 
-    // Get stakeholders
+    // Get stakeholders. NOTE: assessment_token is intentionally NOT selected
+    // here — it's a permanent unrevocable backdoor and must not be exposed
+    // via this dashboard endpoint (P0-3). Practitioners use the workspace's
+    // explicit "Email link" / "Copy link" actions which fetch tokens
+    // server-side via /clients/[orgId] (server component) or via the
+    // /api/stakeholders/by-id/[id]/send-assessment-email route.
     const { data: stakeholders } = await db
       .from("stakeholders")
-      .select("id, name, role, email, relevant_modules, assessment_token")
+      .select("id, name, role, email, relevant_modules")
       .eq("org_id", orgId);
 
     // Get module scores

@@ -1,5 +1,7 @@
 # AI-CDIO: Architecture
 
+> **Last refreshed:** 2026-04-28 (Day 4 ending). Aligned with `docs/STRATEGY-2026.md` practitioner-first principle.
+
 ## The Four-Layer Model
 
 ```
@@ -72,19 +74,19 @@ agent_logs (per practitioner + per client, cost tracking)
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Frontend | Next.js 15 + TypeScript + Tailwind |
-| Auth | Clerk (multi-tenant: practitioners with N clients) |
-| AI | Claude Sonnet (reasoning) + Haiku (execution + chat) |
-| Database | Supabase Postgres + Row Level Security |
-| Vector Store | pgvector (in Supabase) |
-| Email | Resend |
-| Charts | Recharts |
-| Hosting | Vercel |
-| Background Jobs | Inngest or QStash (for synthesis + roadmap generation) |
-| Observability | Sentry + Langfuse |
-| Rate Limiting | Upstash Redis |
+| Layer | Technology | Status |
+|-------|-----------|--------|
+| Frontend | Next.js 16 (Turbopack) + TypeScript + Tailwind 4 | ✅ |
+| Auth | Clerk 7 (multi-tenant: practitioners with N clients) | ✅ Wired |
+| AI | Claude Sonnet 4.5+ (single model for everything until cost demands otherwise) | ✅ Wired |
+| Database | Supabase Postgres + pgvector + RLS (RLS policies pre-wired, full per-user JWT activation Day 30+) | ✅ Wired |
+| Email | Resend (`onboarding@resend.dev` for testing; verified domain Phase 2) | ✅ Wired Day 4 |
+| Charts | Recharts | ✅ |
+| Hosting | Vercel | ❌ Phase 2 |
+| Background Jobs | Inngest or QStash | ❌ Phase 2 |
+| Observability | Sentry + Langfuse | ❌ Day 6 |
+| Rate Limiting | Upstash Redis | ❌ Day 5 |
+| MCP Server | Custom MCP wrapper exposing engines as tools | ❌ Day 25 |
 
 ## Multi-Tenancy Model
 
@@ -122,22 +124,39 @@ interface PlaybookEngine<TInput, TOutput> {
 
 This makes adding new engines (Status Report, QBR Deck, Board Memo) consistent and fast.
 
-## Key Files (Current State)
+## Key Files (Current State, end of Day 4)
 
 | File | Purpose | Status |
 |------|---------|--------|
-| `src/lib/agents/conversation.ts` | Conversation Agent | Built, needs auth |
-| `src/lib/agents/assessment.ts` | Assessment Agent | Built |
-| `src/lib/agents/strategy.ts` | Strategy Agent (roadmap) | Built (25% of playbook vision) |
-| `src/lib/agents/orchestrator.ts` | State machine | Built, needs practitioner layer |
-| `src/lib/scoring/maturity.ts` | Scoring engine | Built (5-level) |
-| `src/lib/playbook/retrieve.ts` | RAG retrieval | Built (1,154 chunks) |
-| `src/lib/playbook/quick-scan-questions.ts` | 48 quick scan questions | Built |
-| `src/lib/db/schema.sql` | Core schema | Built, needs practitioner tables |
-| `src/lib/db/schema-v3-maturity5.sql` | 5-level migration | Applied |
-| Status Report Generator | NEW — Week 2 priority | NOT BUILT |
-| QBR Deck Generator | NEW — Week 3 priority | NOT BUILT |
-| Practitioner Workspace UI | NEW — Week 1 priority | NOT BUILT |
+| `src/middleware.ts` → `src/proxy.ts` | Clerk + Next 16 proxy | ✅ Day 1 |
+| `src/lib/auth/require-auth.ts` | Defense-in-depth handler-level 401 | ✅ Day 1 |
+| `src/lib/auth/ensure-practitioner.ts` | Lazy-create practitioners row on first sign-in | ✅ Day 2 |
+| `src/lib/auth/assert-owns-org.ts` | Per-org ownership check | ✅ Day 2 |
+| `src/lib/playbook/role-mapping.ts` | Role → modules + influence (extracted from orchestrator Day 4) | ✅ Day 4 |
+| `src/lib/email/send-assessment-email.ts` | Resend wrapper with templated HTML | ✅ Day 4 |
+| `src/lib/agents/conversation.ts` | Conversation Agent | ✅ Built |
+| `src/lib/agents/assessment.ts` | Assessment Agent | ✅ Built |
+| `src/lib/agents/strategy.ts` | Strategy Agent (roadmap) | ⚠ ~25% of playbook vision |
+| `src/lib/agents/orchestrator.ts` | State machine for engagement | ✅ Built |
+| `src/lib/scoring/maturity.ts` | Scoring engine (5-level) | ✅ Built |
+| `src/lib/playbook/retrieve.ts` | RAG retrieval (1,152 chunks, CMU-stripped) | ✅ Built |
+| `src/lib/playbook/quick-scan-questions.ts` | 48 quick scan questions | ✅ Built |
+| `src/lib/playbook/diagnostic-questions.ts` | ~70 diagnostic questions | ⚠ Phase 1C: rewrite for depth + Level 5 indicators |
+| `src/lib/db/schema.sql` | Core schema | ✅ |
+| `src/lib/db/schema-v2.sql` | Conversations + action_cards | ✅ |
+| `src/lib/db/schema-v3-maturity5.sql` | 5-level migration | ✅ Applied |
+| `src/lib/db/schema-v4-practitioners.sql` | Multi-tenant + practitioner_clients | ✅ Applied Day 2 |
+| `src/lib/db/schema-v5-sandbox.sql` | is_sandbox flag | ✅ Applied Day 3 |
+| `src/components/edit-stakeholder-modal.tsx` | Stakeholder editor | ✅ Day 4 |
+| `src/components/stakeholder-row-actions.tsx` | Per-row actions cluster | ✅ Day 4 |
+| `src/components/reset-assessment-button.tsx` | Sandbox-only data wipe | ✅ Day 3 |
+| `src/components/copy-link-button.tsx` | Clipboard-with-fallback | ✅ |
+| `src/app/clients/page.tsx` | Portfolio (server-rendered) | ✅ Day 3 |
+| `src/app/clients/[orgId]/page.tsx` | Client Workspace shell + Overview | ✅ Day 3 |
+| Status Report Generator | Engine #2 — pulls assessment + roadmap + decisions | ❌ Day 18-21 |
+| Engagement Cadence (shareable read-only) | Practitioner-as-trusted-partner differentiator | ❌ Day 22-24 |
+| MCP Server foundation | Distribution channel | ❌ Day 25 |
+| Methodology depth (Modules 5/12/15 deep) | Quick Win Stack | ❌ Phase 1C Days 8-17 |
 
 ## MCP / Integration Roadmap (Future)
 

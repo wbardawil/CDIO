@@ -154,25 +154,16 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Clear old synthesis and divergences
-    await db.from("assessment_synthesis").delete().eq("assessment_id", input.assessment_id);
-    await db.from("divergence_points").delete().eq("assessment_id", input.assessment_id);
-
-    // Save syntheses
-    if (syntheses.length > 0) {
-      const { error: synthError } = await db
-        .from("assessment_synthesis")
-        .insert(syntheses);
-      if (synthError) throw synthError;
-    }
-
-    // Save divergences
-    if (allDivergences.length > 0) {
-      const { error: divError } = await db
-        .from("divergence_points")
-        .insert(allDivergences);
-      if (divError) throw divError;
-    }
+    // Atomic replace via stored procedure (closes P0-6).
+    // The function deletes prior synthesis + divergences and inserts the new
+    // ones inside a single Postgres transaction. If anything fails, all prior
+    // data is preserved — no more delete-succeeds-then-insert-fails data loss.
+    const { error: rpcError } = await db.rpc("replace_assessment_synthesis", {
+      p_assessment_id: input.assessment_id,
+      p_syntheses: syntheses,
+      p_divergences: allDivergences,
+    });
+    if (rpcError) throw rpcError;
 
     // Update assessment status
     await db

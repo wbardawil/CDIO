@@ -8,12 +8,15 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-04-27, end of Day 3):**
+**Current state (2026-04-28, end of Day 4):**
 - ✅ **Phase 1A — Foundation** complete (auth, practitioner schema, IDOR fix, Portfolio + Workspace shell)
-- ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) starts now
-- The founder has dogfooded the platform on a real client (Ambar Capital), surfaced multiple UX/depth bugs, and approved a strategic refresh recorded in `docs/STRATEGY-2026.md`
+- ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) underway
+  - ✅ Day 4: stakeholder edit UI + email send via Resend (closes manual SQL + copy-paste workarounds)
+  - ✅ Day 3.5 bonus: Sandbox flag for safe testing alongside real engagements
+  - ⏳ Day 5: P0-3 (strip token from dashboard) + P0-6 (synthesis transaction) — landing this commit
+  - ⏸ Day 5/6: Upstash + Sentry + Langfuse — waiting on env vars
 
-**Key strategic shift since the last handoff:** practitioner-first principle is now explicit. Methodology depth (Phase 1C) outranks horizontal expansion. MCP server is an architectural choice, not a Year-1 headline.
+**Key strategic shift since the original handoff:** practitioner-first principle is now explicit. Methodology depth (Phase 1C) outranks horizontal expansion. MCP server is an architectural choice, not a Year-1 headline. See `docs/STRATEGY-2026.md`.
 
 ---
 
@@ -31,33 +34,33 @@ AI-CDIO is the **methodology operating system for fractional CDIOs**. Built firs
 
 ---
 
-## What's Built (end of Day 3)
+## What's Built (end of Day 4)
 
 | Surface | State |
 |---|---|
-| `/` Marketing landing | ✅ With auth-aware nav (Sign in / Open Portfolio) |
+| `/` Marketing landing | ✅ Auth-aware nav (Sign in / Open Portfolio) |
 | `/scan` Quick Scan | ✅ Public; live spider chart + action cards |
-| `/onboarding` Practitioner onboards a client | ✅ Auth-required; CIO/CDIO/CDO/CISO + 14 other roles in dropdown; explicit error display |
+| `/onboarding` Practitioner onboards a client | ✅ Auth-required; CIO/CDIO/CDO/CISO + 14 other roles; explicit error display; **Sandbox checkbox** |
 | `/assess/[token]` Stakeholder assessment | ✅ Token-based public; intersection of role-relevant ∩ org-active modules; Return-to-workspace CTAs on completion |
-| `/clients` Portfolio | ✅ Server-rendered table from practitioner_clients ↔ organizations |
-| `/clients/[orgId]` Client Workspace | ✅ Shell + Overview tab with Next-step banner + stakeholder list with Open/Copy assessment buttons. 5 other tabs are "Coming Week N" stubs. |
+| `/clients` Portfolio | ✅ Server-rendered table; **Sandbox badge** on flagged clients |
+| `/clients/[orgId]` Client Workspace | ✅ Shell + Overview with Next-step banner + stakeholder list with Edit/Email link/Copy/Open buttons + **Sandbox-only Reset Assessment**. Tabs: Overview ✅; Assessment / Roadmap reach the legacy dashboard; Deliverables / Decisions / Value are coming-Week-N stubs. |
 | `/dashboard?org=...` Legacy dashboard | ✅ Existing engines (synthesis, divergence, roadmap) still reachable |
 | `/sign-in` / `/sign-up` | ✅ Clerk-hosted catch-all |
 | `/chat` Anonymous funnel | ✅ Public, RAG-grounded |
 
-**Backend:** Supabase Postgres + pgvector, 15 tables, schema v1-v4 applied. Clerk for auth. Service-role client used today; RLS policies pre-wired for Day 30 activation. 1,152 RAG chunks of CMU-stripped playbook content.
+**Backend:** Supabase Postgres + pgvector, 15 tables, schema v1-v5 applied. Clerk for auth. Service-role client used today; RLS policies pre-wired for Day 30 activation. 1,152 RAG chunks of CMU-stripped playbook content. Resend live for assessment emails (testing sender; verified-domain swap pending). Atomic synthesis stored procedure planned Day 5.
 
 ---
 
-## What's NOT Built (Phase 1B-1D scope)
+## What's NOT Built (remaining Phase 1 scope)
 
 | Phase | Capability | Notes |
 |---|---|---|
-| 1B | Stakeholder edit UI + email send via Resend | Replaces SQL-edit-by-hand workaround |
-| 1B | Upstash rate limit on /api/chat + /api/assessments | Cost protection |
-| 1B | Strip assessment_token from dashboard response | P0-3 |
-| 1B | Synthesis transaction wrapping | P0-6 |
-| 1B | Sentry + Langfuse | Observability |
+| 1B (in progress) | Strip assessment_token from dashboard response | P0-3 — landing this commit |
+| 1B (in progress) | Synthesis transaction wrapping | P0-6 — landing this commit |
+| 1B | Upstash rate limit on /api/chat + /api/assessments | Cost protection — needs `UPSTASH_*` env vars |
+| 1B | Sentry + Langfuse | Observability — needs `SENTRY_DSN` + `LANGFUSE_*` |
+| 1B | Add/remove stakeholder UI + bulk reminder | Day 4 spillover; user only had pencil-edit must-have |
 | 1C | Module 5 deep (questions, framework citations, narrative scoring, level-5 indicators) | Quick Win Stack starts here |
 | 1C | Decision Package surfacing as standalone artifact | Hero output |
 | 1C | Module 12 + 15 deep | Quick Win Stack complete |
@@ -69,20 +72,22 @@ AI-CDIO is the **methodology operating system for fractional CDIOs**. Built firs
 
 ---
 
-## What to Build Next (Day 4 — Phase 1B starts)
+## What to Build Next (Day 5+ — Phase 1B continues)
 
 Per `docs/ROADMAP.md`:
 
-1. **Stakeholder edit UI** — edit role/relevant_modules/influence_level for any stakeholder, from `/clients/[orgId]`
-2. **Email send via Resend** — assessment links + reminders. Requires `RESEND_API_KEY` in `.env.local` (founder fetches from resend.com)
-3. **Day 5:** rate limiting + assessment_token strip
-4. **Day 6:** synthesis transaction + Sentry/Langfuse
-5. **Day 7:** confirm Ambar real-vs-sandbox + any backfill needed
+1. **Token strip + synthesis transaction** — both landing in the current commit alongside this doc maintenance.
+2. **Day 5/6 (pending creds):** Upstash rate limiting + Sentry + Langfuse — ask founder for these env vars first:
+   - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (free tier at upstash.com)
+   - `SENTRY_DSN` (free tier at sentry.io)
+   - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (cloud.langfuse.com)
+3. **Day 7:** confirm Ambar real-vs-sandbox + any backfill needed.
+4. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth.
 
 Open the next session by reading `docs/STRATEGY-2026.md` first, then `docs/ROADMAP.md`, then ask the founder these:
-- Is `RESEND_API_KEY` ready?
+- Are the Upstash + Sentry + Langfuse env vars set?
 - Is Ambar real or sandbox? (affects how aggressively we polish for it)
-- Any new dogfood surprises since Day 3?
+- Any new dogfood surprises since Day 4?
 
 ---
 
@@ -120,14 +125,15 @@ Set:
 - `SUPABASE_DB_HOST`, `SUPABASE_DB_PORT=6543`, `SUPABASE_DB_USER`, `SUPABASE_DB_PASSWORD`, `SUPABASE_DB_NAME` (Transaction Pooler with IPv4 ON — see `docs/LOCAL_DEV.md`)
 - `ANTHROPIC_API_KEY`
 - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in`, `NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up`, `NEXT_PUBLIC_CLERK_SIGN_IN_FALLBACK_REDIRECT_URL=/`, `NEXT_PUBLIC_CLERK_SIGN_UP_FALLBACK_REDIRECT_URL=/`
+- `RESEND_API_KEY` ✅ Set Day 4
 
-Pending (Phase 1B):
-- `RESEND_API_KEY`
+Pending (Phase 1B Days 5-6):
+- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` (rate limiting)
+- `SENTRY_DSN` (error monitoring)
+- `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY` (LLM observability)
 
-Future (Phase 1B+):
-- `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`
-- `SENTRY_DSN`, `LANGFUSE_PUBLIC_KEY`, `LANGFUSE_SECRET_KEY`
-- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET` (Phase 3)
+Future (Phase 3):
+- `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`
 
 ---
 

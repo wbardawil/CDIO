@@ -1,7 +1,7 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-04-27 (Day 3 of Phase 1).
+> **Last refreshed:** 2026-04-28 (Day 4 of Phase 1, end of Phase 1B kickoff).
 
 ## Current State (April 2026)
 
@@ -50,14 +50,16 @@ Closed P0-1 (auth), P0-2 (IDOR), P0-5 (practitioner workspace), P0-7 (conversati
 
 **Goal:** close the manual-workaround friction the founder hit during dogfood + finish remaining safety items.
 
-| Day | Task | Outcome |
-|-----|------|---------|
-| 4 | Stakeholder edit UI (role + relevant_modules + influence_level) + email send via Resend (assessment links + reminders) | No more SQL-edit-by-hand |
-| 5 | Upstash Redis rate limiting on `/api/chat` + `/api/assessments` | Closes P0-4. Cost protection. |
-| 5 | Strip `assessment_token` from dashboard response, derive IDs server-side | Closes P0-3. |
-| 6 | Wrap synthesis delete-then-insert in a transaction | Closes P0-6. |
-| 6 | Sentry error monitoring + Langfuse LLM observability | Visibility before depth work |
-| 7 | Confirm Ambar Capital is real-engagement data (or sandbox) + backfill founder mapping for any pre-existing test orgs | Phase 1C dogfood reliability |
+| Day | Task | Outcome | Status |
+|-----|------|---------|--------|
+| 4 | Stakeholder edit UI (role + relevant_modules + influence_level) | No more SQL-edit-by-hand | ✅ commit `a95c829` |
+| 4 | Email send via Resend (assessment links + reminders) | No more copy-paste | ✅ commit `a95c829` |
+| 4 | Sandbox flag (deferred to Day 3 evening) | Real-vs-test boundary | ✅ commit `3e61c40` |
+| 5 | Strip `assessment_token` from dashboard response | Closes P0-3 | ⏳ in progress |
+| 5 | Wrap synthesis delete-then-insert in atomic stored proc | Closes P0-6 | ⏳ in progress |
+| 5 | Upstash Redis rate limiting on `/api/chat` + `/api/assessments` | Closes P0-4 — needs `UPSTASH_*` env vars | ⏸ pending creds |
+| 6 | Sentry error monitoring + Langfuse LLM observability | Visibility before depth work | ⏸ pending creds (`SENTRY_DSN`, `LANGFUSE_*`) |
+| 7 | Confirm Ambar Capital is real-engagement data + backfill if needed | Phase 1C dogfood reliability | ⏸ user-decision |
 
 **Done = Founder onboards / edits / emails / monitors clients without manual workarounds.**
 
