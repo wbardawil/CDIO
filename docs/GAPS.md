@@ -1,6 +1,6 @@
 # AI-CDIO: Gap Analysis
 
-> **Refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6). Adds Day 7 Test/Real architectural primitive scope, locks role/area question-level segmentation + universal N/A into Phase 1C, **promotes production deploy to new Phase 1.5 (Days 18-19), and adds AI Accelerator engine as new Phase 2.5 (Days 38-47)**.
+> **Refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6). **MECE rewrite applied:** legal foundation moved into Phase 1.5 (no public deploy without ToS/Privacy/AI Disclaimer); cost telemetry added Day 19; AI lens removed from Phase 1C and absorbed into Phase 2.5; pricing & packaging design slotted into Phase 2 Days 35-38; account & billing settings UI added before Phase 3 Stripe; data migration plan for question banks called out in Phase 1C; Day 90 metrics dashboard added Phase 3; onboarding email sequence + help docs added Phase 2.
 
 ## Priority Tiers
 
@@ -36,9 +36,16 @@
 |---|-----|----------|--------|-------|
 | P1-1 | **Methodology depth (level-5 indicators, framework citations, narrative scoring)** for Module 5 + 12 + 15 | The app underseels the playbook today; this is the perceived-value gap | 7 days | **1C — Days 8-14** |
 | P1-1b | **Role/area question-level segmentation + universal N/A escape (per-module + per-question) + thin-coverage warning** | Today CEO and CTO answer the same questions inside a module — methodologically wrong. N/A as missing-data (not score 1) is required to keep synthesis honest. Thin-coverage warning surfaces engagement gaps to the practitioner. | included in P1-1 (no extra days) | **1C — Days 8-13** (built alongside Module 5/12/15 depth rewrite) |
-| P1-15 | **Production deploy: Vercel + custom domain + verified email domain (L3)** | Methodology depth must ship INTO production, not into a localhost shell. Real Ambar exec emails need a verified-domain sender (not `onboarding@resend.dev`). Demo URL needed for Phase 2 design-partner conversations. | 2 days | **NEW Phase 1.5 — Days 18-19** |
-| P1-16 | **AI Accelerator Engine** — AI Maturity Model, AI Use-Case Library, AI Roadmap Generator, Build-vs-Buy Advisor, Governance Scaffolding, Public `/ai-readiness` Quick Scan, AI deliverable surfacing across workspace | The buy-trigger for practitioners. CEOs are urgently searching for "how do we implement AI faster" — practitioners who can answer credibly buy AI-CDIO. See `docs/STRATEGY-2026.md` AI-as-buy-trigger thesis. | 10 days | **NEW Phase 2.5 — Days 38-47** |
-| P1-17 | **AI lens on Quick Scan** — adds 3-5 AI-readiness questions inline to the public `/scan`. Output includes an "AI Readiness teaser" section that funnels into the AI Accelerator. | Top-of-funnel pull for the AI Accelerator. Built alongside the Quick Scan output upgrade — no extra days. | included in P1-3 | **1C — Days 14-15** (built alongside Quick Scan board-memo upgrade) |
+| P1-15 | **Production deploy: Vercel + custom domain + verified email domain (L3) + legal foundation + cost telemetry** | Methodology depth must ship INTO production, not into a localhost shell. Real Ambar exec emails need a verified-domain sender. App cannot be public without ToS/Privacy/AI Disclaimer (closes 12-day exposure window the previous plan had). Cost-per-engagement telemetry from Day 1 of public exposure (required for Phase 3 pricing decisions). | 3 days | **Phase 1.5 — Days 18-20** |
+| P1-16 | **AI Accelerator Engine** (12 days, expanded from 10) — AI Maturity Model, AI Use-Case Library, AI Roadmap Generator, Build-vs-Buy Advisor, Governance Scaffolding (extends Phase 1C citations layer), AI deliverable surfacing (uses Phase 1D extension points — no rebuild), Public `/ai-readiness` Quick Scan with real destination, Quarterly re-assessment cadence wiring | The buy-trigger for practitioners. See `docs/STRATEGY-2026.md` AI-as-buy-trigger thesis. Expanded to 12 days because the original 10-day estimate for 12 deliverables was aggressive. | 12 days | **Phase 2.5 — Days 39-50** |
+| ~~P1-17~~ | ~~AI lens on Quick Scan in Phase 1C~~ — **REMOVED in MECE rewrite.** Don't tease a feature that won't exist for 23 days. Absorbed into Phase 2.5 Day 49 alongside `/ai-readiness` (the destination it funnels to). | — | — | — |
+| P1-18 | **Legal foundation** — Terms of Service + Privacy Policy + AI Disclaimer pages live, signup gated on acceptance, cookie consent banner. Use Termly/Iubenda templates initially; full attorney review in Phase 2 Day 30. | App cannot be public without basic legal docs. Closes 12-day exposure window from previous plan. | 1 day | **Phase 1.5 — Day 20** |
+| P1-19 | **Pricing & Packaging design** — three-tier feature matrix locked on paper before Phase 3 Stripe build. Starter $199 (Quick Scan + Assessment + Decision Package + Status Reports); Growth $399 (+ Cadence + MCP + AI Accelerator); Scale $599 (+ unlimited clients + Value Tracker + capacity planner). | Stripe integration in Phase 3 cannot ship without the design existing. The previous plan assumed prices but never specified what's IN each tier. | 3 days | **Phase 2 — Days 35-38** |
+| P1-20 | **Data migration plan for question-bank rewrite** — when Module 5/12/15 banks are rewritten Days 8-13, existing assessment responses (Ambar in-progress, TestCo completed) need a documented migration path: preserve as legacy, discard and re-prompt, or machine-map old→new. Decision required Day 8 before rewriting starts. | Without a plan, existing real assessment data may be silently invalidated or duplicated. | 0.5 day (decision + execution) | **Phase 1C — Day 8** |
+| P1-21 | **Cost-per-engagement telemetry** — wire `agent_logs` table to track token counts × model × org_id for every LLM call. Required for Phase 3 pricing decisions to be evidence-based. | Pricing $199/$399/$599 without knowing actual cost-per-client = guessing unit economics. | 0.5 day | **Phase 1.5 — Day 19** |
+| P1-22 | **Day 90 metrics dashboard** — internal-only `/admin/metrics` showing: paying customer count + MRR + founder daily-use streak + average hours saved per client per month. Auto-tracked, not manually counted. | Day 90 kill-switch review is required by strategy; metrics that drive it must exist on the platform. | 1 day | **Phase 3 — Day 59** |
+| P1-23 | **Onboarding email sequence + Help/Docs** — 5-email welcome series triggered on signup; help center at `/help` with getting-started guide + Quick Win Stack walkthrough + per-engine videos + FAQ. | Design partners onboarded Days 35-38 must self-serve. Founder cannot be the bottleneck for 5 simultaneous pilots. | 2 days | **Phase 2 — Days 31-33** |
+| P1-24 | **Account & Billing Settings UI** — `/settings` with tabs: Profile, Plan, Billing (payment method, invoices), Notifications. Built BEFORE Stripe so the destination exists when subscriptions go live. | Cannot ship Stripe without an account-settings surface for practitioners to manage their subscription. | 2 days | **Phase 3 — Days 51-53** (BEFORE Stripe in 54-58) |
 | P1-2 | **Decision Package surfacing** as standalone artifact in workspace | The "what should I do" output that wins prospects | 1 day | 1C — Day 11 |
 | P1-3 | Quick Scan output upgrade — board-memo quality (cited, narrative, 3 named quick wins, projected ROI) | Sales-conversion engine | 2 days | 1C — Days 14-15 |
 | P1-4 | Framework citations layer — every score links to NIST/CMMI/TOGAF/etc. | Methodology authority visible everywhere | 2 days | 1C — Days 16-17 |
@@ -109,13 +116,13 @@
 
 ---
 
-## What This Means for Build Order
+## What This Means for Build Order (post-MECE rewrite)
 
 1. **Phase 1B (Days 4-7):** P0-3, P0-4, P0-6, P1-8, P1-9, **P2-1a (Test/Real primitive — Day 7)** — close remaining safety + practitioner-ops friction
-2. **Phase 1C (Days 8-17):** P1-1, **P1-1b (role/area segmentation + N/A)**, P1-2, P1-3, **P1-17 (AI lens on Quick Scan)**, P1-4 — methodology depth (the practitioner-first promise)
-3. **NEW Phase 1.5 (Days 18-19):** **P1-15 (production deploy L3 — Vercel + custom domain + verified email)** — methodology depth ships INTO production
-4. **Phase 1D (Days 20-27):** P1-5, P1-6, P1-7 — recurring deliverables + MCP
-5. **Phase 2 (Days 28-37):** P1-11, P1-12, P1-13, P1-14, P2-2 — validation prep (asset library + L4 launch) + first pilots
-6. **NEW Phase 2.5 (Days 38-47):** **P1-16 (AI Accelerator Engine)** — the buy-trigger flagship engine
-7. **Phase 3 (Days 48-72):** P2-1, P2-3, P2-5 — monetization (AI Accelerator marketed in Growth+ tier)
-8. **Phase 4+ (Days 73-180):** everything else, demand-driven
+2. **Phase 1C (Days 8-17):** P1-1, **P1-1b (role/area segmentation + N/A)**, **P1-20 (data migration plan, Day 8)**, P1-2, P1-3, P1-4 — methodology depth (no AI lens — that landed in 2.5 alongside its destination)
+3. **Phase 1.5 (Days 18-20):** **P1-15 (deploy L3) + P1-18 (legal foundation) + P1-21 (cost telemetry)** — methodology depth ships INTO production, with legal scaffolding and unit-economics telemetry
+4. **Phase 1D (Days 21-28):** P1-5, P1-6, P1-7 — recurring deliverables + MCP, **all designed with extension points for Phase 2.5**
+5. **Phase 2 (Days 29-38):** P1-11 (caching), P1-12 (legal review), P1-13, P1-14, P2-2, **P1-19 (pricing design Days 35-38), P1-23 (onboarding emails + help docs)** — validation prep + first pilots
+6. **Phase 2.5 (Days 39-50):** **P1-16 (AI Accelerator Engine, 12 days)** — the buy-trigger flagship engine, plugs into Phase 1D extension points
+7. **Phase 3 (Days 51-75):** **P1-24 (account & billing UI Days 51-53 — BEFORE Stripe), P2-1 (Stripe Days 54-58), P1-22 (Day 90 metrics dashboard)**, P2-3, P2-5 — monetization
+8. **Phase 4+ (Days 76-180):** everything else, demand-driven; Day 90 review hits Day 15 of Phase 4

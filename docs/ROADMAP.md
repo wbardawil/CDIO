@@ -1,7 +1,7 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6 — Test/Real primitive scoped, role/area question-level segmentation locked into Phase 1C, **production deploy promoted to new Phase 1.5 at Day 18, AI Accelerator engine slotted in as new Phase 2.5**).
+> **Last refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6 — **MECE rewrite**: AI lens removed from Phase 1C and absorbed into Phase 2.5 (don't tease a feature that won't exist for 23 days); legal foundation moved into Phase 1.5 (no public deploy without ToS/Privacy/AI Disclaimer); pricing & packaging design slotted into Phase 2 (before Stripe in Phase 3); Phase 1D engines explicitly designed with extension points for Phase 2.5; Phase 2.5 expanded to 12 days; account/billing settings UI added before Phase 3 Stripe; Day 90 math re-examined).
 
 ## Current State (April 2026)
 
@@ -119,105 +119,123 @@ Every diagnostic question gets tagged on two axes:
 | 8-10 | **Module 5 deep + role/area tagging + N/A** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area). **Tag every question with executive function + business area.** **Wire N/A button (text-link) on each question + module-gate.** **Wire thin-coverage warning to practitioner.** | Proof of pattern. Dogfood on Ambar (Wadi as fractional CIO) before scaling. **Stop and review.** |
 | 11 | **Decision Package surface** — standalone artifact, not buried in synthesis. Hero-level UI in workspace. | The "what should I do" output that wins prospects |
 | 12-13 | **Module 12 deep (Financial Acumen)** + **Module 15 deep (Process Automation)** — replicate Module 5 pattern, **including role/area tagging + N/A** | Quick Win Stack assessment is demo-quality, role-aware, N/A-safe |
-| 14-15 | **Quick Scan output upgrade + AI lens** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). **Adds 3-5 AI-readiness questions inline** (data foundations, use-case awareness, governance maturity). Output includes an "AI Readiness teaser" section. | Sales-conversion engine + top-of-funnel for the AI Accelerator |
-| 16-17 | **Framework citations layer** — every score, every recommendation links to the named framework + playbook excerpt | Methodology authority visible everywhere |
+| 14-15 | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). **NO AI lens here** — the AI Quick Scan teaser was deferred to Phase 2.5 to avoid teasing a feature that doesn't exist yet. | Sales-conversion engine for the existing CDIO methodology |
+| 16-17 | **Framework citations layer** — every score, every recommendation links to the named framework + playbook excerpt. **Architecture deliberately generic** — extends to NIST AI RMF + EU AI Act in Phase 2.5 without rebuild. | Methodology authority visible everywhere; AI-frameworks-ready by design |
+
+**Phase 1C also includes — explicit data migration plan (added 2026-04-29 MECE):** when Module 5/12/15 question banks are rewritten Days 8-13, existing assessment responses (Ambar's in-progress assessment, TestCo's completed assessment) need a migration plan. Options to evaluate Day 8: (a) preserve old responses by ID, present old questions in a read-only "legacy" tab; (b) discard old responses and re-prompt stakeholders; (c) machine-map old → new questions where possible, flag mismatches. **Decision required Day 8 before rewriting.**
 
 **Done = Founder runs an assessment on a fresh client and the output makes the playbook's depth visible. CEOs answer 5x fewer questions than CTOs inside the same modules. N/A is a first-class option. Thin-coverage gaps surface automatically. Demo-quality.**
 
 **Note:** Modules 1-4, 6-11, 13-14, 16 stay on today's module-level segmentation until they get a depth pass in later phases. Quick Win Stack is the demonstrable proof unit.
 
-### Phase 1.5 — Production Deploy (Days 18-19)
+### Phase 1.5 — Production Deploy + Legal Foundation + Cost Telemetry (Days 18-20)
 
-**Goal:** the platform goes online with a real domain and verified email so methodology depth (just shipped in Phase 1C) ships INTO production, real Ambar exec emails work, and a demo URL exists for design-partner conversations.
+**Goal:** the platform goes online with a real domain, verified email, **and the legal/observability scaffolding required to operate publicly**. Methodology depth (just shipped in Phase 1C) ships INTO production. Real Ambar exec emails work. Demo URL exists for design-partner conversations.
 
-**Locked level: L3 — Vercel + custom domain + verified email.**
+**Locked level: L3 — Vercel + custom domain + verified email + legal + cost telemetry.**
 
 | Day | Task | Outcome |
 |-----|------|---------|
 | 18 | **Vercel production deploy** — environment vars, build pipeline, smoke-test all critical flows in production. **Custom domain** (e.g., `ai-cdio.com` — domain decision pending founder) + DNS + SSL. | Public URL anyone can visit. No more localhost-only demos. |
-| 19 | **Verified email domain in Resend** — DNS records (SPF/DKIM/DMARC) for the custom domain. Update `send-assessment-email.ts` sender from `onboarding@resend.dev` to `you@<custom-domain>`. End-to-end test: send a real assessment email from prod, deliverability passes spam-folder check. | Real Ambar exec emails work. Professional sender. Phase 1C dogfood unblocked at production-grade. |
+| 19 | **Verified email domain in Resend** — DNS records (SPF/DKIM/DMARC) for the custom domain. Update `send-assessment-email.ts` sender from `onboarding@resend.dev` to `you@<custom-domain>`. End-to-end test: send a real assessment email from prod, deliverability passes spam-folder check. **Cost telemetry instrumentation** — wire per-engagement LLM-cost tracking to `agent_logs` table (token counts × model × org_id). Required for Phase 3 pricing decisions to be evidence-based, not guessed. | Real Ambar exec emails work. Professional sender. Phase 1C dogfood unblocked at production-grade. Cost-per-client visibility exists from Day 1 of public exposure. |
+| 20 | **Legal foundation (NEW — MECE fix)** — Terms of Service + Privacy Policy + AI Disclaimer pages live at `/terms`, `/privacy`, `/ai-disclaimer`. Use Termly or Iubenda templates as starting point + light tailoring (no $5K legal review yet — that lands in Phase 2 Day 30 once we have real customer use). Cookie consent banner if EU traffic anticipated. Sign-up flow gated on accepting ToS + Privacy. **No public traffic before this lands.** | App is legally operable for public use. Closes a 12-day exposure window the previous plan had. |
 
-**Done = `https://<custom-domain>` serves the platform; assessment emails arrive in inboxes (not spam) from a verified custom domain.**
+**Done = `https://<custom-domain>` serves the platform with legal docs in place; assessment emails arrive in inboxes (not spam) from a verified custom domain; cost-per-engagement is tracked from the first production query.**
 
-**Note:** L4 (asset library — demo video, one-pager, case study, LinkedIn templates) lands at the start of Phase 2 (Days 28-30) as the public-launch milestone.
+**Note:** L4 (asset library — demo video, one-pager, case study, LinkedIn templates) lands at the start of Phase 2 (Days 29-31) as the public-launch milestone. Full legal review by attorney lands Phase 2 Day 30 (P1-12) before scaling beyond design partners.
 
-### Phase 1D — Recurring Deliverables + MCP (Days 20-27)
+### Phase 1D — Recurring Deliverables + MCP (Days 21-28)
 
-**Goal:** The platform produces the practitioner's recurring artifacts and is callable from Claude.ai.
+**Goal:** The platform produces the practitioner's recurring artifacts and is callable from Claude.ai. **Engines explicitly designed with extension points for Phase 2.5 AI Accelerator** so we don't double-build.
+
+**Architectural pattern locked 2026-04-29 (MECE coordination fixes 4-6):**
+- **Decision Package** is ONE engine called with a `domain: "cdio" | "ai"` parameter. Domain-specific generators plug in. One UI surface, one persistence layer.
+- **Status Report Generator** has a `deliverable_types: []` array on each report; AI status sections are a deliverable type added in Phase 2.5 (no rebuild).
+- **Engagement Cadence** milestones carry a `domain` field; AI milestones use `domain: "ai"`. Same Cadence UI handles both.
+- **MCP Server** ships in 1D with 3 generic tools; Phase 2.5 registers 5 more AI-specific tools against the same tool registry. Auth + transport stays the same.
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 20-23 | **Status Report Generator (Engine #2)** — table + API + AI narrative + Markdown editor + PDF export + Resend send (now from verified domain) | Month-2 retention proof. 90 min → 12 min savings. |
-| 24-26 | **Engagement Cadence** — milestones (commitments, target dates, deliverable types), auto-populated from roadmap + status + decisions, **shareable read-only link** (token-based, no portal) | Practitioner-as-trusted-partner differentiator. Client-facing without portal complexity. |
-| 27 | **MCP Server foundation** — auth, tool registry, first 3 tools (`generate_status_report`, `query_client_data`, `propose_decision_package`). Expand per-engine as we build going forward. | Practitioner can call AI-CDIO from Claude.ai / Cursor / Codex. |
+| 21-24 | **Status Report Generator (Engine #2)** — table + API + AI narrative + Markdown editor + PDF export + Resend send (now from verified domain). **Designed with `deliverable_types[]` extension array** so Phase 2.5 AI sections plug in without refactor. | Month-2 retention proof. 90 min → 12 min savings. AI-extension-ready. |
+| 25-27 | **Engagement Cadence** — milestones (commitments, target dates, deliverable types), auto-populated from roadmap + status + decisions, **shareable read-only link** (token-based, no portal). **Milestones carry a `domain` field** so AI Accelerator milestones (Phase 2.5) integrate cleanly. | Practitioner-as-trusted-partner differentiator. Client-facing without portal complexity. AI-extension-ready. |
+| 28 | **MCP Server foundation** — auth, tool registry, first 3 tools (`generate_status_report`, `query_client_data`, `propose_decision_package`). **Tool registry is forward-looking** — Phase 2.5 will add 5 AI-specific tools against the same architecture: `run_ai_readiness_assessment`, `generate_ai_roadmap`, `propose_ai_use_cases`, `evaluate_build_vs_buy`, `generate_ai_governance_kit`. | Practitioner can call AI-CDIO from Claude.ai / Cursor / Codex. AI-extension-ready. |
 
-**Done = Founder runs full Quick Win engagement on Ambar end-to-end (assessment → cadence → status reports → decision packages) using the platform, including from Claude.ai via MCP.**
+**Done = Founder runs full Quick Win engagement on Ambar end-to-end (assessment → cadence → status reports → decision packages) using the platform, including from Claude.ai via MCP. Every engine is built once and extended in Phase 2.5 — no rebuild work scheduled.**
 
 ---
 
-## Phase 2: VALIDATION (Days 28-37)
+## Phase 2: VALIDATION (Days 29-38)
 
-**Goal:** Prove the practitioner-first promise on real engagements. Onboard 5 design partners. Note: production deploy (Phase 1.5, Day 18-19) was promoted out of Phase 2 because methodology depth needed to ship into a real environment.
+**Goal:** Prove the practitioner-first promise on real engagements. Onboard 5 design partners. Design pricing & packaging before Phase 3 Stripe. Build onboarding email sequence + help docs so design partners can self-serve.
+
+Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 because methodology depth needed to ship into a real environment.
 
 | Day | Task |
 |-----|------|
-| 28-30 | **L4 launch readiness — asset library built**: differentiator one-pager, 3-5 min demo video, anonymized Ambar case study, three LinkedIn post templates |
-| 28-30 | Founder uses platform daily on Ambar + 1-2 more real clients. Document time savings explicitly ("this report took 12 min, used to take 90"). |
-| 31-33 | LinkedIn post: "I'm building this. Want early access?" Cadence ramps to 3 posts/week. First 30 DMs (15 fractional + 15 director). |
-| 34-37 | 5 design-partner pilots onboarded free. 14-day pilot structure. Discovery → demo → pilot funnel weekly slots. |
+| 29-31 | **L4 launch readiness — asset library built**: differentiator one-pager, 3-5 min demo video, anonymized Ambar case study, three LinkedIn post templates |
+| 29-31 | Founder uses platform daily on Ambar + 1-2 more real clients. Document time savings explicitly ("this report took 12 min, used to take 90"). |
+| 30 | **Full legal review by attorney** (P1-12 — closes the templates-only state from Phase 1.5 Day 20). Targeted at AI disclaimer wording + EU AI Act / GDPR exposure if non-US traffic. |
+| 31-33 | **Onboarding email sequence + Help/Docs (NEW — MECE fix)** — practitioner sign-up triggers a 5-email welcome series (Day 0 confirm, Day 1 first-client setup, Day 3 your-first-Quick-Scan, Day 7 status-report walkthrough, Day 14 pilot check-in). Help center built at `/help` with: getting-started guide, Quick Win Stack engagement walkthrough, video walkthrough of each engine, FAQ. Design partners can self-serve, founder isn't bottleneck. |
+| 32-34 | LinkedIn post: "I'm building this. Want early access?" Cadence ramps to 3 posts/week. First 30 DMs (15 fractional + 15 director). |
+| 35-38 | **Pricing & Packaging design (NEW — MECE fix)** — three tiers locked on paper before Phase 3 Stripe build: <br>• **Starter $199/mo** — 1-3 clients, Quick Scan + Assessment + Decision Package + Status Reports (Engine #2). No AI Accelerator. <br>• **Growth $399/mo** — 4-15 clients, all of Starter + Engagement Cadence (shareable client view) + MCP server access + **AI Accelerator engine (full)**. The marketed differentiator. <br>• **Scale $599/mo** — unlimited clients, all of Growth + Value Tracker + priority support + early access to new engines + capacity planner (when shipped). <br>Annual pricing 20% discount option deferred to Phase 4. Stripe products + prices configured in test mode at end of this phase. |
+| 35-38 | 5 design-partner pilots onboarded free using the new email sequence + help docs. 14-day pilot structure. Discovery → demo → pilot funnel weekly slots. |
 
-**Done = Founder uses platform daily. 5 design partners actively running engagements on it. LinkedIn cadence active.**
+**Done = Founder uses platform daily. 5 design partners actively running engagements on it. LinkedIn cadence active. Pricing locked on paper. Onboarding is self-serve. Legal reviewed.**
 
 ---
 
-## Phase 2.5: AI ACCELERATOR ENGINE (Days 38-47)
+## Phase 2.5: AI ACCELERATOR ENGINE (Days 39-50)
 
 **Goal:** Equip the practitioner to be the credible AI advisor for their CEO clients. Triggered by the AI-as-buy-trigger thesis (see `docs/STRATEGY-2026.md`). Practitioner-first preserved — CEOs never get a paid AI-CDIO account.
 
-**Architecture:** AI Accelerator follows the same Engine pattern (load context, load playbook, generate, persist). It's a flagship engine inside the practitioner workspace, not a separate product.
+**Architecture:** AI Accelerator follows the same Engine pattern (load context, load playbook, generate, persist). It's a flagship engine inside the practitioner workspace, not a separate product. **All Phase 1D engines were designed with extension points (`deliverable_types[]`, `domain` field, forward-looking MCP registry) so this phase plugs in without rebuild.**
+
+**Phase expanded from 10 to 12 days (MECE fix 8) — original 10-day estimate for 12 deliverables was aggressive. Realistic budget below.**
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 38-39 | **AI Maturity Model + Assessment Engine** — 6-8 dimensions (data foundations, use-case identification, talent, governance, infrastructure, change mgmt, ROI tracking, vendor strategy). 5-level maturity per dimension. Plain-English questions tagged with the role/area system from Phase 1C (CEO-tagged questions strip out "MLOps" jargon). | The named "AI Readiness Assessment" CEOs are searching for |
-| 40-41 | **AI Use-Case Library** — pre-built catalog by industry × function (sales, ops, finance, customer service, HR). Each use-case: ROI estimate, time-to-value, complexity, vendor options, build-vs-buy hint. Filterable by client size + industry + maturity. | The "what could I do?" answer — CEOs need a menu, not a blank canvas |
-| 42-43 | **AI Roadmap Generator** — 90 / 180 / 360 day plan tailored to client. Quick wins (90), foundation (180), scale (360). Pulls from playbook RAG + AI Use-Case Library. | The "how do I implement faster?" question answered visually |
-| 44 | **Build-vs-Buy Advisor** — Copilot vs Salesforce Einstein vs custom. Cost ranges. Risk scoring. Decision tree based on client profile. | The decision CEOs actually agonize over |
-| 45 | **Governance Scaffolding** — AI policy template, EU AI Act checklist, NIST AI RMF mapping, bias-review workflow, AI use-case approval form | Regulatory pressure makes this Day-1 needed |
-| 46 | **Public AI Quick Scan at `/ai-readiness`** — anonymous 5-minute teaser assessment. Output is a teaser report + CTA: *"Want a real AI roadmap? Connect with a fractional CDIO using AI-CDIO."* Lead capture goes to **practitioners**, not direct subscriptions. | Top-of-funnel lead magnet for practitioner sign-ups |
-| 47 | **AI deliverable surfacing** — AI Readiness Report, AI Roadmap, AI Decision Package added as standalone artifacts in client workspace. AI milestones flow into Engagement Cadence. AI KPIs flow into Status Reports. | AI is not a sidecar — it's woven into every existing surface |
+| 39-40 | **AI Maturity Model + Assessment Engine** — 6-8 dimensions (data foundations, use-case identification, talent, governance, infrastructure, change mgmt, ROI tracking, vendor strategy). 5-level maturity per dimension. Plain-English questions tagged with the role/area system from Phase 1C (CEO-tagged questions strip out "MLOps" jargon). | The named "AI Readiness Assessment" CEOs are searching for |
+| 41-42 | **AI Use-Case Library** — pre-built catalog by industry × function (sales, ops, finance, customer service, HR). Each use-case: ROI estimate, time-to-value, complexity, vendor options, build-vs-buy hint. Filterable by client size + industry + maturity. Initial catalog: 30-50 named use cases. | The "what could I do?" answer — CEOs need a menu, not a blank canvas |
+| 43-44 | **AI Roadmap Generator** — 90 / 180 / 360 day plan tailored to client. Quick wins (90), foundation (180), scale (360). Pulls from playbook RAG + AI Use-Case Library. | The "how do I implement faster?" question answered visually |
+| 45 | **Build-vs-Buy Advisor** — Copilot vs Salesforce Einstein vs custom. Cost ranges. Risk scoring. Decision tree based on client profile. | The decision CEOs actually agonize over |
+| 46 | **Governance Scaffolding** — AI policy template, EU AI Act checklist, NIST AI RMF mapping, bias-review workflow, AI use-case approval form. **Reuses the framework citations layer from Phase 1C Days 16-17** — extends it with NIST AI RMF + EU AI Act, no rebuild. | Regulatory pressure makes this Day-1 needed |
+| 47-48 | **AI deliverable surfacing** — AI Readiness Report, AI Roadmap, AI Decision Package added as standalone artifacts in client workspace. **AI milestones flow into Engagement Cadence** via `domain: "ai"` field (extension point from Phase 1D). **AI KPIs flow into Status Reports** via `deliverable_types[]` array (extension point from Phase 1D). **5 AI-specific MCP tools registered** against existing tool registry. AI Decision Package generated by the same Decision Package engine called with `domain: "ai"`. | AI is not a sidecar — it's woven into every existing surface, using extension points already built |
+| 49 | **Public AI Quick Scan at `/ai-readiness`** — anonymous 5-minute teaser assessment (the AI lens deferred from Phase 1C lands here, alongside the destination it funnels to). Output is a teaser report + CTA: *"Want a real AI roadmap? Connect with a fractional CDIO using AI-CDIO."* Lead capture goes to **practitioners**, not direct subscriptions. | Top-of-funnel lead magnet for practitioner sign-ups — now with a real destination |
+| 50 | **Quarterly re-assessment cadence wiring** — AI Readiness has a `last_reassessed_at` field; workspace surfaces a prompt at 90-day intervals; tracking shows AI maturity progression over time. | The AI field moves monthly. Quarterly re-assessment is the renewal-lock-in mechanism. |
 
-**Done = A practitioner can walk into a CEO conversation and say: "Let me run a 30-min AI Readiness assessment with your team, and I'll come back with a 90-day AI roadmap, build-vs-buy advice, and a governance starter kit." The platform produces all of it.**
-
-**Quarterly re-assessment cadence** is built in — the AI field moves monthly, so AI Readiness has a `last_reassessed_at` field and a workspace prompt at 90-day intervals.
-
----
-
-## Phase 3: MONETIZATION (Days 48-72)
-
-**Goal:** Convert pilots to paid. Hit Day 90 kill-switch criteria with margin. Note: Phase 3 shifted +12 days because Phase 2.5 (AI Accelerator) was inserted.
-
-| Days | Task |
-|---|---|
-| 48-52 | Stripe billing integration. Tiers: Starter $199, Growth $399, Scale $599. **AI Accelerator included in Growth+ tier as a marketed differentiator.** |
-| 53-57 | Convert pilots to paid at Day 14/30/60 of their engagement. First 3-5 paying customers. |
-| 58-62 | First case studies published (with permission), **including at least one AI-implementation case**. LinkedIn cadence to 5 posts/week. DM cadence to 30/week. |
-| 63-67 | Value/ROI Tracker (Engine #3) — commit→deliver→prove cycle | Renewal engine for first paying cohort |
-| 68-72 | First original research draft: "State of the Fractional CDIO 2026: How Practitioners Are Helping SMBs Implement AI" — aggregate anonymized data. Quarterly publication target. |
-
-**Done = 5-8 paying customers, $1.5-4K MRR, retained pilots, public case studies, LinkedIn momentum.**
-
-**Day 90 review hits at Day 72 + 18 = Day 90. Kill switch criteria evaluated.**
+**Done = A practitioner can walk into a CEO conversation and say: "Let me run a 30-min AI Readiness assessment with your team, and I'll come back with a 90-day AI roadmap, build-vs-buy advice, and a governance starter kit." The platform produces all of it. The Growth tier ($399/mo, locked Phase 2 Day 35-38) is now defensible.**
 
 ---
 
-## Phase 4: SCALE & DEEPEN (Days 73-180)
+## Phase 3: MONETIZATION (Days 51-75)
 
-Note: Phase 4 shifted +12 days because Phase 2.5 (AI Accelerator) was inserted.
+**Goal:** Convert pilots to paid. Hit Day 90 kill-switch criteria with margin. Note: Phase 3 shifted +15 days from original (Phase 2.5 + Phase 1.5 expansions).
+
+**Account & billing settings UI (NEW — MECE fix G) is the Day-1 deliverable** — practitioners need a place to view their current plan, change plans, update payment, see usage, manage notifications. Cannot ship Stripe without this surface.
 
 | Days | Task |
 |---|---|
-| 73-90 | QBR Deck Generator (Engine #4) · Templates Library (charters, vendor playbook, M&A DD, risk register) · Knowledge Reuse panel ("I solved this at Client X") · Module-level improvement chat |
-| 91-120 | Document/image upload + AI Vision evidence analysis · Engagement Lifecycle (Phase 1→2→3 progression UI) · Annual pricing option · **AI Use-Case Library expanded** with patterns from real customer engagements |
+| 51-53 | **Account & Billing Settings UI** — `/settings` with tabs: Profile (name, email, password reset via Clerk), Plan (current tier, usage vs limits, upgrade/downgrade), Billing (payment method, invoices), Notifications (email preferences for status reports, reminders, system alerts). Built BEFORE Stripe so the destination exists when subscriptions go live. |
+| 54-58 | **Stripe billing integration**. Tiers configured per Phase 2 Day 35-38 design: Starter $199, Growth $399, Scale $599. **AI Accelerator gated to Growth+ tier** via a feature flag check (single source of truth: `lib/billing/feature-gates.ts`). Webhook handlers for subscription events. Test mode → live mode cutover. |
+| 59-63 | Convert pilots to paid at Day 14/30/60 of their engagement. First 3-5 paying customers. **Day 90 metrics dashboard built (NEW — MECE fix E)** — internal-only `/admin/metrics` showing: paying customers count + MRR + founder daily-use streak + average hours saved per client per month (founder-reported). The kill-switch math is no longer manual. |
+| 64-68 | First case studies published (with permission), **including at least one AI-implementation case**. LinkedIn cadence to 5 posts/week. DM cadence to 30/week. |
+| 69-72 | Value/ROI Tracker (Engine #3) — commit→deliver→prove cycle. Renewal engine for first paying cohort. |
+| 73-75 | First original research draft: "State of the Fractional CDIO 2026: How Practitioners Are Helping SMBs Implement AI" — aggregate anonymized data. Quarterly publication target. |
+
+**Done = 5-8 paying customers, $1.5-4K MRR, retained pilots, public case studies, LinkedIn momentum, Day 90 metrics tracked automatically.**
+
+**Day 90 review hits at Day 75 + 15 = Day 90.** Kill switch criteria evaluated using auto-tracked metrics from Day 59 onward. Slow-burn outcome (1-4 paying + founder daily) is the planning baseline; see `docs/STRATEGY-2026.md` Day 90 Kill Switch section.
+
+---
+
+## Phase 4: SCALE & DEEPEN (Days 76-180)
+
+Note: Phase 4 shifted +15 days from original because Phase 2.5 (AI Accelerator) + Phase 1.5 expansion (legal day) were inserted.
+
+| Days | Task |
+|---|---|
+| 76-90 | QBR Deck Generator (Engine #4) · Templates Library (charters, vendor playbook, M&A DD, risk register) · Knowledge Reuse panel ("I solved this at Client X") · Module-level improvement chat. **Day 90 kill-switch review** at end of this stretch. |
+| 91-120 | Document/image upload + AI Vision evidence analysis · Engagement Lifecycle (Phase 1→2→3 progression UI) · Annual pricing option (20% discount) · **AI Use-Case Library expanded** with patterns from real customer engagements · Anonymous chat conversations cleanup (low-priority backlog item from MECE audit) |
 | 121-150 | First MSP partner pilot (one MSP, 50+ end clients) · Co-branded client portal (lightweight, opt-in, replacing some Cadence Share use cases) |
 | 151-180 | Resource & capacity planner · Referral program · Hire first part-time CSM · 100+ paying customers, $30K+ MRR |
 

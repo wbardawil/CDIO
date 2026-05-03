@@ -1,7 +1,7 @@
 # AI-CDIO: Strategy 2026
 
 **Status:** Active strategic source of truth. Supersedes any conflicting language in older docs.
-**Last refreshed:** 2026-04-29 (Day 6 of build — AI-as-buy-trigger thesis added, production deploy promoted to Day 18, AI Accelerator engine slotted in as Phase 2.5)
+**Last refreshed:** 2026-04-29 (Day 6 of build — MECE rewrite: elevator pitch reconciled to single sentence; AI lens removed from Phase 1C and absorbed into Phase 2.5; legal foundation moved into Phase 1.5; pricing design slotted into Phase 2; Phase 2.5 expanded to 12 days; account/billing settings UI added before Phase 3 Stripe; Day 90 math re-examined with new schedule)
 
 ---
 
@@ -13,13 +13,13 @@ Practitioner-first. Platform-second. The 1M-SMB aspiration is a 5-year footnote,
 
 ---
 
-## Differentiated Promise
+## Differentiated Promise (reconciled 2026-04-29)
 
-> *"ScalePad manages IT inventory. Fortium gives you a fractional CIO body. ChatGPT gives you a generalist. AI-CDIO is the only platform that turns a 30-file CDIO methodology into deliverables in the surfaces you already use — your AI assistant, your client calls, your weekly rhythm. Faster than ChatGPT because it's domain-deep. Better than Fortium because it scales with you. More specific than ScalePad because it's about strategy, not tickets."*
+> *"ScalePad manages IT inventory. Fortium gives you a fractional CIO body. ChatGPT gives you a generalist. AI-CDIO is the only platform that makes a fractional CDIO practice 5× more productive — turning a 30-file methodology into deliverables in the surfaces practitioners already use (their AI assistant, their client calls, their weekly rhythm), and equipping them with the AI implementation guidance their CEO clients are urgently asking for."*
 
-This is the elevator pitch. It survives until customer feedback proves it wrong.
+This is the elevator pitch. **It positions to practitioners as the buyer**, while explicitly naming the **CEO AI-implementation pull** as the buy-trigger. Both audiences in one sentence. Survives until customer feedback proves it wrong.
 
-## The AI-as-Buy-Trigger Thesis (added 2026-04-29)
+## The AI-as-Buy-Trigger Thesis
 
 CEOs and Owners are searching urgently for: *"How do we implement AI faster in our business?"* They don't want generic ChatGPT advice. They want a fractional CDIO who can run an AI Readiness assessment, build an AI roadmap, evaluate build-vs-buy, navigate governance — and prove ROI quarterly.
 
@@ -29,7 +29,7 @@ CEOs and Owners are searching urgently for: *"How do we implement AI faster in o
 
 **Practitioner-first is preserved.** The CEO never gets a paid AI-CDIO account. They receive deliverables (AI Readiness Report, AI Roadmap, AI Decision Package) via the practitioner's Engagement Cadence — same channel as everything else. A public anonymous `/ai-readiness` Quick Scan exists as a top-of-funnel lead magnet — but it routes prospects to *practitioners*, not to direct CEO subscriptions.
 
-**Architectural note:** The AI Accelerator follows the same Engine pattern as every other engine (Assessment, Roadmap, Status Report, Decision Package). No new product paradigm — just a high-leverage new engine that pulls AI-curious CEOs into the practitioner ecosystem.
+**Architectural note:** The AI Accelerator follows the same Engine pattern as every other engine (Assessment, Roadmap, Status Report, Decision Package). No new product paradigm — just a high-leverage new engine that pulls AI-curious CEOs into the practitioner ecosystem. Phase 1D engines (Status Report, Cadence, Decision Package, MCP) are explicitly designed with **extension points** for the AI Accelerator's specializations, so we don't double-build.
 
 ---
 
@@ -139,13 +139,21 @@ The original "1M SMBs by Year 3" is replaced by realistic targets that compound.
 
 ---
 
-## Day 90 Kill Switch (Recalibrated)
+## Day 90 Kill Switch (Re-examined 2026-04-29 with new schedule)
 
-**At Day 90:**
-- 5+ paying customers at $199+ → continue, accelerate
-- 1-4 paying customers + founder using daily → continue, slow burn
-- 0 paying + 0 commitments + founder NOT using daily → STOP. Reframe or shelve.
-- Founder using daily and saving 5+ hrs/client/month, even at 0 paid → continue. The tool is the product.
+**Schedule reality:**
+- Production goes live Day 18 (Phase 1.5)
+- Monetization opens Day 51 (Phase 3 — Stripe)
+- **Day 90 hits Day 39 of monetization runway** (15 days into Phase 4)
+- Design partners onboarded Days 34-38 → 14-day pilot ends Days 48-52 → conversion window Days 52-90 (~5 weeks)
+
+**Realistic Day 90 outcomes:**
+- **5+ paying customers at $199+** → continue, accelerate. Achievable only if 4-5 of 5 design partners convert at Day 14 + a few cold-DM conversions. Optimistic but possible.
+- **1-4 paying customers + founder using daily** → continue, slow burn. **Most likely actual outcome.** 5 design partners → typical conversion 30-50% at Day 14 → 1-2 paying. Plus 1-2 cold-DM conversions = 2-4 paying.
+- **0 paying + 0 commitments + founder NOT using daily** → STOP. Reframe or shelve.
+- **Founder using daily and saving 5+ hrs/client/month, even at 0 paid** → continue. The tool is the product. Day 90 is a checkpoint, not a deadline.
+
+**Tightened criteria:** the slow-burn outcome (1-4 paying + founder daily) is the planning baseline. Anything above is upside. Kill-switch fires only on the third scenario (zero everything).
 
 The kill switch protects against sunk-cost spiral. It does not punish slow paying-customer ramp if the dogfood loop is healthy.
 
