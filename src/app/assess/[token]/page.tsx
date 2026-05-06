@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { AssessmentForm } from "@/components/forms/assessment-form";
+import { SandboxBanner } from "@/components/sandbox-banner";
 import { MODULE_NAMES } from "@/types";
 
 interface StakeholderInfo {
@@ -10,6 +11,7 @@ interface StakeholderInfo {
   role: string;
   org_name: string;
   org_id: string;
+  org_is_sandbox: boolean;
   assessment_id: string;
   relevant_modules: number[];
   completed_modules: number[];
@@ -139,8 +141,10 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
 
   if (done) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex items-center justify-center">
-        <div className="bg-white rounded-2xl border border-gray-200 p-12 max-w-lg text-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50">
+        <SandboxBanner isSandbox={stakeholder?.org_is_sandbox ?? false} variant="assess" />
+        <div className="flex items-center justify-center px-6 py-16">
+          <div className="bg-white rounded-2xl border border-gray-200 p-12 max-w-lg text-center">
           <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
             <span className="text-green-600 text-3xl">&#10003;</span>
           </div>
@@ -171,6 +175,7 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
           <p className="text-xs text-gray-400 mt-6">
             If you&apos;re a stakeholder (not the practitioner), you can close this tab — the practitioner will be notified.
           </p>
+          </div>
         </div>
       </div>
     );
@@ -183,6 +188,7 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SandboxBanner isSandbox={stakeholder.org_is_sandbox} variant="assess" />
       {/* Header */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-3xl mx-auto px-6 py-4">

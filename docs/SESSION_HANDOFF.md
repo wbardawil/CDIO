@@ -8,14 +8,20 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-04-29, end of Day 6):**
+**Current state (2026-05-06, end of Day 7):**
 - ✅ **Phase 1A — Foundation** complete (auth, practitioner schema, IDOR fix, Portfolio + Workspace shell)
-- ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) underway
+- ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) — code complete, env-var spillover only
   - ✅ Day 3.5 bonus: Sandbox flag for safe testing alongside real engagements
   - ✅ Day 4: stakeholder edit UI + email send via Resend (closes manual SQL + copy-paste workarounds)
   - ✅ Day 5: P0-3 (token strip) + P0-6 (atomic synthesis stored proc)
   - ⏸ Day 5/6: Upstash rate limiting + Sentry + Langfuse — waiting on env vars
-  - ⏳ Day 7: **Test/Real architectural primitive** — `is_sandbox` becomes load-bearing across all surfaces (workspace banner, assessment-page banner, email-routing safety, sandbox-only delete, AI tone). Orphan orgs auto-defaulted to Test. **Design locked 2026-04-29, ready to build.**
+  - ✅ **Day 7: Test/Real architectural primitive shipped.** `is_sandbox` is now load-bearing:
+    - schema-v7 migration auto-flips orphan orgs (no `practitioner_clients` mapping) to `is_sandbox=true` and assigns to the sole practitioner. TestCo auto-flipped; Ambar untouched.
+    - `delete_sandbox_org(uuid)` stored proc hard-deletes a sandbox-flagged org + every dependent row in one transaction; refuses when `is_sandbox=false` at the database level.
+    - `<SandboxBanner>` component (workspace + assess variants) wired into `/clients/[orgId]` and `/assess/[token]`.
+    - Email gating in `send-assessment-email.ts`: when `is_sandbox=true`, recipient is rerouted to the practitioner's own inbox + subject prefixed `[TEST]` + HTML body shows a sandbox warning strip + audit log records the reroute.
+    - `DELETE /api/clients/[orgId]` endpoint — sandbox-only, double-protected (practitioner ownership + RPC-level `is_sandbox` guard). New "Hard-delete client" button with type-name-to-confirm.
+    - **Visual QA blocked**: the Preview MCP Chrome tab got stuck on `chrome-error://chromewebdata/` and would not navigate; `npx next build` passed cleanly and `curl` verified the API contracts (Ambar → `org_is_sandbox: false`, TestCo → `org_is_sandbox: true`). Founder eyeball pass recommended before Phase 1C kickoff.
 
 **Key product decision locked 2026-04-29 (Phase 1C scope expansion):**
 

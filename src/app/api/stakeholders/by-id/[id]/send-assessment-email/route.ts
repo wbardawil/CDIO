@@ -58,7 +58,7 @@ export async function POST(
 
   const { data: org } = await db
     .from("organizations")
-    .select("name")
+    .select("name, is_sandbox")
     .eq("id", stakeholder.org_id)
     .single();
 
@@ -76,22 +76,32 @@ export async function POST(
       orgName: org?.name ?? "your organization",
       assessmentUrl,
       isReminder: input.is_reminder,
+      isSandbox: org?.is_sandbox ?? false,
     });
 
-    // Best-effort audit log — table exists from schema v1
+    // Best-effort audit log — table exists from schema v1.
+    // Surface the sandbox-rerouting decision in the audit trail.
+    const action = org?.is_sandbox
+      ? (input.is_reminder ? "send_assessment_reminder_sandbox" : "send_assessment_invite_sandbox")
+      : (input.is_reminder ? "send_assessment_reminder" : "send_assessment_invite");
     await db.from("agent_logs").insert({
       org_id: stakeholder.org_id,
       agent_type: "email",
       model_used: "resend",
-      action: input.is_reminder ? "send_assessment_reminder" : "send_assessment_invite",
-      input_summary: `to=${stakeholder.email} stakeholder=${stakeholder.id}`,
-      output_summary: `resend_id=${sent.id}`,
+      action,
+      input_summary: `intended=${stakeholder.email} stakeholder=${stakeholder.id} sandbox=${org?.is_sandbox ?? false}`,
+      output_summary: `resend_id=${sent.id} routed_to=${sent.routedTo}`,
       token_count: 0,
       cost_usd: 0,
       duration_ms: 0,
     });
 
-    return NextResponse.json({ ok: true, resend_id: sent.id });
+    return NextResponse.json({
+      ok: true,
+      resend_id: sent.id,
+      routed_to: sent.routedTo,
+      sandbox: org?.is_sandbox ?? false,
+    });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Send failed";
     console.error("send-assessment-email failed:", message);

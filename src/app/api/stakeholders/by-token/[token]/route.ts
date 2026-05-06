@@ -23,10 +23,10 @@ export async function GET(
       );
     }
 
-    // Get organization name + the engagement's active module scope
+    // Get organization name + the engagement's active module scope + sandbox flag
     const { data: org } = await db
       .from("organizations")
-      .select("name, active_modules")
+      .select("name, active_modules, is_sandbox")
       .eq("id", stakeholder.org_id)
       .single();
 
@@ -76,6 +76,7 @@ export async function GET(
       role: stakeholder.role,
       org_name: org?.name ?? "Unknown Organization",
       org_id: stakeholder.org_id,
+      org_is_sandbox: org?.is_sandbox ?? false,
       assessment_id: assessment.id,
       // Effective scope for the assessment UI
       relevant_modules: effectiveModules,

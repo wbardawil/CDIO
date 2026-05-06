@@ -5,6 +5,8 @@ import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { MODULE_NAMES } from "@/types";
 import { ResetAssessmentButton } from "@/components/reset-assessment-button";
+import { DeleteSandboxOrgButton } from "@/components/delete-sandbox-org-button";
+import { SandboxBanner } from "@/components/sandbox-banner";
 import { StakeholderRowActions } from "@/components/stakeholder-row-actions";
 import { headers } from "next/headers";
 
@@ -154,6 +156,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <SandboxBanner isSandbox={org.is_sandbox} variant="workspace" />
       {/* Top nav */}
       <header className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
@@ -174,15 +177,10 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       </header>
 
       {/* Org meta */}
-      <div className={`border-b border-gray-200 ${org.is_sandbox ? "bg-amber-50" : "bg-white"}`}>
+      <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <div className="flex items-baseline gap-3 flex-wrap">
             <h2 className="text-2xl font-bold text-gray-900">{org.name}</h2>
-            {org.is_sandbox && (
-              <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded text-[11px] font-semibold uppercase tracking-wider">
-                Sandbox
-              </span>
-            )}
             <span className="text-sm text-gray-500">
               {INDUSTRY_LABELS[org.industry] ?? org.industry} · {org.employee_count} employees · {org.monthly_hours} hrs/mo
             </span>
@@ -367,11 +365,14 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
               </span>
               <h3 className="text-sm font-semibold text-amber-900">Sandbox tools</h3>
             </div>
-            <p className="text-xs text-amber-800 mb-3">
-              This client is flagged for testing. You can wipe assessment data and
-              re-run flows freely. These actions never appear on real engagements.
+            <p className="text-xs text-amber-800 mb-4">
+              This client is flagged for testing. You can wipe assessment data, hard-delete the client, and
+              re-run flows freely. These actions are blocked on real engagements at the API and database level.
             </p>
-            <ResetAssessmentButton orgId={org.id} orgName={org.name} />
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:gap-3">
+              <ResetAssessmentButton orgId={org.id} orgName={org.name} />
+              <DeleteSandboxOrgButton orgId={org.id} orgName={org.name} />
+            </div>
           </div>
         )}
       </main>

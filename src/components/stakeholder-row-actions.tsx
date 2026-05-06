@@ -44,8 +44,14 @@ export function StakeholderRowActions({ stakeholder, status, pct, done, total, l
       });
       const body = await res.json();
       if (!res.ok) throw new Error(body?.error ?? `HTTP ${res.status}`);
-      setSendResult(`Sent to ${stakeholder.email}`);
-      setTimeout(() => setSendResult(null), 3000);
+      // Sandbox: server reroutes to practitioner. Surface that fact instead
+      // of pretending it went to the stakeholder.
+      if (body.sandbox && body.routed_to) {
+        setSendResult(`[TEST] rerouted to ${body.routed_to} (intended: ${stakeholder.email})`);
+      } else {
+        setSendResult(`Sent to ${stakeholder.email}`);
+      }
+      setTimeout(() => setSendResult(null), 5000);
     } catch (e) {
       setSendError(e instanceof Error ? e.message : "Send failed");
       setTimeout(() => setSendError(null), 5000);
