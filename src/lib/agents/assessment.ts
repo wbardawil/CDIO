@@ -5,7 +5,7 @@
 // ============================================================
 
 import Anthropic from "@anthropic-ai/sdk";
-import { getModuleContext } from "@/lib/playbook/retrieve";
+import { getModuleContext, searchPlaybook } from "@/lib/playbook/retrieve";
 import type {
   MaturityLevel,
   DiagnosticResponse,
@@ -14,6 +14,20 @@ import type {
   Industry,
 } from "@/types";
 import { MODULE_NAMES } from "@/types";
+
+/**
+ * Phase 1C: a narrative + path-to-next-level pair generated post-scoring.
+ * Persisted on module_scores.narrative + module_scores.path_to_next_level
+ * (schema v9). Surfaced in the workspace dashboard as the human-readable
+ * "this is why you scored where you did and this is how to climb" view.
+ */
+export interface NarrativeAndPath {
+  narrative: string;
+  path_to_next_level: Array<{
+    action: string;
+    source: string;
+  }>;
+}
 
 const anthropic = new Anthropic();
 
@@ -155,6 +169,134 @@ Provide your assessment as JSON:
     recommended_actions: parsed.recommended_actions ?? [],
     module_skipped: score === null,
   };
+}
+
+// --- Generate per-stakeholder narrative + path-to-next-level ---
+//
+// Called after scoreModule() lands a maturity_score. Two outputs in one
+// LLM call (cheaper + more coherent than two roundtrips):
+//
+//   1. narrative — 3-4 sentences in CDIO voice explaining WHY this
+//      respondent landed at this level. References specific responses,
+//      not generic boilerplate. Reads like an executive summary, not
+//      a spreadsheet.
+//
+//   2. path_to_next_level — exactly 3 concrete actions that move the
+//      respondent's view of the org from current_level → current_level + 1.
+//      Each action is paired with a "source" — the framework reference
+//      from the question, or a short playbook citation. Action is
+//      "Monday-morning actionable", not aspirational.
+//
+// Skipped (returns empty defaults) when:
+//   - maturity_score is null (N/A or skipped module)
+//   - maturity_score is 5 (no next level to climb to)
+export async function generateNarrativeAndPath(
+  moduleNumber: number,
+  maturityScore: MaturityLevel | null,
+  diagnosticResponses: DiagnosticResponse[],
+  evidence: string,
+  keyGaps: string[],
+  orgContext: { size: OrgSize; industry: Industry; employee_count: number }
+): Promise<NarrativeAndPath> {
+  // Edge cases — no narrative / no path
+  if (maturityScore == null) {
+    return { narrative: "", path_to_next_level: [] };
+  }
+
+  const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
+
+  // For Level 5 we still write the narrative ("you're industry-leading")
+  // but the path is empty — there's no next level by definition.
+  const isAtCeiling = maturityScore === 5;
+
+  // RAG: pull playbook chunks specifically relevant to "moving from L<n>
+  // to L<n+1> in <module>". The query string nudges retrieval toward
+  // remediation/recommendation chunks rather than overview chunks.
+  let pathContext = "";
+  if (!isAtCeiling) {
+    try {
+      const targetLevel = maturityScore + 1;
+      const chunks = await searchPlaybook(
+        `${moduleName} level ${targetLevel} recommendation action quick win`,
+        {
+          moduleNumbers: [moduleNumber],
+          limit: 4,
+        }
+      );
+      pathContext = chunks
+        .slice(0, 4)
+        .map((c) => `[${c.metadata.section_title}]\n${c.content.substring(0, 600)}`)
+        .join("\n\n---\n\n");
+    } catch {
+      // RAG retrieval is optional — proceed without it
+    }
+  }
+
+  // Compose responses + key-gap summary so the model has structured data
+  // to anchor on. Limit to a sane size to keep token cost predictable.
+  const responseSummary = diagnosticResponses
+    .slice(0, 20)
+    .map((r) => `- ${r.question_text} → ${r.answer}${r.evidence ? ` (note: ${r.evidence})` : ""}`)
+    .join("\n");
+
+  const prompt = `Generate a narrative summary and path-to-next-level for a stakeholder's assessment of:
+
+Module ${moduleNumber}: ${moduleName}
+Stakeholder scored: Level ${maturityScore}${isAtCeiling ? " (already at ceiling — no path required)" : ` (target: Level ${maturityScore + 1})`}
+
+Organization: ${orgContext.size} (${orgContext.employee_count} employees), ${orgContext.industry}
+
+Their responses:
+${responseSummary}
+
+Computed evidence summary: ${evidence}
+Key gaps identified: ${keyGaps.length > 0 ? keyGaps.join("; ") : "none"}
+
+${pathContext ? `## Playbook reference\n${pathContext.substring(0, 2400)}` : ""}
+
+Produce JSON:
+{
+  "narrative": "<3-4 sentences in the voice of a fractional CDIO. Explain WHY they're at Level ${maturityScore} citing specific evidence from their responses. Avoid generic statements. Be direct but not harsh.>",
+  "path_to_next_level": ${isAtCeiling
+      ? "[]"
+      : `[
+    { "action": "<concrete action Monday-morning actionable, 1 sentence>", "source": "<framework reference like 'NIST CSF v2.0 PR.AA' or a short playbook citation>" },
+    { "action": "...", "source": "..." },
+    { "action": "...", "source": "..." }
+  ]`}
+}
+
+CRITICAL: Each action must be specific and outcome-oriented. Bad: "Improve security posture." Good: "Roll out phishing-resistant MFA (FIDO2 keys) for all admin accounts within 30 days."`;
+
+  const message = await anthropic.messages.create({
+    model: "claude-sonnet-4-20250514",
+    max_tokens: 1024,
+    system:
+      "You are a fractional CDIO writing for a small/mid-size business CEO. Direct, evidence-anchored, never generic. Cite frameworks and the playbook when you can.",
+    messages: [{ role: "user", content: prompt }],
+  });
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "";
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    return { narrative: "", path_to_next_level: [] };
+  }
+
+  try {
+    const parsed = JSON.parse(jsonMatch[0]);
+    const narrative = typeof parsed.narrative === "string" ? parsed.narrative.trim() : "";
+    const pathRaw = Array.isArray(parsed.path_to_next_level) ? parsed.path_to_next_level : [];
+    const path = pathRaw
+      .filter((p: unknown): p is { action: string; source: string } =>
+        typeof p === "object" && p !== null &&
+        typeof (p as { action: unknown }).action === "string" &&
+        typeof (p as { source: unknown }).source === "string"
+      )
+      .slice(0, 3);
+    return { narrative, path_to_next_level: path };
+  } catch {
+    return { narrative: "", path_to_next_level: [] };
+  }
 }
 
 // --- Generate adaptive follow-up questions based on initial responses ---

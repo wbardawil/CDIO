@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServiceClient } from "@/lib/db/supabase";
 import { scoreModuleFromResponses } from "@/lib/scoring/rule-based";
-import { scoreModule } from "@/lib/agents/assessment";
+import { scoreModule, generateNarrativeAndPath } from "@/lib/agents/assessment";
 import { z } from "zod";
 import type { OrgSize, Industry } from "@/types";
 
@@ -74,8 +74,50 @@ export async function POST(request: NextRequest) {
       result = scoreModuleFromResponses(input.responses);
     }
 
+    // Phase 1C Day 9: generate narrative + path-to-next-level after scoring.
+    // Best-effort — if the LLM call fails or no API key, we persist the row
+    // without these fields and the UI falls back to the legacy evidence string.
+    let narrative = "";
+    let pathToNext: Array<{ action: string; source: string }> = [];
+    if (
+      result.maturity_score != null &&
+      !result.module_skipped &&
+      process.env.ANTHROPIC_API_KEY
+    ) {
+      try {
+        const { data: org } = await db
+          .from("organizations")
+          .select("size_category, industry, employee_count")
+          .eq("id", input.org_id)
+          .single();
+
+        const enriched = await generateNarrativeAndPath(
+          input.module_number,
+          result.maturity_score,
+          input.responses.map((r, i) => ({
+            question_id: r.question_id ?? `m${input.module_number}_q${i + 1}`,
+            question_text: r.question_text,
+            answer: r.answer,
+            evidence: r.evidence,
+          })),
+          result.evidence,
+          result.key_gaps,
+          {
+            size: (org?.size_category ?? "medium") as OrgSize,
+            industry: (org?.industry ?? "other") as Industry,
+            employee_count: org?.employee_count ?? 100,
+          }
+        );
+        narrative = enriched.narrative;
+        pathToNext = enriched.path_to_next_level;
+      } catch (narrativeError) {
+        console.warn("Narrative generation failed (non-fatal):", narrativeError);
+      }
+    }
+
     // Save score to database. maturity_score may be null if module_skipped
     // or every answer was N/A; the column is nullable as of schema v8.
+    // narrative + path_to_next_level added by schema v9.
     const { data: score, error: saveError } = await db
       .from("module_scores")
       .upsert(
@@ -88,6 +130,8 @@ export async function POST(request: NextRequest) {
           diagnostic_responses: input.responses,
           business_impact_rating: input.business_impact_rating ?? 5,
           module_skipped: result.module_skipped,
+          narrative,
+          path_to_next_level: pathToNext,
         },
         { onConflict: "assessment_id,stakeholder_id,module_number" }
       )

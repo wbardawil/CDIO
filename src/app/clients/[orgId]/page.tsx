@@ -8,6 +8,11 @@ import { ResetAssessmentButton } from "@/components/reset-assessment-button";
 import { DeleteSandboxOrgButton } from "@/components/delete-sandbox-org-button";
 import { SandboxBanner } from "@/components/sandbox-banner";
 import { StakeholderRowActions } from "@/components/stakeholder-row-actions";
+import {
+  ModuleInsightsPanel,
+  type ScoredEntry,
+} from "@/components/module-insights-panel";
+import { CoverageWarningPanel } from "@/components/coverage-warning-panel";
 import { headers } from "next/headers";
 
 interface PageProps {
@@ -110,13 +115,37 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
     completed_modules: [] as number[],
   }));
 
+  // Phase 1C Day 9: pull the full scores (including narrative + path) so
+  // the workspace can render the Module Insights panel + the thin-coverage
+  // warning. The legacy "completed_modules" array is derived from the same
+  // fetch.
+  let allScores: Array<{
+    stakeholder_id: string;
+    module_number: number;
+    maturity_score: number | null;
+    module_skipped: boolean;
+    evidence: string;
+    narrative: string | null;
+    path_to_next_level: Array<{ action: string; source: string }>;
+  }> = [];
+
   if (latestAssessment?.id && stakeholderRows.length > 0) {
     const { data: scores } = await db
       .from("module_scores")
-      .select("stakeholder_id, module_number")
+      .select("stakeholder_id, module_number, maturity_score, module_skipped, evidence, narrative, path_to_next_level")
       .eq("assessment_id", latestAssessment.id);
+    allScores = (scores ?? []).map((s) => ({
+      stakeholder_id: s.stakeholder_id as string,
+      module_number: s.module_number as number,
+      maturity_score: (s.maturity_score as number | null) ?? null,
+      module_skipped: Boolean(s.module_skipped),
+      evidence: (s.evidence as string) ?? "",
+      narrative: (s.narrative as string | null) ?? null,
+      path_to_next_level: (s.path_to_next_level as Array<{ action: string; source: string }>) ?? [],
+    }));
+
     const scoreMap = new Map<string, number[]>();
-    for (const s of scores ?? []) {
+    for (const s of allScores) {
       const arr = scoreMap.get(s.stakeholder_id) ?? [];
       arr.push(s.module_number);
       scoreMap.set(s.stakeholder_id, arr);
@@ -126,6 +155,18 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       completed_modules: scoreMap.get(s.id) ?? [],
     }));
   }
+
+  // Build the props for ModuleInsightsPanel — denormalize stakeholder
+  // name/role onto each score entry so the component stays presentational.
+  const stakeholderById = new Map(stakeholderRows.map((s) => [s.id, s]));
+  const scoredEntries: ScoredEntry[] = allScores.map((s) => {
+    const sh = stakeholderById.get(s.stakeholder_id);
+    return {
+      ...s,
+      stakeholder_name: sh?.name ?? "Unknown",
+      stakeholder_role: sh?.role ?? "",
+    };
+  });
 
   // Build absolute origin so assessment links work when copied
   const h = await headers();
@@ -340,6 +381,27 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             </div>
           </div>
         )}
+
+        {/* Phase 1C Day 9 — coverage warning + module insights */}
+        {scoredEntries.length > 0 && (
+          <CoverageWarningPanel
+            activeModules={activeModules}
+            stakeholders={stakeholderRows.map((s) => ({
+              id: s.id,
+              name: s.name,
+              role: s.role,
+              relevant_modules: s.relevant_modules ?? [],
+            }))}
+            scores={allScores.map((s) => ({
+              stakeholder_id: s.stakeholder_id,
+              module_number: s.module_number,
+              maturity_score: s.maturity_score,
+              module_skipped: s.module_skipped,
+            }))}
+          />
+        )}
+
+        {scoredEntries.length > 0 && <ModuleInsightsPanel scores={scoredEntries} />}
 
         {/* Quiet secondary action — always available, never the hero */}
         <div className="flex items-center justify-between mt-2">
