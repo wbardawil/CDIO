@@ -253,6 +253,12 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             >
               Selections
             </Link>
+            <Link
+              href={`/clients/${org.id}/cadence`}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Cadence
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
