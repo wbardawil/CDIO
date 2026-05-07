@@ -7,7 +7,10 @@ import {
   getModuleQuestions,
   type DiagnosticQuestion,
 } from "@/lib/playbook/diagnostic-questions";
-import { filterQuestionsForRole } from "@/lib/playbook/role-tag-mapping";
+import {
+  filterQuestionsForRole,
+  selectAdaptiveSubset,
+} from "@/lib/playbook/role-tag-mapping";
 
 /**
  * Phase 1C assessment form (2026-05-06):
@@ -57,7 +60,12 @@ export function AssessmentForm({
   onBusinessImpact,
 }: AssessmentFormProps) {
   const allModuleQuestions = getModuleQuestions(moduleNumber);
-  const questions = filterQuestionsForRole(allModuleQuestions, stakeholderRole);
+  const roleFiltered = filterQuestionsForRole(allModuleQuestions, stakeholderRole);
+  // Phase 1C Day 16 — Tier 1 AI leverage. Cap at 8 questions per
+  // stakeholder per module so the assessment finishes inside one
+  // sitting; subcategory breadth preserved by the selector.
+  const questions = selectAdaptiveSubset(roleFiltered, 8);
+  const wasAdaptivelyTrimmed = roleFiltered.length > questions.length;
   const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
 
   // The role filter dropped every question for this module. Show the
@@ -233,6 +241,11 @@ export function AssessmentForm({
         </h2>
         <p className="text-sm text-gray-500 mt-1">
           {questions.length} questions for your role ({stakeholderRole})
+          {wasAdaptivelyTrimmed && (
+            <span className="text-xs text-gray-400 ml-1.5">
+              · narrowed from {roleFiltered.length} for focus
+            </span>
+          )}
         </p>
         <div className="mt-3 h-2 bg-gray-100 rounded-full overflow-hidden">
           <div

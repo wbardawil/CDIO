@@ -858,6 +858,25 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     },
   },
 
+  // ----- AMP / PE-Underwriting Discipline: Hard-Dollar Defendability -----
+  {
+    id: "m12_q14", module_number: 12, subcategory: "Value Realization",
+    question: "Are projected initiative benefits underwritten with a documented financial model — volume × time saved × fully-loaded cost × realizable percent — that survives 18-month retrospective scrutiny?",
+    level_indicators: {
+      level_1: "Benefit claims are narrative (we'll save time, we'll improve experience); no financial model underwrites the projection.",
+      level_2: "Some initiatives have a benefit number, but the math is opaque or built on heroic adoption assumptions; nobody pressure-tests it.",
+      level_3: "Documented financial model per major initiative — volume, minutes saved per unit, fully-loaded cost per minute, realizable percent — validated with workflow owners before funding.",
+      level_4: "Conservative-estimate discipline; risk haircut applied; over-claims rarely survive funding gate; quarterly variance review against the underlying assumptions, not just the headline number.",
+      level_5: "Every initiative would survive an 18-month CFO / LP / board retrospective without hedging — hard-dollar, recurring, defensible. Soft-benefit narratives are tracked separately and never co-mingled with margin claims.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["finance"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives + AMP AI Diagnostic Playbook",
+      reference: "Underwriting Discipline (Standardized Impact Formula)",
+      rationale: "Benefit claims without an underwriting model produce theater; AMP's PE-grade discipline (volume × minutes × cost × realizable percent) and KPMG ROO's value-realization track produce numbers that survive 18-month scrutiny — which is the bar SMB CEOs need to defend tech spend to their boards or PE owners.",
+    },
+  },
+
   // ============================================================
   // MODULE 13: Portfolio & Vendor Management
   // ============================================================

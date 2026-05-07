@@ -125,7 +125,7 @@ Every diagnostic question gets tagged on two axes:
 | **12** ✅ | **Module 12 deep — Tech Finance & Value Realization** (TBM Council + KPMG Return on Objectives). 13 questions across 4 subcategories (Cost Transparency, Cloud & SaaS Discipline, Vendor Economics, Value Realization). 8 TBM-anchored + 5 KPMG ROO-anchored. All role/area-tagged, level-5-indicators, framework-cited. | Quick Win Stack 2/3 done. CEO sees the cost-discipline + value-realization conversation framework-cited. |
 | **13** | **Module 15 deep — Process Automation & Transformation** (APQC PCF + Lean Six Sigma). Replicate Module 5/12 pattern: 12-15 questions, role/area-tagged, level-5, framework-cited. | Quick Win Stack 3/3 — full demo-quality assessment. |
 | **14-15** | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). **No AI lens here** — that lands in Phase 2.5 alongside its destination `/ai-readiness`. | Sales-conversion engine for the existing CDIO methodology. |
-| **16** | **Module 2 deep — Tech Strategy & Business Alignment** anchored to **KPMG 4-practice + MIT Strategic Alignment Model**. 12-15 questions tagged + level 5 + framework-cited. Plus: **Tier 1 AI leverage — adaptive questioning** wired in (every stakeholder gets 6-8 contextually-selected questions instead of 15). Uses existing `generateFollowUpQuestions` infrastructure. | Pillar 3 (alignment) gets its strongest expression. Complexity tax of 15-question modules removed by adaptive selection. |
+| **16** | **Tier 1 AI leverage — adaptive questioning** wired in (every stakeholder gets up to 8 contextually-selected questions instead of 15 via subcategory-breadth-first selection). Module 2 deep DEFERRED to Phase 2 dogfood (Days 29-38) where founder's Ambar engagement will surface what alignment depth actually moves the needle — designing it cold today is lower-leverage than designing it from real engagement signal. | Complexity tax of 15-question modules removed by adaptive selection. Day 16 simplified to a single visible AI leverage shipping. |
 | **17** | **Framework citations layer + jargon → CEO-language translation** — every score, every recommendation links to the named framework + playbook excerpt. **Tier 1 AI leverage — runtime translation:** practitioner sees "PR.AA-05"; CEO sees "*Does your team enforce password rules everyone follows?*" Architecture deliberately generic — extends to NIST AI RMF + EU AI Act in Phase 2.5 without rebuild. | Methodology authority visible everywhere; AI-frameworks-ready by design; CEO never sees framework jargon. |
 
 **Phase 1C also includes — explicit data migration plan (added 2026-04-29 MECE):** when Module 5/12/15 question banks are rewritten Days 8-13, existing assessment responses (Ambar's in-progress assessment, TestCo's completed assessment) need a migration plan. Options to evaluate Day 8: (a) preserve old responses by ID, present old questions in a read-only "legacy" tab; (b) discard old responses and re-prompt stakeholders; (c) machine-map old → new questions where possible, flag mismatches. **Decision required Day 8 before rewriting.**
@@ -218,11 +218,17 @@ Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 beca
 
 ---
 
-## Phase 2.5: AI ACCELERATOR ENGINE (Days 39-50)
+## Phase 2.5: AI ACCELERATOR ENGINE (Days 39-46, REDUCED 2026-05-07)
 
 **Goal:** Equip the practitioner to be the credible AI advisor for their CEO clients. Triggered by the AI-as-buy-trigger thesis (see `docs/STRATEGY-2026.md`). Practitioner-first preserved — CEOs never get a paid AI-CDIO account.
 
-**Architecture:** AI Accelerator follows the same Engine pattern (load context, load playbook, generate, persist). It's a flagship engine inside the practitioner workspace, not a separate product. **All Phase 1D engines were designed with extension points (`deliverable_types[]`, `domain` field, forward-looking MCP registry) so this phase plugs in without rebuild.**
+**Reduced from 12 days to 8** by reusing the AMP AI Diagnostic Playbook (an ex-Google PE consulting methodology, $3.3M Year-1 hard savings on a real $100M PE-backed engagement) as the design template rather than building from scratch:
+- AI Maturity Model dimensions = AMP's 5 governance components verbatim (Sponsorship / Decision rights / Intake / Review cadence / Risk controls) + 1-3 SMB-specific dimensions. Half the design work disappears.
+- AI Use-Case Library taxonomy = AMP's 4 opportunity categories (Resource & process efficiency / Vendor & tool spend / Quality, risk & reliability / Scalability enablement) with `counts_toward_margin: bool` flag.
+- AI Roadmap Generator = AMP's 100→17→7 funnel implemented directly with the 5×5 Feasibility × Value scoring as the Selection Engine `domain: "ai"` template.
+- AI Selection Engine pass = AMP's 5×5 plugged into existing Phase 1D Selection Engine with `domain: "tech" | "ai"` parameter — no new criteria-template build.
+
+**Architecture:** AI Accelerator follows the same Engine pattern. **All Phase 1D engines were designed with extension points (`deliverable_types[]`, `domain` field, forward-looking MCP registry) so this phase plugs in without rebuild.**
 
 **Pre-Phase 2.5 mandatory gates (per `STRATEGY-2026.md` Process Discipline):**
 - `/autoplan` on the full Phase 2.5 scope before Day 39 starts (CEO + Design + Eng review chained)

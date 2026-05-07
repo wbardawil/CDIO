@@ -458,6 +458,46 @@ The skills run inside the same Claude Code session. Each gate adds 5-15 minutes 
 
 ---
 
+## AMP Playbook Integration (locked 2026-05-07 — Phase 2.5 design template)
+
+The Phase 2.5 AI Accelerator Engine is not designed in a vacuum. Its scoring, taxonomy, governance, and roadmap structure are **directly templated on the AMP AI Diagnostic Playbook** — a real ex-Google PE consulting methodology used on a $100M PE-backed vertical SaaS engagement that produced $3.3M Year-1 hard run-rate impact (~8% EBITDA uplift), $11.2M three-year impact, every dollar defensible to the LP.
+
+This is a deliberate, documented design choice. It cuts Phase 2.5 from 12 days to 8 by reusing four pieces of AMP's structure as templates rather than designing them from scratch.
+
+### What we adopt verbatim
+
+| AMP element | AI-CDIO use |
+|---|---|
+| **5 governance components** (Sponsorship / Decision rights / Intake / Performance review cadence / Risk controls) | 5 of the 6-8 dimensions of the AI Maturity Model. Add 1-3 SMB-specific dimensions (data foundations, talent, vendor stack). |
+| **4 opportunity categories** (Resource & process efficiency / Vendor & tool spend / Quality, risk & reliability / Scalability enablement) + `counts_toward_margin: bool` | AI Use-Case Library taxonomy. Hard-savings (counts toward margin) gets first-class surfacing on Decision Packages and the Quick Scan board memo. |
+| **3-stage funnel (100 → 17 → 7)** | The AI Roadmap Generator's built-in flow. Longlist → screened shortlist (5×5 scored) → underwritten roadmap. Replaces "AI Roadmap" as a free-text artifact with a structured pipeline. |
+| **5 Feasibility × 5 Value scoring (10 dimensions)** | The Selection Engine's `domain: "ai"` template. Same 10 dimensions, defaulted on every AI initiative; practitioner can override. |
+| **Standardized Impact Formula** (Volume × Minutes saved × Fully-loaded cost × Realizable %) | The math under every AI initiative card. Surfaces in Decision Packages and the 90-Day Commitment Matrix Day-90 ROI deliverable. |
+| **"Hard savings only — defensible 18 months later"** | Sharpens the 90-Day Commitment Matrix Day 90 language: "ROI documented" → "**Hard-dollar, recurring, defensible 18-month retrospective.**" Soft-benefit narratives tracked separately. |
+
+### What we add to AMP
+
+AMP is a PE consulting methodology designed for $100M+ engagements. AI-CDIO targets 10-250-employee SMBs as the Year 1 audience. Three SMB-specific adjustments:
+
+1. **Lean-form-first rule** (already shipped Phase 1C Day 13) — AMP's "conservative estimates" become "propose the spreadsheet/Notion-page form before any tool". Lower threshold for "lean alternative considered."
+2. **Size-band ceiling** (already shipped Phase 1C Day 13) — AMP doesn't cap maturity by size because it doesn't need to; AI-CDIO's customer set is small enough that a uniform 5-level ambition would push bank-grade governance onto 30-person companies.
+3. **Practitioner-as-buyer Year 2+** — AMP is sold to PE / corporate boards directly. AI-CDIO is sold first to the founder's CEO clients (Year 1) via him, then to other fractional CDIOs (Year 2+) who use the platform on their own engagements. Asset library + onboarding emails reflect the latter buyer.
+
+### What stays AI-CDIO native (not AMP)
+
+- The **playbook RAG corpus** (1,154 chunks from the 30-file source playbook) — AMP doesn't have a methodology corpus; AI-CDIO's framework citations + path-to-next-level recommendations rely on it.
+- The **role / area question tagging system** (Phase 1C v2 schema) — AMP screens initiatives, not stakeholders; AI-CDIO's role filter is a separate discipline solving a separate problem (which stakeholder can attest to which capability).
+- The **Module 1-16 framework anchors** (NIST CSF, CMMI, TBM Council, KPMG ROO, APQC PCF, Lean SS, etc.) — AMP is AI-specific; AI-CDIO's 16-module maturity model spans the full Fractional Executive OS scope.
+- The **Cadence + Engagement read-only client view** — AMP's deliverables are slide decks; AI-CDIO's Cadence is the renewal-lock-in mechanism that depends on platform persistence.
+
+### Where this lands in the build
+
+- **Phase 2.5 Days 39-46 (8 days, reduced from 12):** see `docs/ROADMAP.md` Phase 2.5 section.
+- **AI Operator Bootcamp** (AMP's 6-module training product mapping 1:1 to engagement workflow): logged as a **Year 2+ commercial product** alongside the platform release to other fractionals. Not Year-1 scope.
+- **Module 12 polish question** (m12_q14 — hard-dollar underwriting question): shipped Phase 1C Day 17. The question references both KPMG ROO and AMP's Standardized Impact Formula explicitly.
+
+---
+
 ## Architectural Lineage (locked 2026-05-07)
 
 AI-CDIO's architecture is not invented from scratch. It borrows deliberately from two reference systems we've studied:

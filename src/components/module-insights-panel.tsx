@@ -11,7 +11,7 @@
  * a read-mostly view; the expandable behavior uses native <details>.
  */
 
-import { MODULE_NAMES } from "@/types";
+import { MODULE_NAMES, MODULE_META } from "@/types";
 
 interface PathStep {
   action: string;
@@ -80,15 +80,22 @@ export function ModuleInsightsPanel({ scores }: Props) {
           // Sort entries by stakeholder name for stable rendering
           entries.sort((a, b) => a.stakeholder_name.localeCompare(b.stakeholder_name));
 
+          const meta = MODULE_META[mn];
           return (
             <div key={mn} className="px-6 py-4">
-              <div className="flex items-baseline gap-2 mb-3 flex-wrap">
+              <div className="flex items-baseline gap-2 mb-1 flex-wrap">
                 <span className="text-xs font-mono text-gray-400">M{mn}</span>
                 <h4 className="text-sm font-semibold text-gray-900">{moduleName}</h4>
                 <span className="text-xs text-gray-500">
                   · {entries.length} {entries.length === 1 ? "respondent" : "respondents"}
                 </span>
               </div>
+              {meta && (
+                <p className="text-[11px] text-gray-500 mb-3 italic">
+                  Anchor: <span className="font-medium not-italic">{meta.framework}</span>
+                  <span className="text-gray-400"> · &ldquo;{meta.oneLiner}&rdquo;</span>
+                </p>
+              )}
 
               <div className="space-y-2">
                 {entries.map((e) => {

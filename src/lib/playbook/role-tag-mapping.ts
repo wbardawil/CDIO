@@ -141,3 +141,68 @@ export function moduleEmptyForRole(
 ): boolean {
   return filterQuestionsForRole(moduleQuestions, role).length === 0;
 }
+
+/**
+ * Adaptive question subset (Phase 1C Day 16 — Tier 1 AI leverage).
+ *
+ * Caps a role-filtered question list at `targetCount` (default 8) by
+ * picking one question per subcategory first (breadth), then filling
+ * with remaining questions in original order (which is the order the
+ * curator placed them — typically broadest-first).
+ *
+ * Why: a CIO sees almost every question in a deep module (~12-15);
+ * answering all of them per stakeholder per module per assessment is
+ * 50+ minutes of stakeholder time across 16 modules and is the #1
+ * cause of incomplete assessments. 6-8 questions is the empirically
+ * defensible floor for a 5-level maturity score (binary answers in
+ * aggregate produce reliable resolution at n>=6).
+ *
+ * If the input list is already <=targetCount, returns it unchanged.
+ *
+ * Deterministic, no AI call, no API key required. The "AI leverage"
+ * label refers to the contextual selection happening at all — not to
+ * an LLM in the loop. A future Phase 2.5 enhancement can swap in an
+ * AI selector that weights by industry overlay + prior responses;
+ * the UI consumer doesn't need to change.
+ */
+export function selectAdaptiveSubset(
+  questions: DiagnosticQuestion[],
+  targetCount: number = 8
+): DiagnosticQuestion[] {
+  if (questions.length <= targetCount) return questions;
+
+  // Bucket by subcategory in input order.
+  const order: string[] = [];
+  const buckets: Record<string, DiagnosticQuestion[]> = {};
+  for (const q of questions) {
+    const key = q.subcategory || "Uncategorized";
+    if (!(key in buckets)) {
+      buckets[key] = [];
+      order.push(key);
+    }
+    buckets[key].push(q);
+  }
+
+  // First pass: one question per subcategory, in subcategory order.
+  const selected: DiagnosticQuestion[] = [];
+  const consumedIds = new Set<string>();
+  for (const sub of order) {
+    if (selected.length >= targetCount) break;
+    const head = buckets[sub][0];
+    selected.push(head);
+    consumedIds.add(head.id);
+  }
+
+  // Second pass: fill the rest in original order, skipping already-picked.
+  if (selected.length < targetCount) {
+    for (const q of questions) {
+      if (selected.length >= targetCount) break;
+      if (!consumedIds.has(q.id)) {
+        selected.push(q);
+        consumedIds.add(q.id);
+      }
+    }
+  }
+
+  return selected;
+}
