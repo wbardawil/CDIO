@@ -241,6 +241,12 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             >
               Charter
             </Link>
+            <Link
+              href={`/clients/${org.id}/initiatives`}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Initiatives
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
