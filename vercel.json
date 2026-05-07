@@ -1,0 +1,12 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "functions": {
+    "src/app/api/chat/route.ts": { "maxDuration": 60 },
+    "src/app/api/assessments/route.ts": { "maxDuration": 60 },
+    "src/app/api/assessments/synthesize/route.ts": { "maxDuration": 120 },
+    "src/app/api/roadmaps/route.ts": { "maxDuration": 120 },
+    "src/app/api/organizations/route.ts": { "maxDuration": 60 }
+  }
+}
