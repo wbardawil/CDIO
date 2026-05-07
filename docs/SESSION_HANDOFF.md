@@ -29,7 +29,81 @@ This session was the inflection point. We shifted the platform from feature-led 
 
 ---
 
-## Day 11 — what shifted strategically (the new session reads this carefully)
+## Day 11 evening — final scope lock (the new session reads this BEFORE the Day 11 morning section below)
+
+The Day 11 evening session locked three corrections that changed the strategic identity of Year 1:
+
+### Correction 1 — AI + Data first, then expand
+
+The "Quick Win Stack" from the playbook (Modules 5+12+15) was a 2024-2025 framing. **For 2026, the right Quick Win Stack is AI + Data + Security.** Module 5 (Security) is already deep. Module 6 (Data & AI) and an AI Accelerator MVP land NEXT, not in Phase 2.5. Phase 2.5 reduced from 12 days to 6-7 days because the MVP shipped early.
+
+**Phase 1C Days 12-17 revised:**
+- Days 12-13: Module 6 deep (Data & AI Capabilities, NIST AI RMF + DAMA-DMBOK)
+- Days 14-16: AI Accelerator MVP (AI Maturity Model + Use-Case Library starter + Roadmap Generator + public `/ai-readiness` Quick Scan)
+- Day 17: Framework citations + jargon-to-CEO translation + adaptive questioning
+
+**Modules 12, 15, 2 deferred to Phase 2 dogfood** — they get depth pass during the founder's real engagements, driven by what the work actually needs.
+
+### Correction 2 — Year 1 customer is the CEO via the founder, not other fractionals
+
+The strategy doc was implicitly written to sell to other fractional CDIOs. **It's wrong for Year 1.** Founder isn't selling AI-CDIO to peers yet. He's using AI-CDIO with his current CEO clients. Year 2+ commercialization happens when the founder's fractional practice maxes out (capacity-constrained → release platform as new income stream).
+
+**Year 1 audience:** the founder's CEO clients (Ambar + 1-2 more). They never log in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it.
+**Year 2+ audience:** other fractional CDIOs. Phase 3 commercial release.
+
+**Phase 2 reframed:** NO design partner pilots in Year 1. Founder uses platform on REAL clients of his own fractional practice. Modules 12, 15, 2 depth passes happen here. CEO-facing asset library built (one-pager, demo video, case study, LinkedIn templates) — all leading with what CEOs experience, not what fractionals can buy.
+
+**Phase 3 reframed:** this is when other fractionals come in. Commercial release. Stripe + first paying fractional customers + design partner pilots.
+
+**Day 90 kill switch criterion revised:** evaluation criteria are CEO outcomes delivered by the founder, NOT paying-customer count. Paying-customer count moves to Year 2 metric. Year 1 metric is `docs/OUTCOMES.md` weekly entries.
+
+### Correction 3 — Differentiated Promise rewritten as 3-promise structure with 90-Day Commitment Matrix
+
+Replaces the abstract "command center" elevator pitch. The new pitch is what the founder says to a CEO he's pitching as their fractional CDIO:
+
+> *"Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice — you walk in with framework-cited proof. Bad tech bets die before they cost you money — every decision over $25K runs through a review with named alternatives. AI moves from board talk to real rollout — you ship something in 90 days, not strategy theater. I deliver this in one quarter at a fifth the cost of a full-time CDIO. The platform I built makes me 5x faster than peers."*
+
+The 3 promises map to mechanisms (NIST CSF / KPMG citations + Selection Engine + AI Accelerator MVP) and to a 90-Day Commitment Matrix that becomes the engagement contract backbone:
+
+| Day | Deliverable | Outcome |
+|---|---|---|
+| 14 | Maturity assessment across 5-7 modules | Baseline + same scoreboard |
+| 21 | First 3-5 Decision Packages resolved | Misalignments caught early |
+| 30 | AI Readiness + AI Quick Win Roadmap | Board AI plan in hand |
+| 45 | First initiative launched (outcome-driven, not category-limited — could be cyber, AI, data viz, automation) | Visible execution starts |
+| 60 | Second initiative + first Status Report + Cadence link live | Ongoing visibility for CEO |
+| 90 | Maturity score lift + ROI documented + AI initiative shipped | Re-engagement secured |
+
+This matrix is now the contractual backbone. See `docs/CONTRACT-TEMPLATES.md` Section 3 for the sample contract clause language.
+
+### Better / Cheaper / Faster table (locked)
+
+The fractional CDIO using AI-CDIO competes against:
+- **Full-time CDIO** ($250-400K/year, 6+ months ramp)
+- **Big 4 / boutique consulting** ($150-300K/project, 3-4 months, slide-deck-heavy)
+- **Generic ChatGPT advice** ($20/mo, zero methodology)
+- **Fractional WITHOUT AI-CDIO** ($5-15K/mo, 6 months to first outcome)
+- **Fractional WITH AI-CDIO** ($5-15K/mo, **90 days** to first outcome, framework-cited and auditable)
+
+Differentiator: **5x faster + 1/5th the cost of full-time + better proof than any consultant slide deck.**
+
+### Doc updates committed Day 11 evening
+
+- `docs/STRATEGY-2026.md` — Differentiated Promise rewritten + 90-Day Commitment Matrix added + audience shift Year 1/Year 2+ + Day 90 kill switch criterion revised + marketing principle refined
+- `docs/ROADMAP.md` — Phase 1C Days 12-17 re-sequenced (AI + Data first); Phase 2 reframed as founder dogfood (no design partner pilots Year 1); Phase 2.5 reduced to Days 39-45 (heavyweights only); Phase 3 reframed as commercial release to other fractionals
+- `docs/CONTRACT-TEMPLATES.md` — Section 3 added: "The 90-Day Commitment Matrix" sample contract clause language
+- `docs/OUTCOMES.md` — Day 90 evidence base re-emphasized; format example updated to require CEO outcome + 90-Day Commitment Matrix milestone tracking + better/cheaper/faster comparison
+- `CLAUDE.md` — Strategic Decisions + Current Sprint updated (Day 12 = Module 6, not Module 12)
+
+### What's next — Day 12 (next code session)
+
+1. Run `/plan-eng-review` on Module 6 (Data & AI Capabilities) deep + AI Accelerator MVP scope (mandatory gate per Process Discipline)
+2. Build Module 6 deep — anchored to NIST AI RMF + DAMA-DMBOK, 12-15 questions, role-tagged, level-5, framework-cited
+3. Day 13 — finish Module 6 + start AI Accelerator MVP scaffolding
+
+---
+
+## Day 11 morning — what shifted strategically (the new session reads this carefully — earlier in the day)
 
 The founder challenged the platform's positioning: *"We described features... but I can only sell outcomes, better yet feelings. Are we optimizing for outcomes and feelings?"*
 

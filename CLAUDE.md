@@ -6,12 +6,25 @@
 
 Before doing ANY work in this repo, read these in order:
 
-1. `docs/SESSION_HANDOFF.md` — Where we are, what's next
-2. `docs/PRODUCT.md` — What the product is (and isn't)
-3. `docs/ROADMAP.md` — Build order and current sprint
-4. `docs/GAPS.md` — P0 ship-blockers, P1 high, P2 medium
+1. `docs/STRATEGY-2026.md` — The contract: 4 outcome pillars, architectural laws, scope, process discipline. Refreshed 2026-05-07.
+2. `docs/SESSION_HANDOFF.md` — Where we are, what's next, Day 11 architectural decisions.
+3. `docs/ROADMAP.md` — Build order and current sprint (Phase 1C-1.5-1D-2-2.5).
+4. `docs/ARCHITECTURE.md` — Multi-corpus RAG, tenant isolation P0, single-agent default + multi-agent tier matrix, Phase 1D engine schemas.
+5. `docs/OUTCOMES.md` — Founder's weekly outcome log (verification surface for Day 90 kill switch).
+6. `docs/PRODUCT.md` — What the product is (and isn't).
+7. `docs/GAPS.md` — P0 ship-blockers, P1 high, P2 medium.
+8. `docs/CONTRACT-TEMPLATES.md` — PM covenant + vendor/contractor access language (Phase 2 Day 30 attorney review).
 
 The strategic plan (deeper context) lives at: `C:/Users/Dell/.claude/plans/curious-wibbling-raccoon.md`
+
+## Sibling Frameworks (locked 2026-05-07)
+
+The founder maintains two sibling frameworks at the OS level. Both are MIT-licensed and locally available:
+
+- **gstack** at `~/.claude/skills/gstack/` (also cloned at `C:/Users/Dell/projects/gstack/`) — Garry Tan's Claude Code skill collection. 23 specialist roles + 8 power tools as slash commands. **Used as build-process discipline** (mandatory gates — see Process Discipline section below). NOT embedded in the AI-CDIO product. Source: github.com/garrytan/gstack (founder's fork: github.com/wbardawil/gstack).
+- **gsd-2** at `C:/Users/Dell/projects/gsd-2/` — Standalone CLI for autonomous AI coding agents built on the Pi SDK. **Used as architectural reference and pattern source.** Patterns already adopted in AI-CDIO: single-writer state engine, fresh-context-per-task, durable state, worktree isolation. Runtime integration decision deferred to Phase 2.5 Day 38 gate. Source: github.com/gsd-build/gsd-2 (founder's fork: github.com/wbardawil/gsd-2).
+
+See `docs/STRATEGY-2026.md` Architectural Lineage section for the strategic framing; `docs/ARCHITECTURE.md` Architectural Lineage section for the technical details.
 
 ## What This Project Is
 
@@ -58,41 +71,73 @@ C:/Users/Dell/projects/CDIO/
 - Commit secrets or `.env.local` (it's in .gitignore — keep it that way)
 - Add tests, lint configs, or CI without being asked
 
-### Strategic Decisions Already Made
-- **Path B confirmed:** Fractional Executive OS for practitioners + internal IT directors
-- **Customer #0 = founder.** Tool first, product second, business third (sequential phases run in parallel from Day 1)
-- **5-level maturity scale** (Initial → Optimizing) — applied to module_scores, pending propagation to all prompts
-- **Multi-tenancy via practitioner → clients hierarchy** (P0 priority, not yet built)
-- **Auth via Clerk** (in deps, not wired)
-- **Background jobs via Inngest or QStash** (for synthesis + roadmap, not yet implemented)
-- **Rate limiting via Upstash Redis** (P0, not yet implemented)
+### Strategic Decisions Already Made (refreshed 2026-05-07 evening)
+- **Path B confirmed:** Fractional Executive OS for practitioners + internal IT directors. Customer #0 = founder.
+- **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on Ambar + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
+- **The Differentiated Promise is CEO-facing:** "Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice. Bad tech bets die before they cost you money. AI moves from board talk to real rollout in 90 days." See `docs/STRATEGY-2026.md`.
+- **The 90-Day Commitment Matrix locks the contract backbone:** Day 14 maturity baseline → Day 21 Decision Packages resolved → Day 30 AI roadmap → Day 45 first initiative launched (outcome-driven, not category-limited) → Day 60 second initiative + Status Report + Cadence → Day 90 maturity lift + ROI + AI initiative shipped.
+- **Better / cheaper / faster:** 5x faster + 1/5th the cost of full-time CDIO + better proof than any consultant slide deck.
+- **AI + Data + Security = 2026 Quick Win Stack (locked 2026-05-07 evening).** The playbook's original 2024-2025 Quick Win Stack of Modules 5+12+15 is replaced for 2026 by Modules 5 (Security, done) + 6 (Data & AI, next) + AI Accelerator MVP (Phase 1C Days 14-16).
+- **Outcomes-led strategy (Day 11 rewrite):** four pillars — higher project success, higher tech ROI, monthly strategy alignment, helping CEOs build moats. Each anchored in 2025-2026 research from McKinsey/BCG/KPMG/WEF/Gartner.
+- **Pillar 4 AI claim boundary:** AI-CDIO does not build AI; it catches the seven decision-phase failures that cause ~70% of AI initiatives to die before they deliver value.
+- **Command-center reframe:** the platform is the strategic heartbeat (charter, decisions, oversight, value tracking, re-assessment); tactical task management lives in the client's existing tools (Jira, Asana, Monday) via read-sync.
+- **Methodology FULL on every tier:** no feature-gating of AI Accelerator. Tiers differentiate by scale (clients, practitioners) and compute mechanism only. Mechanism 1 (allowance + metered overage) for Starter; Mechanism 2 (BYOK) for Growth + Scale. Final pricing locked at Phase 2 Day 37-38 based on Day 19 cost telemetry.
+- **Day 90 kill switch criterion revised (locked 2026-05-07 evening):** Year 1 metric is CEO outcomes delivered (`docs/OUTCOMES.md`), not paying-customer count from fractionals. Paying-customer count is a Year 2 metric.
+- **Phase 1D scope (Days 21-28):** Charter → Initiative Pilot → Selection Engine (Tech + Partner) + Network Catalog → Cadence → Status Reports → MCP + integrations.
+- **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on Ambar + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
+- **Phase 2.5 reduced to 6-7 days (locked 2026-05-07 evening):** AI Accelerator MVP shipped early in Phase 1C; Phase 2.5 only handles heavyweight pieces (deep Use-Case Library expansion, multi-step AI Roadmap, Selection Engine AI extension, Governance Scaffolding, quarterly cadence formalization).
+- **Phase 3 reframed (locked 2026-05-07 evening):** opens to other fractionals (commercial release). Stripe + first paying fractional customers + design partner pilots.
+- **Architectural laws (8) locked:** see `docs/STRATEGY-2026.md` Architectural Laws section.
+- **Network Catalog privacy P0:** per-practitioner only, encrypted, no cross-practitioner aggregates Year 1.
+- **gsd-2 runtime integration deferred** to Phase 2.5 Day 38 decision gate.
+- **gstack skills are mandatory gates** going forward (see Process Discipline section above).
+- **5-level maturity scale** (Initial → Optimizing) — Module 5 deep-pass shipped Day 8.
+- **Multi-tenancy via practitioner → clients hierarchy:** N:N schema (already in place); UI defaults to single-owner display.
+- **Auth via Clerk:** wired Day 1.
+- **Rate limiting via Upstash Redis:** Day 5 (env vars pending).
 
-## Current Sprint (Week 1 — Foundation)
+## Current Sprint (end of Day 11 evening — Phase 1C in progress, AI + Data re-sequence locked)
 
-Per `docs/ROADMAP.md`:
+Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-11 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 evening scope re-sequence).
 
-1. Add Clerk auth + middleware on every API route
-2. Add `practitioners` + `practitioner_clients` tables to schema
-3. Practitioner workspace UI: list of all clients
-4. Strip `assessment_token` from dashboard response, derive IDs server-side
-5. Upstash Redis rate limiting on `/api/chat` and `/api/assessments`
-6. Wrap synthesis delete-then-insert in transaction
-7. Migrate founder's 1-3 real clients into platform
+**Day 12 (next code session) — REVISED 2026-05-07 evening:**
+1. Run `/plan-eng-review` on Module 6 + AI Accelerator MVP scope (mandatory gate per Process Discipline)
+2. **Module 6 deep — Data & AI Capabilities** (NIST AI RMF + DAMA-DMBOK anchor) — was Module 12 here; bumped to Phase 2 dogfood
 
-**Done = Founder logs in, sees portfolio, drills into Client A, runs existing engines safely.**
+**Days 13-16:** Module 6 finish + AI Accelerator MVP (Maturity Model + Use-Case Library + Roadmap Generator + Public `/ai-readiness` Quick Scan). **The buy-trigger lands at Day 16, not Day 50.**
 
-## gstack Skills (When Installed)
+**Days 17:** Framework citations + jargon-to-CEO translation + adaptive questioning AI leverage.
 
-If `~/.claude/skills/gstack` is present, use these skills proactively:
+**Modules 12, 15, 2 deferred to Phase 2 dogfood (Days 29-38)** — they get depth pass during real Ambar engagement work, driven by what actually moves the needle.
 
-- **Before any feature:** `/plan-ceo-review` (rethink scope) → `/plan-eng-review` (architecture) → `/autoplan` (combined)
-- **After implementation:** `/review` (find production bugs) → `/qa <url>` (test in real browser)
-- **Before commit:** `/cso` (security audit on touched code)
-- **Before deploy:** `/ship` (sync, test, push, PR) → `/land-and-deploy`
-- **Weekly:** `/retro` (per-client patterns, time wins, blockers)
-- **Never use:** `mcp__claude-in-chrome__*` — use `/browse` from gstack instead
+**Done with Phase 1C = the founder can sell "AI implementation as a service" to CEO clients within 30 days of where we are now. AI + Data + Security (Modules 5 + 6) is the 2026 Quick Win Stack — not the playbook's original 2024-2025 framing of 5+12+15.**
 
-If gstack is NOT installed, proceed without it. Don't request installation unless asked.
+## Process Discipline — gstack as MANDATORY GATES (locked 2026-05-07)
+
+gstack is installed at `~/.claude/skills/gstack/`. **Going forward, gstack skills are mandatory gates, not optional polish.** Days 1-11 under-used these skills; the Day 11 outcomes-led strategic pivot was done manually when `/plan-ceo-review` would have surfaced the same conclusions in one command. We don't repeat that mistake.
+
+### Mandatory gates by scenario
+
+- **Before any architecture commit:** `/plan-eng-review` — surface hidden assumptions, lock data flow + state machines + edge cases
+- **Before any scope change:** `/plan-ceo-review` — outcome-led / scope-expansion challenge in one command
+- **Before any privacy-sensitive feature:** `/cso` — OWASP + STRIDE security audit (Network Catalog Day 25 is non-negotiable)
+- **For independent second opinions on architectural calls:** `/codex` — OpenAI Codex CLI reviews same code/plan
+- **At start of any new phase:** `/autoplan` — runs CEO + Design + Eng reviews chained automatically
+- **Before any merge to main:** `/review` — catches production bugs that pass CI
+- **Before any deploy:** `/qa` — real browser, real clicks, regression tests auto-generated
+- **After major commits:** `/learn` — captures patterns for Phase 4 Knowledge Reuse panel
+- **Weekly:** `/retro` — engineering retrospective with per-person breakdown
+
+### Non-negotiable phase gates
+
+- **Before Phase 1D Day 21 (Charter Generator):** run `/plan-eng-review` on the entire Phase 1D scope (Initiative Pilot + Selection Engine + Network Catalog)
+- **Before Phase 1D Day 25 (Network Catalog):** run `/cso` on the privacy + tenant-isolation model
+- **Before Phase 1.5 Day 18 (production deploy):** run `/cso` on the production attack surface
+- **Before Phase 2.5 Day 39 (AI Accelerator):** run `/autoplan` on the full Phase 2.5 scope and `/codex` on the multi-agent architecture decision
+
+**Browser automation:** never use `mcp__claude-in-chrome__*` tools — use `/browse` from gstack instead.
+
+**Cost of skipping:** skipping gates is a false economy. Each gate adds 5-15 minutes of agent runtime; the cost of NOT skipping is measured in re-work. The Day 11 strategic pivot would have cost zero re-work if `/plan-ceo-review` had run on Day 6.
 
 ## Tech Stack
 
