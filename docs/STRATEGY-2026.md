@@ -86,6 +86,8 @@ This is the inversion from the previous version of this doc: features are now su
 
 **Honest grade today:** this is the platform's *weakest* pillar. The Quick Win Stack (Modules 5 + 12 + 15) addresses defensive moves — risk reduction, cost discipline, operational efficiency — not moat-building. **This pillar requires Phase 2.5 to land before AI-CDIO delivers on it.**
 
+**Boundary on the AI claim (added 2026-05-07):** AI-CDIO does not build your AI. It catches the seven decision-phase failures that account for ~70% of why AI initiatives die before they deliver value: wrong use case, weak sponsorship, no success criteria, CEO-CTO misalignment, build-vs-buy errors, governance gaps, organizational silos. The remaining ~30% (data engineering, MLOps execution, end-user adoption) is the execution partner's responsibility. This boundary is what protects the founder in sales — we sell strategic clarity, not implementation guarantees. At Day 90 we count "decisions caught" and "wasted spend avoided," not "AI accuracy improvements" — those aren't ours to claim.
+
 **How AI-CDIO will structurally deliver it (Phase 2.5 — Days 39-50):**
 - AI Maturity Model + AI Use-Case Library: catalogs proprietary-data moat opportunities by industry × function. Stops generic AI bets, focuses on use cases that compound.
 - AI Roadmap Generator: 90/180/360-day plan toward end-to-end AI systems, not isolated experiments.

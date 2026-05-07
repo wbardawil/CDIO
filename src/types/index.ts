@@ -216,25 +216,112 @@ export interface Milestone {
 }
 
 // --- Module Definitions ---
+//
+// Phase 1C Day 11 (2026-05-07) outcome-led rename. Each module is a
+// dimension of fractional-CDIO methodology, anchored to a recognized
+// framework so the assessment is auditable and credible. The one-liner
+// names what the module asks of the organization in plain English the
+// CEO would use at dinner — not the framework jargon.
 
-export const MODULE_NAMES: Record<number, string> = {
-  1: "Role of the CIDO",
-  2: "IT/Digital Transformation Strategy",
-  3: "Enterprise Architecture & IT Modernization",
-  4: "Cloud Computing & Infrastructure Strategy",
-  5: "Cybersecurity, Risk Management & Compliance",
-  6: "Data & AI Engineering",
-  7: "Digital Ecosystems: Platforms & Products",
-  8: "Data Analytics, BI & Decision Science",
-  9: "Human Centered Design & Customer Journey",
-  10: "Leadership, Business Strategy & Communications",
-  11: "CIDO Organization Structure & Operations",
-  12: "Financial Acumen",
-  13: "Portfolio & Vendor Management",
-  14: "Agile, DevOps & Innovation Management",
-  15: "Business Process Transformation & Automation",
-  16: "Future of Work & Workforce Development",
+export interface ModuleMeta {
+  /** Outcome-led name shown across the UI. */
+  name: string;
+  /** Plain-English one-liner — what this module asks of the organization. */
+  oneLiner: string;
+  /** Anchor framework(s) — surfaced as authority in the workspace tooltip. */
+  framework: string;
+}
+
+export const MODULE_META: Record<number, ModuleMeta> = {
+  1: {
+    name: "Technology Leadership at the Top",
+    oneLiner: "Is there a real seat at the executive table for technology?",
+    framework: "Gartner CIO Leadership Model",
+  },
+  2: {
+    name: "Tech Strategy & Business Alignment",
+    oneLiner: "Is your technology strategy actually aligned with where the business is going?",
+    framework: "KPMG 4-Practice Alignment + MIT Strategic Alignment Model",
+  },
+  3: {
+    name: "Tech Foundation & Modernization",
+    oneLiner: "Is your tech foundation working with you or against you?",
+    framework: "TOGAF (lite) + Gartner Application Modernization",
+  },
+  4: {
+    name: "Cloud & Infrastructure",
+    oneLiner: "Is your cloud spend disciplined and your infrastructure resilient?",
+    framework: "AWS Well-Architected + FinOps Foundation",
+  },
+  5: {
+    name: "Security, Risk & Compliance",
+    oneLiner: "Are you protecting the business, or hoping nothing happens?",
+    framework: "NIST CSF v2.0 + CMMI",
+  },
+  6: {
+    name: "Data & AI Capabilities",
+    oneLiner: "Is your data ready to power AI, or is AI exposing a data problem?",
+    framework: "NIST AI RMF + DAMA-DMBOK",
+  },
+  7: {
+    name: "Platforms, APIs & Digital Products",
+    oneLiner: "Are your systems connected enough to create digital revenue?",
+    framework: "TOGAF Integration + Postman API Maturity",
+  },
+  8: {
+    name: "Analytics & Data-Driven Decisions",
+    oneLiner: "Are you making decisions on data, or on gut feel dressed up as data?",
+    framework: "Gartner Analytics Maturity Model",
+  },
+  9: {
+    name: "Customer Experience & Journey",
+    oneLiner: "Do you know what your customer feels at every touchpoint, and is it improving?",
+    framework: "Forrester CX Index + Service Design Network",
+  },
+  10: {
+    name: "Executive Communication & Influence",
+    oneLiner: "Does technology have a voice the rest of the executive team listens to?",
+    framework: "HBR Leadership + IT-CMF",
+  },
+  11: {
+    name: "IT Team Structure & Operations",
+    oneLiner: "Is your IT team set up to deliver, or set up to firefight?",
+    framework: "ITIL 4",
+  },
+  12: {
+    name: "Tech Finance & Value Realization",
+    oneLiner: "Do you know what your technology costs and what it returns?",
+    framework: "TBM Council + KPMG Return on Objectives",
+  },
+  13: {
+    name: "Portfolio, Vendors & SaaS Spend",
+    oneLiner: "Are you running your vendor portfolio, or is it running you?",
+    framework: "Gartner ITPPM + SaaS Optimization",
+  },
+  14: {
+    name: "Delivery, DevOps & Innovation",
+    oneLiner: "How fast can you ship a working change to your customer?",
+    framework: "DORA Metrics + SAFe",
+  },
+  15: {
+    name: "Process Automation & Transformation",
+    oneLiner: "Where is human time being wasted on work a machine could do reliably?",
+    framework: "APQC PCF + Lean Six Sigma",
+  },
+  16: {
+    name: "Workforce, Skills & Change",
+    oneLiner: "Is your team ready for the technology you're rolling out?",
+    framework: "Prosci ADKAR + Kotter 8-Step",
+  },
 };
+
+/**
+ * Backwards-compatible export. Many call sites still import MODULE_NAMES;
+ * they keep working because the surface is unchanged.
+ */
+export const MODULE_NAMES: Record<number, string> = Object.fromEntries(
+  Object.entries(MODULE_META).map(([k, v]) => [Number(k), v.name])
+) as Record<number, string>;
 
 // --- Module Stacks (pre-built combinations from adaptation guide) ---
 

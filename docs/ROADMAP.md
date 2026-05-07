@@ -1,7 +1,9 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-04-29 (Day 6 of Phase 1, end of Phase 1B Day 6 — **MECE rewrite**: AI lens removed from Phase 1C and absorbed into Phase 2.5 (don't tease a feature that won't exist for 23 days); legal foundation moved into Phase 1.5 (no public deploy without ToS/Privacy/AI Disclaimer); pricing & packaging design slotted into Phase 2 (before Stripe in Phase 3); Phase 1D engines explicitly designed with extension points for Phase 2.5; Phase 2.5 expanded to 12 days; account/billing settings UI added before Phase 3 Stripe; Day 90 math re-examined).
+> **Last refreshed:** 2026-05-07 (Phase 1C Day 11 — outcomes-led strategy rewrite; 16 modules renamed + framework-anchored + one-liners added; **Module 2 deep promoted from Phase 4 to Phase 1C Day 16** because it's the structural expression of Pillar 3 — strategy-tech alignment is the platform's strongest pillar; **Tier 1 AI leverage** added to Phase 1C/1.5: adaptive questioning (Day 16), framework-jargon-to-CEO-language translation (Day 17), industry overlay generator (Day 18). These mitigate the complexity tax of 15-question framework-anchored modules.).
+>
+> **Previous refresh:** 2026-04-29 (Phase 1B Day 6 MECE rewrite — AI lens removed from Phase 1C, legal foundation moved into Phase 1.5, pricing slotted into Phase 2, Phase 2.5 expanded to 12 days).
 
 ## Current State (April 2026)
 
@@ -68,7 +70,7 @@ Closed P0-1 (auth), P0-2 (IDOR), P0-5 (practitioner workspace), P0-7 (conversati
 
 **Done = Founder onboards / edits / emails / monitors clients without manual workarounds. Test and Real clients are visually + behaviorally distinct everywhere.**
 
-### Phase 1C — Methodology Depth: Quick Win Stack (Days 8-17)
+### Phase 1C — Methodology Depth: Quick Win Stack + Module 2 + AI-Leveraged Frameworks (Days 8-17)
 
 **Goal:** The methodology becomes visible. Module 5 + 12 + 15 (the playbook's named "Quick Win Stack", 200-400% ROI in 90 days) get full depth so an assessment produces real diagnostic output, not just scores. AND the assessment becomes role-aware at the **question** level — a CEO no longer sees the same questions as a CTO inside a given module.
 
@@ -120,7 +122,8 @@ Every diagnostic question gets tagged on two axes:
 | 11 | **Decision Package surface** — standalone artifact, not buried in synthesis. Hero-level UI in workspace. | The "what should I do" output that wins prospects |
 | 12-13 | **Module 12 deep (Financial Acumen)** + **Module 15 deep (Process Automation)** — replicate Module 5 pattern, **including role/area tagging + N/A** | Quick Win Stack assessment is demo-quality, role-aware, N/A-safe |
 | 14-15 | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). **NO AI lens here** — the AI Quick Scan teaser was deferred to Phase 2.5 to avoid teasing a feature that doesn't exist yet. | Sales-conversion engine for the existing CDIO methodology |
-| 16-17 | **Framework citations layer** — every score, every recommendation links to the named framework + playbook excerpt. **Architecture deliberately generic** — extends to NIST AI RMF + EU AI Act in Phase 2.5 without rebuild. | Methodology authority visible everywhere; AI-frameworks-ready by design |
+| 16 | **Module 2 deep — Tech Strategy & Business Alignment** (PROMOTED from Phase 4 on 2026-05-07) anchored to **KPMG 4-practice + MIT Strategic Alignment Model**. 12 questions tagged + level 5 + framework-cited. Plus: **Tier 1 AI leverage — adaptive questioning** wired in (every stakeholder gets 6-8 contextually-selected questions instead of 15). Uses existing `generateFollowUpQuestions` infrastructure. | Pillar 3 (alignment) gets its strongest expression. Complexity tax of 15-question modules removed by adaptive selection. |
+| 17 | **Framework citations layer + jargon → CEO-language translation** — every score, every recommendation links to the named framework + playbook excerpt. **Tier 1 AI leverage — runtime translation:** practitioner sees "PR.AA-05"; CEO sees "*Does your team enforce password rules everyone follows?*" Architecture deliberately generic — extends to NIST AI RMF + EU AI Act in Phase 2.5 without rebuild. | Methodology authority visible everywhere; AI-frameworks-ready by design; CEO never sees framework jargon. |
 
 **Phase 1C also includes — explicit data migration plan (added 2026-04-29 MECE):** when Module 5/12/15 question banks are rewritten Days 8-13, existing assessment responses (Ambar's in-progress assessment, TestCo's completed assessment) need a migration plan. Options to evaluate Day 8: (a) preserve old responses by ID, present old questions in a read-only "legacy" tab; (b) discard old responses and re-prompt stakeholders; (c) machine-map old → new questions where possible, flag mismatches. **Decision required Day 8 before rewriting.**
 
@@ -136,9 +139,9 @@ Every diagnostic question gets tagged on two axes:
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 18 | **Vercel production deploy** — environment vars, build pipeline, smoke-test all critical flows in production. **Custom domain** (e.g., `ai-cdio.com` — domain decision pending founder) + DNS + SSL. | Public URL anyone can visit. No more localhost-only demos. |
+| 18 | **Vercel production deploy** — environment vars, build pipeline, smoke-test all critical flows in production. **Custom domain** (e.g., `ai-cdio.com` — domain decision pending founder) + DNS + SSL. **Tier 1 AI leverage — industry overlay generator:** AI rewrites base questions to feel native to the client's industry at runtime (manufacturing gets supply-chain phrasing; healthcare gets HIPAA phrasing). Massive content multiplier — 16 modules × 6 industries handled by one runtime function instead of 96 hand-written variants. | Public URL anyone can visit. Every assessment feels native to the client's industry. |
 | 19 | **Verified email domain in Resend** — DNS records (SPF/DKIM/DMARC) for the custom domain. Update `send-assessment-email.ts` sender from `onboarding@resend.dev` to `you@<custom-domain>`. End-to-end test: send a real assessment email from prod, deliverability passes spam-folder check. **Cost telemetry instrumentation** — wire per-engagement LLM-cost tracking to `agent_logs` table (token counts × model × org_id). Required for Phase 3 pricing decisions to be evidence-based, not guessed. | Real Ambar exec emails work. Professional sender. Phase 1C dogfood unblocked at production-grade. Cost-per-client visibility exists from Day 1 of public exposure. |
-| 20 | **Legal foundation (NEW — MECE fix)** — Terms of Service + Privacy Policy + AI Disclaimer pages live at `/terms`, `/privacy`, `/ai-disclaimer`. Use Termly or Iubenda templates as starting point + light tailoring (no $5K legal review yet — that lands in Phase 2 Day 30 once we have real customer use). Cookie consent banner if EU traffic anticipated. Sign-up flow gated on accepting ToS + Privacy. **No public traffic before this lands.** | App is legally operable for public use. Closes a 12-day exposure window the previous plan had. |
+| 20 | **Legal foundation** — Terms of Service + Privacy Policy + AI Disclaimer pages live at `/terms`, `/privacy`, `/ai-disclaimer`. Use Termly or Iubenda templates as starting point + light tailoring (no $5K legal review yet — that lands in Phase 2 Day 30 once we have real customer use). Cookie consent banner if EU traffic anticipated. Sign-up flow gated on accepting ToS + Privacy. **No public traffic before this lands.** | App is legally operable for public use. Closes a 12-day exposure window the previous plan had. |
 
 **Done = `https://<custom-domain>` serves the platform with legal docs in place; assessment emails arrive in inboxes (not spam) from a verified custom domain; cost-per-engagement is tracked from the first production query.**
 
