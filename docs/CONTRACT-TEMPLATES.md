@@ -11,7 +11,7 @@ The platform's PM guardrail (locked in `docs/STRATEGY-2026.md` Pillar 1) require
 
 Phase 2 Day 29-31 ships the Asset Library (one-pager, demo video, case study, LinkedIn templates). Contract template language ships alongside as part of that asset bundle.
 
-## Three categories of clauses to draft
+## Four categories of clauses to draft
 
 Each category lists the founder's stated intent. Attorney drafts the actual language at Phase 2 Day 30.
 
@@ -36,7 +36,37 @@ Each category lists the founder's stated intent. Attorney drafts the actual lang
 - "Engagement records (initiative steps, decisions, status reports, charters) are jointly owned by Client and Practitioner. Either party may export full engagement record at any time."
 - "Vendor / contractor pricing, performance ratings, and Practitioner's notes about vendors / contractors remain Practitioner's private records and are not shared with Client unless Practitioner explicitly chooses to."
 
-### 3. AI / data-handling clauses
+### 3. The 90-Day Commitment Matrix (NEW 2026-05-07 evening — locked)
+
+**Purpose:** turn the Differentiated Promise from `docs/STRATEGY-2026.md` into contractual deliverables the CEO can hold the practitioner to. This is the operational backbone of every fractional engagement contract — the founder's, and (Year 2+) every fractional customer's.
+
+**Stated intent:**
+> *"How would I be able to promise an outcome for my CEO and deliver it at a better quality? Better, cheaper, faster — those are the alternatives the CEO is choosing between."*
+
+**Sample contract clause (placeholder for attorney review):**
+
+> *"Practitioner commits to delivering the following milestones to Client during the first 90 days of engagement:*
+>
+> *Day 14 — Maturity assessment delivered, covering the agreed active modules. Baseline scores documented with framework citations.*
+>
+> *Day 21 — First 3-5 Decision Packages produced and reviewed with Client leadership. Misalignments between stakeholders surfaced and resolution paths proposed.*
+>
+> *Day 30 — AI Readiness assessment completed. AI Quick Win Roadmap delivered (90/180/360-day plan with named use cases, ROI estimates, and build-vs-buy recommendations).*
+>
+> *Day 45 — First Initiative launched, with vendor / contractor / internal team aligned. Initiative scope is determined by Client's highest-leverage outcome — could be cybersecurity hardening, AI implementation, data visualization or analytics, process automation, or any other outcome anchored to a recognized framework.*
+>
+> *Day 60 — Second Initiative launched. First Status Report delivered. Engagement Cadence (read-only client view) live for Client's executive team.*
+>
+> *Day 90 — First-quarter outcomes review: documented maturity score lift on 2-3 modules, ROI calculation with measurable evidence, and at least one initiative shipped to production.*
+>
+> *Failure to deliver any milestone by its target date triggers a written exception report from Practitioner to Client within 5 business days, with revised target date and root cause."*
+
+**Notes for attorney:**
+- These milestones are deliverables, not aspirations. The clause should make them enforceable but not crippling — reasonable miss-and-replan language with exception reports is the right balance.
+- The Day 45 initiative is intentionally outcome-driven, not category-limited — the practitioner picks the highest-leverage move for THIS specific Client. Don't pin it to a fixed category in the contract; pin it to "highest-leverage outcome anchored to a recognized framework."
+- The 90-Day Commitment is what differentiates the fractional CDIO using AI-CDIO from a traditional fractional CDIO who delivers vague advisory hours. Protect it as the contractual differentiator.
+
+### 4. AI / data-handling clauses
 
 **Purpose:** EU AI Act, GDPR, CCPA, and SOC2 compliance language for SMB clients in regulated industries.
 

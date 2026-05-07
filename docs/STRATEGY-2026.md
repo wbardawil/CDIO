@@ -1,7 +1,7 @@
 # AI-CDIO: Strategy 2026
 
 **Status:** Active strategic source of truth. Supersedes any conflicting language in older docs.
-**Last refreshed:** 2026-05-07 (Day 11 — three updates: (1) outcomes-and-feelings rewrite anchored in 2025-2026 research from McKinsey, BCG, KPMG, Gartner, Deloitte, WEF; (2) **scope expanded** to include Initiative Pilot + Selection Engine + Network Catalog as Phase 1D deliverables, founder confirmed execution oversight is in scope; (3) **architectural laws** locked: single-agent default with tier-based multi-agent matrix, multi-corpus RAG with strict tenant isolation, memory primitives Phase 4 commitment.)
+**Last refreshed:** 2026-05-07 (Day 11 evening — fifth and final update: **(1)** outcomes-and-feelings rewrite anchored in 2025-2026 research from McKinsey, BCG, KPMG, Gartner, Deloitte, WEF; **(2)** scope expanded to include Initiative Pilot + Selection Engine + Network Catalog as Phase 1D deliverables, founder confirmed execution oversight is in scope; **(3)** architectural laws locked: single-agent default, methodology FULL on every tier (no feature-gating), multi-corpus RAG with strict tenant isolation, memory primitives Phase 4 commitment; **(4)** Process Discipline locked — gstack skills are mandatory gates not optional polish; Architectural Lineage from gsd-2 + gstack documented; Network Catalog Privacy P0 spec; **(5)** AI + Data + Quick Win re-sequenced as Phase 1C priority (was Phase 2.5); audience shift locked — Year 1 customer is the CEO via the founder, Year 2+ customer is other fractionals; CEO-facing differentiated promise rewritten as a 3-promise structure with 90-Day Commitment Matrix.)
 
 ---
 
@@ -126,13 +126,63 @@ These feelings are what survive the demo-to-paid conversion. Features get the pr
 
 ---
 
-## The Differentiated Promise (reconciled 2026-04-29, sharpened 2026-05-07)
+## The Differentiated Promise — CEO-facing, locked 2026-05-07 evening
 
-> *"ScalePad manages your IT inventory. Fortium gives you a fractional CIO body. Asana / Jira manages your tasks. ChatGPT gives you a generalist with no methodology. AI-CDIO is the only platform that becomes the **fractional CDIO's command center** — running the strategic heartbeat of every engagement (charter → assess → recommend → choose → decide → oversee → prove value → re-assess) while integrating with the tactical tools the client already uses."*
+The Year 1 audience is the **CEO**, not other fractionals. The founder pitches AI-CDIO indirectly: it's how he keeps the promises he makes to his CEO clients. Year 2+ pivots to other fractionals once the founder's outcome log validates the platform.
 
-This positions to **practitioners as the buyer**, names the **CEO AI-implementation pull** as the buy-trigger, and leads with **outcomes** (project success, ROI, alignment, moats), not features. Survives until customer feedback proves it wrong.
+**The pitch — what the founder says to a CEO he's pitching as their fractional CDIO:**
+
+> *"Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice — you walk in with framework-cited proof. Bad tech bets die before they cost you money — every decision over $25K runs through a review with named alternatives. AI moves from board talk to real rollout — you ship something in 90 days, not strategy theater. I deliver this in one quarter at a fifth the cost of a full-time CDIO. The platform I built makes me 5x faster than peers. That's why I can promise outcomes other fractionals only hint at."*
+
+**Three promises with proof of mechanism:**
+
+| Promise to the CEO | What the CEO experiences | Mechanism (why the founder can keep it) |
+|---|---|---|
+| **Your board stops asking the same tech questions twice** | Walks into every board meeting with framework-cited maturity progression + decision logs | Module assessments anchored to NIST CSF / KPMG / TBM / NIST AI RMF. Citations on every score. Maturity chart over time. |
+| **Bad tech bets die before they cost real money** | Every tech investment ≥$25K runs through a decision review with named alternatives + projected ROI of acting vs deferring | Selection Engine matrix + Decision Package surface. Catches CEO/CTO divergence BEFORE funding. |
+| **AI moves from board talk to real rollout in 90 days** | A working AI quick win in production, not strategy theater | AI Accelerator MVP — Maturity Model + Use-Case Library + AI Roadmap + Build-vs-Buy + Governance scaffolding |
+
+**Better / cheaper / faster — against the alternatives the CEO would otherwise consider:**
+
+| Alternative | Cost | Time to outcome | Quality of proof |
+|---|---|---|---|
+| Full-time CDIO hire | $250-400K/year + benefits + equity | 6+ months to ramp | High but expensive; locked in |
+| Big 4 / boutique consulting firm | $150-300K for one project | 3-4 months engagement | High proof but slide-deck-heavy, hard to operationalize |
+| Generic ChatGPT advice | $20/mo | Instant but useless | Zero — no methodology, no citations, no continuity |
+| Fractional CDIO WITHOUT AI-CDIO | $5-15K/mo | 6 months to first outcome | Variable; depends on consultant's manual work |
+| **Fractional CDIO WITH AI-CDIO** | **$5-15K/mo** | **90 days to first outcome** | **Framework-cited, board-ready, auditable** |
+
+The differentiator: **5x faster + 1/5th the cost of full-time + better proof than any consultant slide deck.**
 
 **Command-center reframe (locked 2026-05-07):** the platform is the *strategic heartbeat* of the engagement — diagnostic, decisions, charter, oversight, value tracking, re-assessment. Tactical task management lives in the client's existing tools (Jira, Asana, Monday). Read-sync brings tactical status into the strategic view; we never compete with PM tools.
+
+---
+
+## The 90-Day Commitment Matrix (locked 2026-05-07 evening)
+
+This is what goes into the founder's engagement contract with each CEO client. It's the operational backbone of the Differentiated Promise above. The platform makes each milestone deliverable on the timeline below.
+
+| Day | Deliverable to CEO | Outcome unlocked |
+|---|---|---|
+| **Day 14** | Maturity assessment complete across 5-7 active modules | Baseline locked. CEO and team see the same scoreboard. |
+| **Day 21** | First 3-5 Decision Packages resolved | Misalignments caught before they cost money. |
+| **Day 30** | AI Readiness assessment + AI Quick Win Roadmap delivered | CEO walks into next board meeting with the AI plan. |
+| **Day 45** | First initiative launched with vendor + contractor + internal team aligned | Visible execution starts. The "we don't know what's happening" worry dies. **First initiative is outcome-driven, not category-limited** — could be a cybersecurity quick win, AI quick win, data visualization / analysis quick win, process automation quick win, or any other module-anchored deliverable that's the highest-leverage outcome for THIS specific client. |
+| **Day 60** | Second initiative launched. First Status Report sent. Cadence link live. | CEO sees ongoing engagement progress without asking. |
+| **Day 90** | First quarter's outcome: maturity score lift on 2-3 modules + ROI documented + AI initiative shipped to production | Re-engagement secured. Board sees real numbers. |
+
+**This matrix becomes part of `docs/CONTRACT-TEMPLATES.md`** as the contract language the founder uses with new CEO clients, and (Year 2+) the contract template AI-CDIO ships to other fractionals so they can make the same commitment to their own CEOs.
+
+---
+
+## Audience Shift Locked (2026-05-07 evening)
+
+| Year | Customer | What you sell them | How |
+|---|---|---|---|
+| **Year 1 (now → Day ~180)** | **The founder's CEO clients** (Ambar, plus 1-2 more) | Outcomes + feelings: tech bets stop bleeding budget, AI moves from talk to rollout, board moments land cleanly, alignment month-over-month | The founder uses AI-CDIO as HIS tool. The CEO never logs in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it. |
+| **Year 2+ (Phase 3 onward)** | **Other fractional CDIOs** (the founder's peers) | Capacity unlock + new income stream once the founder's own fractional practice maxes out | Open the platform commercially. Ship the same Differentiated Promise + 90-Day Commitment Matrix as a productized methodology other fractionals can adopt. |
+
+**This means Phase 2 is reframed:** it's NOT 5 design partner pilots. It's the founder running the platform on Ambar + 1-2 more REAL clients of his own fractional practice, building the outcome log that Year 2+ commercialization rests on. Design partners (other fractionals testing it) move to Phase 3.
 
 ---
 
@@ -286,7 +336,7 @@ The original "1M SMBs by Year 3" is replaced by realistic targets that compound.
 | Pilot → Paid (Day 14, 30, 60) | Personal check-in calls | Auto-tracks usage, sends pilot summary |
 | Quarterly research | Approve scope, write voice | Aggregates anonymized data, drafts findings |
 
-**Marketing principle (locked 2026-05-07):** every public artifact (LinkedIn posts, case studies, demo video, one-pager) leads with **outcomes and feelings**, never with features. "I caught a $40K wasted IT spend in 30 minutes using my own methodology, productized" — not "I built a 5-level maturity assessment."
+**Marketing principle (refined 2026-05-07 evening):** Year 1 marketing audience is the founder's **current and prospective CEO clients** — not other fractionals. Every public artifact (LinkedIn posts, case studies, demo video, one-pager) leads with what the CEO experiences when their fractional CDIO uses AI-CDIO. *"Caught Mike's encryption gap before the May 14 board meeting — reframed L2 to L3 path with $40K NIST-aligned roadmap. Ambar's CEO walked into the board confident."* — not *"I built a 5-level maturity assessment."* Year 2+ marketing pivots to other fractionals once the founder's CEO outcome log validates the platform.
 
 ---
 
@@ -501,16 +551,16 @@ Per Process Discipline above, `/cso` (OWASP + STRIDE audit) runs before any Netw
 - **Day 90 hits Day 39 of monetization runway** (15 days into Phase 4)
 - Design partners onboarded Days 34-38 → 14-day pilot ends Days 48-52 → conversion window Days 52-90 (~5 weeks)
 
-**Realistic Day 90 outcomes:**
-- **5+ paying customers at $199+** → continue, accelerate. Achievable only if 4-5 of 5 design partners convert at Day 14 + a few cold-DM conversions. Optimistic but possible.
-- **1-4 paying customers + founder using daily** → continue, slow burn. **Most likely actual outcome.** 5 design partners → typical conversion 30-50% at Day 14 → 1-2 paying. Plus 1-2 cold-DM conversions = 2-4 paying.
-- **0 paying + 0 commitments + founder NOT using daily** → STOP. Reframe or shelve.
-- **Founder using daily and saving 5+ hrs/client/month, even at 0 paid** → continue. The tool is the product. Day 90 is a checkpoint, not a deadline.
+**Realistic Day 90 outcomes (REVISED 2026-05-07 evening — audience shift to CEO-first locked):**
 
-**Tightened criteria (2026-04-29):** the slow-burn outcome (1-4 paying + founder daily) is the planning baseline. Anything above is upside. Kill-switch fires only on the third scenario (zero everything).
+The Year 1 customer is the founder's CEO clients via him, not other fractionals. The Day 90 kill switch must measure **outcomes delivered to those CEO clients**, not paying-customer count from other fractionals. Paying-customer-from-fractionals is a Year 2 signal.
 
-**New criterion added 2026-05-07 — outcomes verification:**
-- **Has the founder logged at least 5 weekly outcomes in the new outcome log by Day 90?** Outcomes meaning: specific dollar amounts saved, specific decisions caught, specific board moments won. If yes — the practitioner-first thesis is validated qualitatively, regardless of paying-customer count. If no — the platform is producing features without producing outcomes, and we have a positioning problem, not just a sales problem.
+- **The founder has delivered all six 90-Day Commitment Matrix milestones to at least one real CEO client (Ambar)** → continue, accelerate. The platform's promise is keeping promises to CEO clients. If that's working, the rest follows.
+- **The founder has delivered 4-5 of the six milestones + has 5+ qualitative outcomes logged in `docs/OUTCOMES.md`** → continue, slow burn. **Most likely actual outcome.** Real CEO outcomes are the Year 1 evidence base.
+- **The founder has delivered <3 milestones to any CEO client AND has fewer than 3 qualitative outcomes logged** → STOP. Reframe or shelve. The platform isn't making the founder's practice better.
+- **The founder has delivered all six milestones to multiple CEO clients (Ambar + 1-2 more) and is capacity-constrained** → trigger Year 2 commercialization. This is the cue to release to other fractionals.
+
+**Paying-customer count at Day 90 is no longer the headline metric.** It moves to a Year 2 metric. The Year 1 metric is **CEO outcomes delivered**, measured in `docs/OUTCOMES.md` weekly entries with specific dollar amounts saved, specific decisions caught, specific board moments won.
 
 The kill switch protects against sunk-cost spiral. It does not punish slow paying-customer ramp if the dogfood loop is healthy.
 
