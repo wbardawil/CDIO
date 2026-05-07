@@ -235,6 +235,12 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             <h1 className="text-base font-semibold text-gray-900">{org.name}</h1>
           </div>
           <div className="flex items-center gap-4">
+            <Link
+              href={`/clients/${org.id}/charter`}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Charter
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
