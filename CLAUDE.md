@@ -77,7 +77,7 @@ C:/Users/Dell/projects/CDIO/
 - **The Differentiated Promise is CEO-facing:** "Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice. Bad tech bets die before they cost you money. AI moves from board talk to real rollout in 90 days." See `docs/STRATEGY-2026.md`.
 - **The 90-Day Commitment Matrix locks the contract backbone:** Day 14 maturity baseline → Day 21 Decision Packages resolved → Day 30 AI roadmap → Day 45 first initiative launched (outcome-driven, not category-limited) → Day 60 second initiative + Status Report + Cadence → Day 90 maturity lift + ROI + AI initiative shipped.
 - **Better / cheaper / faster:** 5x faster + 1/5th the cost of full-time CDIO + better proof than any consultant slide deck.
-- **AI + Data + Security = 2026 Quick Win Stack (locked 2026-05-07 evening).** The playbook's original 2024-2025 Quick Win Stack of Modules 5+12+15 is replaced for 2026 by Modules 5 (Security, done) + 6 (Data & AI, next) + AI Accelerator MVP (Phase 1C Days 14-16).
+- **Quick Win Stack = Modules 5 + 12 + 15 (final lock 2026-05-07 — `9f3a2a6` leads).** The Day 11 evening rough draft proposed re-sequencing around AI + Data + Security; that re-sequencing was reversed in the final lock per the user's directive that commit `9f3a2a6` leads on logic and scope. Module 5 ✅ Day 8; Module 12 ✅ Day 12 (`f595bfc`); Module 15 next at Day 13. AI Accelerator stays in Phase 2.5 (Days 39-50, full 12-day plan); the AI-as-buy-trigger thesis still holds — just lands at Day 50, not Day 16.
 - **Outcomes-led strategy (Day 11 rewrite):** four pillars — higher project success, higher tech ROI, monthly strategy alignment, helping CEOs build moats. Each anchored in 2025-2026 research from McKinsey/BCG/KPMG/WEF/Gartner.
 - **Pillar 4 AI claim boundary:** AI-CDIO does not build AI; it catches the seven decision-phase failures that cause ~70% of AI initiatives to die before they deliver value.
 - **Command-center reframe:** the platform is the strategic heartbeat (charter, decisions, oversight, value tracking, re-assessment); tactical task management lives in the client's existing tools (Jira, Asana, Monday) via read-sync.
@@ -85,7 +85,7 @@ C:/Users/Dell/projects/CDIO/
 - **Day 90 kill switch criterion revised (locked 2026-05-07 evening):** Year 1 metric is CEO outcomes delivered (`docs/OUTCOMES.md`), not paying-customer count from fractionals. Paying-customer count is a Year 2 metric.
 - **Phase 1D scope (Days 21-28):** Charter → Initiative Pilot → Selection Engine (Tech + Partner) + Network Catalog → Cadence → Status Reports → MCP + integrations.
 - **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on Ambar + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
-- **Phase 2.5 reduced to 6-7 days (locked 2026-05-07 evening):** AI Accelerator MVP shipped early in Phase 1C; Phase 2.5 only handles heavyweight pieces (deep Use-Case Library expansion, multi-step AI Roadmap, Selection Engine AI extension, Governance Scaffolding, quarterly cadence formalization).
+- **Phase 2.5 stays full 12 days (Days 39-50, per `9f3a2a6` final lock):** AI Maturity Model + Use-Case Library + Roadmap Generator + AI-flavored Selection Engine pass (extends Phase 1D Day 24 generic Selection Engine via `domain: "tech" | "ai"` parameter — no standalone Build-vs-Buy Advisor) + Governance Scaffolding + AI deliverable surfacing + Public `/ai-readiness` Quick Scan + Quarterly re-assessment cadence wiring.
 - **Phase 3 reframed (locked 2026-05-07 evening):** opens to other fractionals (commercial release). Stripe + first paying fractional customers + design partner pilots.
 - **Architectural laws (8) locked:** see `docs/STRATEGY-2026.md` Architectural Laws section.
 - **Network Catalog privacy P0:** per-practitioner only, encrypted, no cross-practitioner aggregates Year 1.
@@ -96,21 +96,21 @@ C:/Users/Dell/projects/CDIO/
 - **Auth via Clerk:** wired Day 1.
 - **Rate limiting via Upstash Redis:** Day 5 (env vars pending).
 
-## Current Sprint (end of Day 11 evening — Phase 1C in progress, AI + Data re-sequence locked)
+## Current Sprint (end of Day 12 — Phase 1C Quick Win Stack 2/3 done)
 
-Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-11 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 evening scope re-sequence).
+Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-12 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 doc-lock + Day 12 Module 12 deep shipped at `f595bfc`).
 
-**Day 12 (next code session) — REVISED 2026-05-07 evening:**
-1. Run `/plan-eng-review` on Module 6 + AI Accelerator MVP scope (mandatory gate per Process Discipline)
-2. **Module 6 deep — Data & AI Capabilities** (NIST AI RMF + DAMA-DMBOK anchor) — was Module 12 here; bumped to Phase 2 dogfood
+**Day 13 (next code session):**
+1. Run `/plan-eng-review` on Module 15 deep scope (mandatory gate per Process Discipline)
+2. **Module 15 deep — Process Automation & Transformation** (APQC PCF + Lean Six Sigma anchor). 12-15 questions, role-tagged, level-5, framework-cited. Replicate Module 5 / Module 12 pattern.
 
-**Days 13-16:** Module 6 finish + AI Accelerator MVP (Maturity Model + Use-Case Library + Roadmap Generator + Public `/ai-readiness` Quick Scan). **The buy-trigger lands at Day 16, not Day 50.**
+**Days 14-15:** Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5).
 
-**Days 17:** Framework citations + jargon-to-CEO translation + adaptive questioning AI leverage.
+**Day 16:** Module 2 deep — Tech Strategy & Business Alignment (KPMG 4-practice + MIT) + adaptive questioning wired in.
 
-**Modules 12, 15, 2 deferred to Phase 2 dogfood (Days 29-38)** — they get depth pass during real Ambar engagement work, driven by what actually moves the needle.
+**Day 17:** Framework citations layer + jargon → CEO-language translation.
 
-**Done with Phase 1C = the founder can sell "AI implementation as a service" to CEO clients within 30 days of where we are now. AI + Data + Security (Modules 5 + 6) is the 2026 Quick Win Stack — not the playbook's original 2024-2025 framing of 5+12+15.**
+**Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on Ambar end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
 
 ## Process Discipline — gstack as MANDATORY GATES (locked 2026-05-07)
 

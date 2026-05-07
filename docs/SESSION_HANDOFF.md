@@ -33,16 +33,18 @@ This session was the inflection point. We shifted the platform from feature-led 
 
 The Day 11 evening session locked three corrections that changed the strategic identity of Year 1:
 
-### Correction 1 — AI + Data first, then expand
+### Correction 1 — AI+Data first re-sequence proposed, then REVERSED 2026-05-07 final lock
 
-The "Quick Win Stack" from the playbook (Modules 5+12+15) was a 2024-2025 framing. **For 2026, the right Quick Win Stack is AI + Data + Security.** Module 5 (Security) is already deep. Module 6 (Data & AI) and an AI Accelerator MVP land NEXT, not in Phase 2.5. Phase 2.5 reduced from 12 days to 6-7 days because the MVP shipped early.
+The Day 11 evening rough draft proposed re-sequencing Phase 1C around AI + Data + Security (Module 6 deep at Days 12-13, AI Accelerator MVP at Days 14-16, Modules 12/15/2 deferred to Phase 2 dogfood). **That re-sequencing was reversed in the final 2026-05-07 lock.** Per the user's directive: commit `9f3a2a6` (Day 11 doc-lock) leads on logic and scope.
 
-**Phase 1C Days 12-17 revised:**
-- Days 12-13: Module 6 deep (Data & AI Capabilities, NIST AI RMF + DAMA-DMBOK)
-- Days 14-16: AI Accelerator MVP (AI Maturity Model + Use-Case Library starter + Roadmap Generator + public `/ai-readiness` Quick Scan)
-- Day 17: Framework citations + jargon-to-CEO translation + adaptive questioning
+**Final Phase 1C Days 12-17 sequence (locked):**
+- ✅ Day 12: Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO) — shipped commit `f595bfc`
+- Day 13: Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma)
+- Days 14-15: Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5)
+- Day 16: Module 2 deep — Tech Strategy & Business Alignment (KPMG 4-practice + MIT) + adaptive questioning
+- Day 17: Framework citations layer + jargon → CEO-language translation
 
-**Modules 12, 15, 2 deferred to Phase 2 dogfood** — they get depth pass during the founder's real engagements, driven by what the work actually needs.
+**Quick Win Stack = Modules 5 (✅ Day 8) + 12 (✅ Day 12) + 15 (Day 13).** AI Accelerator stays in Phase 2.5 (Days 39-50, full 12-day plan). Module 6 (Data & AI Capabilities) gets its depth pass in Phase 4 alongside the rest of Modules 1-4, 6-11, 13-14, 16.
 
 ### Correction 2 — Year 1 customer is the CEO via the founder, not other fractionals
 
@@ -90,16 +92,16 @@ Differentiator: **5x faster + 1/5th the cost of full-time + better proof than an
 ### Doc updates committed Day 11 evening
 
 - `docs/STRATEGY-2026.md` — Differentiated Promise rewritten + 90-Day Commitment Matrix added + audience shift Year 1/Year 2+ + Day 90 kill switch criterion revised + marketing principle refined
-- `docs/ROADMAP.md` — Phase 1C Days 12-17 re-sequenced (AI + Data first); Phase 2 reframed as founder dogfood (no design partner pilots Year 1); Phase 2.5 reduced to Days 39-45 (heavyweights only); Phase 3 reframed as commercial release to other fractionals
+- `docs/ROADMAP.md` — Phase 2 reframed as founder dogfood (no design partner pilots Year 1); Phase 3 reframed as commercial release to other fractionals. **Phase 1C scope and Phase 2.5 12-day plan match commit `9f3a2a6` (final lock 2026-05-07).**
 - `docs/CONTRACT-TEMPLATES.md` — Section 3 added: "The 90-Day Commitment Matrix" sample contract clause language
 - `docs/OUTCOMES.md` — Day 90 evidence base re-emphasized; format example updated to require CEO outcome + 90-Day Commitment Matrix milestone tracking + better/cheaper/faster comparison
-- `CLAUDE.md` — Strategic Decisions + Current Sprint updated (Day 12 = Module 6, not Module 12)
+- `CLAUDE.md` — Strategic Decisions + Current Sprint updated (Day 12 = Module 12, ✅ shipped; Day 13 = Module 15)
 
-### What's next — Day 12 (next code session)
+### What's next — Day 13 (next code session)
 
-1. Run `/plan-eng-review` on Module 6 (Data & AI Capabilities) deep + AI Accelerator MVP scope (mandatory gate per Process Discipline)
-2. Build Module 6 deep — anchored to NIST AI RMF + DAMA-DMBOK, 12-15 questions, role-tagged, level-5, framework-cited
-3. Day 13 — finish Module 6 + start AI Accelerator MVP scaffolding
+1. Run `/plan-eng-review` on Module 15 deep scope (mandatory gate per Process Discipline)
+2. Build Module 15 deep — anchored to APQC PCF + Lean Six Sigma, 12-15 questions, role-tagged, level-5, framework-cited (replicate Module 5 / Module 12 pattern)
+3. Days 14-15 — Quick Scan output upgrade (board-memo quality)
 
 ---
 
