@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { AssessmentForm } from "@/components/forms/assessment-form";
 import { SandboxBanner } from "@/components/sandbox-banner";
 import { MODULE_NAMES } from "@/types";
+import type { Industry } from "@/types";
 
 interface StakeholderInfo {
   id: string;
@@ -12,6 +13,8 @@ interface StakeholderInfo {
   org_name: string;
   org_id: string;
   org_is_sandbox: boolean;
+  org_industry: Industry | null;
+  org_size_category: "small" | "medium" | "large" | null;
   assessment_id: string;
   relevant_modules: number[];
   completed_modules: number[];
@@ -243,6 +246,7 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
             key={currentModule}
             moduleNumber={currentModule}
             stakeholderRole={stakeholder.role}
+            industry={stakeholder.org_industry ?? undefined}
             onSubmit={(responses, businessImpact, moduleSkipped) =>
               handleSubmit(responses, businessImpact, moduleSkipped)
             }

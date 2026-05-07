@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MODULE_NAMES } from "@/types";
-import type { DiagnosticAnswer } from "@/types";
+import type { DiagnosticAnswer, Industry } from "@/types";
 import {
   getModuleQuestions,
   type DiagnosticQuestion,
@@ -11,6 +11,7 @@ import {
   filterQuestionsForRole,
   selectAdaptiveSubset,
 } from "@/lib/playbook/role-tag-mapping";
+import { getIndustryOverlay } from "@/lib/playbook/industry-overlays";
 
 /**
  * Phase 1C assessment form (2026-05-06):
@@ -40,6 +41,8 @@ interface AssessmentFormProps {
   moduleNumber: number;
   /** Free-text role from stakeholder.role; used for question-level filtering. */
   stakeholderRole: string;
+  /** Org industry for the industry-overlay banner (Phase 1.5 Day 18). */
+  industry?: Industry;
   onSubmit: (
     responses: {
       question_id: string;
@@ -56,6 +59,7 @@ interface AssessmentFormProps {
 export function AssessmentForm({
   moduleNumber,
   stakeholderRole,
+  industry,
   onSubmit,
   onBusinessImpact,
 }: AssessmentFormProps) {
@@ -257,6 +261,20 @@ export function AssessmentForm({
           {answeredCount} of {questions.length} questions answered
         </p>
       </div>
+
+      {industry && (() => {
+        const overlay = getIndustryOverlay(industry, moduleNumber);
+        return (
+          <div className="mb-6 px-4 py-3 bg-indigo-50 border border-indigo-200 rounded-lg">
+            <p className="text-[10px] uppercase tracking-wider text-indigo-700 font-semibold mb-1">
+              {overlay.label} context
+            </p>
+            <p className="text-sm text-indigo-900 leading-relaxed">
+              {overlay.banner}
+            </p>
+          </div>
+        );
+      })()}
 
       {/* Questions by subcategory */}
       {Object.entries(grouped).map(([subcategory, subQuestions]) => (

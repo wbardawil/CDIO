@@ -24,9 +24,11 @@ export async function GET(
     }
 
     // Get organization name + the engagement's active module scope + sandbox flag
+    // + industry (Phase 1.5 Day 18 — needed by AssessmentForm to render the
+    // industry-specific overlay banner).
     const { data: org } = await db
       .from("organizations")
-      .select("name, active_modules, is_sandbox")
+      .select("name, active_modules, is_sandbox, industry, size_category")
       .eq("id", stakeholder.org_id)
       .single();
 
@@ -77,6 +79,8 @@ export async function GET(
       org_name: org?.name ?? "Unknown Organization",
       org_id: stakeholder.org_id,
       org_is_sandbox: org?.is_sandbox ?? false,
+      org_industry: org?.industry ?? null,
+      org_size_category: org?.size_category ?? null,
       assessment_id: assessment.id,
       // Effective scope for the assessment UI
       relevant_modules: effectiveModules,
