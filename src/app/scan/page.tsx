@@ -2,8 +2,8 @@
 
 import { useState, useCallback, useMemo } from "react";
 import { SpiderChart } from "@/components/charts/spider-chart";
-import { MODULE_NAMES } from "@/types";
-import { getQuickScanForModule, type QuickScanQuestion } from "@/lib/playbook/quick-scan-questions";
+import { MODULE_NAMES, MODULE_META } from "@/types";
+import { getQuickScanForModule } from "@/lib/playbook/quick-scan-questions";
 import { scoreModuleFromResponses } from "@/lib/scoring/rule-based";
 
 interface ModuleResult {
@@ -16,6 +16,14 @@ interface ModuleResult {
     impact: string;
   } | null;
 }
+
+// Modules carrying disproportionate risk if neglected — used to pick
+// strategic risks for the board memo.
+const HIGH_STAKES_MODULES = new Set([5, 12, 6, 4, 16]);
+
+// Modules whose Quick Wins are most likely to be hard-savings recurring
+// (AMP-style "counts toward margin") rather than soft-benefit narratives.
+const HARD_SAVINGS_MODULES = new Set([12, 4, 13, 15]);
 
 // Module order: start with high-impact, tangible modules
 const MODULE_ORDER = [5, 4, 12, 15, 2, 3, 8, 6, 9, 7, 14, 11, 13, 10, 1, 16];
@@ -117,14 +125,24 @@ export default function ScanPage() {
 
   const completedCount = results.length;
   const progressPct = Math.round((completedCount / 16) * 100);
-  const avgScore = results.length > 0
-    ? (results.reduce((s, r) => s + r.score, 0) / results.length).toFixed(1)
-    : "—";
+  const avgScoreNum = results.length > 0
+    ? results.reduce((s, r) => s + r.score, 0) / results.length
+    : 0;
+  const avgScore = results.length > 0 ? avgScoreNum.toFixed(1) : "—";
+
+  const memo = useMemo(() => buildBoardMemo(results, avgScoreNum), [
+    results,
+    avgScoreNum,
+  ]);
+
+  const handlePrint = useCallback(() => {
+    if (typeof window !== "undefined") window.print();
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-3">
+      {/* Header (hidden in print) */}
+      <header className="bg-white border-b border-gray-200 px-6 py-3 print:hidden">
         <div className="max-w-7xl mx-auto flex items-center justify-between">
           <div>
             <h1 className="text-lg font-bold text-gray-900">AI-CDIO</h1>
@@ -145,7 +163,18 @@ export default function ScanPage() {
         </div>
       </header>
 
-      {/* Main content — split layout */}
+      {/* Board memo (only when complete) — full width, print-friendly */}
+      {isComplete && (
+        <BoardMemo
+          memo={memo}
+          spiderScores={spiderScores}
+          results={results}
+          onPrint={handlePrint}
+        />
+      )}
+
+      {/* Main content — split layout (hidden when complete) */}
+      {!isComplete && (
       <div className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* LEFT: Questions */}
@@ -210,35 +239,6 @@ export default function ScanPage() {
                     Skip this module
                   </button>
                 </div>
-              </div>
-            ) : isComplete ? (
-              <div className="bg-white rounded-2xl border border-gray-200 p-8 text-center">
-                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <span className="text-green-600 text-3xl">&#10003;</span>
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 mb-2">
-                  Health Check Complete
-                </h2>
-                <p className="text-gray-500 mb-4">
-                  Average maturity: {avgScore}/5 across {completedCount} modules
-                </p>
-                <div className="flex gap-3 justify-center">
-                  <a
-                    href="/onboarding"
-                    className="px-6 py-3 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700"
-                  >
-                    Get the Full Assessment
-                  </a>
-                  <a
-                    href="/chat"
-                    className="px-6 py-3 border border-gray-200 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50"
-                  >
-                    Ask AI-CDIO a Question
-                  </a>
-                </div>
-                <p className="text-xs text-gray-400 mt-4">
-                  The full assessment includes AI-powered scoring, multi-stakeholder alignment, and a detailed 90-day roadmap.
-                </p>
               </div>
             ) : null}
 
@@ -346,11 +346,442 @@ export default function ScanPage() {
           </div>
         </div>
       </div>
+      )}
 
-      {/* Footer */}
-      <div className="text-center py-4 text-xs text-gray-400">
+      {/* Footer (hidden in print) */}
+      <div className="text-center py-4 text-xs text-gray-400 print:hidden">
         AI-powered advice — verify recommendations with qualified professionals before implementation.
       </div>
+    </div>
+  );
+}
+
+// ============================================================
+// Board Memo — board-quality output of the Quick Scan
+// (Phase 1C Day 14-15 upgrade)
+// ============================================================
+
+interface QuickWin {
+  module: number;
+  moduleName: string;
+  score: number;
+  title: string;
+  why: string;
+  impact: string;
+  framework: string;
+  hardSavings: boolean;
+}
+
+interface StrategicRisk {
+  module: number;
+  moduleName: string;
+  score: number;
+  framework: string;
+  reason: string;
+}
+
+interface Strength {
+  module: number;
+  moduleName: string;
+  score: number;
+  framework: string;
+}
+
+interface BoardMemoData {
+  avg: number;
+  tierLabel: string;
+  tierBlurb: string;
+  narrative: string;
+  quickWins: QuickWin[];
+  risks: StrategicRisk[];
+  strengths: Strength[];
+  scannedCount: number;
+  date: string;
+}
+
+function buildBoardMemo(results: ModuleResult[], avg: number): BoardMemoData {
+  const tierLabel =
+    avg >= 4
+      ? "Managed"
+      : avg >= 3
+        ? "Defined"
+        : avg >= 2
+          ? "Developing"
+          : "Initial";
+
+  const tierBlurb =
+    avg >= 4
+      ? "broadly mature with selective optimization opportunities"
+      : avg >= 3
+        ? "fundamentals in place, with several high-leverage gaps to close"
+        : avg >= 2
+          ? "early-stage maturity with material exposure in critical areas"
+          : "foundational posture — the next 90 days establish basic disciplines";
+
+  const sorted = [...results].sort((a, b) => a.score - b.score);
+
+  const lowest = sorted[0];
+  const highest = sorted[sorted.length - 1];
+
+  // Quick wins: low-score modules with action cards, prefer high-stakes
+  // and hard-savings modules first.
+  const quickWinsRaw = results
+    .filter((r) => r.actionCard !== null && r.score <= 3)
+    .sort((a, b) => {
+      const aHigh = HIGH_STAKES_MODULES.has(a.module) ? 1 : 0;
+      const bHigh = HIGH_STAKES_MODULES.has(b.module) ? 1 : 0;
+      if (aHigh !== bHigh) return bHigh - aHigh;
+      return a.score - b.score;
+    })
+    .slice(0, 3);
+
+  const quickWins: QuickWin[] = quickWinsRaw.map((r) => ({
+    module: r.module,
+    moduleName: MODULE_NAMES[r.module] ?? `Module ${r.module}`,
+    score: r.score,
+    title: r.actionCard!.title,
+    why: r.actionCard!.why,
+    impact: r.actionCard!.impact,
+    framework: MODULE_META[r.module]?.framework ?? "—",
+    hardSavings: HARD_SAVINGS_MODULES.has(r.module),
+  }));
+
+  // Strategic risks: low score on high-stakes modules.
+  const risks: StrategicRisk[] = results
+    .filter((r) => r.score <= 2 && HIGH_STAKES_MODULES.has(r.module))
+    .sort((a, b) => a.score - b.score)
+    .slice(0, 3)
+    .map((r) => ({
+      module: r.module,
+      moduleName: MODULE_NAMES[r.module] ?? `Module ${r.module}`,
+      score: r.score,
+      framework: MODULE_META[r.module]?.framework ?? "—",
+      reason:
+        r.module === 5
+          ? "Cyber gap on this scale is a board-reportable event the day a breach occurs."
+          : r.module === 12
+            ? "Tech-finance opacity at this level usually masks 20-30% recoverable spend and erodes board trust."
+            : r.module === 6
+              ? "Without a data foundation, AI investment becomes vendor theater — see Module 6."
+              : r.module === 4
+                ? "Cloud spend left ungoverned at this maturity grows ~30% per year."
+                : r.module === 16
+                  ? "Workforce-readiness this thin caps the ROI of every other tech investment."
+                  : "High-stakes capability area performing below the safety threshold for the company's size.",
+    }));
+
+  // Strengths: highest-score modules.
+  const strengths: Strength[] = [...results]
+    .sort((a, b) => b.score - a.score)
+    .slice(0, 3)
+    .filter((r) => r.score >= 3)
+    .map((r) => ({
+      module: r.module,
+      moduleName: MODULE_NAMES[r.module] ?? `Module ${r.module}`,
+      score: r.score,
+      framework: MODULE_META[r.module]?.framework ?? "—",
+    }));
+
+  // Narrative: 3-4 sentence executive summary.
+  const strongestName =
+    highest && highest.score >= 3
+      ? MODULE_NAMES[highest.module] ?? `Module ${highest.module}`
+      : null;
+  const weakestName = lowest
+    ? MODULE_NAMES[lowest.module] ?? `Module ${lowest.module}`
+    : null;
+
+  const narrative = [
+    `Across ${results.length} dimensions of technology maturity, this organization sits at ${tierLabel} (Level ${avg.toFixed(1)} of 5) — ${tierBlurb}.`,
+    strongestName
+      ? `The strongest area is ${strongestName} (Level ${highest.score}); a credible baseline to leverage.`
+      : "",
+    weakestName
+      ? `The most urgent gap is ${weakestName} (Level ${lowest.score}) — a high-leverage point for the next 90 days.`
+      : "",
+    quickWins.length > 0
+      ? `Three named quick wins below carry projected hard-dollar or time-savings impact and can ship before the next board meeting.`
+      : `No urgent gaps surface from this scan; the work is selective optimization rather than foundational repair.`,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return {
+    avg,
+    tierLabel,
+    tierBlurb,
+    narrative,
+    quickWins,
+    risks,
+    strengths,
+    scannedCount: results.length,
+    date: new Date().toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }),
+  };
+}
+
+interface BoardMemoProps {
+  memo: BoardMemoData;
+  spiderScores: { module_number: number; score: number }[];
+  results: ModuleResult[];
+  onPrint: () => void;
+}
+
+function BoardMemo({ memo, spiderScores, results, onPrint }: BoardMemoProps) {
+  return (
+    <div className="bg-white print:bg-white">
+      <main className="max-w-4xl mx-auto px-6 sm:px-10 py-10 print:py-6">
+        {/* Memo header */}
+        <header className="border-b border-gray-200 pb-6 mb-8 print:pb-4 print:mb-6">
+          <div className="flex items-start justify-between flex-wrap gap-4">
+            <div>
+              <p className="text-xs uppercase tracking-wide text-gray-500">
+                Technology Maturity — Board Memo
+              </p>
+              <h1 className="text-3xl font-bold text-gray-900 mt-1">
+                {memo.tierLabel} ·{" "}
+                <span className="text-blue-700">
+                  Level {memo.avg.toFixed(1)} / 5
+                </span>
+              </h1>
+              <p className="text-sm text-gray-500 mt-2">
+                AI-CDIO Quick Scan · {memo.scannedCount} of 16 dimensions ·{" "}
+                {memo.date}
+              </p>
+            </div>
+            <div className="flex gap-2 print:hidden">
+              <button
+                type="button"
+                onClick={onPrint}
+                className="px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Print / Save PDF
+              </button>
+              <a
+                href="/onboarding"
+                className="px-3 py-1.5 text-xs font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Book full assessment →
+              </a>
+            </div>
+          </div>
+        </header>
+
+        {/* Executive summary */}
+        <section className="mb-10 print:mb-8">
+          <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+            Executive Summary
+          </h2>
+          <p className="text-base text-gray-800 leading-relaxed">
+            {memo.narrative}
+          </p>
+        </section>
+
+        {/* Spider chart + score breakdown */}
+        <section className="mb-10 print:mb-8 grid grid-cols-1 sm:grid-cols-5 gap-6 print:grid-cols-5">
+          <div className="sm:col-span-3 print:col-span-3 bg-gray-50 border border-gray-200 rounded-xl p-4">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+              Maturity Radar
+            </h3>
+            {spiderScores.length > 0 ? (
+              <SpiderChart scores={spiderScores} title="" />
+            ) : (
+              <div className="h-48 flex items-center justify-center text-gray-300 text-sm">
+                No data
+              </div>
+            )}
+          </div>
+          <div className="sm:col-span-2 print:col-span-2">
+            <h3 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+              By Dimension
+            </h3>
+            <ul className="space-y-1.5 text-sm">
+              {[...results]
+                .sort((a, b) => a.score - b.score)
+                .map((r) => (
+                  <li
+                    key={r.module}
+                    className="flex items-center gap-2 border-b border-gray-100 pb-1.5 last:border-0"
+                  >
+                    <span
+                      className={`shrink-0 inline-flex items-center justify-center w-5 h-5 rounded text-white text-[10px] font-bold ${
+                        r.score <= 1
+                          ? "bg-red-500"
+                          : r.score === 2
+                            ? "bg-amber-500"
+                            : r.score === 3
+                              ? "bg-blue-500"
+                              : "bg-emerald-500"
+                      }`}
+                    >
+                      {r.score}
+                    </span>
+                    <span className="text-gray-700 flex-1 text-xs">
+                      {MODULE_NAMES[r.module]}
+                    </span>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        </section>
+
+        {/* Quick wins */}
+        {memo.quickWins.length > 0 && (
+          <section className="mb-10 print:mb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+              Three Named Quick Wins
+            </h2>
+            <p className="text-xs text-gray-500 mb-4">
+              Specific, lean-form-first actions to ship before the next board
+              meeting. Each anchored to a recognized framework. Hard-savings
+              candidates marked.
+            </p>
+            <ol className="space-y-4">
+              {memo.quickWins.map((qw, i) => (
+                <li
+                  key={qw.module}
+                  className="border border-gray-200 rounded-xl p-5 bg-white"
+                >
+                  <div className="flex items-start justify-between gap-3 mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="inline-flex items-center justify-center w-7 h-7 bg-blue-600 text-white rounded-lg text-sm font-bold">
+                        {i + 1}
+                      </span>
+                      <div>
+                        <p className="text-sm font-semibold text-gray-900">
+                          {qw.title}
+                        </p>
+                        <p className="text-xs text-gray-500 mt-0.5">
+                          Module {qw.module} · {qw.moduleName} · current Level{" "}
+                          {qw.score}
+                        </p>
+                      </div>
+                    </div>
+                    {qw.hardSavings && (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 shrink-0">
+                        Hard-savings candidate
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-sm text-gray-700 mt-2">
+                    <span className="font-semibold text-gray-900">Why: </span>
+                    {qw.why}
+                  </p>
+                  <p className="text-sm text-emerald-700 mt-1">
+                    <span className="font-semibold">Projected impact: </span>
+                    {qw.impact}
+                  </p>
+                  <p className="text-xs text-gray-500 mt-3 italic">
+                    Anchor: {qw.framework}
+                  </p>
+                </li>
+              ))}
+            </ol>
+          </section>
+        )}
+
+        {/* Strategic risks */}
+        {memo.risks.length > 0 && (
+          <section className="mb-10 print:mb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+              Strategic Risks
+            </h2>
+            <p className="text-xs text-gray-500 mb-4">
+              High-stakes capability areas performing below threshold for the
+              company&apos;s size band. These warrant board attention regardless
+              of competing priorities.
+            </p>
+            <ul className="space-y-3">
+              {memo.risks.map((r) => (
+                <li
+                  key={r.module}
+                  className="border-l-4 border-red-400 bg-red-50 rounded-r-lg p-4"
+                >
+                  <p className="text-sm font-semibold text-red-900">
+                    {r.moduleName}{" "}
+                    <span className="text-xs font-normal text-red-700">
+                      Level {r.score}
+                    </span>
+                  </p>
+                  <p className="text-sm text-red-800 mt-1">{r.reason}</p>
+                  <p className="text-xs text-red-600 mt-1.5 italic">
+                    Anchor: {r.framework}
+                  </p>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* Strengths */}
+        {memo.strengths.length > 0 && (
+          <section className="mb-10 print:mb-8">
+            <h2 className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-3">
+              Areas of Strength
+            </h2>
+            <ul className="space-y-2">
+              {memo.strengths.map((s) => (
+                <li
+                  key={s.module}
+                  className="flex items-center justify-between border border-emerald-200 bg-emerald-50 rounded-lg px-4 py-2.5"
+                >
+                  <div>
+                    <p className="text-sm font-semibold text-emerald-900">
+                      {s.moduleName}
+                    </p>
+                    <p className="text-xs text-emerald-700 italic">
+                      Anchor: {s.framework}
+                    </p>
+                  </div>
+                  <span className="text-sm font-bold text-emerald-700">
+                    Level {s.score}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+
+        {/* CTA */}
+        <section className="mt-12 mb-6 border-t border-gray-200 pt-8 print:hidden">
+          <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 text-center">
+            <h3 className="text-base font-semibold text-gray-900 mb-2">
+              Ready to underwrite the next 90 days?
+            </h3>
+            <p className="text-sm text-gray-600 mb-4 max-w-2xl mx-auto">
+              The full AI-CDIO assessment runs role-aware deep diagnostics
+              across the same 16 dimensions, with framework-cited scoring,
+              multi-stakeholder alignment, and a 90-day commitment matrix the
+              board can hold the practitioner to.
+            </p>
+            <div className="flex gap-3 justify-center flex-wrap">
+              <a
+                href="/onboarding"
+                className="px-6 py-2.5 bg-blue-600 text-white rounded-xl font-medium text-sm hover:bg-blue-700"
+              >
+                Book the full assessment
+              </a>
+              <a
+                href="/chat"
+                className="px-6 py-2.5 border border-gray-300 text-gray-700 rounded-xl font-medium text-sm hover:bg-gray-50"
+              >
+                Ask a question first
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Disclaimer */}
+        <p className="text-[11px] text-gray-400 text-center mt-8 leading-relaxed">
+          Quick Scan output. Rule-based scoring on stakeholder responses; the
+          full assessment runs AI-powered narrative + path-to-next-level
+          recommendations across multiple stakeholders. Verify recommendations
+          with qualified professionals before implementation.
+        </p>
+      </main>
     </div>
   );
 }
