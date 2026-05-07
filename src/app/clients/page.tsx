@@ -72,6 +72,12 @@ export default async function ClientsPage() {
           </div>
           <div className="flex items-center gap-4">
             <Link
+              href="/network"
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Network Catalog
+            </Link>
+            <Link
               href="/preview"
               className="text-sm text-gray-600 hover:text-gray-900"
             >
