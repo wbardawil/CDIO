@@ -1,7 +1,7 @@
 # AI-CDIO: Strategy 2026
 
 **Status:** Active strategic source of truth. Supersedes any conflicting language in older docs.
-**Last refreshed:** 2026-05-07 (Day 11 — outcomes-and-feelings rewrite anchored in 2025-2026 research from McKinsey, BCG, KPMG, Gartner, Deloitte, World Economic Forum. Features moved subordinate to outcomes.)
+**Last refreshed:** 2026-05-07 (Day 11 — outcomes-and-feelings rewrite anchored in 2025-2026 research from McKinsey, BCG, KPMG, Gartner, Deloitte, World Economic Forum. Features moved subordinate to outcomes. **Architectural laws locked end-of-day**: single-agent default with selective multi-agent past Phase 2.5, multi-corpus RAG with strict per-practitioner tenant isolation, memory primitives Phase 4, tier-based multi-agent matrix as differentiator, PM-covenant clause library as Phase 2 deliverable, Module 17 flagged as Year-2 candidate.)
 
 ---
 
@@ -228,6 +228,77 @@ The original "1M SMBs by Year 3" is replaced by realistic targets that compound.
 | **Single Supabase project, single Clerk app** | One environment until Phase 3. |
 | **Production deploy at Day 18 (not Day 30)** | Methodology depth ships INTO production. Real Ambar exec emails route through verified domain when Phase 1C dogfood begins. Demo URL exists for design-partner conversations starting Phase 2. |
 | **AI Accelerator as a flagship engine, NOT a separate product** | Practitioner-first preserved. Public `/ai-readiness` Quick Scan is a top-of-funnel lead magnet for practitioners, not a direct CEO subscription. |
+
+---
+
+## Architectural Laws (locked Day 11 — 2026-05-07)
+
+These are commitments, not preferences. They survive feature debates. Technical detail lives in `docs/ARCHITECTURE.md`; this section explains the strategic *why*.
+
+### Law 1 — Single-agent default; multi-agent reserved for high-leverage flows past Phase 2.5
+
+The ~20 operations across Phases 1A–2 are well served by a single agent over a single shared context. Multi-agent adds latency, cost, and orchestration debt that customers can't perceive in the deliverable. We pay that cost only where the work genuinely benefits from specialization.
+
+**Multi-agent flows (~10 operations, Phase 2.5+):**
+- Tech Selection deep evaluation (research agent + evaluator + recommender)
+- Partner Selection sourcing (Phase 2.5 find capability)
+- AI Use-Case Library / AI Roadmap / Build-vs-Buy / Governance generators
+- Knowledge Reuse pattern detection across engagements
+- Stakeholder pattern detector / Outcome prediction
+- Document/image AI Vision evidence analysis
+- QBR deck generation
+
+**Why this matters strategically:** multi-agent becomes a **tier differentiator**, not a default cost burden. Starter customers pay less because they get the cheaper architecture. Scale customers pay more because the multi-agent flows deliver work the cheaper tier literally cannot.
+
+### Law 2 — Multi-corpus RAG with strict per-practitioner tenant isolation (P0 architectural concern)
+
+Today: 1 corpus (1,154 playbook chunks, shared across all practitioners).
+
+Future: 7 corpora — Playbook + Frameworks + Vendor data + Use case catalog + **Per-practitioner historical engagements** + **Per-practitioner Network Catalog** + Industry-specific overlays.
+
+**The non-negotiable:** the two per-practitioner corpora MUST NEVER leak across practitioners. A practitioner's historical engagement notes and personal Network Catalog (vetted vendors and partners they've worked with) are the **practitioner's moat**. Cross-practitioner leakage would destroy the value proposition and create legal exposure.
+
+**Strategic implication:** retrieval pipelines, embedding stores, and any future agent code that touches practitioner data are evaluated against this law as P0. `/cso` review is mandatory before any feature that touches per-practitioner corpora ships.
+
+### Law 3 — Memory primitives are Phase 4, not Phase 1
+
+Per-client conversational memory across sessions ("remember what we decided last quarter for Ambar") is real value but not Phase 1 value. We adopt Anthropic's native memory primitives when they ship, rather than building a homegrown layer that we then have to migrate. Phase 4 commitment.
+
+### Law 4 — Tier-based multi-agent matrix (drives pricing defensibility)
+
+| Tier | Price | Architectural capability |
+|---|---|---|
+| **Starter** | $199/mo | Single-agent only — Quick Scan + Assessment + Decision Package + Status Reports |
+| **Growth** | $399/mo | Selective multi-agent — Tech Selection deep, AI Accelerator full, Partner Selection sourcing |
+| **Scale** | $599/mo | Full multi-agent — Knowledge Reuse + Outcome prediction + Document AI Vision + cross-engagement pattern detection |
+
+This matrix is what makes the three tiers genuinely different products, not arbitrary feature paywalls. Cost telemetry from Phase 1.5 Day 19 (per-engagement LLM cost) makes the unit economics defensible — we know what each tier actually costs to serve before Phase 3 Stripe goes live.
+
+### Law 5 — Network Catalog is per-practitioner, never cross-practitioner (privacy boundary locked)
+
+The Network Catalog (Phase 1D Day 25) is the practitioner's permanent address book of vetted people: name, role, domain tags, last engagement, rating, source, notes. AI suggests partners from the practitioner's OWN network FIRST, then external sourcing.
+
+**This is the practitioner's moat. It compounds engagement-over-engagement.** Cross-practitioner visibility would destroy that compounding. Architectural commitments:
+- Per-practitioner only — never cross-practitioner visible
+- Encrypted at rest beyond Supabase defaults
+- Full export + wipe controls on every entry
+- `/cso` security audit required before ship; `/codex` second opinion required on the privacy model
+
+### Law 6 — PM-covenant guardrail: contract language as a soft feature, not platform expansion
+
+The platform makes execution oversight light enough that the practitioner can do it as part of strategic engagement WITHOUT it becoming the engagement. The product **does not become a PM-for-hire tool** — that's a different price point and a different buyer.
+
+**The mechanism:** the practitioner's engagement contract requires the client to nominate or hire a PM (internal or external) the practitioner oversees. The platform supports the oversight; the platform does not replace the PM.
+
+**Phase 2 (Days 29-31) deliverable:** ship contract template language as a soft feature in the Asset Library so practitioners can paste covenant clauses into their own engagement contracts. See `docs/CONTRACT-TEMPLATES.md` for the clause stub.
+
+### Law 7 — Module 17 (Sales/Marketing/Revenue Tech) is a Year-2 candidate, not a Phase-1 commitment
+
+The current 16 modules over-index on infrastructure and governance and under-index on revenue-side tech. Modern SMB CDIOs spend 30-50% of their time on sales tech, marketing tech, and customer success tech. **Module 17 ships in Year 2 if and only if customer demand confirms the gap.** Other future-module candidates flagged but not committed:
+- Vision & North Star (a possible Module 0)
+- Governance & Decision Rights (today partially inside Module 1, may split)
+- AI as its own module (split from Module 6 once Phase 2.5 lands)
+- Sustainability / ESG Tech (regulatory-pressure dependent)
 
 ---
 

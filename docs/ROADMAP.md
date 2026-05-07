@@ -1,9 +1,11 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-05-07 (Phase 1C Day 11 — outcomes-led strategy rewrite; 16 modules renamed + framework-anchored + one-liners added; **Module 2 deep promoted from Phase 4 to Phase 1C Day 16** because it's the structural expression of Pillar 3 — strategy-tech alignment is the platform's strongest pillar; **Tier 1 AI leverage** added to Phase 1C/1.5: adaptive questioning (Day 16), framework-jargon-to-CEO-language translation (Day 17), industry overlay generator (Day 18). These mitigate the complexity tax of 15-question framework-anchored modules.).
+> **Last refreshed:** 2026-05-07 end of day (Phase 1C Day 11 doc-lock — Day 11 architectural decisions A-G committed: **Phase 1D revised from 4 days to 8 days** (Charter / Initiative Pilot / Selection Engine + Network Catalog / Cadence / Status Reports / MCP) per founder simplicity ranking (C, D, A, B, E); **Tech Selection Engine replaces standalone Build-vs-Buy Advisor** in Phase 2.5; **Module 17 flagged Year-2 candidate**, not a Phase-1 commitment; architectural laws cross-referenced to `STRATEGY-2026.md` Architectural Laws section.
 >
-> **Previous refresh:** 2026-04-29 (Phase 1B Day 6 MECE rewrite — AI lens removed from Phase 1C, legal foundation moved into Phase 1.5, pricing slotted into Phase 2, Phase 2.5 expanded to 12 days).
+> **Previous refresh:** 2026-05-07 morning (Phase 1C Day 11 — outcomes-led strategy rewrite; 16 modules renamed + framework-anchored + one-liners added; **Module 2 deep promoted from Phase 4 to Phase 1C Day 16**; **Tier 1 AI leverage** added to Phase 1C/1.5).
+>
+> **Earlier refresh:** 2026-04-29 (Phase 1B Day 6 MECE rewrite — AI lens removed from Phase 1C, legal foundation moved into Phase 1.5, pricing slotted into Phase 2, Phase 2.5 expanded to 12 days).
 
 ## Current State (April 2026)
 
@@ -147,23 +149,49 @@ Every diagnostic question gets tagged on two axes:
 
 **Note:** L4 (asset library — demo video, one-pager, case study, LinkedIn templates) lands at the start of Phase 2 (Days 29-31) as the public-launch milestone. Full legal review by attorney lands Phase 2 Day 30 (P1-12) before scaling beyond design partners.
 
-### Phase 1D — Recurring Deliverables + MCP (Days 21-28)
+### Phase 1D — Execution Coordination + Recurring Deliverables + MCP (Days 21-28, REVISED 2026-05-07)
 
-**Goal:** The platform produces the practitioner's recurring artifacts and is callable from Claude.ai. **Engines explicitly designed with extension points for Phase 2.5 AI Accelerator** so we don't double-build.
+**Goal:** The platform produces the practitioner's recurring artifacts, **handles execution oversight without becoming a PM-for-hire tool** (see PM-covenant guardrail in `STRATEGY-2026.md` Law 6), and is callable from Claude.ai. Phase 1D was originally 4 days of recurring deliverables; the founder's Day 11 confirmation that execution oversight is in scope (he's required to oversee initiatives with vendors/contractors) expanded it to 8 days.
 
-**Architectural pattern locked 2026-04-29 (MECE coordination fixes 4-6):**
-- **Decision Package** is ONE engine called with a `domain: "cdio" | "ai"` parameter. Domain-specific generators plug in. One UI surface, one persistence layer.
-- **Status Report Generator** has a `deliverable_types: []` array on each report; AI status sections are a deliverable type added in Phase 2.5 (no rebuild).
-- **Engagement Cadence** milestones carry a `domain` field; AI milestones use `domain: "ai"`. Same Cadence UI handles both.
-- **MCP Server** ships in 1D with 3 generic tools; Phase 2.5 registers 5 more AI-specific tools against the same tool registry. Auth + transport stays the same.
+**Founder simplicity priority ranking (drives the day order — locked Day 11):**
+1. **C — Stop rebuilding charters/status/decisions from scratch** (top pain → drives Days 21-23)
+2. **D — Stop answering CEO's "where are we?"** (drives Day 26 Cadence)
+3. **A — Stop juggling 5 tools** (drives Day 28 integration)
+4. **B — Stop chasing vendors/contractors** (stretch — auto-pulse later, not Day-21 commitment)
+5. **E — Stop client-switching context** (Phase 4)
+
+**Architectural pattern locked 2026-04-29 (MECE coordination fixes 4-6) — preserved:**
+- **Decision Package** is ONE engine called with `domain: "cdio" | "ai"`. One UI surface, one persistence layer.
+- **Status Report Generator** has a `deliverable_types: []` array; AI status sections plug in Phase 2.5.
+- **Engagement Cadence** milestones carry a `domain` field; AI milestones use `domain: "ai"`.
+- **MCP Server** ships with 3 generic tools; Phase 2.5 registers 5 more AI-specific tools against the same registry.
+
+**New architectural commitments (locked Day 11):**
+- **Initiative Pilot** uses **token-based contextual visibility** for vendor/contractor invites. Vendors see *their steps + initiative goal + relevant Decision Packages*. Vendors NEVER see other clients, vendors, maturity scores, or strategic narrative.
+- **Tech Selection Engine** = matrix builder + AI leaning recommendation **with caveats**. The platform produces a defensible artifact and suggests a lean; the founder's judgment is the value-add. Replaces the standalone Build-vs-Buy Advisor in Phase 2.5 — see updated Phase 2.5 plan below.
+- **Charter format = lean one-page.** PMI PMBOK is enterprise theater for SMBs.
+- **Jira/Asana integration = read-sync only.** Pull ticket status in. Don't push out. No bidirectional traps.
+- **Vendor catalog seed = hybrid** — agent generates initial seed from public data; founder curates the 10-15 categories he most often works in.
+- **Network Catalog** = per-practitioner-only address book of vetted people. **Never cross-practitioner visible.** Encrypted at rest beyond Supabase defaults; full export + wipe controls. See `STRATEGY-2026.md` Law 5.
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 21-24 | **Status Report Generator (Engine #2)** — table + API + AI narrative + Markdown editor + PDF export + Resend send (now from verified domain). **Designed with `deliverable_types[]` extension array** so Phase 2.5 AI sections plug in without refactor. | Month-2 retention proof. 90 min → 12 min savings. AI-extension-ready. |
-| 25-27 | **Engagement Cadence** — milestones (commitments, target dates, deliverable types), auto-populated from roadmap + status + decisions, **shareable read-only link** (token-based, no portal). **Milestones carry a `domain` field** so AI Accelerator milestones (Phase 2.5) integrate cleanly. | Practitioner-as-trusted-partner differentiator. Client-facing without portal complexity. AI-extension-ready. |
-| 28 | **MCP Server foundation** — auth, tool registry, first 3 tools (`generate_status_report`, `query_client_data`, `propose_decision_package`). **Tool registry is forward-looking** — Phase 2.5 will add 5 AI-specific tools against the same architecture: `run_ai_readiness_assessment`, `generate_ai_roadmap`, `propose_ai_use_cases`, `evaluate_build_vs_buy`, `generate_ai_governance_kit`. | Practitioner can call AI-CDIO from Claude.ai / Cursor / Codex. AI-extension-ready. |
+| 21 | **Charter Generator** — lean one-page charter (objective, scope, success criteria, owner, timeline, dependencies, decisions taken). Generated from a Decision Package OR a Roadmap initiative. Markdown + PDF export. **No PMI PMBOK theater.** | Pain C: stop rebuilding charters from scratch. Founder commits one client charter under 10 minutes. |
+| 22-23 | **Initiative Pilot core** — initiative model (status, owner, dates, linked decisions); step generation from playbook RAG (per category: tech rollout, vendor migration, governance build); **multi-party invites with token-based contextual visibility** (vendor sees their steps + goal + relevant Decision Packages, never anything else); step ownership routing. | Pain C: execution oversight light enough to fold into strategic engagement WITHOUT becoming the engagement (PM-covenant guardrail, `STRATEGY-2026.md` Law 6). |
+| 24 | **Selection Engine — Tech mode** — matrix builder, criteria templates per category, **AI leaning recommendation with caveats**, paste-G2-link workflow (founder pastes a vendor URL; agent extracts public data + populates row). | Pain C: defensible artifact for tech selection conversations. Replaces Phase 2.5 standalone Build-vs-Buy Advisor — that capability now ships here, generic over `domain: "tech" \| "ai"`. |
+| 25 | **Selection Engine — Partner mode + Network Catalog** — per-practitioner tagged network of vetted people (name, role, domain tags, last engagement, rating, source, notes). AI suggests partners from YOUR network FIRST, then external sourcing prompts (Upwork, Clutch, peer-network templates). **Encrypted at rest. Per-practitioner-only — never cross-practitioner.** | Pain C + practitioner moat. Compounds engagement-over-engagement. **`/cso` review and `/codex` second opinion required before ship.** |
+| 26 | **Engagement Cadence** — milestones (commitments, target dates, deliverable types), auto-populated from roadmap + status + decisions + Initiative Pilot, **shareable read-only client view** (token-based, no portal). Milestones carry `domain` field for Phase 2.5 AI extension. | Pain D: client gets "where are we?" answered without the practitioner being in every meeting. AI-extension-ready. |
+| 27 | **Status Report Generator (Engine #2)** — auto-aggregated from Initiative Pilot data + Cadence milestones + Decision Packages + Roadmap. AI narrative draft + Markdown editor + PDF export + Resend send (verified domain from Phase 1.5). **`deliverable_types[]` extension array** for Phase 2.5 AI sections. | Pain C: 90 min → 12 min savings per client per month. AI-extension-ready. |
+| 28 | **MCP Server foundation + Jira/Asana read-sync** — auth, tool registry, first 3 tools (`generate_status_report`, `query_client_data`, `propose_decision_package`). **Read-sync only** — pull ticket status from Jira/Asana into Initiative Pilot steps; never push. Tool registry forward-looking — Phase 2.5 will add 5 AI-specific tools (`run_ai_readiness_assessment`, `generate_ai_roadmap`, `propose_ai_use_cases`, `evaluate_build_vs_buy`, `generate_ai_governance_kit`). | Pain A: stop juggling 5 tools. Practitioner calls AI-CDIO from Claude.ai / Cursor / Codex. Ticket status visible without bidirectional traps. AI-extension-ready. |
 
-**Done = Founder runs full Quick Win engagement on Ambar end-to-end (assessment → cadence → status reports → decision packages) using the platform, including from Claude.ai via MCP. Every engine is built once and extended in Phase 2.5 — no rebuild work scheduled.**
+**Stretch (not Day-21 commitment):** auto-pulse / vendor-chasing automation — pings vendors when their step is overdue. Founder ranked this 4th on simplicity priority. Slot in Phase 4 if usage data justifies.
+
+**Pre-Phase-1D gates (locked Day 11):**
+- `/plan-eng-review` on full Phase 1D scope (Initiative Pilot + Selection Engine + Network Catalog) before Day 21 code.
+- `/codex` second opinion on the Network Catalog privacy model (cross-tenant isolation specifically).
+- `/cso` security audit before Network Catalog ships (Day 25).
+
+**Done = Founder runs full Quick Win + execution-oversight engagement on Ambar end-to-end (assessment → charter → initiative pilot → tech selection → cadence → status report) using the platform, including from Claude.ai via MCP. Every engine is built once and extended in Phase 2.5 — no rebuild work scheduled.**
 
 ---
 
@@ -200,7 +228,7 @@ Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 beca
 | 39-40 | **AI Maturity Model + Assessment Engine** — 6-8 dimensions (data foundations, use-case identification, talent, governance, infrastructure, change mgmt, ROI tracking, vendor strategy). 5-level maturity per dimension. Plain-English questions tagged with the role/area system from Phase 1C (CEO-tagged questions strip out "MLOps" jargon). | The named "AI Readiness Assessment" CEOs are searching for |
 | 41-42 | **AI Use-Case Library** — pre-built catalog by industry × function (sales, ops, finance, customer service, HR). Each use-case: ROI estimate, time-to-value, complexity, vendor options, build-vs-buy hint. Filterable by client size + industry + maturity. Initial catalog: 30-50 named use cases. | The "what could I do?" answer — CEOs need a menu, not a blank canvas |
 | 43-44 | **AI Roadmap Generator** — 90 / 180 / 360 day plan tailored to client. Quick wins (90), foundation (180), scale (360). Pulls from playbook RAG + AI Use-Case Library. | The "how do I implement faster?" question answered visually |
-| 45 | **Build-vs-Buy Advisor** — Copilot vs Salesforce Einstein vs custom. Cost ranges. Risk scoring. Decision tree based on client profile. | The decision CEOs actually agonize over |
+| 45 | **AI-flavored Selection Engine pass** — extends the Tech Selection Engine (shipped Phase 1D Day 24) with AI-specific evaluation criteria: model-vendor lock-in, training data ownership, build-vs-buy heuristics for AI specifically (Copilot vs Salesforce Einstein vs custom), AI-vendor cost-range library, AI-specific risk scoring, EU AI Act / NIST AI RMF compliance flags. **No standalone Build-vs-Buy Advisor** — the generic Selection Engine handles both tech and AI domains via a `domain: "tech" \| "ai"` parameter. | The AI build-vs-buy decision answered by the same engine that handles every other tech selection. No double-build. |
 | 46 | **Governance Scaffolding** — AI policy template, EU AI Act checklist, NIST AI RMF mapping, bias-review workflow, AI use-case approval form. **Reuses the framework citations layer from Phase 1C Days 16-17** — extends it with NIST AI RMF + EU AI Act, no rebuild. | Regulatory pressure makes this Day-1 needed |
 | 47-48 | **AI deliverable surfacing** — AI Readiness Report, AI Roadmap, AI Decision Package added as standalone artifacts in client workspace. **AI milestones flow into Engagement Cadence** via `domain: "ai"` field (extension point from Phase 1D). **AI KPIs flow into Status Reports** via `deliverable_types[]` array (extension point from Phase 1D). **5 AI-specific MCP tools registered** against existing tool registry. AI Decision Package generated by the same Decision Package engine called with `domain: "ai"`. | AI is not a sidecar — it's woven into every existing surface, using extension points already built |
 | 49 | **Public AI Quick Scan at `/ai-readiness`** — anonymous 5-minute teaser assessment (the AI lens deferred from Phase 1C lands here, alongside the destination it funnels to). Output is a teaser report + CTA: *"Want a real AI roadmap? Connect with a fractional CDIO using AI-CDIO."* Lead capture goes to **practitioners**, not direct subscriptions. | Top-of-funnel lead magnet for practitioner sign-ups — now with a real destination |
@@ -251,6 +279,7 @@ Only if Phase 1-4 has delivered clear PMF. None of these are commitments.
 | Quarter | Focus |
 |---------|-------|
 | Q5 | AI-Strategist sibling (parallel methodology toolkit on shared MCP infrastructure) |
+| Q5 | **Module 17 — Sales / Marketing / Revenue Tech** (CANDIDATE, not commitment). The current 16 modules over-index on infrastructure and governance and under-index on revenue-side tech. Modern SMB CDIOs spend 30-50% of time on sales tech, marketing tech, customer success tech. Ship Module 17 ONLY IF customer demand confirms the gap. See `STRATEGY-2026.md` Law 7 for other future-module candidates (Vision & North Star, Governance & Decision Rights split, AI as its own module, Sustainability / ESG Tech). |
 | Q6 | AI-OME sibling |
 | Q7 | Cross-agent intelligence (shared client context across CDIO+Strategist+OME) |
 | Q8 | Multi-language (Spanish first if Latin American demand emerges) |

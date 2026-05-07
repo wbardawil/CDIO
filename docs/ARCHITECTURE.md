@@ -1,6 +1,8 @@
 # AI-CDIO: Architecture
 
-> **Last refreshed:** 2026-04-28 (Day 4 ending). Aligned with `docs/STRATEGY-2026.md` practitioner-first principle.
+> **Last refreshed:** 2026-05-07 (Phase 1C Day 11 doc-lock — multi-corpus RAG model, per-practitioner tenant isolation, selective multi-agent boundaries, and Network Catalog privacy model added per `STRATEGY-2026.md` Architectural Laws 1-5).
+>
+> **Previous refresh:** 2026-04-28 (Day 4 ending). Aligned with `docs/STRATEGY-2026.md` practitioner-first principle.
 
 ## The Four-Layer Model
 
@@ -163,8 +165,166 @@ This makes adding new engines (Status Report, QBR Deck, Board Memo) consistent a
 | Phase | Integrations |
 |-------|-------------|
 | Phase 1 (Now) | Self-contained, no external integrations |
+| Phase 1D (Day 28) | Jira/Asana **read-sync only** — pull ticket status into Initiative Pilot steps; never push out (no bidirectional traps) |
 | Phase 2 (Month 2-3) | Google Workspace / M365 admin (auto-detect tools, MFA status, license waste) |
 | Phase 3 (Month 4-6) | Cloud billing APIs, security scanners, SaaS management |
-| Phase 4 (Month 7+) | Slack/Teams, Jira/Linear, accounting (QuickBooks/Xero) |
+| Phase 4 (Month 7+) | Slack/Teams, accounting (QuickBooks/Xero) |
 
 **Principle:** Integrations enrich the engines (auto-populate scores, fetch data). They never make us a tool vendor.
+
+---
+
+## Multi-Corpus RAG Model (locked Day 11)
+
+Strategic context lives in `STRATEGY-2026.md` Architectural Law 2. This section is the technical detail.
+
+### Today (end of Day 11)
+
+A single shared corpus: **playbook chunks**. 1,154 entries from the 30-file CDIO playbook, CMU/Carnegie attribution stripped. Embedding model: OpenAI `text-embedding-3-small` via Supabase pgvector. Retrieval is semantic top-k with no re-ranking layer. Every practitioner queries the same corpus.
+
+### Future (post-Phase-2.5)
+
+Seven distinct corpora, three of which are **per-practitioner** and isolated:
+
+| Corpus | Scope | Source | Retrieval mode | Tenant boundary |
+|---|---|---|---|---|
+| **1. Playbook** | Global | 30-file CDIO playbook (already shipped) | Semantic embeddings | Shared, read-only |
+| **2. Frameworks** | Global | NIST CSF, NIST AI RMF, EU AI Act, KPMG 4-practice, MIT SAM, ITIL, CMMI, TBM Council, APQC PCF, ADKAR, Kotter — chunked + cited | Semantic embeddings | Shared, read-only |
+| **3. Vendor data** | Global | Public G2 / Capterra / vendor-website extracts populated by Phase 1D agent + curated entries | Semantic embeddings + structured filters (category, price tier) | Shared, read-only |
+| **4. AI Use-Case Library** | Global | Phase 2.5 deliverable: 30-50 named AI use cases tagged by industry × function × maturity | Semantic embeddings + faceted query | Shared, read-only |
+| **5. Per-practitioner Historical Engagements** | **Per-practitioner** | Decisions, narratives, Decision Packages, status reports, charters from prior engagements | Semantic embeddings, **tenant-scoped at the query layer** | **STRICT: never cross-practitioner visible** |
+| **6. Per-practitioner Network Catalog** | **Per-practitioner** | Vetted partners/vendors the practitioner has engaged: name, role, domain tags, last engagement, rating, source, notes | **Structured query** (not embeddings — too small, too sparse, structured fields more useful) | **STRICT: never cross-practitioner visible. Encrypted at rest beyond Supabase defaults.** |
+| **7. Industry overlays** | Global, applied at runtime | Phase 1.5 deliverable: AI-rewrites base questions to feel native to client industry (manufacturing → supply-chain phrasing; healthcare → HIPAA phrasing) | Generated, not retrieved — runtime function transforms base content | Shared (the *function* is shared; the output is per-engagement) |
+
+**Hybrid retrieval pattern:** Corpora 1-4 (global) and Corpus 5 (per-practitioner) use embeddings. Corpus 6 (Network Catalog) uses structured query because it's small, sparse, and structured fields (rating, last_engagement, domain_tags) are more useful than semantic similarity. Corpus 7 is generative, not retrieval.
+
+**Re-ranking layer (Phase 2.5+):** when multiple corpora return hits for a single query, a re-ranker (cross-encoder or LLM-as-reranker) orders by relevance to the practitioner's task. Without re-ranking, the practitioner gets a noisy concatenation. Until volume justifies the cost, we use simple priority: per-practitioner historical engagements > playbook > frameworks > vendor data > AI use-case library.
+
+### Per-practitioner tenant isolation (P0 architectural concern)
+
+The two per-practitioner corpora (5 and 6) are **the practitioner's moat**. Cross-practitioner leakage would destroy the value proposition and create legal exposure. Enforcement is layered:
+
+**Layer 1 — Schema:** every per-practitioner corpus row carries `practitioner_id NOT NULL`. There is no row in either corpus without a `practitioner_id`. No "global" rows.
+
+**Layer 2 — Query:** every retrieval call is wrapped by a function that injects `WHERE practitioner_id = $auth_practitioner_id` into the SQL. The retrieval helper takes `practitioner_id` as a required argument; no overload accepts a "skip filter" path.
+
+**Layer 3 — RLS (post-Day-30 activation):** Supabase Row-Level Security policies on the per-practitioner corpus tables tied to `auth.uid() → practitioners.clerk_user_id`. Until per-user JWTs are wired (post-Day-30), Layer 2 is the enforcement boundary; service-role used in API routes is gated by `assertPractitionerOwnsOrg`.
+
+**Layer 4 — Encryption at rest (Network Catalog only):** beyond Supabase defaults, the Network Catalog table uses application-layer envelope encryption on sensitive columns (notes, rating, last_engagement). Key per practitioner, derived from the practitioner's account. Founder can export everything in plaintext via an account-settings flow; can wipe everything via a destructive confirmation flow. Required by `STRATEGY-2026.md` Law 5.
+
+**Layer 5 — Telemetry:** every retrieval call against per-practitioner corpora logs `practitioner_id_requested` vs `practitioner_id_resolved`. Any mismatch alerts. Sentry rule wired before Network Catalog ships (Phase 1D Day 25).
+
+**Pre-ship gates (locked Day 11):**
+- `/codex` independent second opinion on the privacy model BEFORE Day 25 build.
+- `/cso` security audit on the encryption + isolation boundary BEFORE Day 25 ship.
+
+---
+
+## Selective Multi-Agent Boundaries (locked Day 11)
+
+Strategic context lives in `STRATEGY-2026.md` Architectural Laws 1 and 4. This section is the implementation detail.
+
+### Single-agent default (today through Phase 2)
+
+A single Sonnet 4.5+ agent handles every operation in Phases 1A-2:
+- Quick Scan / full assessment scoring
+- Decision Package generation
+- Roadmap generation
+- Status Report drafting
+- Charter Generator (Phase 1D Day 21)
+- Initiative Pilot step generation (Phase 1D Days 22-23)
+- Cadence narrative
+- Conversation agent
+
+The shared context window holds the playbook RAG hits + client data + role-tagged stakeholder responses. One model, one trace, one cost line per operation.
+
+### Multi-agent flows (Phase 2.5+ — gated to Growth and Scale tiers)
+
+Multi-agent is reserved for ~10 operations where the work genuinely benefits from specialization. The pattern is **orchestrator + workers**, not free-form agent swarms:
+
+| Operation | Agent topology | Why multi-agent |
+|---|---|---|
+| **Tech Selection deep evaluation** (Phase 1D Day 24 lite version → Phase 2.5 full) | Research agent (parallel: scrapes G2 / Capterra / vendor sites) → Evaluator agent (scores against criteria matrix) → Recommender agent (synthesizes the lean with caveats) | Parallelism on research; specialization on evaluation criteria; auditability of the lean recommendation |
+| **Partner Selection sourcing** (Phase 2.5) | Network-Catalog-first agent (queries practitioner's own corpus) → External-sourcing agent (Upwork / Clutch / peer network templates) → Synthesizer | Practitioner moat preservation — own network FIRST, external SECOND |
+| **AI Use-Case Library generators** (Phase 2.5) | Industry-context agent → Function-context agent → Use-case generator → ROI estimator | Each context dimension is a specialization |
+| **AI Roadmap Generator** (Phase 2.5) | 90-day-plan agent (parallel) + 180-day-plan agent + 360-day-plan agent → Synthesizer | Parallelism + horizon-specific specialization |
+| **AI Build-vs-Buy** (Phase 2.5) | Build-feasibility agent + Buy-vendor agent + Risk-scoring agent → Decision-tree synthesizer | Independent evaluation paths reduce framing bias |
+| **Governance Scaffolding** (Phase 2.5) | NIST AI RMF agent + EU AI Act agent + Bias-review agent → Policy synthesizer | Each regulatory regime has distinct chunking |
+| **Knowledge Reuse pattern detector** (Phase 4) | Per-practitioner historical-engagements agent → Pattern matcher → Suggestion agent | Cross-engagement pattern detection benefits from a dedicated retrieval pass |
+| **Stakeholder pattern detector** (Phase 4) | Divergence agent + Behavior agent → Synthesizer | Behavioral patterns are specialized |
+| **Outcome prediction** (Phase 4) | Historical-cohort agent + Current-engagement agent → Predictor | Comparative reasoning benefits from separate context loads |
+| **Document/image AI Vision evidence** (Phase 4) | Vision agent (extract) → Evaluator (score against module rubric) → Narrator | Vision and reasoning are different cost profiles |
+| **QBR deck generation** (Phase 4) | Section-per-module agents (parallel) → Layout synthesizer | Parallelism across module narratives |
+
+### Tier gating (drives the price defensibility)
+
+```
+┌─ Starter ($199/mo) ──────────────────────────────┐
+│  Single-agent only.                              │
+│  Quick Scan + Assessment + Decision Package      │
+│  + Status Reports + Charter + Initiative Pilot   │
+│  + Cadence + Tech Selection (lite, Day 24).      │
+└──────────────────────────────────────────────────┘
+            │  upgrades unlock multi-agent
+            ▼
+┌─ Growth ($399/mo) ───────────────────────────────┐
+│  + Selective multi-agent.                        │
+│  Tech Selection (deep) + AI Accelerator (full)   │
+│  + Partner Selection sourcing.                   │
+└──────────────────────────────────────────────────┘
+            │  upgrades unlock full multi-agent + memory
+            ▼
+┌─ Scale ($599/mo) ────────────────────────────────┐
+│  + Full multi-agent.                             │
+│  Knowledge Reuse + Outcome prediction +          │
+│  Document AI Vision + cross-engagement patterns. │
+└──────────────────────────────────────────────────┘
+```
+
+Cost telemetry from Phase 1.5 Day 19 (`agent_logs.token_count × model × org_id`) feeds the gross-margin math. Before Phase 3 Stripe goes live, we know what each tier costs to serve. Tier gates enforced via `lib/billing/feature-gates.ts` (Phase 3 Day 54).
+
+### Memory primitives (Phase 4 commitment)
+
+Per-client conversational memory across sessions ("remember what we decided last quarter for Ambar") is real value but not Phase 1 value. We do NOT build a homegrown memory layer. We adopt Anthropic's native memory primitives when they ship. Phase 4 commitment.
+
+---
+
+## Network Catalog: Privacy Model (locked Day 11)
+
+Strategic context: `STRATEGY-2026.md` Law 5. Phase 1D Day 25 deliverable.
+
+**Schema sketch (subject to `/plan-eng-review`):**
+
+```sql
+CREATE TABLE practitioner_network_entries (
+  id              uuid PRIMARY KEY,
+  practitioner_id uuid NOT NULL REFERENCES practitioners(id) ON DELETE CASCADE,
+  name            text NOT NULL,
+  role            text,
+  domain_tags     text[] DEFAULT '{}',
+  last_engagement date,
+  rating          smallint, -- 1-5, application-layer encrypted
+  source          text,     -- 'upwork' | 'clutch' | 'peer' | 'direct' | other
+  notes           text,     -- application-layer encrypted
+  contact_meta    jsonb,    -- email/phone, application-layer encrypted
+  created_at      timestamptz DEFAULT now(),
+  updated_at      timestamptz DEFAULT now()
+);
+
+CREATE INDEX ON practitioner_network_entries (practitioner_id);
+ALTER TABLE practitioner_network_entries ENABLE ROW LEVEL SECURITY;
+-- Policy: SELECT/INSERT/UPDATE/DELETE only where practitioner_id = current practitioner
+```
+
+**Encryption boundary:** `notes`, `rating`, `contact_meta` are application-layer envelope-encrypted before Supabase ever sees them. Per-practitioner data key derived from the practitioner's account. Supabase only stores ciphertext + nonce. Key rotation is a documented Phase 4 operation.
+
+**Export + wipe:** practitioner can export the full Network Catalog as CSV (decrypted in-app) or wipe the entire catalog with a destructive confirmation flow. Both flows are logged to `agent_logs` for auditability.
+
+**Cross-tenant invariant:** there is no application path that returns a Network Catalog entry where `practitioner_id` differs from the authenticated practitioner. Tested by:
+- Schema constraint (`NOT NULL` on `practitioner_id`)
+- Query wrapper (no overload accepts a "skip filter" path)
+- RLS policy (post-Day-30)
+- Telemetry alert on any mismatch
+- Penetration test before Phase 1D Day 25 ship (`/cso` skill)
+
+**No cross-practitioner suggestions ever.** When the Selection Engine in Partner mode asks "who do I know that fits this profile?", the query is bounded to the calling practitioner's catalog. External sourcing is the next step ONLY after the practitioner's own catalog is searched.

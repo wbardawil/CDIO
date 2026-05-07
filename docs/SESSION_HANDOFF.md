@@ -8,9 +8,13 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-05-07, end of Day 11 — strategic rewrite session):**
+**Current state (2026-05-07, end of Day 11 — doc-lock complete in cross-environment continuation session):**
 
-This session was the inflection point. We shifted the platform from feature-led to outcomes-led, expanded scope to include execution oversight, and committed to a multi-corpus RAG / selective multi-agent architecture. **Code state unchanged from end of Day 10. Strategy + roadmap heavily updated.**
+This session was the inflection point. We shifted the platform from feature-led to outcomes-led, expanded scope to include execution oversight, and committed to a multi-corpus RAG / selective multi-agent architecture. **Code state unchanged from end of Day 10.** Strategy + roadmap heavily updated. **As of this commit, Day 11 architectural decisions A-G are committed to docs:**
+- `STRATEGY-2026.md` — new "Architectural Laws" section (Laws 1-7)
+- `ROADMAP.md` — Phase 1D rewritten 4 → 8 days; Module 17 flagged Year-2 candidate; Phase 2.5 Build-vs-Buy folded into generic Selection Engine
+- `ARCHITECTURE.md` — multi-corpus RAG model, per-practitioner tenant isolation, selective multi-agent boundaries, Network Catalog privacy model
+- `CONTRACT-TEMPLATES.md` — new stub for PM-covenant clause library (Phase 2 Days 29-31 deliverable)
 
 **Phase 1A — Foundation** ✅ complete (Days 1-3)
 **Phase 1B — Practitioner Operations + Safety** ✅ code complete, env-var spillover only (Days 4-7)
@@ -85,7 +89,12 @@ Reason: Module 2 (Tech Strategy & Business Alignment) is the structural expressi
 
 ## Day 11 — the architectural decisions reached this session (for new-session pickup)
 
-These conversations happened but **doc updates are pending and code is unchanged**. Next session's first job: **commit these architectural decisions to `STRATEGY-2026.md` + `ROADMAP.md` + new `docs/ARCHITECTURE.md` updates before any code work.**
+**Doc-lock status (2026-05-07 end of day, cross-environment continuation session):** ✅ DONE.
+- `STRATEGY-2026.md` Architectural Laws 1-7 committed
+- `ROADMAP.md` Phase 1D revised to 8 days; Module 17 Year-2 flag added; Phase 2.5 Build-vs-Buy generalized into Selection Engine
+- `ARCHITECTURE.md` multi-corpus RAG + tenant isolation + selective multi-agent + Network Catalog privacy model committed
+- `CONTRACT-TEMPLATES.md` stub created (Phase 2 Days 29-31 deliverable)
+- Decisions A-G are now law. The summaries below remain as the rationale record.
 
 ### Decision A: Phase 1D scope expanded — Initiative Pilot + Selection Engine + Network Catalog
 
@@ -272,22 +281,13 @@ Phase 1C now includes **role/area question-level segmentation + universal N/A es
 
 Per `docs/ROADMAP.md` and the Day 11 architectural decisions above:
 
-### First moves of next session (BEFORE any code)
+### First moves of next session (BEFORE any code) — ✅ ALL DONE 2026-05-07 end of day
 
-The Day 11 strategic conversation produced architectural decisions A-G above. **Three of them still need doc updates committed before code resumes:**
-
-1. **Update `docs/STRATEGY-2026.md`** to lock the architectural law:
-   - Single-agent default; multi-agent reserved for high-leverage flows past Phase 2.5
-   - Multi-corpus RAG with strict tenant isolation
-   - Memory primitives Phase 4 commitment
-   - Tier-based multi-agent matrix (Starter / Growth / Scale)
-2. **Update `docs/ROADMAP.md`** to revise Phase 1D:
-   - Days 21-28 reshaped per founder's simplicity ranking (C, D, A, B, E)
-   - Charter Generator → Initiative Pilot → Selection Engine (Tech + Partner) → Network Catalog → Cadence → Status Reports → MCP + integrations
-   - Tech Selection Engine replaces standalone Build-vs-Buy Advisor in Phase 2.5
-3. **Add `docs/ARCHITECTURE.md`** updates: multi-corpus RAG model, tenant isolation requirements, agent specialization boundaries
-4. **Add `docs/CONTRACT-TEMPLATES.md`** stub for the PM-covenant clause library (Phase 2 Day 29-31 deliverable)
-5. **Flag Module 17 (Sales/Marketing/Revenue Tech)** as a Year-2 candidate in `ROADMAP.md`
+1. ✅ `docs/STRATEGY-2026.md` — Architectural Laws 1-7 committed
+2. ✅ `docs/ROADMAP.md` — Phase 1D revised; Phase 2.5 Build-vs-Buy generalized into Selection Engine; Module 17 Year-2 flag added
+3. ✅ `docs/ARCHITECTURE.md` — multi-corpus RAG, tenant isolation, selective multi-agent boundaries, Network Catalog privacy model
+4. ✅ `docs/CONTRACT-TEMPLATES.md` — stub created
+5. ✅ Module 17 flagged in `ROADMAP.md` Phase 5 as Year-2 candidate
 
 ### Then resume code per the existing Phase 1C plan
 
@@ -314,9 +314,11 @@ The Day 11 strategic conversation produced architectural decisions A-G above. **
    - `SENTRY_DSN` (error monitoring)
    - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (LLM observability)
 
-### Open question: gsd-2
+### gsd-2 (resolved 2026-05-07)
 
-Founder mentioned having a separate repo at `gsd-2` (alongside `gstack`). The repo's purpose / capability set is unknown to this session. **Next session: ask founder what gsd-2 contains and whether it should integrate with AI-CDIO.**
+`gsd-2` is GSD 2 — the evolution of the "Get Shit Done" prompt framework, now a standalone CLI coding agent built on the Pi SDK (`npm i -g gsd-pi`). Direct TypeScript access to the agent harness: context-window control, session management, git branching, cost/token tracking, stuck-loop detection, crash recovery, auto-advance through milestones. v1 was a prompt framework asking the LLM to behave; v2 actually controls execution.
+
+**Relevance to AI-CDIO:** not a Phase-1 dependency. Possible later integration: drive end-to-end methodology engagements via an autonomous agent ("run the assessment + draft the Decision Package + email the stakeholders, walk away"). Tracked as a Phase-4+ exploration; nothing committed.
 
 ### gstack skills — next session uses these proactively
 
