@@ -1,5 +1,21 @@
 # AI-CDIO: Pricing & Unit Economics
 
+> **⚠ STATUS — PROVISIONAL (locked 2026-05-07).** All numbers and tier structures below are *provisional sketches predating the Day 11 architectural rewrite*. Do not treat as locked pricing.
+>
+> **Architectural law that supersedes everything below** (`docs/STRATEGY-2026.md` Architectural Law 2): methodology is FULL on every tier; compute is the variable-cost lever; tiers differentiate by scale (clients, practitioners) and compute mechanism only — never by methodology depth.
+>
+> **Final pricing locked at Phase 2 Day 35-38** based on Day 19+ cost-per-engagement telemetry from `agent_logs`. Founder's stated inputs to that review:
+> - **Starter** uses Mechanism 1 (tier-included compute allowance + transparent metered overage). AI Accelerator included IF margin math works under Mechanism 1; otherwise excluded and Growth+ becomes minimum AI tier.
+> - **Growth** uses Mechanism 2 (BYOK — practitioner connects own Anthropic / OpenAI / OpenRouter / Copilot key). Full AI Accelerator unconditionally.
+> - **Scale** uses Mechanism 2 (BYOK). Full AI Accelerator + Knowledge Reuse + Custom playbook ingestion (Year 2+) + cross-engagement analytics + priority support.
+> - No methodology gating at any tier.
+> - Tier names and dollar amounts below ($199/$399/$1,499) are placeholders; final dollar amounts and tier names locked Day 35-38.
+>
+> Below content is preserved as historical context + ROI math reference. Treat as reading material for the Day 35-38 review, not as the current pricing structure.
+
+---
+
+
 ## Two Customer Segments, Five Tiers
 
 ### Fractional CDIO/CTO (Practitioner Segment)
