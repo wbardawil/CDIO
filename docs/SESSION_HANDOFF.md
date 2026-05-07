@@ -8,20 +8,170 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-05-06, end of Day 7):**
-- ✅ **Phase 1A — Foundation** complete (auth, practitioner schema, IDOR fix, Portfolio + Workspace shell)
-- ▶ **Phase 1B — Practitioner Operations + Safety** (Days 4-7) — code complete, env-var spillover only
-  - ✅ Day 3.5 bonus: Sandbox flag for safe testing alongside real engagements
-  - ✅ Day 4: stakeholder edit UI + email send via Resend (closes manual SQL + copy-paste workarounds)
-  - ✅ Day 5: P0-3 (token strip) + P0-6 (atomic synthesis stored proc)
-  - ⏸ Day 5/6: Upstash rate limiting + Sentry + Langfuse — waiting on env vars
-  - ✅ **Day 7: Test/Real architectural primitive shipped.** `is_sandbox` is now load-bearing:
-    - schema-v7 migration auto-flips orphan orgs (no `practitioner_clients` mapping) to `is_sandbox=true` and assigns to the sole practitioner. TestCo auto-flipped; Ambar untouched.
-    - `delete_sandbox_org(uuid)` stored proc hard-deletes a sandbox-flagged org + every dependent row in one transaction; refuses when `is_sandbox=false` at the database level.
-    - `<SandboxBanner>` component (workspace + assess variants) wired into `/clients/[orgId]` and `/assess/[token]`.
-    - Email gating in `send-assessment-email.ts`: when `is_sandbox=true`, recipient is rerouted to the practitioner's own inbox + subject prefixed `[TEST]` + HTML body shows a sandbox warning strip + audit log records the reroute.
-    - `DELETE /api/clients/[orgId]` endpoint — sandbox-only, double-protected (practitioner ownership + RPC-level `is_sandbox` guard). New "Hard-delete client" button with type-name-to-confirm.
-    - **Visual QA blocked**: the Preview MCP Chrome tab got stuck on `chrome-error://chromewebdata/` and would not navigate; `npx next build` passed cleanly and `curl` verified the API contracts (Ambar → `org_is_sandbox: false`, TestCo → `org_is_sandbox: true`). Founder eyeball pass recommended before Phase 1C kickoff.
+**Current state (2026-05-07, end of Day 11 — strategic rewrite session):**
+
+This session was the inflection point. We shifted the platform from feature-led to outcomes-led, expanded scope to include execution oversight, and committed to a multi-corpus RAG / selective multi-agent architecture. **Code state unchanged from end of Day 10. Strategy + roadmap heavily updated.**
+
+**Phase 1A — Foundation** ✅ complete (Days 1-3)
+**Phase 1B — Practitioner Operations + Safety** ✅ code complete, env-var spillover only (Days 4-7)
+**Phase 1C — Methodology Depth** ▶ in progress (Days 8-17)
+- ✅ Day 8: Module 5 deep + role/area tagging + universal N/A escape
+- ✅ Day 9: AI narrative + path-to-next-level + thin-coverage warning
+- ✅ Day 10: Decision Packages surfaced as hero artifact
+- ✅ **Day 11: Outcomes-led strategy rewrite + 16 module renames + AI leverage roadmap**
+- ⏳ Day 12 (next session): Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO)
+
+---
+
+## Day 11 — what shifted strategically (the new session reads this carefully)
+
+The founder challenged the platform's positioning: *"We described features... but I can only sell outcomes, better yet feelings. Are we optimizing for outcomes and feelings?"*
+
+The honest answer was no, we were feature-led. This session rebuilt the strategy from the customer outcome backwards.
+
+### 1. Strategy doc rewritten outcomes-first (`docs/STRATEGY-2026.md`)
+
+Four outcome pillars, each anchored in 2025-2026 research from McKinsey, BCG, KPMG, WEF:
+- **Pillar 1 — Higher Project Success Rate** (alignment forced earlier; 48% of digital initiatives miss without alignment per Gartner)
+- **Pillar 2 — Higher ROI from Tech Investments** (avoidance + focus; 60% of companies generate no AI value per BCG)
+- **Pillar 3 — Tech Aligned to Strategy** (the platform's structural strength; KPMG 4-practice framework operationalized)
+- **Pillar 4 — Helping CEOs Build Moats** (weakest pillar today; Phase 2.5 unlocks it)
+
+### 2. Pillar 4 now carries the AI claim boundary
+
+> *"AI-CDIO does not build your AI. It catches the seven decision-phase failures that account for ~70% of why AI initiatives die before they deliver value: wrong use case, weak sponsorship, no success criteria, CEO-CTO misalignment, build-vs-buy errors, governance gaps, organizational silos. The remaining ~30% (data engineering, MLOps execution, end-user adoption) is the execution partner's responsibility."*
+
+This is what the founder can defensibly claim in sales without overselling.
+
+### 3. Practitioner Feeling Map locked
+
+Four feelings drive demo-to-paid conversion:
+- *"I look like the CEO I want to be in front of my board."*
+- *"My methodology travels with me."*
+- *"I'm not the bottleneck."*
+- *"I'm getting better as a practitioner faster than I would alone."*
+
+### 4. Weekly outcome log discipline (`docs/OUTCOMES.md`)
+
+Founder writes one entry per Friday answering: *"What did the platform help me deliver this week that I couldn't have done as well without it?"* Day 90 kill switch reads this log. Outcome categorization by pillar served. **Founder commitment: starts Day 18 (production deploy) for real entries.**
+
+### 5. All 16 modules renamed + framework-anchored (`src/types/index.ts`)
+
+New `MODULE_META` typed export carries name + oneLiner + framework anchor for each module. `MODULE_NAMES` kept as backwards-compatible alias derived from MODULE_META. Highlights:
+
+| # | Old | New | Framework anchor |
+|---|---|---|---|
+| 1 | Role of the CIDO | Technology Leadership at the Top | Gartner CIO Leadership Model |
+| 2 | IT/Digital Transformation Strategy | Tech Strategy & Business Alignment | KPMG 4-Practice + MIT Strategic Alignment Model |
+| 5 ⭐ | Cybersecurity, Risk Management & Compliance | Security, Risk & Compliance | NIST CSF v2.0 + CMMI ✅ shipped |
+| 12 ⭐ | Financial Acumen | Tech Finance & Value Realization | TBM Council + KPMG ROO |
+| 15 ⭐ | Business Process Transformation & Automation | Process Automation & Transformation | APQC PCF + Lean Six Sigma |
+| 16 | Future of Work & Workforce Development | Workforce, Skills & Change | Prosci ADKAR + Kotter 8-Step |
+
+Each carries a CEO-language one-liner. Quick Win Stack = Modules 5, 12, 15 (⭐).
+
+### 6. Module 2 deep promoted from Phase 4 to Phase 1C Day 16
+
+Reason: Module 2 (Tech Strategy & Business Alignment) is the structural expression of Pillar 3 — alignment is the platform's strongest pillar. Methodology depth on this module directly supports demo-to-paid conversion. Anchored to KPMG 4-practice + MIT Strategic Alignment Model.
+
+### 7. Tier 1 AI leverage added to Phase 1C/1.5 to mitigate complexity tax
+
+15-question framework-anchored modules add complexity. Three AI leverage points commit to keeping it light:
+- **Day 16 — Adaptive questioning** (each stakeholder gets 6-8 contextually-selected questions instead of 15; uses existing `generateFollowUpQuestions` infrastructure)
+- **Day 17 — Framework jargon → CEO-language translation** (practitioner sees "PR.AA-05"; CEO sees "*Does your team enforce password rules everyone follows?*")
+- **Day 18 — Industry overlay generator** (16 modules × 6 industries handled by one runtime function instead of 96 hand-written variants)
+
+---
+
+## Day 11 — the architectural decisions reached this session (for new-session pickup)
+
+These conversations happened but **doc updates are pending and code is unchanged**. Next session's first job: **commit these architectural decisions to `STRATEGY-2026.md` + `ROADMAP.md` + new `docs/ARCHITECTURE.md` updates before any code work.**
+
+### Decision A: Phase 1D scope expanded — Initiative Pilot + Selection Engine + Network Catalog
+
+The founder confirmed execution oversight is in scope (he's required to oversee initiatives with vendors/contractors). Original Phase 1D was 4 days of recurring deliverables; revised is 8 days covering execution coordination.
+
+**Revised Phase 1D plan (Days 21-28):**
+| Day | Deliverable |
+|---|---|
+| 21 | Charter Generator (lean one-page from Decision Package or Roadmap initiative) |
+| 22-23 | Initiative Pilot core (initiative model, step generation from playbook RAG, multi-party invites with token-based contextual visibility, step ownership routing) |
+| 24 | Selection Engine — Tech mode (matrix builder, criteria templates per category, AI leaning recommendation with caveats, paste-G2-link workflow) |
+| 25 | Selection Engine — Partner mode + Network Catalog (per-practitioner tagged network of vetted people, AI suggests from network FIRST then external sourcing prompts) |
+| 26 | Engagement Cadence (read-only client view, token-based) |
+| 27 | Status Report Generator (auto-aggregated from Initiative Pilot data) |
+| 28 | MCP Server foundation + Jira/Asana read-sync |
+
+**Auto-pulse / vendor-chasing automation = stretch goal, not Day-21 commitment.** Founder ranked it 4th on simplicity priority.
+
+### Decision B: Founder simplicity priority ranking (drives Phase 1D sequencing)
+
+Founder ranked his 5 admin pains: **C, D, A, B, E**
+- C — simpler than rebuilding charters/status/decisions from scratch each engagement (top pain — drives Days 21-23)
+- D — simpler than answering CEO's "where are we?" (drives Day 26 Cadence)
+- A — simpler than juggling 5 tools (drives Day 28 integration)
+- B — simpler than chasing vendors/contractors (stretch — auto-pulse later)
+- E — simpler than client-switching context (Phase 4)
+
+### Decision C: Tech Selection Engine architecture
+
+- **Mode C (matrix + leaning recommendation with caveats)** — platform produces defensible artifact, suggests a lean, founder makes the call. Founder's judgment is the value-add.
+- **Charter format: Lean one-page** (PMI PMBOK is enterprise theater for SMBs)
+- **Jira/Asana integration: B (read-sync)** — pull ticket status in. Don't push out. No bidirectional traps.
+- **Vendor visibility: Contextual** — vendors see their steps + initiative goal + relevant Decision Packages. Never see other clients, vendors, maturity scores, or strategic narrative.
+- **Vendor catalog seed: Hybrid (C)** — agent generates initial seed from public data; founder curates the 10-15 categories he most often works in.
+
+### Decision D: Network Catalog — per-practitioner moat
+
+Founder uses Upwork, Clutch, peer networks for partner sourcing. Many vendors he evaluates aren't on G2. The Network Catalog becomes the practitioner's permanent address book of vetted people:
+- Name, role, domain tags, last engagement, rating, source, notes
+- AI suggests from YOUR network FIRST, then external sourcing
+- Per-practitioner only — **never cross-practitioner visible** (privacy boundary locked)
+- Encrypted at rest beyond Supabase defaults; full export + wipe controls
+
+**This is the practitioner's moat. Compounds engagement-over-engagement.**
+
+### Decision E: PM guardrail + contract covenant
+
+Founder accepted the guardrail: *the platform makes execution oversight light enough that you can do it as part of strategic engagement WITHOUT it becoming the engagement.* Don't take PM-for-hire work just because the platform makes it possible — that's a different price point.
+
+**New commitment from founder:** the practitioner's contract should require the client to nominate or hire a PM (internal or external) the practitioner oversees. Platform supports this; doesn't replace it.
+
+**Phase 2 Day 29-31 deliverable:** ship contract template language as a soft feature in the Asset Library so practitioners can paste covenant clauses into their own engagement contracts.
+
+### Decision F: Architecture commitments — single-agent default, multi-corpus RAG, memory primitives Phase 4
+
+Single-agent is right for the ~20 operations in Phase 1A through Phase 2 inclusive. Multi-agent reserved for ~10 operations in Phase 2.5+:
+- Tech Selection deep evaluation (research agent + evaluator + recommender)
+- Partner Selection sourcing (Phase 2.5 find capability)
+- AI Use-Case Library / AI Roadmap / Build-vs-Buy / Governance
+- Knowledge Reuse / Stakeholder pattern detector / Outcome prediction
+- Document/image AI Vision evidence analysis
+- QBR deck generation
+
+**Multi-agent becomes a tier differentiator:**
+- Starter ($199): single-agent only
+- Growth ($399): selective multi-agent (Tech Selection deep, AI Accelerator)
+- Scale ($599): full multi-agent + Knowledge Reuse + Outcome prediction + Document AI Vision
+
+Cost telemetry from Day 19 (Phase 1.5) makes this actionable.
+
+**Multi-corpus RAG architectural commitment:**
+- Today: 1 corpus (playbook chunks, 1,154 entries)
+- Future: 7 corpora — Playbook + Frameworks + Vendor data + Use case catalog + Per-practitioner historical engagements + Per-practitioner Network Catalog + Industry-specific overlays
+- Strict tenant isolation: per-practitioner corpora must NEVER leak across (P0 architectural concern)
+- Hybrid retrieval: embeddings for unstructured (playbook, frameworks, vendor docs), structured query for Network Catalog
+- Re-ranking layer when multiple corpora return hits
+
+**Memory primitives:** Phase 4 commitment. Per-client conversational memory across sessions. Adopts Anthropic's native memory primitives when available.
+
+### Decision G: Module 17 (Sales/Marketing/Revenue Tech) flagged as Year-2 addition
+
+Current 16 modules over-index on infrastructure / governance and under-index on revenue-side tech. Modern SMB CDIOs spend 30-50% of time on sales tech, marketing tech, customer success tech. Add Module 17 in Year 2 if customer demand confirms. Other potential future modules already flagged:
+- Vision & North Star
+- Governance & Decision Rights
+- AI as its own module (split from Module 6 once Phase 2.5 lands)
+- Sustainability / ESG Tech
 
 **Key product decision locked 2026-04-29 (Phase 1C scope expansion):**
 
@@ -118,35 +268,85 @@ Phase 1C now includes **role/area question-level segmentation + universal N/A es
 
 ---
 
-## What to Build Next (Day 7+ — Phase 1B continues)
+## What to Build Next (Day 12+ — Phase 1C continues)
 
-Per `docs/ROADMAP.md`:
+Per `docs/ROADMAP.md` and the Day 11 architectural decisions above:
 
-1. **Day 7 (next session):** Build the Test/Real architectural primitive. Scope locked:
-   - One migration: any org with no `practitioner_clients` mapping → flip `is_sandbox = true` + assign to the lone practitioner. (TestCo cleaned automatically; Ambar untouched.)
-   - Sandbox banner component on workspace header + `/assess/[token]` page.
-   - Email gating in `send-assessment-email.ts`: if Test, route to practitioner only with `[TEST]` subject prefix.
-   - Sandbox-only delete-org endpoint (no UI on Real orgs).
-2. **Day 5/6 (pending creds):** Upstash rate limiting + Sentry + Langfuse — ask founder if these env vars are set:
-   - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (free tier at upstash.com)
-   - `SENTRY_DSN` (free tier at sentry.io)
-   - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (cloud.langfuse.com)
-3. **Phase 1C starts Day 8** — Module 5 deep is the proof-of-pattern for methodology depth + role/area question-level segmentation + N/A. **Day 8 also requires a data migration decision** for Ambar/TestCo existing assessment responses before the Module 5 question-bank rewrite begins. AI lens NOT in Phase 1C (deferred to Phase 2.5).
-4. **Phase 1.5 lands Days 18-20** — production deploy + legal foundation + cost telemetry. Custom domain decision pending founder before Day 18.
-5. **Phase 1D Days 21-28** — Status Report Generator, Engagement Cadence, MCP. **Each engine designed with explicit extension points for Phase 2.5** to avoid double-build.
-6. **Phase 2 Days 29-38** — design partner pilots, asset library (L4), pricing & packaging design (Days 35-38), onboarding emails + help docs.
-7. **Phase 2.5 Days 39-50** — AI Accelerator Engine (12 days). See `docs/STRATEGY-2026.md` AI-as-buy-trigger thesis + `docs/ROADMAP.md` Phase 2.5 section.
-8. **Phase 3 Days 51-75** — account/billing settings UI FIRST, then Stripe, then Day 90 metrics dashboard, then Value Tracker.
+### First moves of next session (BEFORE any code)
 
-**Day 7 audit findings (locked 2026-04-29):**
+The Day 11 strategic conversation produced architectural decisions A-G above. **Three of them still need doc updates committed before code resumes:**
+
+1. **Update `docs/STRATEGY-2026.md`** to lock the architectural law:
+   - Single-agent default; multi-agent reserved for high-leverage flows past Phase 2.5
+   - Multi-corpus RAG with strict tenant isolation
+   - Memory primitives Phase 4 commitment
+   - Tier-based multi-agent matrix (Starter / Growth / Scale)
+2. **Update `docs/ROADMAP.md`** to revise Phase 1D:
+   - Days 21-28 reshaped per founder's simplicity ranking (C, D, A, B, E)
+   - Charter Generator → Initiative Pilot → Selection Engine (Tech + Partner) → Network Catalog → Cadence → Status Reports → MCP + integrations
+   - Tech Selection Engine replaces standalone Build-vs-Buy Advisor in Phase 2.5
+3. **Add `docs/ARCHITECTURE.md`** updates: multi-corpus RAG model, tenant isolation requirements, agent specialization boundaries
+4. **Add `docs/CONTRACT-TEMPLATES.md`** stub for the PM-covenant clause library (Phase 2 Day 29-31 deliverable)
+5. **Flag Module 17 (Sales/Marketing/Revenue Tech)** as a Year-2 candidate in `ROADMAP.md`
+
+### Then resume code per the existing Phase 1C plan
+
+| Day | Task |
+|---|---|
+| **12** | Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO). 12-15 questions tagged + level 5 + framework-cited. The new outcome-led framing baked in from question-bank up. |
+| 13 | Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma) |
+| 14-15 | Quick Scan output upgrade (board-memo-quality artifact) |
+| **16** | **Module 2 deep — Tech Strategy & Business Alignment** (KPMG 4-practice + MIT) + **adaptive questioning wired in** |
+| **17** | Framework citations layer + jargon → CEO-language translation |
+| **18-20** | Phase 1.5 — Vercel deploy + custom domain + verified email + industry overlay generator + cost telemetry + legal foundation |
+| **21-28** | **Phase 1D revised** — Charter / Initiative Pilot / Selection Engine + Network Catalog / Cadence / Status Reports / MCP + integrations |
+
+### Founder's pending decisions (next session asks for these)
+
+1. **Custom domain choice** for Phase 1.5 (`ai-cdio.com` or other). Needed before Day 18.
+2. **Vendor catalog seed approach** ✅ confirmed C (hybrid: agent generates, founder curates 10-15 categories).
+3. **Pre-Day 12 actions:**
+   - Run `/plan-eng-review` on Phase 1D scope (Initiative Pilot + Selection Engine + Network Catalog) — gstack skill, locally available
+   - Run `/codex` on the Network Catalog privacy model — independent second opinion
+   - Run `/cso` on the planned Network Catalog encryption / cross-tenant isolation
+4. **Optional env vars (Phase 1B spillover):**
+   - `UPSTASH_REDIS_REST_URL` + `UPSTASH_REDIS_REST_TOKEN` (rate limiting)
+   - `SENTRY_DSN` (error monitoring)
+   - `LANGFUSE_PUBLIC_KEY` + `LANGFUSE_SECRET_KEY` (LLM observability)
+
+### Open question: gsd-2
+
+Founder mentioned having a separate repo at `gsd-2` (alongside `gstack`). The repo's purpose / capability set is unknown to this session. **Next session: ask founder what gsd-2 contains and whether it should integrate with AI-CDIO.**
+
+### gstack skills — next session uses these proactively
+
+Available skills at `~/.claude/skills/gstack/`:
+- `/plan-eng-review` — gate before Phase 1D code
+- `/plan-ceo-review` — strategic scope reviews (would have caught Day 11 reframe earlier)
+- `/codex` — second opinion on architectural calls
+- `/cso` — security audit before any privacy-sensitive feature (Network Catalog!)
+- `/health` — code quality dashboard, weekly
+- `/learn` — capture engagement patterns post-commit
+- `/qa` — visual QA (Windows-compatibility uncertain; try once)
+
+This session under-used these. Next session uses them as gates, not optional polish.
+
+### Key data state
+
 - Practitioners: 1 (Wadi Bardawil, `wadi.bardawil@arkiva.mx`, plan: `starter`)
-- Real orgs: **Ambar Capital** — `is_sandbox=false`, properly mapped to founder as `owner`, `active_modules = [5, 15, 4]` (Cybersecurity + Process Automation + Cloud — founder's call as fractional CIO; intentional variant from the canonical Quick Win Stack `[5, 15, 12]`)
-- Test orgs (post-migration): **TestCo Industries** — pre-Phase-1A legacy, will be auto-flipped to Test via Day 7 migration rule
-- Founder's role at Ambar: **fractional CIO**
+- Real orgs: **Ambar Capital** — `is_sandbox=false`, mapped to founder as `owner`, `active_modules = [5, 15, 4]`
+- Sandbox orgs: **TestCo Industries** — auto-flipped Day 7 migration
+- Founder's role at Ambar: fractional CIO
+- Module 5 = first deep-pass module (NIST CSF v2.0, 15 questions, role-tagged, level-5, narrative + path)
+- Existing Module 5 scores on Ambar/TestCo are **legacy schema** — re-running an assessment populates the new narrative + path fields per stakeholder
 
-Open the next session by reading `docs/STRATEGY-2026.md` first, then `docs/ROADMAP.md`, then ask the founder these:
-- Are the Upstash + Sentry + Langfuse env vars set? (If yes, those close in <1hr each.)
-- Run preview-based QA on every UI commit (the discipline committed Day 3) — banner work is UI, screenshots required before claiming done.
+Open the next session by reading in order:
+1. `docs/STRATEGY-2026.md` (the outcomes-led rewrite)
+2. `docs/OUTCOMES.md` (founder's verification surface)
+3. `docs/SESSION_HANDOFF.md` (this doc, starting at top)
+4. `docs/ROADMAP.md` (Phase 1C-1D-2.5)
+5. `docs/PRODUCT.md`
+6. `docs/GAPS.md`
 
 ---
 
