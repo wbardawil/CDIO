@@ -7,6 +7,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { getModuleContext, searchPlaybook } from "@/lib/playbook/retrieve";
 import { getTargetLevelCeiling } from "@/lib/scoring/maturity";
+import { logAnthropicCall } from "@/lib/observability/agent-logs";
 import type {
   MaturityLevel,
   DiagnosticResponse,
@@ -113,7 +114,10 @@ export async function scoreModule(
     // RAG retrieval is optional — continue without it
   }
 
-  const message = await anthropic.messages.create({
+  const message = await logAnthropicCall({
+    agentName: "assessment.scoreModule",
+    metadata: { moduleNumber, orgSize: orgContext.size, industry: orgContext.industry },
+    call: () => anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
     system: ASSESSMENT_SYSTEM_PROMPT + (playbookContext ? `\n\n## Playbook Reference for This Module\n${playbookContext.substring(0, 3000)}` : ""),
@@ -143,6 +147,7 @@ Provide your assessment as JSON:
 }`,
       },
     ],
+    }),
   });
 
   const responseText =
@@ -283,12 +288,23 @@ CRITICAL rules for path-to-next-level (Phase 1C Day 13):
 3. PE-UNDERWRITING DISCIPLINE. Conservative estimates over optimistic ones. Hard-dollar savings preferred over soft-benefit narratives. Every recommended action should be defensible 18 months later as having either delivered the projected outcome or surfaced what blocked it.
 4. SPECIFIC AND OUTCOME-ORIENTED. Bad: "Improve security posture." Good: "Document the 3-incident IR playbook in a shared Notion page and run a 30-min tabletop drill within 30 days."`;
 
-  const message = await anthropic.messages.create({
+  const message = await logAnthropicCall({
+    agentName: "assessment.generateNarrativeAndPath",
+    metadata: {
+      moduleNumber,
+      maturityScore,
+      orgSize: orgContext.size,
+      industry: orgContext.industry,
+      targetCeiling,
+      isAtCeiling,
+    },
+    call: () => anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
     system:
       "You are a fractional CDIO writing for a small/mid-size business CEO. Direct, evidence-anchored, never generic. Cite frameworks and the playbook when you can. You bias hard toward lean-form-first recommendations (manual / spreadsheet / shared doc) over tool-buy escalation. You respect size-band ceilings — a 30-person company does not need bank-grade governance. You write with PE-underwriting discipline: conservative estimates, hard-dollar savings, every claim defensible 18 months later.",
     messages: [{ role: "user", content: prompt }],
+    }),
   });
 
   const text = message.content[0].type === "text" ? message.content[0].text : "";
@@ -323,7 +339,10 @@ export async function generateFollowUpQuestions(
 ): Promise<string[]> {
   const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
 
-  const message = await anthropic.messages.create({
+  const message = await logAnthropicCall({
+    agentName: "assessment.generateFollowUpQuestions",
+    metadata: { moduleNumber, currentScore },
+    call: () => anthropic.messages.create({
     model: "claude-haiku-4-5-20251001",
     max_tokens: 512,
     system:
@@ -338,6 +357,7 @@ Initial responses: ${JSON.stringify(initialResponses)}
 Generate 2-3 follow-up questions that would help determine if the score should be higher or lower. Return as a JSON array of strings.`,
       },
     ],
+    }),
   });
 
   const responseText =
@@ -360,7 +380,15 @@ export async function generateDecisionPackage(
   projected_roi: string;
   alignment_suggestion: string;
 }> {
-  const message = await anthropic.messages.create({
+  const message = await logAnthropicCall({
+    agentName: "assessment.generateDecisionPackage",
+    metadata: {
+      moduleNumber,
+      gap: Math.abs(stakeholderA.score - stakeholderB.score),
+      orgSize: orgContext.size,
+      industry: orgContext.industry,
+    },
+    call: () => anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
     system: `You are the Decision Facilitation Agent. Your job is to help leadership teams align on technology decisions OBJECTIVELY.
@@ -392,6 +420,7 @@ Produce a Decision Package as JSON:
 }`,
       },
     ],
+    }),
   });
 
   const responseText =
