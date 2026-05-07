@@ -605,22 +605,257 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   },
 
   // ============================================================
-  // MODULE 12: Financial Acumen
+  // MODULE 12: Tech Finance & Value Realization
+  //
+  // Phase 1C Day 12 deep rewrite (2026-05-07). Question bank realigned
+  // to TBM Council taxonomy (Cost Transparency, Run/Grow/Transform,
+  // Cost for Performance, Cloud FinOps, Vendor & Subscription Management,
+  // License Optimization, Vendor & Contract Management, Benchmarking)
+  // and KPMG Return on Objectives (Strategic Alignment, Outcome
+  // Definition, Value Realization, Portfolio Outcome Visibility,
+  // Stakeholder Communication). Maturity rubrics drawn from TBM Council
+  // maturity model + KPMG ROO practice progression. Every question
+  // carries:
+  //   - Layer-1 function tag (CFO/CIO see most; CEO sees strategic-only;
+  //     Director-Finance sees the cost-discipline subset; Director-IT
+  //     sees the cloud/SaaS/vendor subset by area=IT match)
+  //   - Layer-2 area tag (finance / IT / cross_functional combinations)
+  //   - Level-5 indicator describing the "industry-leading" state
+  //     (board-grade transparency, FinOps integration, ROO-driven
+  //     portfolio governance)
+  //   - Framework citation surfaced inline in the assessment UI (TBM
+  //     Council reference for spend-discipline questions; KPMG ROO
+  //     reference for value-realization questions)
+  //   - na_eligible default true (universal N/A escape)
   // ============================================================
+
+  // ----- TBM Council: Cost Transparency -----
   {
-    id: "m12_q1", module_number: 12, subcategory: "IT Budgeting",
-    question: "Is there a defined IT budget aligned with business priorities?",
-    level_indicators: { level_1: "No defined IT budget", level_2: "Basic budget allocation", level_3: "Strategic IT budget with business case requirements", level_4: "Value-based budgeting with ROI tracking" },
+    id: "m12_q1", module_number: 12, subcategory: "Cost Transparency",
+    question: "Can you account for the full cost of technology — CapEx, OpEx, cloud, SaaS subscriptions, and IT labor — in one consolidated view?",
+    level_indicators: {
+      level_1: "Tech spend is scattered across budgets and cost centers; no consolidated view exists; questions about total cost get an estimate, not a number.",
+      level_2: "Major buckets are tracked (hardware, software licenses) but cloud, SaaS sprawl, and embedded IT labor are not consolidated.",
+      level_3: "Total tech spend is visible monthly across CapEx, OpEx, cloud, SaaS, and labor — categorized to a TBM-style taxonomy and reconciled to general ledger.",
+      level_4: "Spend is dashboarded with month-over-month trend, variance against forecast, and drill-down by application, service, or business unit; anomalies trigger review.",
+      level_5: "Total tech spend is a continuously updated, board-grade narrative — every variance has a documented business reason, and the spend story is part of every executive review.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["finance", "IT"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Cost Transparency",
+      rationale: "TBM's first principle is that you cannot manage what you cannot see — total tech spend visibility is the foundation of every other discipline.",
+    },
   },
   {
-    id: "m12_q2", module_number: 12, subcategory: "IT Budgeting",
-    question: "Is IT spending tracked and reported regularly?",
-    level_indicators: { level_1: "No tracking", level_2: "Annual budget review", level_3: "Monthly reporting with variance analysis", level_4: "Real-time financial dashboards with forecasting" },
+    id: "m12_q2", module_number: 12, subcategory: "Cost Transparency",
+    question: "Do you know what percentage of your tech spend goes to keeping current operations running versus growing the business versus transforming it?",
+    level_indicators: {
+      level_1: "Spend is bucketed by general ledger account; nobody can say what percentage goes to run vs grow vs transform.",
+      level_2: "An informal estimate of run-vs-grow-vs-transform exists in someone's head or a one-time slide; it is not maintained or reported.",
+      level_3: "Tech spend is formally allocated to Run / Grow / Transform every quarter and reviewed with executive leadership against a target mix.",
+      level_4: "Run / Grow / Transform mix is dashboarded monthly with explicit targets (e.g., 60/25/15); shifts are decisions, not accidents.",
+      level_5: "Run / Grow / Transform allocation is the lens for every funding conversation — the business actively rebalances toward growth and transformation as constraints relax.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["finance", "IT"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Run / Grow / Transform Lens",
+      rationale: "Run/Grow/Transform allocation is the most cited boardroom metric in tech finance — it answers 'are we maintaining or are we moving?'",
+    },
   },
   {
-    id: "m12_q3", module_number: 12, subcategory: "ROI & Value",
-    question: "Are ROI calculations performed for technology investments?",
-    level_indicators: { level_1: "No ROI analysis", level_2: "Occasional cost-benefit", level_3: "Standardized ROI framework for all projects", level_4: "Value realization tracking with post-implementation reviews" },
+    id: "m12_q3", module_number: 12, subcategory: "Cost Transparency",
+    question: "Can you tell a business unit, application owner, or service line what they consumed in tech spend last quarter — by user, transaction, or service?",
+    level_indicators: {
+      level_1: "There is no concept of unit cost or chargeback; tech is a fixed overhead line on the P&L.",
+      level_2: "Some major systems are charged back at a high level (e.g., per headcount), but most consumption is invisible to business owners.",
+      level_3: "Showback (consumption visible, not billed) is in place for major services — applications, infrastructure, end-user computing — at the business-unit level.",
+      level_4: "Unit costs (per user / per transaction / per GB) are tracked monthly; outliers are investigated; chargeback is in place for at least one major service.",
+      level_5: "Unit-cost discipline drives behavior — business units actively right-size their consumption; tech finance partners with business on cost-vs-value tradeoffs.",
+    },
+    tags: { function: ["financial", "operational"], area: ["finance", "IT"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Cost for Performance / Showback & Chargeback",
+      rationale: "Without showback or chargeback, tech is treated as a sunk cost; TBM's discipline makes consumption visible so business owners can make informed tradeoffs.",
+    },
+  },
+
+  // ----- TBM Council: Cloud & SaaS Discipline -----
+  {
+    id: "m12_q4", module_number: 12, subcategory: "Cloud & SaaS Discipline",
+    question: "Are cloud costs forecasted, monitored against budget, and right-sized monthly?",
+    level_indicators: {
+      level_1: "Cloud bills are paid as they arrive; nobody owns cloud spend or knows what is driving the trend.",
+      level_2: "Cloud spend is reviewed quarterly; over-provisioned instances and orphaned resources accumulate between reviews.",
+      level_3: "Monthly cloud-cost review with a named owner; reserved instances or committed-use discounts applied for predictable workloads; tags enforced on resources.",
+      level_4: "FinOps practice in place — engineers see cost impact in dashboards; right-sizing, autoscaling, and savings plans are actively managed; chargeback to teams.",
+      level_5: "Cloud cost is a first-class engineering metric — every architecture review includes a cost dimension; monthly waste is below industry benchmark.",
+    },
+    tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "TBM Council + FinOps Foundation",
+      reference: "Cloud FinOps Practice",
+      rationale: "Cloud has the highest waste rate in tech spend (typically 30%+); FinOps integrates engineering and finance to capture it.",
+    },
+  },
+  {
+    id: "m12_q5", module_number: 12, subcategory: "Cloud & SaaS Discipline",
+    question: "Do you maintain a current inventory of every SaaS subscription with cost, owner, renewal date, and active-user count?",
+    level_indicators: {
+      level_1: "There is no SaaS inventory; subscriptions are discovered when their renewal invoice arrives.",
+      level_2: "A list exists in a spreadsheet but is incomplete and not updated regularly; renewal surprises are common.",
+      level_3: "Maintained inventory of all SaaS subscriptions with cost, owner, renewal date, contract terms, and seat / usage data; reviewed quarterly.",
+      level_4: "Renewals tracked 90 days ahead; usage data drives renewal-or-cancel decisions; new SaaS purchases gated through a procurement workflow.",
+      level_5: "SaaS portfolio is actively pruned — every renewal is a decision, not an automatic; redundant or low-usage tools are consolidated quarterly.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Vendor & Subscription Management",
+      rationale: "SaaS sprawl is one of the largest hidden costs in modern tech budgets; an enforced inventory is the precondition for every other vendor-economics discipline.",
+    },
+  },
+  {
+    id: "m12_q6", module_number: 12, subcategory: "Cloud & SaaS Discipline",
+    question: "Have you reviewed license utilization across major platforms in the last six months and reclaimed or downgraded unused seats?",
+    level_indicators: {
+      level_1: "Licenses are bought and forgotten; nobody knows what fraction of paid seats are actually in use.",
+      level_2: "Periodic ad-hoc reviews when a renewal forces the conversation; waste is identified but rarely acted upon.",
+      level_3: "Quarterly license-utilization review across major platforms; idle seats are reclaimed before next true-up.",
+      level_4: "License management is automated — usage data feeds a dashboard, harvest-and-reassign workflow runs continuously, and waste rate is tracked as a KPI.",
+      level_5: "License utilization is a continuous discipline — purchases are right-sized at order, idle seats are harvested in days not quarters; waste rate is in line with the best-in-class benchmark.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "License Optimization",
+      rationale: "License waste typically runs 20-30% across major platforms; reclaiming it is the cheapest tech savings available — no business disruption, immediate margin.",
+    },
+  },
+
+  // ----- TBM Council: Vendor Economics -----
+  {
+    id: "m12_q7", module_number: 12, subcategory: "Vendor Economics",
+    question: "Do you track tech vendor spend by category and consolidate vendors where overlap exists?",
+    level_indicators: {
+      level_1: "Vendor relationships are inherited and undocumented; significant overlap exists across categories (e.g., multiple monitoring tools, multiple project-management tools).",
+      level_2: "A vendor list exists with annual spend; overlap is acknowledged informally but not addressed.",
+      level_3: "Vendor spend is categorized; overlap is reviewed annually; consolidation initiatives are identified and tracked.",
+      level_4: "Vendor consolidation is a managed program — strategic vendor partnerships are formed, redundant tools are sunset on schedule, and the renewal calendar drives consolidation conversations.",
+      level_5: "Vendor portfolio is actively shaped — concentration risk is balanced against negotiation leverage; vendor-business reviews are held with strategic partners.",
+    },
+    tags: { function: ["financial", "operational"], area: ["finance", "IT"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Vendor & Contract Management",
+      rationale: "Consolidation captures both direct savings (volume discounts) and indirect savings (lower integration cost, fewer renewal events to manage).",
+    },
+  },
+  {
+    id: "m12_q8", module_number: 12, subcategory: "Vendor Economics",
+    question: "Do you benchmark your tech spend (per employee, per revenue, or against industry peers) at least annually?",
+    level_indicators: {
+      level_1: "No benchmarking is done; the budget is whatever last year's was, plus or minus.",
+      level_2: "Internal year-over-year comparison is done; external benchmarking is anecdotal or absent.",
+      level_3: "Annual benchmarking against industry peers (e.g., Gartner IT Key Metrics, peer surveys); results inform budget conversations.",
+      level_4: "Quarterly benchmarking against a peer set; outliers (categories where spend is materially above or below peer median) trigger investigation.",
+      level_5: "Benchmarking is integrated into investment governance — every major initiative is sized against external reference points; the company knows where it intends to be a peer leader vs a fast follower.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["finance"] },
+    framework_citation: {
+      framework: "TBM Council",
+      reference: "Benchmarking & External Reference",
+      rationale: "Without external benchmarks, internal budgets drift; benchmarking gives the board a reference point that internal arguments cannot.",
+    },
+  },
+
+  // ----- KPMG Return on Objectives: Value Realization -----
+  {
+    id: "m12_q9", module_number: 12, subcategory: "Value Realization",
+    question: "Does every funded tech initiative have a named business objective and an owner outside of IT?",
+    level_indicators: {
+      level_1: "Initiatives are funded based on technical merit or vendor pressure; no explicit link to a business objective is documented.",
+      level_2: "Some initiatives have documented objectives, but ownership stays inside IT and the objective is rarely revisited after kickoff.",
+      level_3: "Every funded initiative has a documented business objective and a named business owner outside IT; the objective is referenced in steering committee reviews.",
+      level_4: "Investment governance enforces the linkage — initiatives without a business owner cannot pass the funding gate; objectives are quantified before funding.",
+      level_5: "Business owners are accountable for outcomes, not deliverables — every quarterly review revisits the objective and either reaffirms, revises, or kills the initiative.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["cross_functional", "finance"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives",
+      reference: "Strategic Alignment Practice",
+      rationale: "Tech initiatives without a named business owner outside IT are the most common pattern of failed investment — KPMG ROO makes the linkage non-negotiable.",
+    },
+  },
+  {
+    id: "m12_q10", module_number: 12, subcategory: "Value Realization",
+    question: "Are success metrics for tech initiatives defined and signed off by the business owner before the initiative is funded?",
+    level_indicators: {
+      level_1: "Initiatives are funded on the basis of effort or scope (build X, deploy Y); success is whether it shipped.",
+      level_2: "Metrics are sometimes defined late in the initiative (during pilot); they are technical metrics (uptime, performance), not business metrics.",
+      level_3: "Business outcome metrics are defined and signed off by the business owner before funding; metrics are quantitative (revenue, cost, time, NPS, etc.).",
+      level_4: "Metrics are tracked from kickoff through 90/180-day post-implementation; deviations trigger course-correction conversations.",
+      level_5: "Outcome definition is a craft — metrics are SMART, downstream-correlated to financial outcomes, and used in real time to manage the initiative.",
+    },
+    tags: { function: ["strategic", "financial", "operational"], area: ["cross_functional", "finance"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives",
+      reference: "Outcome Definition Practice",
+      rationale: "Without pre-defined outcome metrics, every initiative claims success post-hoc; ROO requires the metric to be defined and owned before any money is committed.",
+    },
+  },
+  {
+    id: "m12_q11", module_number: 12, subcategory: "Value Realization",
+    question: "Do you compare projected vs actual outcomes 90 to 180 days after a tech initiative goes live?",
+    level_indicators: {
+      level_1: "Initiatives are declared done at go-live; nobody comes back to check if the projected outcome materialized.",
+      level_2: "Some initiatives are reviewed informally, but there is no consistent post-implementation review process.",
+      level_3: "Formal post-implementation review at 90 and 180 days for every funded initiative; projected vs actual is documented; lessons learned are captured.",
+      level_4: "Findings feed forward — patterns from past initiatives inform funding decisions on new ones; chronic over-promisers are flagged.",
+      level_5: "Value realization tracking is a live discipline — outcomes are dashboarded across the portfolio; the company knows its actual realization rate and is improving it.",
+    },
+    tags: { function: ["strategic", "financial", "operational"], area: ["cross_functional", "finance"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives",
+      reference: "Value Realization Practice",
+      rationale: "Most organizations measure delivery (was it shipped?) but not realization (did it deliver the outcome?); ROO closes that gap.",
+    },
+  },
+  {
+    id: "m12_q12", module_number: 12, subcategory: "Value Realization",
+    question: "Do you have a multi-quarter view that shows the cumulative outcomes the tech portfolio is on track to deliver?",
+    level_indicators: {
+      level_1: "There is no portfolio-level outcome view; outcomes are tracked, if at all, initiative-by-initiative in isolation.",
+      level_2: "A roadmap of initiatives exists (timing, scope) but does not aggregate to expected outcomes at the portfolio level.",
+      level_3: "Multi-quarter roadmap shows expected cumulative outcomes (revenue uplift, cost reduction, risk reduction) tied to initiative milestones.",
+      level_4: "Roadmap is dynamic — updated quarterly with realized outcomes; gap-to-plan is visible; investment is rebalanced based on actual realization.",
+      level_5: "Portfolio outcome roadmap is the central planning artifact for executive leadership — every funding conversation references it; the board sees it; it shapes M&A and divestiture conversations.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["cross_functional", "finance"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives",
+      reference: "Portfolio Outcome Visibility",
+      rationale: "Without a portfolio view, individual initiatives can succeed while the portfolio underdelivers; ROO requires the cumulative lens.",
+    },
+  },
+  {
+    id: "m12_q13", module_number: 12, subcategory: "Value Realization",
+    question: "Can you give the board a one-page view showing where tech investment is producing measured value versus where it is not?",
+    level_indicators: {
+      level_1: "Board updates on tech are status-of-projects (timeline, budget, risk) — not value-realized.",
+      level_2: "Some value claims are reported anecdotally; numbers are typically projected, not realized; the board is left to take it on faith.",
+      level_3: "Quarterly one-page board view shows realized vs projected outcomes by major investment area; backed by an underlying metric trail.",
+      level_4: "Board view is part of a documented narrative — wins are celebrated, underperformers are explicitly flagged with corrective action plans, and the conversation moves to forward bets.",
+      level_5: "Tech is a peer line of business in board reporting — outcome reporting is on par with revenue or operations reporting; the board treats tech finance with the same rigor as commercial finance.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["finance", "cross_functional"] },
+    framework_citation: {
+      framework: "KPMG Return on Objectives",
+      reference: "Stakeholder Communication & Board Reporting",
+      rationale: "Tech investment is increasingly a board-level conversation; ROO's reporting discipline is what gives boards the confidence to fund the next bet.",
+    },
   },
 
   // ============================================================

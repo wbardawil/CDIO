@@ -22,8 +22,10 @@ This session was the inflection point. We shifted the platform from feature-led 
 - ✅ Day 8: Module 5 deep + role/area tagging + universal N/A escape
 - ✅ Day 9: AI narrative + path-to-next-level + thin-coverage warning
 - ✅ Day 10: Decision Packages surfaced as hero artifact
-- ✅ **Day 11: Outcomes-led strategy rewrite + 16 module renames + AI leverage roadmap**
-- ⏳ Day 12 (next session): Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO)
+- ✅ Day 11: Outcomes-led strategy rewrite + 16 module renames + AI leverage roadmap
+- ✅ **Day 11 doc-lock: architectural decisions A-G committed (Architectural Laws 1-7, Phase 1D revised 4→8 days, multi-corpus RAG + tenant isolation + selective multi-agent in ARCHITECTURE.md, CONTRACT-TEMPLATES.md stub)**
+- ✅ **Day 12: Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO). 13 questions across 4 subcategories (Cost Transparency, Cloud & SaaS Discipline, Vendor Economics, Value Realization). 8 TBM-anchored + 5 KPMG ROO-anchored. All role/area-tagged, level-5-indicators, framework-cited. Quick Win Stack now 2/3 complete (Module 5 ✅, Module 12 ✅, Module 15 next).**
+- ⏳ Day 13 (next session): Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma)
 
 ---
 
@@ -293,7 +295,7 @@ Per `docs/ROADMAP.md` and the Day 11 architectural decisions above:
 
 | Day | Task |
 |---|---|
-| **12** | Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO). 12-15 questions tagged + level 5 + framework-cited. The new outcome-led framing baked in from question-bank up. |
+| ✅ **12** | **Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO).** 13 questions across 4 subcategories: Cost Transparency (Q1-3), Cloud & SaaS Discipline (Q4-6), Vendor Economics (Q7-8), Value Realization (Q9-13). 8 TBM + 5 ROO. All level-5, role-tagged, framework-cited. Type-check clean. Smoke test confirms role filtering: CEO 8/13 strategic-only, CFO 13/13, CIO 13/13, Director-Finance 13/13, Director-IT 9/13, Director-Sales/Marketing 0/13 (will N/A out the module). |
 | 13 | Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma) |
 | 14-15 | Quick Scan output upgrade (board-memo-quality artifact) |
 | **16** | **Module 2 deep — Tech Strategy & Business Alignment** (KPMG 4-practice + MIT) + **adaptive questioning wired in** |
