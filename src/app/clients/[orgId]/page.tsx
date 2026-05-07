@@ -247,6 +247,12 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             >
               Initiatives
             </Link>
+            <Link
+              href={`/clients/${org.id}/selections`}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Selections
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
