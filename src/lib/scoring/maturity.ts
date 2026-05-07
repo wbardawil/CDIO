@@ -15,6 +15,50 @@ import type {
 } from "@/types";
 import { MODULE_NAMES, SIZE_PRIORITY_SEQUENCES } from "@/types";
 
+// --- Size-band target maturity ceiling (Phase 1C Day 13) ---
+//
+// The "lean SMB defense": the rule that level-3-or-4 is the right ceiling
+// for most modules at SMB scale. Pushing a 30-person SaaS toward Level 5
+// governance is bank-grade theater. The narrative agent reads this ceiling
+// to (a) treat the practitioner as already at ceiling when their score
+// hits the band's target — no path-to-next-level, no recommendation
+// pressure — and (b) to constrain "path to next level" recommendations
+// to lean forms first (manual, spreadsheet, shared doc) rather than
+// tool-buy escalation.
+//
+// Defaults are deliberately conservative — Year 1 audience is the
+// founder's CEO clients (10-250 employees). The practitioner can
+// override at the org level when an enterprise-grade engagement
+// genuinely needs a higher ceiling (e.g. a mid-market company with
+// regulatory exposure).
+//
+// Modules 5 (Security, Risk & Compliance) and 16 (Workforce, Skills &
+// Change) get a +1 ceiling at small / medium because security is
+// non-negotiable and workforce is irreducible — even small orgs need
+// to be capable here.
+
+const DEFAULT_CEILING: Record<OrgSize, MaturityLevel> = {
+  small: 3,
+  medium: 4,
+  large: 5,
+};
+
+const MODULE_OVERRIDE: Partial<
+  Record<number, Partial<Record<OrgSize, MaturityLevel>>>
+> = {
+  5: { small: 4, medium: 5 },
+  16: { small: 4, medium: 5 },
+};
+
+export function getTargetLevelCeiling(
+  moduleNumber: number,
+  orgSize: OrgSize
+): MaturityLevel {
+  const override = MODULE_OVERRIDE[moduleNumber]?.[orgSize];
+  if (override !== undefined) return override;
+  return DEFAULT_CEILING[orgSize];
+}
+
 // --- Consensus Score (weighted average across stakeholders) ---
 //
 // Phase 1C semantics (2026-05-06): rows where maturity_score is null

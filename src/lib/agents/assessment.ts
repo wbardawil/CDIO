@@ -6,6 +6,7 @@
 
 import Anthropic from "@anthropic-ai/sdk";
 import { getModuleContext, searchPlaybook } from "@/lib/playbook/retrieve";
+import { getTargetLevelCeiling } from "@/lib/scoring/maturity";
 import type {
   MaturityLevel,
   DiagnosticResponse,
@@ -205,9 +206,13 @@ export async function generateNarrativeAndPath(
 
   const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
 
-  // For Level 5 we still write the narrative ("you're industry-leading")
-  // but the path is empty — there's no next level by definition.
-  const isAtCeiling = maturityScore === 5;
+  // Size-band ceiling (Phase 1C Day 13) — a 30-person SaaS at Level 3 on
+  // most modules is at THEIR ceiling; pushing for Level 4-5 across the
+  // board is bank-grade theater. The narrative agent treats hitting the
+  // band's ceiling as "no path required" and softens recommendations
+  // accordingly. Hard ceiling at 5 still applies — there's no level 6.
+  const targetCeiling = getTargetLevelCeiling(moduleNumber, orgContext.size);
+  const isAtCeiling = maturityScore >= targetCeiling || maturityScore === 5;
 
   // RAG: pull playbook chunks specifically relevant to "moving from L<n>
   // to L<n+1> in <module>". The query string nudges retrieval toward
@@ -239,12 +244,18 @@ export async function generateNarrativeAndPath(
     .map((r) => `- ${r.question_text} → ${r.answer}${r.evidence ? ` (note: ${r.evidence})` : ""}`)
     .join("\n");
 
+  const sizeBandNote = isAtCeiling
+    ? `Stakeholder is at or above the target ceiling for a ${orgContext.size} organization (Level ${targetCeiling}). NO further investment is recommended — pushing past the band's ceiling is bank-grade theater for this size.`
+    : `Target ceiling for a ${orgContext.size} organization is Level ${targetCeiling}. Stakeholder is at Level ${maturityScore}; one increment to Level ${maturityScore + 1} is appropriate. Do NOT propose actions that would push past Level ${targetCeiling} — that's overkill for this org size.`;
+
   const prompt = `Generate a narrative summary and path-to-next-level for a stakeholder's assessment of:
 
 Module ${moduleNumber}: ${moduleName}
 Stakeholder scored: Level ${maturityScore}${isAtCeiling ? " (already at ceiling — no path required)" : ` (target: Level ${maturityScore + 1})`}
 
 Organization: ${orgContext.size} (${orgContext.employee_count} employees), ${orgContext.industry}
+
+Size-band guidance: ${sizeBandNote}
 
 Their responses:
 ${responseSummary}
@@ -260,19 +271,23 @@ Produce JSON:
   "path_to_next_level": ${isAtCeiling
       ? "[]"
       : `[
-    { "action": "<concrete action Monday-morning actionable, 1 sentence>", "source": "<framework reference like 'NIST CSF v2.0 PR.AA' or a short playbook citation>" },
+    { "action": "<concrete LEAN-FORM-FIRST action: a Monday-morning actionable in 1 sentence. Propose the manual / spreadsheet / shared-doc / Notion-page form FIRST. Tools, RPA, and platforms are Phase-2 alternatives only after the lean form has been hit and is failing.>", "source": "<framework reference like 'NIST CSF v2.0 PR.AA' or a short playbook citation>" },
     { "action": "...", "source": "..." },
     { "action": "...", "source": "..." }
   ]`}
 }
 
-CRITICAL: Each action must be specific and outcome-oriented. Bad: "Improve security posture." Good: "Roll out phishing-resistant MFA (FIDO2 keys) for all admin accounts within 30 days."`;
+CRITICAL rules for path-to-next-level (Phase 1C Day 13):
+1. LEAN FORM FIRST. Always propose the manual / spreadsheet / shared-doc / Notion-page form before recommending a tool, RPA platform, or vendor purchase. If the lean form genuinely cannot deliver the outcome, name that tradeoff explicitly. The most expensive automation is the one that automates a bad process.
+2. SIZE-BAND CEILING. Never recommend an action that pushes past the size band's target ceiling. A 30-person SaaS does not need a quarterly risk committee or a CMMI Level 5 process for ${moduleName}.
+3. PE-UNDERWRITING DISCIPLINE. Conservative estimates over optimistic ones. Hard-dollar savings preferred over soft-benefit narratives. Every recommended action should be defensible 18 months later as having either delivered the projected outcome or surfaced what blocked it.
+4. SPECIFIC AND OUTCOME-ORIENTED. Bad: "Improve security posture." Good: "Document the 3-incident IR playbook in a shared Notion page and run a 30-min tabletop drill within 30 days."`;
 
   const message = await anthropic.messages.create({
     model: "claude-sonnet-4-20250514",
     max_tokens: 1024,
     system:
-      "You are a fractional CDIO writing for a small/mid-size business CEO. Direct, evidence-anchored, never generic. Cite frameworks and the playbook when you can.",
+      "You are a fractional CDIO writing for a small/mid-size business CEO. Direct, evidence-anchored, never generic. Cite frameworks and the playbook when you can. You bias hard toward lean-form-first recommendations (manual / spreadsheet / shared doc) over tool-buy escalation. You respect size-band ceilings — a 30-person company does not need bank-grade governance. You write with PE-underwriting discipline: conservative estimates, hard-dollar savings, every claim defensible 18 months later.",
     messages: [{ role: "user", content: prompt }],
   });
 

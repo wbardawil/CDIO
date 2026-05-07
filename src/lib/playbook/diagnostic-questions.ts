@@ -897,22 +897,259 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   },
 
   // ============================================================
-  // MODULE 15: Business Process Transformation & Automation
+  // MODULE 15: Process Automation & Transformation
+  // Phase 1C Day 13 deep pass — anchored to APQC PCF + Lean Six Sigma.
+  // 13 questions across 5 subcategories. 8 APQC PCF + 5 Lean Six Sigma.
   // ============================================================
+
+  // ----- APQC PCF: Process Inventory & Mapping -----
   {
-    id: "m15_q1", module_number: 15, subcategory: "Process Management",
-    question: "Are key business processes documented?",
-    level_indicators: { level_1: "No documentation", level_2: "Some processes documented", level_3: "Core processes mapped with owners", level_4: "Process mining with continuous optimization" },
+    id: "m15_q1", module_number: 15, subcategory: "Process Inventory & Mapping",
+    question: "Do you have a documented inventory of your core business processes — what they are, what they do, and where they live?",
+    level_indicators: {
+      level_1: "There is no process inventory; processes exist in people's heads and shared drives; nobody could list the top 20 processes if asked.",
+      level_2: "A partial inventory exists in scattered docs (one team's runbook, another team's wiki); coverage is uneven and out of date.",
+      level_3: "A maintained inventory of core processes exists, with each process named, scoped, and assigned to a category (operate, manage, support).",
+      level_4: "Inventory is reviewed quarterly; new processes are catalogued at launch; redundant or dead processes are flagged for retirement.",
+      level_5: "Process inventory is the operating-model backbone — every change conversation references it; inventory drives org design, automation roadmap, and audit scope.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Process Classification Framework — Process Inventory",
+      rationale: "APQC's first principle is that you cannot improve what you cannot name; a maintained process inventory is the precondition for every other discipline in this module.",
+    },
   },
   {
-    id: "m15_q2", module_number: 15, subcategory: "Automation",
-    question: "Are repetitive tasks being automated?",
-    level_indicators: { level_1: "All manual", level_2: "Basic macros/scripts", level_3: "RPA or workflow automation in place", level_4: "Intelligent automation with AI-assisted processes" },
+    id: "m15_q2", module_number: 15, subcategory: "Process Inventory & Mapping",
+    question: "Are your processes categorized using a recognized taxonomy (APQC PCF, eTOM, SCOR, or equivalent)?",
+    level_indicators: {
+      level_1: "There is no process taxonomy; processes are listed by team or owner, not by category.",
+      level_2: "An informal taxonomy exists (one team's view) but is not used consistently across the company.",
+      level_3: "Processes are classified using a recognized taxonomy at the level-1/level-2 (operate/manage/support, with major subcategories) tier.",
+      level_4: "Taxonomy is granular (drilled to level-3 process IDs); cross-functional processes are catalogued under shared categories so handoffs are visible.",
+      level_5: "Taxonomy is integrated with systems of record (ERP modules map to PCF process IDs, ITSM tickets reference process IDs) — analysis at the process level is fast and reliable.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Cross-Industry Process Classification Framework",
+      rationale: "A shared taxonomy makes benchmarking, automation prioritization, and cross-functional improvement possible; without it every comparison is an apples-and-oranges argument.",
+    },
   },
   {
-    id: "m15_q3", module_number: 15, subcategory: "Automation",
-    question: "Is there a pipeline of automation opportunities identified?",
-    level_indicators: { level_1: "No pipeline", level_2: "Ad hoc opportunities", level_3: "Prioritized automation roadmap", level_4: "Citizen automation with CoE governance" },
+    id: "m15_q3", module_number: 15, subcategory: "Process Inventory & Mapping",
+    question: "Does every core process have a named owner accountable for its performance and improvement?",
+    level_indicators: {
+      level_1: "Process ownership is implicit or shared; if a process breaks, nobody is on the hook by name.",
+      level_2: "Some processes have owners assigned, but ownership is title-based (the manager) rather than capability-based; owners are not actively improving the process.",
+      level_3: "Every core process has a named owner with documented responsibility for performance, improvement, and exceptions.",
+      level_4: "Process owners are evaluated on process outcomes (cycle time, error rate, customer satisfaction); ownership is a discipline, not a label.",
+      level_5: "Process owners are senior leaders for cross-cutting flows (order-to-cash, hire-to-retire); process performance is part of their executive scorecard.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Process Ownership & Governance",
+      rationale: "Without named, accountable owners, processes drift; APQC's process-owner discipline is the lightest-weight governance that consistently produces process improvement.",
+    },
+  },
+
+  // ----- APQC PCF: Process Performance & Metrics -----
+  {
+    id: "m15_q4", module_number: 15, subcategory: "Process Performance & Metrics",
+    question: "Are your most critical processes measured — cycle time, error rate, cost per transaction, or equivalent — and reviewed regularly?",
+    level_indicators: {
+      level_1: "Process performance is anecdotal; nobody can tell you cycle time or error rate for a key process in numbers.",
+      level_2: "Some processes have ad hoc measurements (a spreadsheet kept by one team) but metrics are not reported, reviewed, or trended.",
+      level_3: "Critical processes are measured monthly with documented metrics (cycle time, error rate, throughput, cost-per-transaction); results are reviewed by process owners.",
+      level_4: "Metrics are dashboarded in real time; trend lines are visible; owners investigate variance against target as a discipline.",
+      level_5: "Process metrics flow into operational KPIs and the executive scorecard; the company manages by process performance, not by activity reports.",
+    },
+    tags: { function: ["operational", "financial"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Process Performance Measurement",
+      rationale: "Process metrics are the feedback loop without which improvement is opinion-driven; APQC research consistently shows that measured processes outperform unmeasured ones by 30-50%.",
+    },
+  },
+  {
+    id: "m15_q5", module_number: 15, subcategory: "Process Performance & Metrics",
+    question: "Are there documented service levels or quality targets for your customer-facing processes (order fulfillment, support response, onboarding)?",
+    level_indicators: {
+      level_1: "There are no service-level targets; customer-facing performance is whatever happens.",
+      level_2: "Internal expectations exist informally (we try to respond in a day) but are not documented or measured.",
+      level_3: "Documented SLAs / quality targets for major customer-facing processes; performance against target is reported.",
+      level_4: "Targets are tied to customer impact (NPS / CSAT / churn correlation); misses trigger formal corrective action; SLAs are written into contracts where relevant.",
+      level_5: "Service-level discipline is a competitive differentiator — performance is publicly committed, exceeded as a habit, and instrumented end-to-end.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["operations", "sales"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Service Level Management",
+      rationale: "Customer-facing processes without service levels become inconsistent; APQC's SLA discipline closes the gap between intent and customer experience.",
+    },
+  },
+  {
+    id: "m15_q6", module_number: 15, subcategory: "Process Performance & Metrics",
+    question: "Do you compare your process performance against industry benchmarks at least annually?",
+    level_indicators: {
+      level_1: "No benchmarking is done; the company has no idea whether its order-to-cash cycle, support resolution time, or hire-to-fill time is competitive.",
+      level_2: "Benchmarking is anecdotal (we hear that companies our size do X) but not formal.",
+      level_3: "Annual benchmarking against published peer data (APQC Open Standards, industry reports) for at least the top 5 processes.",
+      level_4: "Quarterly benchmarking; outliers (top quartile or bottom quartile) trigger investigation and either share-or-fix conversations.",
+      level_5: "Benchmarking is a planning input — investment decisions explicitly state where the company intends to be a peer leader vs. a fast follower vs. acceptable median.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Process Benchmarking & Open Standards",
+      rationale: "Without external benchmarks, internal arguments about whether a process is good enough have no anchor; APQC's Open Standards database makes peer comparison a one-day exercise rather than a one-year project.",
+    },
+  },
+
+  // ----- APQC PCF: Automation Strategy -----
+  {
+    id: "m15_q7", module_number: 15, subcategory: "Automation Strategy",
+    question: "Have you identified the top 3-5 automation candidates by ROI, with the lean (manual / spreadsheet / shared-doc) form considered first?",
+    level_indicators: {
+      level_1: "Automation is opportunistic; whoever has the loudest pain or the favorite vendor gets the next automation budget.",
+      level_2: "Some candidates are listed but ROI is hand-wavy; cheaper non-tool alternatives (a checklist, a template, a Friday review) are rarely evaluated.",
+      level_3: "Top 3-5 automation candidates documented with effort-vs-payoff scoring; for each candidate, the lean alternative is named and explicitly compared before tool selection.",
+      level_4: "Automation pipeline is reviewed quarterly with realized-vs-projected ROI; lean alternatives are deployed first and only escalated to tool-based automation when the lean form proves insufficient.",
+      level_5: "Automation discipline is mature — the company rarely buys tools to solve problems that a clearer process or a shared template would solve cheaper.",
+    },
+    tags: { function: ["strategic", "financial", "operational"], area: ["operations", "IT"] },
+    framework_citation: {
+      framework: "APQC PCF + Lean Six Sigma",
+      reference: "Automation Prioritization & Build-vs-Buy-vs-Lean",
+      rationale: "The most expensive automation is the one that automates a bad process; APQC + Lean disciplines require lean alternatives to be considered first because automation amplifies whatever process you point it at.",
+    },
+  },
+  {
+    id: "m15_q8", module_number: 15, subcategory: "Automation Strategy",
+    question: "Is there a governance model for citizen automation (low-code / Power Automate / Zapier / Notion automations) — who can build what without IT review?",
+    level_indicators: {
+      level_1: "Citizen automation is either banned (so people build shadow automations anyway) or completely ungoverned (so risky automations proliferate).",
+      level_2: "Informal rules exist (run anything risky by IT) but are inconsistently applied; nobody has a list of citizen-built automations in production.",
+      level_3: "Documented governance: list of approved citizen tools, scope of what citizens can build (process aids, internal helpers), what requires IT review (customer data, financial transactions, integrations), inventory of citizen automations maintained.",
+      level_4: "Center of Excellence supports citizens — templates, code reviews, training; risky patterns are caught at design time rather than discovery time.",
+      level_5: "Citizen automation is a strategic capability — non-technical staff routinely solve their own bottlenecks within governance guardrails; IT focuses on the heavy lifts.",
+    },
+    tags: { function: ["operational", "technical", "risk"], area: ["IT", "operations"] },
+    framework_citation: {
+      framework: "APQC PCF",
+      reference: "Citizen Automation Governance",
+      rationale: "Citizen automation is a force multiplier when governed and a risk vector when ungoverned; APQC's CoE pattern is the lightest-weight governance that scales without bottlenecking IT.",
+    },
+  },
+
+  // ----- Lean Six Sigma: Waste & Lean Discipline -----
+  {
+    id: "m15_q9", module_number: 15, subcategory: "Waste & Lean Discipline",
+    question: "Have you systematically identified the top sources of waste in your operations — rework, waiting, handoffs, overproduction, motion, inventory, defects, underused talent?",
+    level_indicators: {
+      level_1: "Waste is not a vocabulary the team uses; inefficiencies are accepted as how things work.",
+      level_2: "Some waste is recognized informally (we know there's too much rework on X) but it's not systematically catalogued.",
+      level_3: "Top waste sources documented for the most critical processes using a recognized framework (Lean's 8 wastes / DOWNTIME / TIM WOODS); waste hotspots are reviewed quarterly.",
+      level_4: "Waste reduction is a managed program — each top waste has a named owner, a target, and a tracked improvement curve.",
+      level_5: "Lean thinking is operating discipline — front-line staff identify and call out waste in standups; waste reduction is part of how the company gets better, not a separate project.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "Lean Six Sigma",
+      reference: "8 Wastes (DOWNTIME / TIM WOODS)",
+      rationale: "Lean's 8-wastes model is the most widely recognized lens for identifying value-vs-waste in any operation; making waste visible is the first step to eliminating it cheaply.",
+    },
+  },
+  {
+    id: "m15_q10", module_number: 15, subcategory: "Waste & Lean Discipline",
+    question: "Do teams run regular improvement cycles (Kaizen events, retrospectives, 5S, A3 problem-solving) at a documented cadence?",
+    level_indicators: {
+      level_1: "Improvement happens only when something breaks badly; there is no scheduled improvement cadence.",
+      level_2: "Some teams run retrospectives or post-mortems sporadically; cadence is uneven and outputs are rarely tracked.",
+      level_3: "Documented improvement cadence (weekly / monthly / quarterly retrospectives or Kaizen events) for major teams; outputs are captured and assigned.",
+      level_4: "Improvements are tracked from idea to implementation; closure rate is measured; the cadence rarely slips.",
+      level_5: "Improvement cadence is sacred — the company protects the time, celebrates the wins, and uses the rhythm as the engine of operational excellence.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "Lean Six Sigma",
+      reference: "Kaizen / Continuous Improvement Cadence",
+      rationale: "Continuous improvement requires rhythm, not heroics; Lean's structured improvement cycles are what convert waste-spotting into actual change.",
+    },
+  },
+  {
+    id: "m15_q11", module_number: 15, subcategory: "Waste & Lean Discipline",
+    question: "Is there a documented method for capturing process improvement ideas from front-line staff — and a measured response cycle?",
+    level_indicators: {
+      level_1: "Front-line ideas die in the gap between staff and management; nobody collects them.",
+      level_2: "An idea box / suggestion form exists but most submissions are ignored or take months to evaluate.",
+      level_3: "Documented intake (form / channel), triage (named reviewer, target response time), and feedback loop (the submitter learns what happened to their idea).",
+      level_4: "Response time is measured and reported; implemented suggestions are tracked back to their source; staff see their improvements adopted as a regular event.",
+      level_5: "Front-line idea flow is a primary improvement engine — the volume, response rate, and implementation rate are KPIs; the company would notice immediately if the channel went silent.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "Lean Six Sigma",
+      reference: "Gemba / Voice of the Worker",
+      rationale: "The people closest to the work see waste first; Lean's gemba discipline turns that line-of-sight into a continuous improvement input rather than wasted institutional knowledge.",
+    },
+  },
+
+  // ----- Lean Six Sigma: Continuous Improvement & Change Adoption -----
+  {
+    id: "m15_q12", module_number: 15, subcategory: "Continuous Improvement & Change Adoption",
+    question: "When a process is improved, does the new way stick — or do teams quietly drift back within 6 months?",
+    level_indicators: {
+      level_1: "Improvements are mostly cosmetic; six months after a project ends, nobody is following the new process.",
+      level_2: "Some improvements stick (when the loud sponsor is watching) but most decay; nobody measures stickiness.",
+      level_3: "Process changes are accompanied by training, updated documentation, and a 60/90-day adherence check; sustained adherence is the explicit success criterion.",
+      level_4: "Adherence is measured at 90/180/365 days; root causes of decay are investigated and addressed (was the new process actually better? did the training cover the right things?).",
+      level_5: "Sustainability is the discipline — improvements are designed to be self-reinforcing (visible metrics, simpler than the old way, embedded in tools), not policed.",
+    },
+    tags: { function: ["operational"], area: ["operations", "cross_functional"] },
+    framework_citation: {
+      framework: "Lean Six Sigma",
+      reference: "Sustain (the S in DMAIC's Control / 5S's Sustain)",
+      rationale: "Most improvement programs fail at sustain; Lean's explicit Sustain phase is what separates real change from project theater.",
+    },
+  },
+  {
+    id: "m15_q13", module_number: 15, subcategory: "Continuous Improvement & Change Adoption",
+    question: "Do you measure the cumulative business impact of process improvements — hours freed, errors avoided, dollars saved, customer experience improved?",
+    level_indicators: {
+      level_1: "Improvement impact is not measured; the company cannot say what last year's improvement work returned.",
+      level_2: "Some improvements claim impact (a slide here, a memo there) but numbers are not aggregated or audited.",
+      level_3: "Documented benefits register tracks each improvement: target benefit, realized benefit, status; reviewed quarterly with the executive team.",
+      level_4: "Benefits are validated against pre-baseline measurements; over-claims and under-realized projects are flagged; the realization rate is a known number.",
+      level_5: "Process improvement is funded based on its track record — the discipline produces measurable returns reliably enough that the company invests in it as it would in any other capital activity.",
+    },
+    tags: { function: ["strategic", "financial", "operational"], area: ["operations", "finance"] },
+    framework_citation: {
+      framework: "Lean Six Sigma",
+      reference: "Benefits Realization (DMAIC Control / Hard-Soft Savings)",
+      rationale: "Improvement work without realized-benefits tracking quickly becomes performative; Lean's hard-soft savings discipline keeps the program grounded in actual outcomes.",
+    },
+  },
+
+  // ----- AMP / AI Operator Playbook: AI-Readiness Precondition -----
+  {
+    id: "m15_q14", module_number: 15, subcategory: "Continuous Improvement & Change Adoption",
+    question: "Is your process structure standardized enough to be AI-automatable — or would AI amplify exception handling, rework, and the existing variability?",
+    level_indicators: {
+      level_1: "Most processes are high-variability and exception-heavy; pointing AI at them today would scale the chaos rather than the work.",
+      level_2: "Some processes are structured enough; the company can name 1-2 candidates but has not screened the rest for AI-readiness.",
+      level_3: "Top processes are screened for AI-readiness using a standardization / repeatability / exception-rate lens; AI-unready processes are flagged for cleanup before any AI investment.",
+      level_4: "AI-readiness is a precondition gate — no process gets an AI investment until standardization, data readiness, and exception rate clear documented thresholds.",
+      level_5: "AI investment and process redesign run together — process owners know that fixing structure unlocks AI value, and AI-readiness is part of every process owner's scorecard.",
+    },
+    tags: { function: ["strategic", "operational", "technical"], area: ["operations", "IT"] },
+    framework_citation: {
+      framework: "APQC PCF + AMP AI Diagnostic Playbook",
+      reference: "Feasibility — Process Structure & Standardization",
+      rationale: "AI amplifies whatever process you point it at; high-variability or exception-heavy processes scale the chaos rather than the work. AMP's PE-underwriting discipline treats process structure as a decisive feasibility criterion — often the criterion that kills otherwise-attractive AI initiatives.",
+    },
   },
 
   // ============================================================
