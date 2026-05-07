@@ -66,6 +66,12 @@ export default async function PreviewModulePage({
           </div>
           <div className="flex items-center gap-3 shrink-0">
             <Link
+              href={`/preview/module/${n}/try`}
+              className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
+            >
+              Try it &rarr;
+            </Link>
+            <Link
               href="/preview"
               className="text-sm text-gray-600 hover:text-gray-900"
             >
