@@ -71,6 +71,12 @@ export default async function ClientsPage() {
             <p className="text-xs text-gray-500">Fractional Executive OS</p>
           </div>
           <div className="flex items-center gap-4">
+            <Link
+              href="/preview"
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Methodology Preview
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
