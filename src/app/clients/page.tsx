@@ -83,6 +83,12 @@ export default async function ClientsPage() {
             >
               Methodology Preview
             </Link>
+            <Link
+              href="/settings/mcp"
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              MCP
+            </Link>
             <span className="text-sm text-gray-600 hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
