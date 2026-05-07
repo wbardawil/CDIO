@@ -16,6 +16,13 @@ import type {
 import { MODULE_NAMES, SIZE_PRIORITY_SEQUENCES } from "@/types";
 
 // --- Consensus Score (weighted average across stakeholders) ---
+//
+// Phase 1C semantics (2026-05-06): rows where maturity_score is null
+// represent N/A respondents — they hit the module-gate or answered N/A
+// on every question. Those rows are skipped from the consensus math
+// rather than treated as a low score. A module where every respondent
+// abstained returns 0 + an empty score-count, which the caller can use
+// to surface a thin-coverage warning.
 
 interface StakeholderWeight {
   stakeholder_id: string;
@@ -32,7 +39,14 @@ export function calculateConsensusScore(
   scores: Pick<ModuleScore, "stakeholder_id" | "maturity_score">[],
   stakeholderWeights: StakeholderWeight[]
 ): number {
-  if (scores.length === 0) return 0;
+  // Filter to scored rows only — N/A (null) abstentions don't pull the
+  // average down. The synthesis caller separately tracks the abstain
+  // count for the thin-coverage warning.
+  type ScoredRow = { stakeholder_id: string; maturity_score: MaturityLevel };
+  const scored: ScoredRow[] = scores
+    .filter((s) => s.maturity_score != null)
+    .map((s) => ({ stakeholder_id: s.stakeholder_id, maturity_score: s.maturity_score as MaturityLevel }));
+  if (scored.length === 0) return 0;
 
   const weightMap = new Map(
     stakeholderWeights.map((sw) => [
@@ -44,7 +58,7 @@ export function calculateConsensusScore(
   let weightedSum = 0;
   let totalWeight = 0;
 
-  for (const score of scores) {
+  for (const score of scored) {
     const weight = weightMap.get(score.stakeholder_id) ?? 1;
     weightedSum += score.maturity_score * weight;
     totalWeight += weight;
@@ -58,9 +72,13 @@ export function calculateConsensusScore(
 export function calculateDivergenceScore(
   scores: Pick<ModuleScore, "maturity_score">[]
 ): number {
-  if (scores.length <= 1) return 0;
+  // Skip N/A rows — they're not opinions, just absences.
+  const values: number[] = [];
+  for (const s of scores) {
+    if (s.maturity_score != null) values.push(s.maturity_score);
+  }
+  if (values.length <= 1) return 0;
 
-  const values = scores.map((s) => s.maturity_score);
   const mean = values.reduce((a, b) => a + b, 0) / values.length;
   const variance =
     values.reduce((sum, val) => sum + Math.pow(val - mean, 2), 0) / values.length;
@@ -76,26 +94,32 @@ export function detectDivergencePoints(
     stakeholder_name: string;
   })[]
 ): Omit<DivergencePoint, "framework_recommendation" | "projected_roi">[] {
+  // Only opinions can diverge. N/A respondents are dropped from the
+  // pairwise comparison before any gap is computed.
+  const opinions = scores.filter(
+    (s) => s.maturity_score != null
+  ) as (typeof scores[number] & { maturity_score: MaturityLevel })[];
+
   const divergences: Omit<DivergencePoint, "framework_recommendation" | "projected_roi">[] = [];
 
-  for (let i = 0; i < scores.length; i++) {
-    for (let j = i + 1; j < scores.length; j++) {
-      const gap = Math.abs(scores[i].maturity_score - scores[j].maturity_score);
+  for (let i = 0; i < opinions.length; i++) {
+    for (let j = i + 1; j < opinions.length; j++) {
+      const gap = Math.abs(opinions[i].maturity_score - opinions[j].maturity_score);
       if (gap >= 2) {
         divergences.push({
           module_number: moduleNumber,
           module_name: MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`,
           stakeholder_a: {
-            id: scores[i].stakeholder_id,
-            name: scores[i].stakeholder_name,
-            score: scores[i].maturity_score as MaturityLevel,
-            evidence: scores[i].evidence,
+            id: opinions[i].stakeholder_id,
+            name: opinions[i].stakeholder_name,
+            score: opinions[i].maturity_score as MaturityLevel,
+            evidence: opinions[i].evidence,
           },
           stakeholder_b: {
-            id: scores[j].stakeholder_id,
-            name: scores[j].stakeholder_name,
-            score: scores[j].maturity_score as MaturityLevel,
-            evidence: scores[j].evidence,
+            id: opinions[j].stakeholder_id,
+            name: opinions[j].stakeholder_name,
+            score: opinions[j].maturity_score as MaturityLevel,
+            evidence: opinions[j].evidence,
           },
           score_gap: gap,
         });

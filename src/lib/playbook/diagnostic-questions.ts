@@ -1,8 +1,40 @@
 // ============================================================
 // AI-CDIO — Diagnostic Questions
-// Structured from the Playbook Assessment Framework
-// Each module has 2-3 subcategories with 3-4 questions each
+//
+// Phase 1C question schema (locked 2026-04-29, Module 5 first proof
+// shipped 2026-05-06). Old questions (Modules 1-4, 6-16) coexist with
+// the new schema via OPTIONAL extension fields. Modules 12 + 15 get
+// the full v2 treatment Days 12-13. Other modules ride the legacy
+// shape until later phases.
+//
+// New fields on top of the legacy shape:
+//   - level_indicators.level_5  — the "optimizing/innovating" tier
+//   - tags.function[]           — one or more executive-function tags
+//   - tags.area[]               — one or more business-area tags
+//   - framework_citation        — named source (NIST CSF, CMMI, etc.)
+//   - na_eligible (default true) — N/A is offered on every new-schema
+//     question. Set false only for questions where N/A makes no sense
+//     (none today; reserved for future use).
 // ============================================================
+
+import type {
+  QuestionFunctionTag,
+  QuestionAreaTag,
+} from "@/types";
+
+export interface QuestionTags {
+  function: QuestionFunctionTag[];
+  area: QuestionAreaTag[];
+}
+
+export interface FrameworkCitation {
+  /** Human-readable source name shown to the respondent, e.g. "NIST CSF v2.0". */
+  framework: string;
+  /** The specific subcategory / process area / control reference. */
+  reference: string;
+  /** Plain-English one-liner explaining why the framework cares about this. */
+  rationale: string;
+}
 
 export interface DiagnosticQuestion {
   id: string;
@@ -14,11 +46,21 @@ export interface DiagnosticQuestion {
     level_2: string;
     level_3: string;
     level_4: string;
+    /** Phase 1C addition. Optional on legacy questions. */
+    level_5?: string;
   };
+  /** Phase 1C addition. Absent = question is shown to all roles. */
+  tags?: QuestionTags;
+  /** Phase 1C addition. Absent = no inline citation surfaced. */
+  framework_citation?: FrameworkCitation;
+  /** Phase 1C addition. Default true. False would hide the N/A escape. */
+  na_eligible?: boolean;
 }
 
 export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
+  // ============================================================
   // MODULE 1: Role of the CIDO
+  // ============================================================
   {
     id: "m1_q1", module_number: 1, subcategory: "Leadership & Governance",
     question: "Is there a clearly defined technology leadership role at the executive level?",
@@ -60,7 +102,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No influence", level_2: "Consulted on feasibility only", level_3: "Active contributor to product decisions", level_4: "Drives product innovation through technology" },
   },
 
+  // ============================================================
   // MODULE 2: IT/Digital Transformation Strategy
+  // ============================================================
   {
     id: "m2_q1", module_number: 2, subcategory: "Strategy Development",
     question: "Is there a documented digital transformation strategy?",
@@ -102,7 +146,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "Unknown outside IT", level_2: "Leadership aware only", level_3: "Organization-wide communication", level_4: "Embedded in culture with employee advocacy" },
   },
 
+  // ============================================================
   // MODULE 3: Enterprise Architecture & IT Modernization
+  // ============================================================
   {
     id: "m3_q1", module_number: 3, subcategory: "Architecture Planning",
     question: "Is there a documented enterprise architecture framework?",
@@ -129,7 +175,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No modernization effort", level_2: "Ad hoc replacements", level_3: "Planned migration roadmap", level_4: "Continuous modernization with cloud-native targets" },
   },
 
+  // ============================================================
   // MODULE 4: Cloud Computing & Infrastructure Strategy
+  // ============================================================
   {
     id: "m4_q1", module_number: 4, subcategory: "Cloud Strategy",
     question: "Is there a documented cloud strategy?",
@@ -156,39 +204,290 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No DR plan", level_2: "Documented but untested", level_3: "Annual testing with documented procedures", level_4: "Automated failover with regular chaos engineering" },
   },
 
+  // ============================================================
   // MODULE 5: Cybersecurity, Risk Management & Compliance
+  //
+  // Phase 1C deep rewrite (2026-05-06). Question bank realigned to
+  // NIST Cybersecurity Framework v2.0 (six functions: GOVERN, IDENTIFY,
+  // PROTECT, DETECT, RESPOND, RECOVER) with maturity rubrics drawn
+  // from CMMI-DEV v2.0 (Initial → Optimizing). Every question carries:
+  //   - Layer-1 function tag (so role mapping can filter to qualified
+  //     respondents)
+  //   - Layer-2 area tag (so Director/Manager respondents land on
+  //     questions in their lane)
+  //   - Level-5 indicator describing the "industry-leading" state
+  //   - Framework citation surfaced inline in the assessment UI
+  //   - na_eligible default true (universal N/A escape)
+  // ============================================================
+
+  // ----- GOVERN function (NIST CSF GV) -----
   {
-    id: "m5_q1", module_number: 5, subcategory: "Security Posture",
-    question: "Is there a documented cybersecurity policy?",
-    level_indicators: { level_1: "No policy", level_2: "Basic policy exists", level_3: "Comprehensive policy aligned to framework (NIST/ISO)", level_4: "Mature program with continuous assessment" },
+    id: "m5_q1", module_number: 5, subcategory: "Governance & Strategy",
+    question: "Is there a documented cybersecurity policy approved by executive leadership?",
+    level_indicators: {
+      level_1: "No documented policy; security is the IT team's informal responsibility.",
+      level_2: "Basic policy exists but is outdated, unsigned, or unread by most of the organization.",
+      level_3: "Comprehensive policy aligned to a recognized framework (NIST CSF / ISO 27001), reviewed annually, signed by leadership.",
+      level_4: "Policy is metric-driven — exceptions tracked, control effectiveness measured quarterly, drift reported to risk committee.",
+      level_5: "Policy is a living document refined continuously from threat intel, post-incident learnings, and peer benchmarking; cited as industry exemplar.",
+    },
+    tags: { function: ["strategic", "risk"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "GV.PO — Policy",
+      rationale: "Documented, leadership-endorsed policy is the foundation of every NIST CSF GOVERN subcategory.",
+    },
   },
   {
-    id: "m5_q2", module_number: 5, subcategory: "Security Posture",
-    question: "Is multi-factor authentication (MFA) implemented across all systems?",
-    level_indicators: { level_1: "No MFA", level_2: "MFA on some critical systems", level_3: "MFA on all external access", level_4: "Zero-trust architecture with adaptive authentication" },
+    id: "m5_q2", module_number: 5, subcategory: "Governance & Strategy",
+    question: "Does the executive team review cybersecurity risk at least quarterly?",
+    level_indicators: {
+      level_1: "Cyber risk never reaches the executive agenda.",
+      level_2: "Discussed only after an incident or audit finding.",
+      level_3: "Quarterly review with documented decisions and risk register updates.",
+      level_4: "Risk reviewed monthly with measured exposure trends and tolerance thresholds.",
+      level_5: "Cyber risk integrated into enterprise risk management; executive decisions explicitly weigh cyber posture alongside financial and operational risk.",
+    },
+    tags: { function: ["strategic", "risk"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "GV.RM — Risk Management Strategy",
+      rationale: "Risk decisions must be visible at the executive level, not delegated to IT, for the organization to claim mature governance.",
+    },
   },
   {
-    id: "m5_q3", module_number: 5, subcategory: "Security Posture",
-    question: "Are regular vulnerability assessments conducted?",
-    level_indicators: { level_1: "No assessments", level_2: "Annual scan", level_3: "Quarterly assessments with remediation tracking", level_4: "Continuous scanning with automated remediation" },
-  },
-  {
-    id: "m5_q4", module_number: 5, subcategory: "Risk & Compliance",
-    question: "Is there a risk management framework in place?",
-    level_indicators: { level_1: "No framework", level_2: "Informal risk awareness", level_3: "Documented risk register with mitigation plans", level_4: "Enterprise risk management integrated with business decisions" },
-  },
-  {
-    id: "m5_q5", module_number: 5, subcategory: "Risk & Compliance",
-    question: "Are compliance requirements identified and tracked?",
-    level_indicators: { level_1: "No compliance tracking", level_2: "Aware of requirements", level_3: "Compliance program with regular audits", level_4: "Automated compliance monitoring and reporting" },
-  },
-  {
-    id: "m5_q6", module_number: 5, subcategory: "Risk & Compliance",
-    question: "Is there an incident response plan?",
-    level_indicators: { level_1: "No plan", level_2: "Documented but untested", level_3: "Tested plan with assigned roles", level_4: "Practiced response with tabletop exercises and post-incident reviews" },
+    id: "m5_q3", module_number: 5, subcategory: "Governance & Strategy",
+    question: "Is there a named accountable owner for cybersecurity (CISO, vCISO, or equivalent)?",
+    level_indicators: {
+      level_1: "No named owner; responsibility is implicit on whoever runs IT.",
+      level_2: "IT manager carries the title informally; not in their job description.",
+      level_3: "Named CISO / vCISO with documented charter and direct line to executive leadership.",
+      level_4: "Owner has staff, budget authority, and KPIs reviewed by executives.",
+      level_5: "Security leadership is a peer to other C-suite functions, drives strategic decisions, and shapes product/M&A roadmap.",
+    },
+    tags: { function: ["strategic"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "GV.RR — Roles, Responsibilities & Authorities",
+      rationale: "Clear ownership is the prerequisite for any sustained security program.",
+    },
   },
 
+  // ----- IDENTIFY function (NIST CSF ID) -----
+  {
+    id: "m5_q4", module_number: 5, subcategory: "Asset & Risk Identification",
+    question: "Does the organization maintain a current inventory of critical IT assets and data?",
+    level_indicators: {
+      level_1: "No inventory; teams discover assets when something breaks.",
+      level_2: "Spreadsheet inventory updated annually or after audits.",
+      level_3: "Asset management system with quarterly reconciliation; covers endpoints, servers, SaaS, and crown-jewel data.",
+      level_4: "Continuous discovery via automated tools; assets tagged with criticality and data sensitivity; orphaned assets flagged.",
+      level_5: "Real-time asset graph linked to identity, network, and data flows; supports automated risk scoring and lifecycle decisions.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "ID.AM — Asset Management",
+      rationale: "You cannot protect what you do not know you have. Asset inventory is the first hard problem in every framework.",
+    },
+  },
+  {
+    id: "m5_q5", module_number: 5, subcategory: "Asset & Risk Identification",
+    question: "Are cybersecurity risks formally identified, prioritized, and tracked in a risk register?",
+    level_indicators: {
+      level_1: "No risk register; risks live in people's heads.",
+      level_2: "Risks captured during annual audits or after incidents; not maintained.",
+      level_3: "Documented risk register with owners, mitigation plans, and quarterly review.",
+      level_4: "Risk register quantifies likelihood × impact in dollars; mitigation effectiveness measured against KPIs.",
+      level_5: "Risk register integrates threat intelligence, peer-incident data, and predictive modeling; drives investment decisions.",
+    },
+    tags: { function: ["risk", "strategic"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "ID.RA — Risk Assessment",
+      rationale: "A risk register is the artifact regulators and insurers require to demonstrate due care.",
+    },
+  },
+  {
+    id: "m5_q6", module_number: 5, subcategory: "Asset & Risk Identification",
+    question: "Are third-party / vendor cybersecurity risks assessed before onboarding?",
+    level_indicators: {
+      level_1: "Vendors onboarded with no security review.",
+      level_2: "Ad hoc questionnaire on request; no formal process.",
+      level_3: "Documented vendor risk assessment process; SOC2 / ISO required for critical vendors.",
+      level_4: "Tiered review with continuous monitoring of high-risk vendors; contractual security SLAs enforced.",
+      level_5: "Vendor risk feeds enterprise risk register; supply-chain attack surface continuously mapped and reduced.",
+    },
+    tags: { function: ["risk", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "GV.SC — Cybersecurity Supply Chain Risk Management",
+      rationale: "Most modern breaches enter through the supply chain. Vendor review is no longer optional.",
+    },
+  },
+
+  // ----- PROTECT function (NIST CSF PR) -----
+  {
+    id: "m5_q7", module_number: 5, subcategory: "Identity & Access",
+    question: "Is multi-factor authentication (MFA) enforced for all users on all systems?",
+    level_indicators: {
+      level_1: "No MFA anywhere.",
+      level_2: "MFA only on email or admin accounts.",
+      level_3: "MFA on all external access and privileged accounts.",
+      level_4: "MFA on every system, including internal — phishing-resistant methods (FIDO2 / hardware keys) for privileged users.",
+      level_5: "Zero-trust architecture: continuous adaptive authentication, contextual risk scoring, passwordless by default.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "PR.AA — Identity Management, Authentication & Access Control",
+      rationale: "MFA blocks ~99% of credential-based attacks (Microsoft / CISA data). The single highest-leverage control.",
+    },
+  },
+  {
+    id: "m5_q8", module_number: 5, subcategory: "Identity & Access",
+    question: "Is the principle of least privilege enforced for user and service accounts?",
+    level_indicators: {
+      level_1: "Most users / accounts have admin or broad access.",
+      level_2: "Some role-based separation; admin accounts overused.",
+      level_3: "Documented role definitions; quarterly access reviews; just-in-time elevation for privileged tasks.",
+      level_4: "Automated provisioning / deprovisioning tied to HR system; access certifications signed off by managers.",
+      level_5: "Zero standing privilege; all elevation is ephemeral, recorded, and risk-scored.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "PR.AA-05 — Access Permissions",
+      rationale: "Privilege creep is the most common audit finding. Least privilege is the structural defense.",
+    },
+  },
+  {
+    id: "m5_q9", module_number: 5, subcategory: "Data Protection",
+    question: "Is sensitive data encrypted at rest and in transit?",
+    level_indicators: {
+      level_1: "No encryption strategy; plaintext storage common.",
+      level_2: "Some encryption (e.g., disk-level) but no consistent policy.",
+      level_3: "Documented data classification with encryption requirements per tier; TLS everywhere; KMS-managed keys.",
+      level_4: "Field-level encryption for sensitive data; key rotation automated; HSM-backed.",
+      level_5: "Confidential computing for high-sensitivity workloads; envelope encryption with customer-managed keys; cryptographic agility planned for post-quantum migration.",
+    },
+    tags: { function: ["technical"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "PR.DS — Data Security",
+      rationale: "Data encryption is table stakes for every regulator (HIPAA, PCI-DSS, GDPR, SOC2).",
+    },
+  },
+  {
+    id: "m5_q10", module_number: 5, subcategory: "Workforce Awareness",
+    question: "Is there a security awareness training program with regular phishing simulations?",
+    level_indicators: {
+      level_1: "No training.",
+      level_2: "Onboarding-only training; no refreshers.",
+      level_3: "Annual training plus quarterly phishing simulations; click-rates tracked.",
+      level_4: "Role-tailored training (engineers / finance / execs); simulation difficulty escalates; measurable click-rate reduction.",
+      level_5: "Continuous, behavior-based learning platform; security culture surveyed and acted upon; users actively report and earn recognition.",
+    },
+    tags: { function: ["operational", "risk"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "PR.AT — Awareness & Training",
+      rationale: "Humans are the path of least resistance. Trained users are a control as real as any technical one.",
+    },
+  },
+
+  // ----- DETECT function (NIST CSF DE) -----
+  {
+    id: "m5_q11", module_number: 5, subcategory: "Detection & Monitoring",
+    question: "Is there continuous security monitoring with alerting on suspicious activity?",
+    level_indicators: {
+      level_1: "No monitoring; incidents discovered through user complaints or breaches.",
+      level_2: "Antivirus / firewall logs reviewed reactively.",
+      level_3: "SIEM in place; log retention policy met; on-call analyst triages alerts.",
+      level_4: "24/7 SOC (in-house or MDR partner); alert fidelity tuned; mean-time-to-detect tracked.",
+      level_5: "Threat-intel-informed detection; behavioral analytics and ML-driven hunting; mean-time-to-detect under 1 hour.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "DE.CM — Continuous Monitoring",
+      rationale: "Most breaches dwell undetected for months (industry median ~200+ days). Detection capability defines blast radius.",
+    },
+  },
+  {
+    id: "m5_q12", module_number: 5, subcategory: "Detection & Monitoring",
+    question: "Are vulnerability assessments and penetration tests performed on a regular cadence?",
+    level_indicators: {
+      level_1: "No assessments.",
+      level_2: "Annual external scan only.",
+      level_3: "Quarterly vulnerability scans; annual penetration test by external firm; remediation tracked to SLA.",
+      level_4: "Continuous scanning of code, containers, infra; pen-test programs include red team scenarios; metrics drive prioritization.",
+      level_5: "Bug bounty + continuous adversarial testing; remediation built into CI/CD; vulnerability lifecycle measured in days, not months.",
+    },
+    tags: { function: ["technical", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "ID.RA-01 / DE.CM — Vulnerability Identification",
+      rationale: "Regular testing surfaces the unknown unknowns. Insurers and most enterprise customers require it contractually.",
+    },
+  },
+
+  // ----- RESPOND + RECOVER functions (NIST CSF RS, RC) -----
+  {
+    id: "m5_q13", module_number: 5, subcategory: "Incident Response & Recovery",
+    question: "Is there a documented incident response plan that has been tested with the leadership team?",
+    level_indicators: {
+      level_1: "No plan.",
+      level_2: "Plan exists on paper; never exercised.",
+      level_3: "Plan tested annually via tabletop exercise; named roles for IT, legal, comms, executive.",
+      level_4: "Plan tested semi-annually with a mix of tabletop and technical drills; lessons captured and merged back.",
+      level_5: "Continuous chaos / red-team exercises; playbooks live in runbooks executed under real conditions; measured response times beat industry benchmarks.",
+    },
+    tags: { function: ["operational", "risk", "strategic"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "RS.MA — Incident Response Management",
+      rationale: "An untested plan fails at first contact with reality. Practice is what makes the plan real.",
+    },
+  },
+  {
+    id: "m5_q14", module_number: 5, subcategory: "Incident Response & Recovery",
+    question: "Are backups tested for restore success on a regular schedule?",
+    level_indicators: {
+      level_1: "No backups, or backups exist but have never been restored.",
+      level_2: "Backups exist; restore tested only when something breaks.",
+      level_3: "Quarterly restore tests of critical systems; results documented.",
+      level_4: "Monthly automated restore tests; immutable / offline copies for ransomware resilience; recovery-time objectives measured.",
+      level_5: "Self-healing infrastructure with continuous restore validation; RTO and RPO contractually committed and met.",
+    },
+    tags: { function: ["operational", "technical"], area: ["IT"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "RC.RP — Recovery Planning",
+      rationale: "Ransomware playbook depends on tested backups. Untested = no backup at all.",
+    },
+  },
+  {
+    id: "m5_q15", module_number: 5, subcategory: "Compliance & Audit",
+    question: "Are applicable compliance and regulatory requirements (e.g., HIPAA, PCI-DSS, GDPR, SOC2) identified and actively managed?",
+    level_indicators: {
+      level_1: "Requirements unknown or ignored.",
+      level_2: "Aware of requirements; no formal compliance program.",
+      level_3: "Documented compliance program with controls mapped; annual audit cycle.",
+      level_4: "Continuous control monitoring with automated evidence collection; audit findings remediated within SLA.",
+      level_5: "Compliance posture is an asset — used as a market differentiator; controls feed product trust portal accessible to customers.",
+    },
+    tags: { function: ["risk", "strategic", "financial"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "NIST CSF v2.0",
+      reference: "GV.OC — Organizational Context (Legal & Regulatory)",
+      rationale: "Compliance is the floor, not the ceiling. Knowing what applies is the first step.",
+    },
+  },
+
+  // ============================================================
   // MODULE 6: Data & AI Engineering
+  // ============================================================
   {
     id: "m6_q1", module_number: 6, subcategory: "Data Architecture",
     question: "Is there a documented data architecture or data strategy?",
@@ -210,7 +509,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No governance", level_2: "Informal data ownership", level_3: "Formal governance with stewards and policies", level_4: "Automated governance with lineage tracking" },
   },
 
+  // ============================================================
   // MODULE 7: Digital Ecosystems: Platforms & Products
+  // ============================================================
   {
     id: "m7_q1", module_number: 7, subcategory: "Platform Strategy",
     question: "Does the organization think in terms of platforms and ecosystems?",
@@ -227,7 +528,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No digital products", level_2: "Basic digital presence", level_3: "Digital products generating revenue", level_4: "Digital-first business model" },
   },
 
+  // ============================================================
   // MODULE 8: Data Analytics, BI & Decision Science
+  // ============================================================
   {
     id: "m8_q1", module_number: 8, subcategory: "Analytics Capability",
     question: "Are business decisions supported by data analytics?",
@@ -244,7 +547,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No formal KPIs", level_2: "Some departmental metrics", level_3: "Organization-wide KPI framework", level_4: "Real-time KPI dashboards with predictive alerts" },
   },
 
+  // ============================================================
   // MODULE 9: Human Centered Design & Customer Journey
+  // ============================================================
   {
     id: "m9_q1", module_number: 9, subcategory: "Design Thinking",
     question: "Is user research conducted before building solutions?",
@@ -261,7 +566,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No measurement", level_2: "Occasional surveys", level_3: "NPS/CSAT tracking with action plans", level_4: "Omnichannel CX measurement with AI-driven insights" },
   },
 
+  // ============================================================
   // MODULE 10: Leadership, Business Strategy & Communications
+  // ============================================================
   {
     id: "m10_q1", module_number: 10, subcategory: "Executive Leadership",
     question: "Does the leadership team have a shared vision for technology's role?",
@@ -278,7 +585,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No communication", level_2: "Occasional updates", level_3: "Regular value communication program", level_4: "Technology brand within the organization" },
   },
 
+  // ============================================================
   // MODULE 11: CIDO Organization Structure & Operations
+  // ============================================================
   {
     id: "m11_q1", module_number: 11, subcategory: "Organization Design",
     question: "Is the IT/Digital team structure clearly defined?",
@@ -295,7 +604,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No formal support", level_2: "Ad hoc support", level_3: "Ticketed helpdesk with SLAs", level_4: "Self-service portal with AI-assisted resolution" },
   },
 
+  // ============================================================
   // MODULE 12: Financial Acumen
+  // ============================================================
   {
     id: "m12_q1", module_number: 12, subcategory: "IT Budgeting",
     question: "Is there a defined IT budget aligned with business priorities?",
@@ -312,7 +623,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No ROI analysis", level_2: "Occasional cost-benefit", level_3: "Standardized ROI framework for all projects", level_4: "Value realization tracking with post-implementation reviews" },
   },
 
+  // ============================================================
   // MODULE 13: Portfolio & Vendor Management
+  // ============================================================
   {
     id: "m13_q1", module_number: 13, subcategory: "Portfolio Management",
     question: "Is there a formal IT project portfolio management process?",
@@ -329,7 +642,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No inventory", level_2: "Partial tracking", level_3: "Complete inventory with license management", level_4: "Automated SaaS management with usage optimization" },
   },
 
+  // ============================================================
   // MODULE 14: Agile, DevOps & Innovation Management
+  // ============================================================
   {
     id: "m14_q1", module_number: 14, subcategory: "Agile Practices",
     question: "Are agile methodologies used for project delivery?",
@@ -346,7 +661,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No process", level_2: "Ad hoc evaluation", level_3: "Technology radar with evaluation framework", level_4: "Innovation lab with structured experimentation" },
   },
 
+  // ============================================================
   // MODULE 15: Business Process Transformation & Automation
+  // ============================================================
   {
     id: "m15_q1", module_number: 15, subcategory: "Process Management",
     question: "Are key business processes documented?",
@@ -363,7 +680,9 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     level_indicators: { level_1: "No pipeline", level_2: "Ad hoc opportunities", level_3: "Prioritized automation roadmap", level_4: "Citizen automation with CoE governance" },
   },
 
+  // ============================================================
   // MODULE 16: Future of Work & Workforce Development
+  // ============================================================
   {
     id: "m16_q1", module_number: 16, subcategory: "Change Management",
     question: "Is there a change management approach for technology initiatives?",
@@ -393,4 +712,13 @@ export function getModuleNumbers(): number[] {
   return [...new Set(DIAGNOSTIC_QUESTIONS.map((q) => q.module_number))].sort(
     (a, b) => a - b
   );
+}
+
+// --- Helper: Whether a module has the new (Phase 1C v2) schema ---
+// Used by the assessment UI to decide whether to render the role-filtered
+// view + per-question N/A + framework citations + the level-5 indicator,
+// or fall back to the legacy 4-level layout.
+export function moduleHasV2Schema(moduleNumber: number): boolean {
+  const qs = getModuleQuestions(moduleNumber);
+  return qs.length > 0 && qs.every((q) => q.tags !== undefined && q.level_indicators.level_5 !== undefined);
 }

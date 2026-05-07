@@ -88,13 +88,16 @@ export default function ScanPage() {
         }));
 
         const result = scoreModuleFromResponses(moduleAnswers);
-        const actionCard = generateQuickAction(currentModule, result.maturity_score);
+        // Public Quick Scan never lets users mark questions N/A, so the
+        // null branch is unreachable here. Default to 1 if it ever happens.
+        const score = result.maturity_score ?? 1;
+        const actionCard = generateQuickAction(currentModule, score);
 
         setResults((prev) => [
           ...prev,
           {
             module: currentModule,
-            score: result.maturity_score,
+            score,
             evidence: result.evidence,
             actionCard,
           },

@@ -67,11 +67,13 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
   const handleSubmit = useCallback(
     async (
       responses: {
+        question_id: string;
         question_text: string;
-        answer: "yes" | "no" | "partial";
+        answer: "yes" | "no" | "partial" | "na";
         evidence?: string;
       }[],
-      businessImpact: number
+      businessImpact: number,
+      moduleSkipped: boolean
     ) => {
       if (!stakeholder || !currentModule) return;
       setSubmitting(true);
@@ -87,6 +89,7 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
             module_number: currentModule,
             responses,
             business_impact_rating: businessImpact,
+            module_skipped: moduleSkipped,
           }),
         });
 
@@ -239,8 +242,9 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
           <AssessmentForm
             key={currentModule}
             moduleNumber={currentModule}
-            onSubmit={(responses, businessImpact) =>
-              handleSubmit(responses, businessImpact)
+            stakeholderRole={stakeholder.role}
+            onSubmit={(responses, businessImpact, moduleSkipped) =>
+              handleSubmit(responses, businessImpact, moduleSkipped)
             }
           />
         )}

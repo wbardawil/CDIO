@@ -23,10 +23,10 @@ const ASSESSMENT_SYSTEM_PROMPT = `You are the Assessment Agent of the AI-CDIO sy
 
 ## Your Assessment Framework
 
-You use a 4-level maturity scale:
-- Level 1 (Beginner): Ad hoc, reactive, minimal capability. No formal processes.
+You use a 5-level maturity scale (CMMI-aligned):
+- Level 1 (Initial): Ad hoc, reactive, minimal capability. No formal processes.
 - Level 2 (Developing): Some processes exist but inconsistent execution. Partial documentation.
-- Level 3 (Proficient): Defined processes with reliable execution. Good documentation and governance.
+- Level 3 (Defined): Documented processes with reliable execution. Good documentation and governance.
 - Level 4 (Managed): Measured, controlled, consistent outcomes. Data-driven decisions with established metrics.
 - Level 5 (Optimizing): Continuous improvement, innovative, industry-leading. Proactive optimization culture.
 
@@ -34,9 +34,11 @@ You use a 4-level maturity scale:
 
 1. Score based on EVIDENCE, not claims. "We have a strategy" without documentation = Level 2, not Level 3.
 2. A "partial" answer to a diagnostic question counts as 0.5 (between yes=1 and no=0).
-3. The maturity score for a module = the level that best matches the majority of diagnostic responses.
-4. If diagnostic responses are split (e.g., 4 yes, 4 no), score at the LOWER level and note the gap.
-5. Always provide specific evidence citations for your scoring rationale.
+3. An "na" answer means the respondent could not speak to that question — EXCLUDE it from the denominator entirely. Do not treat N/A as a low score.
+4. If every answer is "na", you cannot score the module. Return maturity_score=null and explain that the respondent abstained.
+5. The maturity score for a module = the level that best matches the majority of NON-N/A diagnostic responses.
+6. If diagnostic responses are split (e.g., 4 yes, 4 no), score at the LOWER level and note the gap.
+7. Always provide specific evidence citations for your scoring rationale.
 
 ## The 16 Modules
 
@@ -65,11 +67,27 @@ export async function scoreModule(
     employee_count: number;
   }
 ): Promise<{
-  maturity_score: MaturityLevel;
+  maturity_score: MaturityLevel | null;
   evidence: string;
   key_gaps: string[];
   recommended_actions: string[];
+  module_skipped: boolean;
 }> {
+  // Phase 1C: short-circuit when every response is N/A. The respondent
+  // explicitly couldn't speak to this module — calling the LLM would
+  // burn tokens and risk it inventing a score from thin air.
+  const nonNa = diagnosticResponses.filter((r) => r.answer !== "na");
+  if (nonNa.length === 0) {
+    return {
+      maturity_score: null,
+      evidence: diagnosticResponses.length === 0
+        ? "No responses provided."
+        : `Stakeholder abstained on all ${diagnosticResponses.length} questions in this module.`,
+      key_gaps: [],
+      recommended_actions: [],
+      module_skipped: true,
+    };
+  }
   const moduleName = MODULE_NAMES[moduleNumber] ?? `Module ${moduleNumber}`;
 
   // Retrieve playbook context for this module via RAG
@@ -123,11 +141,19 @@ Provide your assessment as JSON:
 
   const parsed = JSON.parse(jsonMatch[0]);
 
+  // The model may legitimately return null when every answer was N/A
+  // (we already short-circuited above, but defensive in case the v2
+  // schema sneaks N/A through downstream).
+  const score = parsed.maturity_score == null
+    ? null
+    : (Math.min(5, Math.max(1, parsed.maturity_score)) as MaturityLevel);
+
   return {
-    maturity_score: Math.min(5, Math.max(1, parsed.maturity_score)) as MaturityLevel,
-    evidence: parsed.evidence,
+    maturity_score: score,
+    evidence: parsed.evidence ?? "",
     key_gaps: parsed.key_gaps ?? [],
     recommended_actions: parsed.recommended_actions ?? [],
+    module_skipped: score === null,
   };
 }
 

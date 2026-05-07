@@ -78,10 +78,17 @@ export type MaturityLevel = 1 | 2 | 3 | 4 | 5;
 // Level 4: Managed — Measured, controlled, consistent outcomes
 // Level 5: Optimizing — Continuous improvement, innovative, industry-leading
 
+/**
+ * "na" is the universal escape hatch — added Phase 1C 2026-05-06.
+ * Synthesis treats N/A as missing data, never as a low score. Stakeholders
+ * who genuinely can't speak to a question must have a way to say so honestly.
+ */
+export type DiagnosticAnswer = "yes" | "no" | "partial" | "na";
+
 export interface DiagnosticResponse {
   question_id: string;
   question_text: string;
-  answer: "yes" | "no" | "partial";
+  answer: DiagnosticAnswer;
   evidence?: string;
 }
 
@@ -90,11 +97,50 @@ export interface ModuleScore {
   assessment_id: string;
   stakeholder_id: string;
   module_number: number;
-  maturity_score: MaturityLevel;
+  /**
+   * NULL when the stakeholder answered N/A on every question or hit the
+   * module-gate. Synthesis layer skips NULL rows when computing consensus.
+   */
+  maturity_score: MaturityLevel | null;
   evidence: string;
   diagnostic_responses: DiagnosticResponse[];
+  /**
+   * True when the stakeholder hit the module-gate "Can you speak to this
+   * area?" and answered N/A. Differentiates explicit module skip from
+   * per-question abstention.
+   */
+  module_skipped: boolean;
   created_at: string;
 }
+
+// --- Question-Level Tagging (Phase 1C, locked 2026-04-29) ---
+// Two-layer tagging system so a CEO and a CTO get different question subsets
+// inside the same module. CEO sees strategic only; CTO sees technical +
+// operational; CISO sees technical + risk; etc.
+
+/**
+ * Layer 1 — what kind of executive thinking the question requires.
+ * A respondent must hold at least one matching tag to see the question.
+ */
+export type QuestionFunctionTag =
+  | "strategic"     // governance, vision, business alignment
+  | "financial"     // budget, ROI, vendor cost
+  | "technical"     // architecture, implementation, controls
+  | "operational"   // processes, day-to-day execution
+  | "risk";         // compliance, threat, mitigation
+
+/**
+ * Layer 2 — which part of the company the question applies to.
+ * Used primarily to route Director/Manager-level respondents (who own a
+ * narrower slice of the org) to questions that fall in their lane.
+ */
+export type QuestionAreaTag =
+  | "operations"
+  | "sales"
+  | "IT"
+  | "finance"
+  | "marketing"
+  | "cross_functional";   // applies organization-wide
 
 // --- Assessment Synthesis (computed from all stakeholder scores) ---
 
