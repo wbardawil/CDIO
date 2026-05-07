@@ -59,149 +59,875 @@ export interface DiagnosticQuestion {
 
 export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   // ============================================================
-  // MODULE 1: Role of the CIDO
+  // MODULE 1: Technology Leadership at the Top
+  // Phase 4 deep pass — anchored to Gartner CIO Leadership Model
+  // + IT-CMF Executive Leadership. 12 questions across 3
+  // subcategories.
   // ============================================================
+
+  // ----- Gartner CIO Leadership: Executive Seat -----
   {
-    id: "m1_q1", module_number: 1, subcategory: "Leadership & Governance",
-    question: "Is there a clearly defined technology leadership role at the executive level?",
-    level_indicators: { level_1: "No formal role", level_2: "IT manager with limited scope", level_3: "Defined CIO/CTO role with executive access", level_4: "Strategic CIDO as core executive team member" },
+    id: "m1_q1", module_number: 1, subcategory: "Executive Seat",
+    question: "Is there a named technology leader at the executive level — a real seat at the table, not a job title?",
+    level_indicators: {
+      level_1: "Technology has no executive owner; whoever has the loudest tech opinion in any given week makes the call.",
+      level_2: "An IT Manager or Director exists but is not part of the executive team and does not attend exec meetings.",
+      level_3: "A CIO / CTO / CDIO sits on the executive team, attends every leadership meeting, and signs off on tech direction alongside other functional heads.",
+      level_4: "Technology leader has formal voting rights on capital allocation; tech is treated as a peer line-of-business, not a support function.",
+      level_5: "Technology leadership is a board-influencing role — agenda items the CEO won't take to the board without their position; tech is a strategic asset, not infrastructure.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Executive Presence (Tier 1)",
+      rationale: "Gartner's longitudinal CIO research consistently shows that companies whose tech leader sits at the executive table outperform peers on every digital-transformation outcome by a wide margin.",
+    },
   },
   {
-    id: "m1_q2", module_number: 1, subcategory: "Leadership & Governance",
-    question: "Does the technology leader report directly to CEO or Board?",
-    level_indicators: { level_1: "Reports to operations/finance", level_2: "Reports to COO", level_3: "Reports to CEO", level_4: "Board-level reporting with strategic influence" },
+    id: "m1_q2", module_number: 1, subcategory: "Executive Seat",
+    question: "Does the technology leader report directly to the CEO (or Board), not to a COO or CFO?",
+    level_indicators: {
+      level_1: "Tech reports to Finance or Operations; tech decisions are filtered through someone else's priorities before reaching the CEO.",
+      level_2: "Tech reports to the COO; tech is treated operationally rather than strategically.",
+      level_3: "Tech reports directly to the CEO; the relationship is regular and substantive.",
+      level_4: "Tech leader has direct CEO access AND a standing item on the board agenda; tech-strategy alignment is a board-reviewed discipline.",
+      level_5: "Tech leader is an officer of the company with fiduciary responsibility commensurate with the CFO or COO.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Reporting Line",
+      rationale: "Reporting line is the single most predictive structural variable for tech-leader effectiveness; CFO-reporting CIOs systematically underdeliver because every conversation defaults to cost reduction.",
+    },
   },
   {
-    id: "m1_q3", module_number: 1, subcategory: "Leadership & Governance",
-    question: "Are technology initiatives aligned with business strategy?",
-    level_indicators: { level_1: "Ad hoc, no alignment", level_2: "Some awareness but reactive", level_3: "Formal alignment process exists", level_4: "Technology drives business strategy" },
+    id: "m1_q3", module_number: 1, subcategory: "Executive Seat",
+    question: "Does technology leadership participate in strategic business planning — not just receive the plan and execute against it?",
+    level_indicators: {
+      level_1: "Technology is not consulted in strategic planning; tech leadership receives the strategy as a fait accompli.",
+      level_2: "Tech leadership is consulted on technical feasibility once the strategy is drafted.",
+      level_3: "Tech leadership is at the planning table from the start, contributing on what's possible, what's emerging, what competitors are doing.",
+      level_4: "Tech leadership co-drives strategic moves — M&A, market entry, productization decisions hinge on technology counsel.",
+      level_5: "Strategy and technology strategy are inseparable; the company's competitive position is technology-shaped at every cycle.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Strategic Co-creation",
+      rationale: "Companies whose tech leaders co-create strategy outperform peers on revenue from new digital products by 2-3x.",
+    },
   },
   {
-    id: "m1_q4", module_number: 1, subcategory: "Leadership & Governance",
-    question: "Is there a formal IT governance structure?",
-    level_indicators: { level_1: "No governance", level_2: "Informal decision-making", level_3: "Defined governance with regular reviews", level_4: "Mature governance with KPIs and continuous improvement" },
+    id: "m1_q4", module_number: 1, subcategory: "Executive Seat",
+    question: "Is technology leadership formally responsible for technology strategy, not just IT operations?",
+    level_indicators: {
+      level_1: "Tech leadership is scoped to keeping systems running — uptime, helpdesk, networks; strategy lives elsewhere or nowhere.",
+      level_2: "Strategy is acknowledged as a tech-leadership responsibility but in practice operations consume all the time.",
+      level_3: "Strategy and operations are separately scoped; the tech leader has time and team capacity to think and write strategy.",
+      level_4: "A documented technology strategy exists, is reviewed quarterly, and drives investment + hiring decisions.",
+      level_5: "Strategy is a published artifact the executive team uses to align cross-functional decisions — every major bet maps to a strategy pillar.",
+    },
+    tags: { function: ["strategic"], area: ["IT"] },
+    framework_citation: {
+      framework: "IT-CMF",
+      reference: "IT Leadership & Strategy Practice",
+      rationale: "IT-CMF's leadership tier separates strategy ownership from operations management; conflating the two is the most common reason internal IT directors stay below executive level.",
+    },
+  },
+
+  // ----- Gartner CIO Leadership: Governance Discipline -----
+  {
+    id: "m1_q5", module_number: 1, subcategory: "Governance Discipline",
+    question: "Is there a formal governance structure for technology decisions — who decides what, with documented thresholds?",
+    level_indicators: {
+      level_1: "No governance; whoever escalates loudest gets a yes; budget overruns and shadow IT proliferate.",
+      level_2: "Some governance exists informally (the CEO signs off on big purchases) but thresholds and decision rights are not documented.",
+      level_3: "Documented governance: investment committee meets monthly, decision rights matrix in place, threshold rules ($25K / $100K / etc.) for who decides what.",
+      level_4: "Governance is reviewed quarterly with KPIs (decision throughput, override rate, post-decision realization); the framework adapts as the company scales.",
+      level_5: "Tech governance is integrated with corporate governance — board-reviewed risk appetite, audit-trail evidence retention, regulatory-grade discipline.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner IT Governance",
+      reference: "Decision Rights Matrix + Investment Committee",
+      rationale: "Without documented decision rights, every tech investment becomes a political fight; Gartner's investment-committee model is the lightest-weight governance that scales.",
+    },
   },
   {
-    id: "m1_q5", module_number: 1, subcategory: "Strategic Influence",
-    question: "Does technology leadership participate in strategic business planning?",
-    level_indicators: { level_1: "Not involved", level_2: "Consulted occasionally", level_3: "Regular participant in planning", level_4: "Co-drives business planning" },
+    id: "m1_q6", module_number: 1, subcategory: "Governance Discipline",
+    question: "Are technology investments evaluated against documented criteria — not just intuition or vendor pitch decks?",
+    level_indicators: {
+      level_1: "Investments approved by gut; vendor pitches drive purchases more than internal analysis.",
+      level_2: "Some investments get a business case; quality of analysis varies wildly.",
+      level_3: "Every investment over a threshold gets a documented business case (cost, expected outcome, owner, success metric).",
+      level_4: "Business cases are reviewed at 90/180-day post-implementation; lessons learned shape the next cycle.",
+      level_5: "Investment evaluation is institutional — patterns from past initiatives inform new ones; chronic over-promisers and over-deliverers are known by name.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "Gartner IT Governance",
+      reference: "Investment Evaluation Discipline",
+      rationale: "Companies without documented investment criteria fund the loudest pitches; criteria-based evaluation is the cheapest filter against vendor capture.",
+    },
   },
   {
-    id: "m1_q6", module_number: 1, subcategory: "Strategic Influence",
-    question: "Is IT viewed as a strategic enabler vs. cost center?",
-    level_indicators: { level_1: "Viewed purely as cost", level_2: "Some see strategic value", level_3: "Broadly recognized as enabler", level_4: "Core competitive advantage" },
+    id: "m1_q7", module_number: 1, subcategory: "Governance Discipline",
+    question: "Is there a documented risk appetite for technology — what risks the company will take, what risks it won't?",
+    level_indicators: {
+      level_1: "Risk appetite is not defined; every risk decision is made fresh without precedent.",
+      level_2: "Implicit risk appetite exists in someone's head; not documented or communicated.",
+      level_3: "Documented risk appetite covering security, privacy, vendor lock-in, technology bets; reviewed annually with executive team.",
+      level_4: "Risk appetite is operationally embedded — every initiative card references which risks it draws on; trade-offs are explicit.",
+      level_5: "Risk appetite is a board-reviewed asset; the company knows where it intends to be aggressive vs. conservative and why.",
+    },
+    tags: { function: ["strategic", "risk"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner Risk Management",
+      reference: "Risk Appetite Framework",
+      rationale: "Without an articulated risk appetite, every risk decision becomes ad hoc; Gartner's framework gives boards the language to set the bar consistently.",
+    },
   },
-  {
-    id: "m1_q7", module_number: 1, subcategory: "Strategic Influence",
-    question: "Are there regular executive briefings on technology initiatives?",
-    level_indicators: { level_1: "None", level_2: "Ad hoc updates", level_3: "Monthly structured briefings", level_4: "Real-time dashboards with regular strategic reviews" },
-  },
+
+  // ----- IT-CMF: Strategic Influence + Executive Communication -----
   {
     id: "m1_q8", module_number: 1, subcategory: "Strategic Influence",
-    question: "Does technology leadership influence product/service strategy?",
-    level_indicators: { level_1: "No influence", level_2: "Consulted on feasibility only", level_3: "Active contributor to product decisions", level_4: "Drives product innovation through technology" },
+    question: "Does the technology leader brief the executive team on technology trends and threats — proactively, not just when asked?",
+    level_indicators: {
+      level_1: "Tech briefings happen reactively when something breaks or a vendor pitch lands.",
+      level_2: "Tech briefings are scheduled but irregular and often skipped for operational topics.",
+      level_3: "Monthly structured tech briefing covering trends, competitive moves, internal status; well-attended.",
+      level_4: "Briefings drive decisions — execs walk in with questions and walk out with assignments.",
+      level_5: "Tech-trend awareness is institutional; the executive team is conversant with emerging tech without needing translation.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "IT-CMF",
+      reference: "Executive Communication Practice",
+      rationale: "Executives who don't see structured tech briefings make tech decisions in a vacuum; IT-CMF's communication discipline keeps the rest of the C-suite literate.",
+    },
+  },
+  {
+    id: "m1_q9", module_number: 1, subcategory: "Strategic Influence",
+    question: "Is IT viewed by the rest of the executive team as a strategic enabler, not a cost center to be minimized?",
+    level_indicators: {
+      level_1: "IT is treated as overhead; conversation is dominated by cost reduction.",
+      level_2: "Some executives see IT as strategic; others still treat it as a cost line.",
+      level_3: "IT is broadly recognized as a strategic capability; investment conversations focus on outcomes, not ticket count.",
+      level_4: "IT investment is competed-for, not avoided; functional leaders pull tech leadership into their planning.",
+      level_5: "Technology is the company's competitive moat — it's how the company wins, not how it operates.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Strategic Enabler Positioning",
+      rationale: "How the rest of the C-suite sees IT determines how much value the company gets from technology investments; the framing is the leverage point.",
+    },
+  },
+  {
+    id: "m1_q10", module_number: 1, subcategory: "Strategic Influence",
+    question: "Does technology leadership influence product or service strategy — what gets built, what gets sunset?",
+    level_indicators: {
+      level_1: "Tech leadership has no input into product strategy; product picks the what, tech executes the how.",
+      level_2: "Tech leadership consulted on feasibility late; rarely on direction.",
+      level_3: "Tech leadership in product strategy from kickoff; brings what's possible to the conversation.",
+      level_4: "Tech leadership co-owns product KPIs; technology-led product moves are credible commitments.",
+      level_5: "The product roadmap is technology-shaped — competitive advantage flows from tech-driven product capabilities.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Product / Tech Co-creation",
+      rationale: "The companies pulling away from peers in their categories typically have tech leadership in the product-strategy conversation as a peer voice.",
+    },
+  },
+  {
+    id: "m1_q11", module_number: 1, subcategory: "Strategic Influence",
+    question: "Does technology leadership develop the next generation — successors, peer leaders, junior talent ready for stretch?",
+    level_indicators: {
+      level_1: "No successor planning; if the tech leader left tomorrow there's no internal candidate.",
+      level_2: "Some succession thinking exists informally; no documented bench.",
+      level_3: "Documented succession plan covering the tech leader, key direct reports, and high-potential talent; reviewed annually.",
+      level_4: "Stretch assignments and external exposure are systematic; the bench has visible recent wins.",
+      level_5: "Talent development is a competitive moat — the company is known as a place where tech leaders are made, which feeds the inbound pipeline.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "IT-CMF",
+      reference: "Talent Pipeline Practice",
+      rationale: "Tech leaders who don't develop successors limit their ceiling and the company's; talent pipeline is a leading indicator of organizational durability.",
+    },
+  },
+  {
+    id: "m1_q12", module_number: 1, subcategory: "Strategic Influence",
+    question: "Is technology leadership measured on business outcomes — revenue, EBITDA, customer satisfaction — not just IT operational metrics?",
+    level_indicators: {
+      level_1: "Tech leadership is measured purely on uptime, ticket close rate, project delivery on time and budget.",
+      level_2: "Some business outcomes are tracked but treated as nice-to-have; operational metrics are the core scorecard.",
+      level_3: "Tech leadership scorecard includes 2-3 business outcome metrics (initiative-driven revenue, cost reduction realized, customer NPS impact).",
+      level_4: "Business outcomes are the primary scorecard; operational metrics are hygiene.",
+      level_5: "Tech leadership compensation is materially tied to enterprise outcomes; technology and business are not separate scoreboards.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "Gartner CIO Leadership Model",
+      reference: "Business-Outcome Measurement",
+      rationale: "What you measure shapes what you do; tech leaders measured only on operations stay operational. The shift to business-outcome measurement is the lever for elevating the role.",
+    },
   },
 
   // ============================================================
-  // MODULE 2: IT/Digital Transformation Strategy
+  // MODULE 2: Tech Strategy & Business Alignment
+  // Phase 4 deep pass — anchored to KPMG 4-Practice Alignment
+  // + MIT Strategic Alignment Model. 12 questions across 4
+  // subcategories.
   // ============================================================
+
+  // ----- KPMG: Strategy Definition -----
   {
-    id: "m2_q1", module_number: 2, subcategory: "Strategy Development",
-    question: "Is there a documented digital transformation strategy?",
-    level_indicators: { level_1: "No strategy exists", level_2: "Informal or outdated strategy", level_3: "Documented and communicated strategy", level_4: "Living strategy with continuous refinement" },
+    id: "m2_q1", module_number: 2, subcategory: "Strategy Definition",
+    question: "Is there a documented technology strategy that names the 3-5 capabilities the company is investing in over the next 24 months?",
+    level_indicators: {
+      level_1: "No technology strategy exists; investment is reactive and feature-by-feature.",
+      level_2: "An informal strategy lives in someone's head or a stale slide deck; it does not drive day-to-day decisions.",
+      level_3: "A documented strategy names the capabilities being invested in, with explicit sequencing and a 24-month horizon; reviewed quarterly.",
+      level_4: "Strategy is the lens for every funding decision; deviations require a documented exception.",
+      level_5: "The strategy is a living narrative that the executive team can recite; new opportunities are evaluated against it as a habit.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "KPMG 4-Practice Alignment",
+      reference: "Strategy Definition Practice",
+      rationale: "Without a documented capability-investment strategy, technology spending becomes the sum of vendor pitches; KPMG's discipline forces a coherent story.",
+    },
   },
   {
-    id: "m2_q2", module_number: 2, subcategory: "Strategy Development",
-    question: "Does the strategy align with business objectives?",
-    level_indicators: { level_1: "No alignment", level_2: "Loosely connected", level_3: "Clear mapping to business goals", level_4: "Strategy and business goals co-created" },
+    id: "m2_q2", module_number: 2, subcategory: "Strategy Definition",
+    question: "Is the technology strategy explicitly linked to business strategy goals — and can both be read on the same one-page document?",
+    level_indicators: {
+      level_1: "Tech strategy and business strategy are independent documents that don't reference each other.",
+      level_2: "Some references exist but the linkage is shallow; tech strategy could survive a different business strategy unchanged.",
+      level_3: "A one-page artifact maps every tech investment to a named business goal; reviewed alongside business plan reviews.",
+      level_4: "Business strategy explicitly relies on tech capabilities to be delivered; tech delivery affects business commitments.",
+      level_5: "Business and technology strategy are inseparable; the company plans, allocates, and reviews them together.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "MIT Strategic Alignment Model (Henderson & Venkatraman)",
+      reference: "Business-IT Alignment",
+      rationale: "MIT's classic model demonstrates that companies in alignment quadrants outperform companies operating in misalignment by orders of magnitude over multi-year periods.",
+    },
   },
   {
-    id: "m2_q3", module_number: 2, subcategory: "Strategy Development",
-    question: "Are transformation goals measurable and time-bound?",
-    level_indicators: { level_1: "Vague aspirations", level_2: "Some metrics defined", level_3: "SMART goals with tracking", level_4: "Real-time KPI dashboards with predictive indicators" },
+    id: "m2_q3", module_number: 2, subcategory: "Strategy Definition",
+    question: "Is there a clearly identified executive sponsor for the technology strategy — not just the tech leader?",
+    level_indicators: {
+      level_1: "No business sponsor; technology strategy is a tech-leadership artifact only.",
+      level_2: "Sponsor exists in name but is not engaged.",
+      level_3: "Active business sponsor (CEO or peer C-level) reviews progress, removes blockers, and represents the strategy to the board.",
+      level_4: "Multiple business sponsors — every major capability has a named C-level owner outside IT.",
+      level_5: "Business-sponsor accountability is part of the executive scorecard; sponsorship is treated as a leadership responsibility, not a courtesy.",
+    },
+    tags: { function: ["strategic"], area: ["cross_functional"] },
+    framework_citation: {
+      framework: "KPMG 4-Practice Alignment",
+      reference: "Sponsorship Practice",
+      rationale: "KPMG research consistently shows business-sponsored tech strategies outperform tech-led-only ones by 2-3x on realized value over 3 years.",
+    },
   },
+
+  // ----- KPMG: Strategy Execution -----
   {
-    id: "m2_q4", module_number: 2, subcategory: "Strategy Development",
-    question: "Is there executive sponsorship for transformation initiatives?",
-    level_indicators: { level_1: "No sponsorship", level_2: "Passive support", level_3: "Active champion at C-level", level_4: "CEO/Board-driven transformation mandate" },
+    id: "m2_q4", module_number: 2, subcategory: "Strategy Execution",
+    question: "Is there a roadmap for executing the technology strategy — phased milestones, not a multi-year monolith?",
+    level_indicators: {
+      level_1: "No roadmap; strategy is aspiration without a path.",
+      level_2: "A high-level timeline exists but lacks milestones, dependencies, or owners.",
+      level_3: "Detailed roadmap with quarterly milestones, owners, and dependencies; reviewed monthly.",
+      level_4: "Roadmap is dynamic — outcomes from completed milestones reshape the upcoming ones; the plan adapts but the strategy holds.",
+      level_5: "Roadmap is a managed portfolio with explicit risk-adjusted forecasting; strategic outcomes are tracked at the same rigor as financial outcomes.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "KPMG 4-Practice Alignment",
+      reference: "Roadmap Discipline",
+      rationale: "Strategy without a phased roadmap is wishful thinking; KPMG's roadmap discipline forces sequencing and accountability.",
+    },
   },
   {
     id: "m2_q5", module_number: 2, subcategory: "Strategy Execution",
-    question: "Is there a roadmap for digital transformation implementation?",
-    level_indicators: { level_1: "No roadmap", level_2: "High-level timeline only", level_3: "Detailed roadmap with milestones", level_4: "Adaptive roadmap with regular review cycles" },
+    question: "Are dedicated resources allocated to the technology strategy — budget, headcount, and protected time — not just borrowed from operations?",
+    level_indicators: {
+      level_1: "No dedicated resources; strategy work happens when the operations team has spare cycles (i.e., never).",
+      level_2: "Some shared resources nominally allocated to strategy; in practice they get pulled into firefighting.",
+      level_3: "Dedicated team and budget for strategic initiatives, protected from operational pull.",
+      level_4: "Resource allocation is reviewed quarterly with explicit tradeoffs (run vs. grow vs. transform).",
+      level_5: "Strategic-resource allocation is institutional — the company is structurally configured to invest, not just operate.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "TBM Council + KPMG Run/Grow/Transform",
+      reference: "Resource Allocation Discipline",
+      rationale: "Without protected resources, strategy decays into hopes; the run/grow/transform discipline forces explicit choices and is the strongest predictor of strategic delivery.",
+    },
   },
   {
     id: "m2_q6", module_number: 2, subcategory: "Strategy Execution",
-    question: "Are resources allocated to support transformation goals?",
-    level_indicators: { level_1: "No dedicated resources", level_2: "Part-time shared resources", level_3: "Dedicated budget and team", level_4: "Optimized resource allocation with ROI tracking" },
+    question: "Are the strategic initiatives tracked end-to-end — from idea to delivered outcome — with documented status?",
+    level_indicators: {
+      level_1: "No tracking; status is whoever asked most recently.",
+      level_2: "Periodic status updates; quality is uneven; outcomes rarely revisited after launch.",
+      level_3: "Regular progress reviews against documented metrics; outcomes tracked at 90/180-day post-launch.",
+      level_4: "Automated tracking with leading indicators; deviations trigger explicit re-plans, not silent slippage.",
+      level_5: "Predictive analytics on initiative health; the company knows which initiatives are likely to underdeliver before the deadline arrives.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "KPMG ROO + APQC PCF",
+      reference: "Initiative Tracking Practice",
+      rationale: "Initiatives untracked decay into noise; the tracking discipline is what separates strategy-as-intent from strategy-as-result.",
+    },
+  },
+
+  // ----- MIT: Alignment Maturity -----
+  {
+    id: "m2_q7", module_number: 2, subcategory: "Alignment Maturity",
+    question: "Are technology and business teams co-located on initiatives — joint planning, joint metrics, joint stand-ups — not handoff-driven?",
+    level_indicators: {
+      level_1: "Tech and business operate in silos; tech receives requirements, business waits for delivery.",
+      level_2: "Some collaboration on big initiatives; default mode is still handoff.",
+      level_3: "Major initiatives use joint teams with shared metrics; collaboration is the norm for strategic work.",
+      level_4: "Joint working is institutional — product teams have embedded engineering; engineering teams have embedded product / business reps.",
+      level_5: "The boundary between tech and business has eroded for strategic work; teams are organized around outcomes, not functions.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "MIT Strategic Alignment Model",
+      reference: "Operational Integration",
+      rationale: "MIT's research shows operational integration is a stronger predictor of digital outcomes than strategy quality alone — execution beats strategy.",
+    },
   },
   {
-    id: "m2_q7", module_number: 2, subcategory: "Strategy Execution",
-    question: "Are transformation initiatives tracked and measured?",
-    level_indicators: { level_1: "No tracking", level_2: "Occasional status updates", level_3: "Regular progress reviews with metrics", level_4: "Automated tracking with predictive analytics" },
+    id: "m2_q8", module_number: 2, subcategory: "Alignment Maturity",
+    question: "Does the technology team understand the business well enough to challenge requirements — to say 'have you considered X instead'?",
+    level_indicators: {
+      level_1: "Tech accepts requirements without challenge; business literacy is low.",
+      level_2: "Some pushback on feasibility; rarely on substance.",
+      level_3: "Tech routinely challenges requirements with informed alternatives; business respects the contribution.",
+      level_4: "Tech is a recognized source of business insight; product / strategy actively seeks tech perspective.",
+      level_5: "Tech contribution to business strategy is sought-after; technology and business literacy are mutually held competencies.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "MIT Strategic Alignment Model",
+      reference: "Business-IT Mutual Literacy",
+      rationale: "One-way literacy (business explaining itself to tech) is rare; mutual literacy is rarer still and is the precondition for the alignment quadrants MIT highlights as outperformers.",
+    },
   },
   {
-    id: "m2_q8", module_number: 2, subcategory: "Strategy Execution",
-    question: "Is the strategy communicated across the organization?",
-    level_indicators: { level_1: "Unknown outside IT", level_2: "Leadership aware only", level_3: "Organization-wide communication", level_4: "Embedded in culture with employee advocacy" },
+    id: "m2_q9", module_number: 2, subcategory: "Alignment Maturity",
+    question: "Is there a shared vocabulary between technology and business — capability names, outcome metrics, system terminology — without translation overhead?",
+    level_indicators: {
+      level_1: "No shared vocabulary; every conversation requires translation.",
+      level_2: "Some shared terms exist; ambiguity is high; misunderstandings drive rework.",
+      level_3: "Documented capability + outcome glossary maintained across business and tech; used in planning artifacts.",
+      level_4: "Shared vocabulary is enforced at the artifact level (every initiative card, every KPI, every charter uses it).",
+      level_5: "Vocabulary is institutional muscle memory; new joiners absorb it within weeks; vendor and customer interactions inherit it.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "MIT Strategic Alignment Model",
+      reference: "Shared Vocabulary",
+      rationale: "Translation overhead is friction; companies that invest in shared vocabulary cut planning cycle time materially and reduce rework.",
+    },
+  },
+
+  // ----- Strategy Refresh & Adaptation -----
+  {
+    id: "m2_q10", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
+    question: "Is the technology strategy revisited regularly — at least quarterly — and adapted based on outcomes, not allowed to drift?",
+    level_indicators: {
+      level_1: "Strategy was written once and has not been revisited; reality has moved on.",
+      level_2: "Annual review only; the world moves faster than the cadence.",
+      level_3: "Quarterly review with explicit decisions to keep, adjust, or kill initiatives based on outcomes.",
+      level_4: "Continuous adaptation — leading indicators trigger mid-cycle re-plans without ceremony.",
+      level_5: "Strategy is a managed portfolio; the company is comfortable with active reshaping while holding the underlying ambition stable.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "KPMG 4-Practice Alignment",
+      reference: "Refresh Cadence",
+      rationale: "Strategy that doesn't adapt becomes a constraint rather than a guide; KPMG's quarterly refresh discipline is the lightest-weight cadence that keeps it alive.",
+    },
+  },
+  {
+    id: "m2_q11", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
+    question: "Are emerging-tech bets explicit — what the company is testing, learning from, or staying out of — rather than reactive?",
+    level_indicators: {
+      level_1: "No emerging-tech posture; whatever the loudest vendor pitches gets attention.",
+      level_2: "Some informal scanning; rarely translates into structured bets.",
+      level_3: "Documented emerging-tech bets — what's in active experimentation, what's being watched, what's deliberately ignored — reviewed annually.",
+      level_4: "Bets are sized and resourced; learning loops produce decisions to scale or kill.",
+      level_5: "The company is known in its industry as an informed early adopter — emerging-tech posture is a competitive identity.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner Hype Cycle + Emerging Tech Radar",
+      reference: "Emerging-Tech Posture",
+      rationale: "Companies without an emerging-tech posture either chase every trend or miss every wave; an explicit posture is the cheapest filter.",
+    },
+  },
+  {
+    id: "m2_q12", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
+    question: "Can the strategy be communicated in 5 minutes by anyone in the executive team — not just by the tech leader?",
+    level_indicators: {
+      level_1: "Only the tech leader can articulate the strategy, and even that depends on the day.",
+      level_2: "A few execs can describe parts of it; the picture is partial.",
+      level_3: "Every C-level can give the 5-minute version; key terms are shared.",
+      level_4: "The strategy travels — middle management can describe it; the language flows down org levels.",
+      level_5: "The strategy is durable culture; new employees absorb it without formal training.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "MIT Strategic Alignment Model",
+      reference: "Strategic Communication",
+      rationale: "Strategies that can't be communicated don't drive behavior; the 5-minute test is the cheapest litmus for whether alignment is real.",
+    },
   },
 
   // ============================================================
-  // MODULE 3: Enterprise Architecture & IT Modernization
+  // MODULE 3: Tech Foundation & Modernization
+  // Phase 4 deep pass — anchored to TOGAF (lite) + Gartner
+  // Application Modernization. 12 questions across 4 subcategories.
   // ============================================================
+
+  // ----- TOGAF lite: Architecture Visibility -----
   {
-    id: "m3_q1", module_number: 3, subcategory: "Architecture Planning",
-    question: "Is there a documented enterprise architecture framework?",
-    level_indicators: { level_1: "No documentation", level_2: "Partial documentation", level_3: "Comprehensive EA framework", level_4: "Living architecture with automated discovery" },
+    id: "m3_q1", module_number: 3, subcategory: "Architecture Visibility",
+    question: "Do you have a current inventory of every system, application, and data store the business depends on?",
+    level_indicators: {
+      level_1: "No system inventory; surprises happen monthly when a forgotten system breaks or invoices arrive.",
+      level_2: "Partial inventory in scattered docs; coverage is uneven and out of date within weeks.",
+      level_3: "Maintained inventory of all production systems with owner, business function, criticality, integration map; reviewed quarterly.",
+      level_4: "Inventory is automated where possible (CMDB / asset discovery); drift between record and reality is monitored.",
+      level_5: "Inventory is the architectural backbone — every change conversation references it; new systems are catalogued at deploy.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "TOGAF",
+      reference: "Architecture Repository",
+      rationale: "Without a system inventory, every modernization conversation is opinion-driven; TOGAF's repository is the precondition for every other architectural discipline.",
+    },
   },
   {
-    id: "m3_q2", module_number: 3, subcategory: "Architecture Planning",
-    question: "Are current and future state architectures defined?",
-    level_indicators: { level_1: "Neither defined", level_2: "Current state partially documented", level_3: "Both states defined with gap analysis", level_4: "Evolutionary architecture with continuous alignment" },
+    id: "m3_q2", module_number: 3, subcategory: "Architecture Visibility",
+    question: "Can you show how systems connect — the data flows, integrations, and dependencies — on one current diagram?",
+    level_indicators: {
+      level_1: "No integration map; surprises about hidden dependencies come up at every change.",
+      level_2: "Integration knowledge lives in the heads of senior engineers; tribal and at risk.",
+      level_3: "Documented integration / data-flow diagram for the top 20 systems; updated when major changes ship.",
+      level_4: "Integration map is auto-generated from API gateway / observability data; trustworthy by default.",
+      level_5: "Integration architecture is a managed asset — every new dependency requires explicit acknowledgement and documentation.",
+    },
+    tags: { function: ["technical"], area: ["IT"] },
+    framework_citation: {
+      framework: "TOGAF",
+      reference: "Integration Architecture View",
+      rationale: "The cost of a hidden dependency is paid every change cycle; an explicit integration view turns archaeology into engineering.",
+    },
   },
   {
-    id: "m3_q3", module_number: 3, subcategory: "Architecture Planning",
-    question: "Is there a technology standards governance process?",
-    level_indicators: { level_1: "No standards", level_2: "Informal preferences", level_3: "Documented standards with review process", level_4: "Standards embedded in CI/CD with automated enforcement" },
+    id: "m3_q3", module_number: 3, subcategory: "Architecture Visibility",
+    question: "Do you track which systems are aging out — approaching unsupported versions, vendor end-of-life, or security debt?",
+    level_indicators: {
+      level_1: "End-of-life tracking is ad hoc; the company is regularly surprised by unsupported software.",
+      level_2: "Major systems tracked; long tail unmonitored.",
+      level_3: "Documented technology lifecycle register; quarterly review of upcoming end-of-life events.",
+      level_4: "Lifecycle is a budget input — sunset and modernization investments come from this register, not crisis.",
+      level_5: "Modernization is a managed program; legacy debt is reduced systematically each year.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "Gartner Application Modernization",
+      reference: "Lifecycle Register",
+      rationale: "End-of-life surprises are the cheapest preventable risk; a maintained lifecycle register turns surprise into schedule.",
+    },
+  },
+
+  // ----- Modernization Strategy -----
+  {
+    id: "m3_q4", module_number: 3, subcategory: "Modernization Strategy",
+    question: "Do you have a documented modernization strategy — what's being retired, replatformed, replaced, or kept — for the next 24 months?",
+    level_indicators: {
+      level_1: "No modernization strategy; whatever is on fire gets the budget.",
+      level_2: "Some modernization on the radar; not sequenced or budgeted.",
+      level_3: "Documented 5R strategy (Retire, Retain, Replatform, Refactor, Replace) for top systems; sequenced over 24 months.",
+      level_4: "Strategy is reviewed quarterly with progress against plan; sequencing adapts to value delivery.",
+      level_5: "Modernization is continuous — there is no big-bang program because retiring debt is a discipline.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner Application Modernization",
+      reference: "5R Framework",
+      rationale: "The Gartner 5R taxonomy (Retire, Retain, Replatform, Refactor, Replace) is the most widely recognized modernization framework; it forces an explicit choice per system.",
+    },
   },
   {
-    id: "m3_q4", module_number: 3, subcategory: "Modernization Approach",
-    question: "Is there a plan to address technical debt?",
-    level_indicators: { level_1: "Technical debt not tracked", level_2: "Awareness but no plan", level_3: "Prioritized remediation plan", level_4: "Systematic reduction with prevention measures" },
+    id: "m3_q5", module_number: 3, subcategory: "Modernization Strategy",
+    question: "Are modernization investments evaluated on business outcome, not just tech preference — what does the new system enable that the old one didn't?",
+    level_indicators: {
+      level_1: "Modernization decisions driven by tech preference (cooler stack, vendor relationship); business value is asserted.",
+      level_2: "Some business cases for modernization; thin and uncontested.",
+      level_3: "Every modernization investment has a documented business case (capability unlocked, cost avoided, risk reduced); reviewed at funding gate.",
+      level_4: "Cases include realization tracking — projected vs actual outcome at 90 / 180 / 365 days post-cutover.",
+      level_5: "Modernization realization is a known number; the company funds with confidence because past cases have delivered.",
+    },
+    tags: { function: ["strategic", "financial", "technical"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "Gartner Application Modernization + KPMG ROO",
+      reference: "Outcome-driven Modernization",
+      rationale: "Modernization without outcome cases tends to recreate the same workflows on a new stack; outcome-driven evaluation is the filter.",
+    },
   },
   {
-    id: "m3_q5", module_number: 3, subcategory: "Modernization Approach",
-    question: "Are legacy systems being systematically modernized?",
-    level_indicators: { level_1: "No modernization effort", level_2: "Ad hoc replacements", level_3: "Planned migration roadmap", level_4: "Continuous modernization with cloud-native targets" },
+    id: "m3_q6", module_number: 3, subcategory: "Modernization Strategy",
+    question: "Do you avoid building custom systems where standard SaaS or platform alternatives would do the job at a fraction of the cost?",
+    level_indicators: {
+      level_1: "Custom-build default; the company has multiple internal systems duplicating commodity functionality.",
+      level_2: "Some buy-vs-build discipline; inconsistent across teams.",
+      level_3: "Documented buy-vs-build policy; default is buy / SaaS unless the capability is genuinely differentiating.",
+      level_4: "Buy-vs-build evaluated through the Selection Engine with explicit TCO + lock-in analysis.",
+      level_5: "Engineering capacity is reserved for differentiating capabilities; commodity work is bought, not built.",
+    },
+    tags: { function: ["strategic", "financial", "technical"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "Gartner Pace-Layered Application Strategy",
+      reference: "Buy-vs-Build Discipline",
+      rationale: "Engineering capacity wasted on commodity rebuilds is the most common opportunity cost in SMB tech; pace-layering forces the explicit choice.",
+    },
+  },
+
+  // ----- Architecture Governance -----
+  {
+    id: "m3_q7", module_number: 3, subcategory: "Architecture Governance",
+    question: "Are architecture standards documented — patterns the company uses, patterns it avoids — to prevent every team from picking new tools?",
+    level_indicators: {
+      level_1: "No standards; every team picks its own stack; integration costs compound.",
+      level_2: "Some informal standards; not documented or enforced.",
+      level_3: "Documented standards (preferred languages, data stores, API patterns, auth model); reviewed annually.",
+      level_4: "Standards are enforced at design review; deviations require explicit exception with sunset.",
+      level_5: "Standards evolve with the company; new patterns are evaluated and admitted intentionally, not by accident.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "TOGAF",
+      reference: "Architecture Standards",
+      rationale: "Without standards, integration cost grows quadratically with system count; documented standards are the cheapest brake.",
+    },
+  },
+  {
+    id: "m3_q8", module_number: 3, subcategory: "Architecture Governance",
+    question: "Is there an architecture review cadence for major changes — not approval theater, but informed challenge?",
+    level_indicators: {
+      level_1: "No architecture review; design decisions are made in isolation and surface only at integration.",
+      level_2: "Periodic reviews; quality varies; rarely change outcomes.",
+      level_3: "Documented review for changes above a threshold (cost, risk, integration scope); produces signed-off design with explicit alternatives considered.",
+      level_4: "Reviews surface lessons institutionally — patterns emerge from past reviews and shape standards.",
+      level_5: "Architecture review is a respected discipline; engineers want to bring designs through it, not avoid it.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "TOGAF",
+      reference: "Architecture Review Boards",
+      rationale: "Reviews catch mistakes when they cost the least; the cadence and quality of reviews are the leading indicators of architectural durability.",
+    },
+  },
+  {
+    id: "m3_q9", module_number: 3, subcategory: "Architecture Governance",
+    question: "Do you measure technical debt — what it costs and where it concentrates — rather than treating it as a vague feeling?",
+    level_indicators: {
+      level_1: "Technical debt is a feeling; nobody knows what it costs.",
+      level_2: "Some debt registered informally; not quantified.",
+      level_3: "Technical debt register with estimated effort and impact per item; reviewed quarterly.",
+      level_4: "Debt reduction is funded as a managed program; metrics show year-over-year reduction.",
+      level_5: "Technical debt is a board-tracked figure alongside financial debt; the company manages it as a balance-sheet item.",
+    },
+    tags: { function: ["technical", "operational", "financial"], area: ["IT"] },
+    framework_citation: {
+      framework: "Gartner Technical Debt Practice",
+      reference: "Debt Quantification",
+      rationale: "Unquantified debt accumulates silently; quantification turns abstract anxiety into prioritizable work.",
+    },
+  },
+
+  // ----- Data + System Health -----
+  {
+    id: "m3_q10", module_number: 3, subcategory: "System Health",
+    question: "Do you have observability — logs, traces, metrics — for the systems your business depends on, or is troubleshooting still detective work?",
+    level_indicators: {
+      level_1: "No structured observability; engineers troubleshoot by SSH-ing into boxes and reading logs.",
+      level_2: "Some monitoring in place; coverage is uneven; alerts are noisy.",
+      level_3: "Structured observability for top systems (APM, structured logs, alerts); MTTR is measured.",
+      level_4: "Observability is a capability — practitioners reason from data; alert quality is curated.",
+      level_5: "Observability is a competitive asset — the company sees customer impact before customers complain.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "Google SRE + DORA",
+      reference: "Observability + MTTR",
+      rationale: "Observability is the lower bound on incident response quality; without it, every outage is detective work.",
+    },
+  },
+  {
+    id: "m3_q11", module_number: 3, subcategory: "System Health",
+    question: "Are the systems your business depends on integrated through documented APIs / contracts — not point-to-point hacks?",
+    level_indicators: {
+      level_1: "Integrations are point-to-point and undocumented; every change risks downstream breakage.",
+      level_2: "Some APIs exist; coverage is partial; legacy hacks remain in load-bearing positions.",
+      level_3: "Documented contract per integration; versioning policy in place; deprecation path for old contracts.",
+      level_4: "API gateway / contract management — every consumer is registered; breaking changes are coordinated.",
+      level_5: "APIs are products themselves — internal and external consumers treated as customers.",
+    },
+    tags: { function: ["technical"], area: ["IT"] },
+    framework_citation: {
+      framework: "TOGAF Integration + Postman API Maturity",
+      reference: "API-as-Product",
+      rationale: "Point-to-point integration is the most expensive form of coupling; API discipline is the cheapest path to durability.",
+    },
+  },
+  {
+    id: "m3_q12", module_number: 3, subcategory: "System Health",
+    question: "Do you regularly retire systems no longer earning their keep — not just adding new ones?",
+    level_indicators: {
+      level_1: "No retirement discipline; the system inventory grows monotonically.",
+      level_2: "Occasional retirement when forced by vendor or audit; not a habit.",
+      level_3: "Documented retirement queue; quarterly review of retirement candidates with cost-vs-effort analysis.",
+      level_4: "Retirement throughput is a tracked KPI; the company retires more systems each year than it adds.",
+      level_5: "System count is intentional — the company chooses scale of architecture, not accumulates it.",
+    },
+    tags: { function: ["technical", "operational", "financial"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "Gartner Application Modernization",
+      reference: "Sunset Discipline",
+      rationale: "System sprawl is the slowest-moving cost driver; retirement discipline reverses the accumulation.",
+    },
   },
 
   // ============================================================
-  // MODULE 4: Cloud Computing & Infrastructure Strategy
+  // MODULE 4: Cloud & Infrastructure
+  // Phase 4 deep pass — anchored to AWS Well-Architected Framework
+  // + FinOps Foundation. 12 questions across 4 subcategories.
   // ============================================================
+
+  // ----- AWS Well-Architected: Operational + Reliability -----
   {
-    id: "m4_q1", module_number: 4, subcategory: "Cloud Strategy",
-    question: "Is there a documented cloud strategy?",
-    level_indicators: { level_1: "No cloud strategy", level_2: "Ad hoc cloud adoption", level_3: "Documented cloud-first policy", level_4: "Cloud-native strategy with multi-cloud optimization" },
+    id: "m4_q1", module_number: 4, subcategory: "Cloud Posture & Operations",
+    question: "Are your business-critical workloads running on cloud infrastructure with documented architecture — not a junior engineer's choices three years ago?",
+    level_indicators: {
+      level_1: "On-prem or unsupported cloud setups; architecture choices are undocumented and unreviewed.",
+      level_2: "Workloads in cloud but architecture is by accident; multi-region, redundancy, scaling decisions are not deliberate.",
+      level_3: "Critical workloads are on cloud with documented architecture review against Well-Architected pillars.",
+      level_4: "Architecture reviews happen at major change; deviations from the framework are explicit and time-bounded.",
+      level_5: "Architecture is continuously assessed; the company is recognizable as well-architected at audit.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Framework",
+      reference: "All 6 Pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability)",
+      rationale: "AWS's Well-Architected pillars apply equally to Azure and GCP workloads; without an architecture review framework, cloud cost and risk drift independently.",
+    },
   },
   {
-    id: "m4_q2", module_number: 4, subcategory: "Cloud Strategy",
-    question: "Have workloads been assessed for cloud readiness?",
-    level_indicators: { level_1: "No assessment done", level_2: "Some workloads evaluated", level_3: "Comprehensive assessment complete", level_4: "Continuous workload optimization and right-sizing" },
+    id: "m4_q2", module_number: 4, subcategory: "Cloud Posture & Operations",
+    question: "Are deployments automated — infrastructure-as-code, CI/CD — or do you still SSH into production?",
+    level_indicators: {
+      level_1: "Manual deploys; infrastructure changes by hand; production drift is constant.",
+      level_2: "Some automation; coverage is partial; emergency changes still happen by hand.",
+      level_3: "Infrastructure-as-code for production; CI/CD pipelines for application deploys; rollback paths defined.",
+      level_4: "Deploy frequency + lead time are measured; deployments are routine, not events.",
+      level_5: "DORA elite metrics — deploy on demand, lead time hours not days, change-fail rate <15%, MTTR minutes not hours.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Operational Excellence + DORA",
+      reference: "Deployment Automation",
+      rationale: "Manual deploys are the floor of operational risk; automated deploys are the precondition for resilience and velocity.",
+    },
   },
   {
-    id: "m4_q3", module_number: 4, subcategory: "Cloud Strategy",
-    question: "Is cloud spending tracked and optimized?",
-    level_indicators: { level_1: "No visibility into cloud costs", level_2: "Basic billing review", level_3: "FinOps practices with regular optimization", level_4: "Automated cost optimization with predictive budgeting" },
+    id: "m4_q3", module_number: 4, subcategory: "Cloud Posture & Operations",
+    question: "If your office became inaccessible tomorrow, could the team work effectively for a week — not a heroic effort, but a normal week?",
+    level_indicators: {
+      level_1: "Business depends on office presence — file shares, on-prem systems, paper artifacts; remote work is improvisation.",
+      level_2: "Some remote-friendliness; full week of remote work would degrade productivity materially.",
+      level_3: "Workforce is fully cloud-enabled — collaboration, documents, systems, communications — a week of remote-only is normal.",
+      level_4: "Remote-first is the default; office is for specific purposes; productivity is unaffected by location.",
+      level_5: "Workforce flexibility is a competitive advantage — hiring, retention, talent geography all benefit.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT", "operations", "cross_functional"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Reliability",
+      reference: "Business Continuity",
+      rationale: "Office-dependence is a single point of failure; remote-capability is the lightest-weight resilience investment with the highest cultural return.",
+    },
+  },
+
+  // ----- Reliability & Disaster Recovery -----
+  {
+    id: "m4_q4", module_number: 4, subcategory: "Reliability & Disaster Recovery",
+    question: "Do you have a tested disaster-recovery plan — not just backups, but a documented, time-bound recovery exercise?",
+    level_indicators: {
+      level_1: "No DR plan; backups exist but have never been tested; recovery is hopeful.",
+      level_2: "DR plan documented but not tested; theoretical confidence only.",
+      level_3: "DR plan tested at least annually; documented RTO / RPO targets met or gaps identified.",
+      level_4: "Quarterly DR drills; failover capabilities exercised on real data; chaos engineering on critical paths.",
+      level_5: "DR is operational muscle; the company has recovered from real incidents and trained against them.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Reliability",
+      reference: "DR Testing",
+      rationale: "Untested backups are not backups; AWS's DR-testing discipline is the lower bound on resilience credibility.",
+    },
   },
   {
-    id: "m4_q4", module_number: 4, subcategory: "Infrastructure",
-    question: "Is infrastructure provisioning automated?",
-    level_indicators: { level_1: "Manual provisioning", level_2: "Some scripted automation", level_3: "Infrastructure as Code (IaC)", level_4: "Self-service platform with policy guardrails" },
+    id: "m4_q5", module_number: 4, subcategory: "Reliability & Disaster Recovery",
+    question: "Are your backup, redundancy, and uptime targets explicit numbers — not aspirational adjectives like 'high availability'?",
+    level_indicators: {
+      level_1: "No explicit targets; uptime is measured by complaint volume.",
+      level_2: "Targets exist informally; not measured or reported.",
+      level_3: "Documented RTO / RPO / uptime SLOs per critical workload; measured monthly.",
+      level_4: "SLOs drive funding decisions; investments are tied to SLO gaps.",
+      level_5: "SLOs are committed externally where appropriate (enterprise customers, regulators); the company can defend its numbers.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Reliability + Google SRE",
+      reference: "SLO Discipline",
+      rationale: "Aspirational availability targets don't drive investment; explicit SLOs do.",
+    },
   },
   {
-    id: "m4_q5", module_number: 4, subcategory: "Infrastructure",
-    question: "Is there a disaster recovery plan tested regularly?",
-    level_indicators: { level_1: "No DR plan", level_2: "Documented but untested", level_3: "Annual testing with documented procedures", level_4: "Automated failover with regular chaos engineering" },
+    id: "m4_q6", module_number: 4, subcategory: "Reliability & Disaster Recovery",
+    question: "Are critical secrets, keys, and credentials managed in a secrets manager — not in environment variables, code, or shared docs?",
+    level_indicators: {
+      level_1: "Secrets in code, config files, shared docs, or wikis; rotation is rare.",
+      level_2: "Some secrets centralized; long tail still scattered.",
+      level_3: "All production secrets in a secrets manager; rotation policy defined per secret type.",
+      level_4: "Automated rotation for high-risk secrets; access logged and reviewed.",
+      level_5: "Secret hygiene is institutional — leaked-key incidents are rare and contained quickly when they occur.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "AWS Well-Architected Security + NIST CSF",
+      reference: "Secrets Management",
+      rationale: "Leaked secrets are the most common credential incident; centralized secrets management is the cheapest mitigation.",
+    },
+  },
+
+  // ----- FinOps: Cost Discipline -----
+  {
+    id: "m4_q7", module_number: 4, subcategory: "FinOps & Cost Discipline",
+    question: "Do you know what you spend on cloud each month — and which workloads, teams, or applications drive that spend?",
+    level_indicators: {
+      level_1: "Cloud bills arrive monthly and surprise everyone; nobody owns the trend.",
+      level_2: "Total cloud spend known; per-workload / per-team breakdown is opaque.",
+      level_3: "Cloud spend tagged and broken down by team / application / environment; reviewed monthly.",
+      level_4: "Engineers see cost impact in dashboards in real time; right-sizing and reserved-instance discipline are continuous.",
+      level_5: "FinOps is a managed practice — cost is a first-class engineering metric, not a finance problem.",
+    },
+    tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "FinOps Foundation",
+      reference: "Inform Phase",
+      rationale: "Cloud cost without visibility grows ~30% per year unmonitored; FinOps's Inform phase is the precondition for every other discipline.",
+    },
+  },
+  {
+    id: "m4_q8", module_number: 4, subcategory: "FinOps & Cost Discipline",
+    question: "Are reserved instances, committed use discounts, or savings plans applied for predictable workloads — capturing the cheapest cloud savings available?",
+    level_indicators: {
+      level_1: "All on-demand pricing; no commitments; cloud bill is 30-50% above what it could be.",
+      level_2: "Some reservations purchased opportunistically; coverage is uneven.",
+      level_3: "Reservation strategy by workload class; coverage rate measured and reviewed monthly.",
+      level_4: "Reservation portfolio actively managed — purchases, modifications, retirements aligned to changing usage.",
+      level_5: "Reservation discipline approaches theoretical maximum savings without over-commitment risk.",
+    },
+    tags: { function: ["financial", "technical"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "FinOps Foundation",
+      reference: "Optimize Phase — Commitment-based Discounts",
+      rationale: "Reservations are the highest-ROI cloud savings; companies routinely leave 20-30% of cloud spend on the table here.",
+    },
+  },
+  {
+    id: "m4_q9", module_number: 4, subcategory: "FinOps & Cost Discipline",
+    question: "Are idle resources (orphaned VMs, oversized instances, unattached storage) actively identified and removed — or do they accumulate as silent waste?",
+    level_indicators: {
+      level_1: "No idle-resource discipline; waste accumulates indefinitely.",
+      level_2: "Periodic cleanups when bills get scary; not systematic.",
+      level_3: "Monthly idle-resource sweep with named owner; orphans tagged for retirement at quarter end.",
+      level_4: "Automated detection + recommendations; right-sizing in continuous-improvement loop.",
+      level_5: "Idle waste rate is a tracked KPI; below industry benchmark; engineering culture treats waste as a defect.",
+    },
+    tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "FinOps Foundation",
+      reference: "Operate Phase — Waste Management",
+      rationale: "Cloud waste typically runs 30%+ on unmanaged accounts; even basic discipline cuts that to single digits.",
+    },
+  },
+
+  // ----- Cloud Strategy & Lock-in -----
+  {
+    id: "m4_q10", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
+    question: "Is your cloud strategy explicit — single cloud, multi-cloud, hybrid — with documented reasons, not the result of accidental drift?",
+    level_indicators: {
+      level_1: "No documented cloud strategy; workloads ended up wherever the loudest engineer wanted at the time.",
+      level_2: "Default cloud chosen; second-cloud workloads exist by accident with poor coordination.",
+      level_3: "Documented strategy with explicit reasoning (single cloud preferred for simplicity, with named exceptions and exit criteria).",
+      level_4: "Strategy reviewed annually; M&A and product changes update it deliberately.",
+      level_5: "Cloud posture is a strategic asset — choices are explainable to the board with cost / risk / capability tradeoffs.",
+    },
+    tags: { function: ["strategic", "technical", "financial"], area: ["IT", "cross_functional"] },
+    framework_citation: {
+      framework: "Gartner Cloud Strategy",
+      reference: "Cloud Posture Framework",
+      rationale: "Accidental multi-cloud is the most expensive way to operate; an explicit strategy is the cheapest correction.",
+    },
+  },
+  {
+    id: "m4_q11", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
+    question: "Do you understand and consciously manage cloud-vendor lock-in — knowing which workloads could be migrated and at what cost?",
+    level_indicators: {
+      level_1: "No lock-in awareness; every deep cloud feature is adopted without considering exit cost.",
+      level_2: "Some teams use abstractions; default is vendor-native services.",
+      level_3: "Lock-in tier per workload documented (none / moderate / deep); decisions made deliberately.",
+      level_4: "Migration cost estimated for top workloads; lock-in is a known number, not a feeling.",
+      level_5: "Lock-in posture is portfolio-managed — high lock-in for differentiated capabilities, portable for commodity workloads.",
+    },
+    tags: { function: ["strategic", "technical", "risk"], area: ["IT"] },
+    framework_citation: {
+      framework: "Gartner Cloud Strategy",
+      reference: "Vendor Lock-in Posture",
+      rationale: "Vendor lock-in is rarely binary; managing it as a portfolio choice gives the company optionality without crippling capability.",
+    },
+  },
+  {
+    id: "m4_q12", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
+    question: "Are tags and account / project structure standardized — so cost, ownership, and security can be reasoned about systematically?",
+    level_indicators: {
+      level_1: "No tagging standards; account / project sprawl makes accountability impossible.",
+      level_2: "Some tags applied; coverage is uneven; reports are unreliable.",
+      level_3: "Mandatory tag schema (owner, application, environment, cost-center); enforced at deploy.",
+      level_4: "Tag compliance > 95%; reports trustworthy; new accounts inherit conventions.",
+      level_5: "Tagging is institutional muscle; the cloud account is a coherent organizational artifact, not a junk drawer.",
+    },
+    tags: { function: ["technical", "operational", "financial"], area: ["IT", "finance"] },
+    framework_citation: {
+      framework: "AWS Well-Architected + FinOps Foundation",
+      reference: "Tagging Strategy",
+      rationale: "Untagged cloud is unmanaged cloud; tagging is the precondition for every chargeback, audit, and optimization motion.",
+    },
   },
 
   // ============================================================
@@ -486,122 +1212,1015 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   },
 
   // ============================================================
-  // MODULE 6: Data & AI Engineering
+  // MODULE 6: Data & AI Capabilities
+  // Phase 4 deep — NIST AI RMF + DAMA-DMBOK. 12 questions, 4 subcategories.
   // ============================================================
+
+  // ----- DAMA-DMBOK: Data Foundations -----
   {
-    id: "m6_q1", module_number: 6, subcategory: "Data Architecture",
-    question: "Is there a documented data architecture or data strategy?",
-    level_indicators: { level_1: "No data strategy", level_2: "Ad hoc data management", level_3: "Documented data architecture with governance", level_4: "Data mesh/fabric with self-service access" },
+    id: "m6_q1", module_number: 6, subcategory: "Data Foundations",
+    question: "Do you have a documented inventory of where your most important data lives — systems, owners, sensitivity tier?",
+    level_indicators: {
+      level_1: "No data inventory; nobody can name where customer data, financial data, or operational data is stored.",
+      level_2: "Partial inventory in scattered docs; sensitive data locations are uncertain.",
+      level_3: "Maintained data catalog covering core domains with named owners and sensitivity tagging.",
+      level_4: "Catalog is automated where possible (discovery tools); lineage between systems is captured.",
+      level_5: "Data catalog is the operating-model backbone — every change conversation references it; new data flows are catalogued at landing.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: { framework: "DAMA-DMBOK", reference: "Data Catalog & Inventory", rationale: "DAMA's first-principle is that you cannot manage data you cannot find; the catalog is the precondition for governance, AI readiness, and compliance." },
   },
   {
-    id: "m6_q2", module_number: 6, subcategory: "Data Architecture",
-    question: "Is data quality actively measured and managed?",
-    level_indicators: { level_1: "No quality management", level_2: "Known quality issues", level_3: "Data quality metrics with improvement plans", level_4: "Automated data quality pipelines with SLAs" },
+    id: "m6_q2", module_number: 6, subcategory: "Data Foundations",
+    question: "Is data quality actively measured — completeness, accuracy, freshness — for the data your business decisions depend on?",
+    level_indicators: {
+      level_1: "Data quality is a feeling; bad data surfaces in customer complaints and silent decision errors.",
+      level_2: "Some quality checks; mostly downstream and reactive.",
+      level_3: "Documented quality metrics for top data domains, reviewed monthly with named owners.",
+      level_4: "Automated quality pipelines with SLAs; quality regressions trigger alerts and corrections.",
+      level_5: "Data quality is a managed practice — quality SLOs are committed to internal customers and met as a discipline.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "DAMA-DMBOK", reference: "Data Quality Practice", rationale: "Bad data scales bad decisions; DAMA's quality discipline is the cheapest insurance against silent failure." },
   },
   {
-    id: "m6_q3", module_number: 6, subcategory: "AI/ML Capability",
-    question: "Is the organization using AI/ML in any business processes?",
-    level_indicators: { level_1: "No AI/ML usage", level_2: "Exploring/pilot stage", level_3: "AI in production for 1-2 use cases", level_4: "AI embedded across operations with MLOps" },
+    id: "m6_q3", module_number: 6, subcategory: "Data Foundations",
+    question: "Is there a data governance framework — named stewards, documented policies, decision rights — not just a wiki page nobody reads?",
+    level_indicators: {
+      level_1: "No governance; ownership of data domains is ambiguous; conflicts unresolved.",
+      level_2: "Informal stewardship; no enforced policies.",
+      level_3: "Formal governance: named stewards per domain, documented policies for access / retention / classification, periodic review.",
+      level_4: "Governance is operational; policy violations are detected and resolved in normal work.",
+      level_5: "Governance is institutional muscle — new joiners absorb it; vendor and partner integrations inherit it.",
+    },
+    tags: { function: ["strategic", "operational", "risk"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "DAMA-DMBOK", reference: "Data Governance Framework", rationale: "Governance separates organizations that survive a data audit from those that don't; it is also the precondition for AI deployment." },
+  },
+
+  // ----- NIST AI RMF: AI Readiness -----
+  {
+    id: "m6_q4", module_number: 6, subcategory: "AI Readiness",
+    question: "Is the company using AI in any production business processes — not just experimenting?",
+    level_indicators: {
+      level_1: "No AI use; conversations are aspirational.",
+      level_2: "Pilots in flight; no production deployments yet.",
+      level_3: "1-2 AI use cases in production with measured outcomes.",
+      level_4: "AI embedded across multiple business processes; ROI tracked per use case.",
+      level_5: "AI is a competitive capability — multiple production use cases compounding into measurable advantage.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "NIST AI RMF", reference: "Manage Function (Production AI)", rationale: "NIST AI RMF separates organizations using AI from those talking about it; production deployment is the inflection point." },
   },
   {
-    id: "m6_q4", module_number: 6, subcategory: "AI/ML Capability",
-    question: "Is there a data governance framework?",
-    level_indicators: { level_1: "No governance", level_2: "Informal data ownership", level_3: "Formal governance with stewards and policies", level_4: "Automated governance with lineage tracking" },
+    id: "m6_q5", module_number: 6, subcategory: "AI Readiness",
+    question: "Is data ready to power AI — clean, accessible, sufficient volume — or is AI exposing a data foundation gap?",
+    level_indicators: {
+      level_1: "Data is too scattered, dirty, or low-volume to support AI; AI investments would amplify the problem.",
+      level_2: "Some data is AI-ready; most is not; readiness is patchy and undocumented.",
+      level_3: "Data readiness assessed per use case; gaps identified and remediated before AI investment.",
+      level_4: "Data foundation is structurally AI-ready — clean, integrated, accessible to authorized models / users.",
+      level_5: "Data is a competitive asset — the company's AI capability is gated by imagination, not by data.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT"] },
+    framework_citation: { framework: "NIST AI RMF + AMP AI Diagnostic Playbook", reference: "Data Readiness (Feasibility Dimension 1)", rationale: "AMP's Feasibility framework (and NIST's Map function) consistently identify data readiness as the most decisive factor in AI initiative success." },
+  },
+  {
+    id: "m6_q6", module_number: 6, subcategory: "AI Readiness",
+    question: "Is there an AI use-case backlog — named opportunities by industry × function × value — or do you start every AI conversation from scratch?",
+    level_indicators: {
+      level_1: "No backlog; AI ideas surface from vendor pitches.",
+      level_2: "Some ideas listed informally; not prioritized or evaluated.",
+      level_3: "Documented backlog of 10-20 use cases with industry × function tagging, ROI estimates, and feasibility scoring.",
+      level_4: "Backlog is reviewed quarterly; in-flight pilots are sequenced from it.",
+      level_5: "Backlog is a managed portfolio; the company is rarely surprised by an AI opportunity it had not already considered.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "AMP AI Diagnostic Playbook", reference: "Use-Case Library (4 Opportunity Categories)", rationale: "AMP's catalog approach (resource & process efficiency / vendor & tool spend / quality, risk & reliability / scalability enablement) prevents AI from chasing the latest pitch." },
+  },
+
+  // ----- NIST AI RMF: AI Governance -----
+  {
+    id: "m6_q7", module_number: 6, subcategory: "AI Governance",
+    question: "Is there a documented AI policy — what AI use is allowed, what's restricted, what requires review — covering employees and vendors?",
+    level_indicators: {
+      level_1: "No AI policy; employees use ChatGPT with confidential data, vendors unknown.",
+      level_2: "Informal guidance; not documented or enforced.",
+      level_3: "Documented AI policy covering employee use, vendor AI integration, data classification for AI prompts; communicated.",
+      level_4: "Policy is enforced with training, technical controls (DLP), and audit; violations are addressed.",
+      level_5: "AI governance is institutional; policy adapts as capabilities and threats evolve.",
+    },
+    tags: { function: ["strategic", "operational", "risk"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "NIST AI RMF + EU AI Act", reference: "AI Policy & Governance", rationale: "Without an AI policy, the company is one ChatGPT prompt away from a data leak or regulatory exposure; the policy is the cheapest control." },
+  },
+  {
+    id: "m6_q8", module_number: 6, subcategory: "AI Governance",
+    question: "Is bias and fairness checked on AI use cases that touch customers, employees, or financial decisions?",
+    level_indicators: {
+      level_1: "No bias review; AI deployed without checking impact on protected groups.",
+      level_2: "Awareness of bias risk; no documented review process.",
+      level_3: "Bias review at design / deployment for high-impact use cases; mitigations documented.",
+      level_4: "Continuous monitoring for bias drift; periodic external review.",
+      level_5: "Fairness is a tracked KPI; the company can defend AI decisions before regulators or customers.",
+    },
+    tags: { function: ["strategic", "risk"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "NIST AI RMF", reference: "Govern + Measure Functions (Fairness)", rationale: "Bias in AI is a regulatory and reputational risk; review at design time is far cheaper than remediation after a public incident." },
+  },
+  {
+    id: "m6_q9", module_number: 6, subcategory: "AI Governance",
+    question: "Are AI vendor contracts reviewed for data ownership, model training rights, and incident notification — not just signed as-is?",
+    level_indicators: {
+      level_1: "Contracts signed without AI-specific review; vendors may train on your data.",
+      level_2: "Some contracts reviewed for AI clauses; coverage is uneven.",
+      level_3: "Documented AI clause review for every vendor: data ownership, no-training rights, incident notification, audit rights.",
+      level_4: "Standard AI addendum used; vendors that won't sign it are filtered out at procurement.",
+      level_5: "AI contractual posture is a known competitive position — the company knows where its AI data goes and what's done with it.",
+    },
+    tags: { function: ["strategic", "financial", "risk"], area: ["IT", "finance"] },
+    framework_citation: { framework: "NIST AI RMF + EU AI Act", reference: "Vendor AI Risk Management", rationale: "AI vendor contracts are where data leakage happens silently; review at signing is the cheapest mitigation." },
+  },
+
+  // ----- AI Capability & ROI -----
+  {
+    id: "m6_q10", module_number: 6, subcategory: "AI Capability & ROI",
+    question: "Is there an AI Roadmap with 90 / 180 / 360-day milestones — quick wins, foundation, scale — that survives board scrutiny?",
+    level_indicators: {
+      level_1: "No AI roadmap; investments are reactive.",
+      level_2: "High-level roadmap exists; thin on milestones and accountability.",
+      level_3: "Documented 90 / 180 / 360-day roadmap with named use cases, ROI estimates, build-vs-buy decisions per milestone.",
+      level_4: "Roadmap is reviewed quarterly with realized-vs-projected outcomes; sequencing adapts.",
+      level_5: "AI roadmap is the central planning artifact for AI investment; the board references it; the company funds with confidence.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "AMP AI Diagnostic Playbook", reference: "AI Roadmap (100 → 17 → 7 Funnel)", rationale: "AMP's 3-stage funnel produces roadmaps that survive 18-month retrospective scrutiny — the bar SMB CEOs need to defend AI spend." },
+  },
+  {
+    id: "m6_q11", module_number: 6, subcategory: "AI Capability & ROI",
+    question: "Are AI initiatives measured on hard-dollar outcomes (Volume × Time × Cost × Realizable %) — not just on shipped vs not shipped?",
+    level_indicators: {
+      level_1: "AI initiatives evaluated on whether they shipped; no business outcome measurement.",
+      level_2: "Some outcome claims; numbers are projected and unverified.",
+      level_3: "Documented financial model per AI initiative (volume, time saved, cost, realizable %); validated post-deployment at 90/180 days.",
+      level_4: "Realization tracked institutionally; over-claims rare and detected; AI investment funded based on track record.",
+      level_5: "AI's contribution to enterprise outcomes is a known number; the company defends AI ROI to the board with the same rigor as any capex.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: { framework: "AMP Standardized Impact Formula + KPMG ROO", reference: "Volume × Time × Cost × Realizable %", rationale: "AMP's PE-grade underwriting formula is the discipline that separates real AI ROI from slide-deck AI ROI." },
+  },
+  {
+    id: "m6_q12", module_number: 6, subcategory: "AI Capability & ROI",
+    question: "Is AI talent (data engineering, ML / model ops, AI product management) sourced and retained — internal, fractional, or partner — with a credible plan?",
+    level_indicators: {
+      level_1: "No AI talent strategy; ad-hoc hires or no hires.",
+      level_2: "Some AI talent in place; gaps unfilled; vendors fill the void unintentionally.",
+      level_3: "Documented AI talent strategy: which roles internal, which fractional, which partner; named candidates or hires.",
+      level_4: "AI talent is a managed capability; bench depth covers core skills; partners are formally integrated.",
+      level_5: "AI talent is a competitive asset — the company is known in its market for AI capability and attracts talent.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "NIST AI RMF", reference: "AI Workforce Practice", rationale: "AI without the right talent is vendor theater; talent strategy is the precondition for any AI capability claim." },
   },
 
   // ============================================================
-  // MODULE 7: Digital Ecosystems: Platforms & Products
+  // MODULE 7: Platforms, APIs & Digital Products
+  // Phase 4 deep — TOGAF Integration + Postman API Maturity. 12 questions.
   // ============================================================
+
+  // ----- Platform Strategy -----
   {
     id: "m7_q1", module_number: 7, subcategory: "Platform Strategy",
-    question: "Does the organization think in terms of platforms and ecosystems?",
-    level_indicators: { level_1: "Siloed applications", level_2: "Some integration awareness", level_3: "Platform strategy with API architecture", level_4: "Ecosystem orchestrator with partner network" },
+    question: "Does the company think in terms of platforms and ecosystems — reusable capabilities consumed by multiple business units / partners — or only in terms of standalone applications?",
+    level_indicators: {
+      level_1: "Every business need spawns a new application; no shared platform thinking.",
+      level_2: "Some shared services exist; not strategically managed as platforms.",
+      level_3: "Documented platform strategy; core capabilities (identity, payments, customer data, notifications) treated as shared platforms.",
+      level_4: "Platform team operates as internal product; consumers measured; SLAs honored.",
+      level_5: "Platform-as-product is institutional; partners and customers consume it as easily as internal teams.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "TOGAF Integration", reference: "Platform Architecture Discipline", rationale: "Without platform thinking, capability is rebuilt every initiative; TOGAF's discipline is the cheapest path to scale." },
   },
   {
     id: "m7_q2", module_number: 7, subcategory: "Platform Strategy",
-    question: "Are APIs used to connect systems and enable integration?",
-    level_indicators: { level_1: "No APIs", level_2: "Point-to-point integrations", level_3: "API-first approach with documentation", level_4: "API marketplace with developer portal" },
+    question: "Are digital products / services part of the business model — not just internal tools — generating identifiable revenue?",
+    level_indicators: {
+      level_1: "No digital products; revenue is from non-digital channels only.",
+      level_2: "Basic digital presence (marketing site, simple e-commerce); revenue contribution unclear.",
+      level_3: "Digital products generating tracked revenue; product-market fit understood for at least one offering.",
+      level_4: "Digital revenue is a meaningful share of total; products are managed as a portfolio.",
+      level_5: "Digital-first business model — the company's competitive position is digital-product-shaped.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "sales", "marketing"] },
+    framework_citation: { framework: "MIT CISR Digital Maturity", reference: "Digital Product Portfolio", rationale: "MIT CISR research shows digital revenue mix is the strongest predictor of growth in mature SMBs over 5 years." },
   },
   {
-    id: "m7_q3", module_number: 7, subcategory: "Digital Products",
-    question: "Are digital products/services part of the business model?",
-    level_indicators: { level_1: "No digital products", level_2: "Basic digital presence", level_3: "Digital products generating revenue", level_4: "Digital-first business model" },
+    id: "m7_q3", module_number: 7, subcategory: "Platform Strategy",
+    question: "Are partner and customer integrations enabled programmatically (APIs / webhooks) — not via manual file exchange or one-off custom builds?",
+    level_indicators: {
+      level_1: "All partner / customer integration is manual file exchange or per-deal custom code.",
+      level_2: "Some API-based integration; mostly bilateral and fragile.",
+      level_3: "Documented partner / customer integration patterns; standard APIs and webhooks for the most common cases.",
+      level_4: "Self-service partner integration; partners onboard without dev-team involvement.",
+      level_5: "Integration is a competitive asset; partners and customers prefer working with the company because it's easy to integrate with.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT", "sales"] },
+    framework_citation: { framework: "TOGAF Integration", reference: "Partner Integration Architecture", rationale: "Manual integration is the highest-friction sales motion; programmatic integration is a multiplier on partner-led revenue." },
+  },
+
+  // ----- API Maturity -----
+  {
+    id: "m7_q4", module_number: 7, subcategory: "API Maturity",
+    question: "Are APIs documented, versioned, and discoverable — not buried in code or internal wikis?",
+    level_indicators: {
+      level_1: "APIs exist; documentation is scattered, outdated, or absent.",
+      level_2: "Major APIs documented; coverage is uneven; consumers find APIs by asking.",
+      level_3: "Standard documentation (OpenAPI / Postman) for every public and major internal API; versioning policy in place.",
+      level_4: "API portal / catalog with discovery, examples, and SDKs; consumer-self-service.",
+      level_5: "APIs are products with their own roadmap, SLA, and consumer relationships; treated as first-class assets.",
+    },
+    tags: { function: ["technical"], area: ["IT"] },
+    framework_citation: { framework: "Postman API Maturity Model", reference: "Documentation & Discoverability", rationale: "Undocumented APIs are unused APIs; documentation maturity is the strongest predictor of API consumption." },
+  },
+  {
+    id: "m7_q5", module_number: 7, subcategory: "API Maturity",
+    question: "Are API contracts stable — breaking changes versioned and announced — not pushed silently?",
+    level_indicators: {
+      level_1: "Breaking changes ship without notice; consumers break unpredictably.",
+      level_2: "Some change-management awareness; consumers still surprised regularly.",
+      level_3: "Documented versioning + deprecation policy; breaking changes versioned, deprecated APIs sunset on schedule.",
+      level_4: "Consumer impact assessed before breaking changes; coordinated migration paths offered.",
+      level_5: "API contract stability is a stated commitment; consumers build with confidence.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "Postman API Maturity Model", reference: "Versioning & Lifecycle", rationale: "API instability is the most expensive form of platform decay; lifecycle discipline is the cheapest brake." },
+  },
+  {
+    id: "m7_q6", module_number: 7, subcategory: "API Maturity",
+    question: "Are APIs secured with consistent auth, rate limiting, and audit logging — not bespoke per endpoint?",
+    level_indicators: {
+      level_1: "API security is per-endpoint; auth varies; rate limits absent or inconsistent.",
+      level_2: "Some standardization; gaps remain.",
+      level_3: "Standard API security pattern: auth via gateway, rate limits enforced, requests logged with correlation IDs.",
+      level_4: "Security posture audited continuously; misconfigurations detected automatically.",
+      level_5: "API security is institutional; new APIs inherit it by default; vulnerability surface is managed.",
+    },
+    tags: { function: ["technical", "risk"], area: ["IT"] },
+    framework_citation: { framework: "OWASP API Security Top 10", reference: "API Security Standards", rationale: "API security gaps are the most common breach vector for platform-shaped companies; OWASP API Top 10 is the lower bound." },
+  },
+
+  // ----- Product / Platform Discipline -----
+  {
+    id: "m7_q7", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Are platforms and digital products owned by named product managers — not just engineering leads moonlighting?",
+    level_indicators: {
+      level_1: "No product management; engineering decides what gets built.",
+      level_2: "Part-time product management; coverage is partial.",
+      level_3: "Dedicated product managers for major platforms / products; standard PM rituals (roadmap, backlog, customer interviews).",
+      level_4: "Product management is a discipline; PMs measured on outcomes, not output.",
+      level_5: "Product culture is institutional; non-PM functions reason in product terms.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Marty Cagan SVPG / Lenny Rachitsky PM Standard", reference: "Product Management Discipline", rationale: "Engineering-led product is engineering-shaped product; dedicated PM is the lever for outcome-led product." },
+  },
+  {
+    id: "m7_q8", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Are platform consumers (internal teams, partners, customers) actively measured — usage, satisfaction, time-to-integrate — and treated as customers?",
+    level_indicators: {
+      level_1: "No consumer measurement; platforms operate without feedback.",
+      level_2: "Some metrics; not acted upon.",
+      level_3: "Documented metrics (usage, NPS, time-to-integrate); reviewed quarterly; investments adjusted.",
+      level_4: "Consumer satisfaction is a tracked KPI; platform team measured against it.",
+      level_5: "Platform team operates as a startup serving internal / external customers; competition for usage is real.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Team Topologies (Skelton & Pais)", reference: "Platform Team Pattern", rationale: "Team Topologies' platform pattern requires consumer-pull, not provider-push; consumer measurement enforces the pattern." },
+  },
+  {
+    id: "m7_q9", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Is technical debt within platforms tracked and managed — not allowed to compound silently?",
+    level_indicators: {
+      level_1: "Platform debt accumulates; nobody tracks it.",
+      level_2: "Awareness of debt; no register or remediation budget.",
+      level_3: "Documented debt register per platform; remediation budget allocated annually.",
+      level_4: "Debt reduction year-over-year measured; platform agility correlated with debt level.",
+      level_5: "Debt is a managed balance-sheet item; the company knows its platform debt cost and trajectory.",
+    },
+    tags: { function: ["technical", "operational", "financial"], area: ["IT"] },
+    framework_citation: { framework: "Gartner Technical Debt Practice", reference: "Platform Debt Management", rationale: "Platform debt compounds faster than application debt because the blast radius is shared; explicit management is the only durable defense." },
+  },
+  {
+    id: "m7_q10", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Is there a documented digital-product / platform roadmap — quarterly sequencing tied to business outcomes — visible to the executive team?",
+    level_indicators: {
+      level_1: "No roadmap; investments per fire of the week.",
+      level_2: "Internal roadmap exists; executive visibility partial.",
+      level_3: "Documented quarterly roadmap mapped to business outcomes; executive review monthly.",
+      level_4: "Roadmap drives investment decisions; deviations are documented exceptions.",
+      level_5: "Roadmap is a strategic artifact; M&A and partnership decisions reference it.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Lean Product Playbook (Olsen) + KPMG Strategy Execution", reference: "Outcome-led Roadmap", rationale: "Roadmaps mapped to outputs become wishlists; outcome-mapped roadmaps stay strategically relevant." },
+  },
+  {
+    id: "m7_q11", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Are external integrations (Stripe, Salesforce, Slack, etc.) treated as first-class capabilities — health monitored, vendor risk assessed — not just plugged in and forgotten?",
+    level_indicators: {
+      level_1: "External integrations are install-and-forget; outages cascade silently.",
+      level_2: "Some monitoring on top integrations; reactive coverage.",
+      level_3: "Health monitoring + vendor risk assessment for every load-bearing integration; quarterly review.",
+      level_4: "Integration health is a tracked SLA; degradations escalate; vendor performance shapes contract decisions.",
+      level_5: "Integration portfolio is managed as a strategic dependency map; over-reliance is identified and mitigated.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: { framework: "Gartner Vendor Risk Management", reference: "Integration Lifecycle", rationale: "External integrations are silent third-party risk; explicit lifecycle management is the cheapest mitigation." },
+  },
+  {
+    id: "m7_q12", module_number: 7, subcategory: "Product & Platform Discipline",
+    question: "Is platform / product success measured at the business outcome level (revenue, retention, NPS) — not just at usage / latency?",
+    level_indicators: {
+      level_1: "Only operational metrics; no business outcome tied to platform.",
+      level_2: "Some outcome metrics; thin and uncontested.",
+      level_3: "Documented business outcome KPIs per platform / product; reviewed at executive cadence.",
+      level_4: "Platform investment competes for funding on business outcome; the link is causally established.",
+      level_5: "Platforms and products are economic units; the company knows ROI per platform.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "MIT CISR + KPMG ROO", reference: "Outcome-led Platform Measurement", rationale: "Operational metrics measure efficiency; outcome metrics measure value; both matter, but outcome metrics drive investment decisions." },
   },
 
   // ============================================================
-  // MODULE 8: Data Analytics, BI & Decision Science
+  // MODULE 8: Analytics & BI
+  // Phase 4 deep — Gartner BI Maturity + TDWI + DataOps. 12 questions.
   // ============================================================
+
+  // ----- Analytics Foundation -----
   {
-    id: "m8_q1", module_number: 8, subcategory: "Analytics Capability",
-    question: "Are business decisions supported by data analytics?",
-    level_indicators: { level_1: "Gut-feel decisions", level_2: "Basic reporting (spreadsheets)", level_3: "BI platform with dashboards", level_4: "Predictive analytics driving decisions" },
+    id: "m8_q1", module_number: 8, subcategory: "Analytics Foundation",
+    question: "Can you pull up key business metrics (revenue, cost, performance) in real time — or are you waiting for last month's report?",
+    level_indicators: {
+      level_1: "Decisions made on stale data; reports take days to compile.",
+      level_2: "Some metrics available daily; many still in spreadsheets refreshed manually.",
+      level_3: "Real-time / near-real-time dashboards for top business metrics; refreshed automatically.",
+      level_4: "Real-time alerting on threshold breaches; metrics integrated into operational workflows.",
+      level_5: "Real-time data is institutional; the company moves at the speed of its observations.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["finance", "operations", "IT", "cross_functional"] },
+    framework_citation: { framework: "Gartner BI & Analytics Maturity", reference: "Real-time Decision Support", rationale: "Decision latency is the cost of stale data; real-time data is the lever for faster business cycles." },
   },
   {
-    id: "m8_q2", module_number: 8, subcategory: "Analytics Capability",
-    question: "Is there a self-service analytics capability for business users?",
-    level_indicators: { level_1: "All reports from IT", level_2: "Some shared reports", level_3: "Self-service BI tools available", level_4: "Data democratization with literacy programs" },
+    id: "m8_q2", module_number: 8, subcategory: "Analytics Foundation",
+    question: "Is there a single source of truth for the metrics that matter — not five different definitions of 'revenue' or 'active customer'?",
+    level_indicators: {
+      level_1: "Multiple definitions; every meeting starts with reconciling numbers.",
+      level_2: "Awareness of inconsistency; not yet resolved.",
+      level_3: "Documented metric definitions in a semantic layer / catalog; reviewed quarterly.",
+      level_4: "Definitions enforced at query time; rogue definitions are detected and corrected.",
+      level_5: "Metric trust is institutional; the executive team agrees on numbers as a baseline, not as a debate.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["finance", "cross_functional"] },
+    framework_citation: { framework: "TDWI Data Quality + dbt Semantic Layer Pattern", reference: "Single Source of Truth", rationale: "Inconsistent metrics are organizational gas-lighting; a managed semantic layer is the technical solution." },
   },
   {
-    id: "m8_q3", module_number: 8, subcategory: "Analytics Capability",
-    question: "Are KPIs defined and tracked across the organization?",
-    level_indicators: { level_1: "No formal KPIs", level_2: "Some departmental metrics", level_3: "Organization-wide KPI framework", level_4: "Real-time KPI dashboards with predictive alerts" },
+    id: "m8_q3", module_number: 8, subcategory: "Analytics Foundation",
+    question: "Do non-technical staff have access to the data they need — without filing a ticket and waiting for IT?",
+    level_indicators: {
+      level_1: "All data access goes through IT; turnaround in days or weeks.",
+      level_2: "Some teams have direct access; others wait.",
+      level_3: "Self-service BI tools available with guardrails; non-technical users build their own reports.",
+      level_4: "Data literacy program in place; self-service is the norm.",
+      level_5: "Data democratization is institutional; data is consumed across functions as a habit.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Gartner BI Maturity Model", reference: "Self-Service Analytics", rationale: "IT-bottlenecked analytics is rate-limited analytics; self-service unlocks the long tail of decision-making." },
+  },
+
+  // ----- Decision Discipline -----
+  {
+    id: "m8_q4", module_number: 8, subcategory: "Decision Discipline",
+    question: "Are major business decisions backed by data analysis — or by the loudest voice in the room?",
+    level_indicators: {
+      level_1: "Gut-feel decisions dominate; data is rarely consulted.",
+      level_2: "Data sometimes consulted; mostly to support pre-formed positions.",
+      level_3: "Major decisions require documented data analysis; alternatives evaluated against evidence.",
+      level_4: "Decision quality reviewed post-hoc; lessons feed forward.",
+      level_5: "Data-driven decision-making is cultural; teams are uncomfortable making major calls without analytical grounding.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "Gartner BI Maturity + Roger Martin Strategic Choice", reference: "Evidence-led Decision-making", rationale: "MIT and McKinsey research consistently shows data-driven companies outperform peers by 5-6% on operating metrics; the discipline is the lever." },
+  },
+  {
+    id: "m8_q5", module_number: 8, subcategory: "Decision Discipline",
+    question: "Are KPIs cascaded across the organization — every team knows the 3-5 numbers it owns and how those roll up?",
+    level_indicators: {
+      level_1: "No cascaded KPIs; teams operate without measurable goals.",
+      level_2: "Some KPIs at top level; cascade is uneven.",
+      level_3: "Documented KPI tree from enterprise to team; reviewed at cadence.",
+      level_4: "Real-time dashboards visible at every level; teams self-monitor.",
+      level_5: "KPI alignment is institutional; the company moves coherently because every team knows what 'winning' looks like.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "OKR (Doerr) + Gartner Performance Management", reference: "KPI Cascade", rationale: "Cascaded KPIs align effort; without them, local optimization undermines enterprise outcomes." },
+  },
+  {
+    id: "m8_q6", module_number: 8, subcategory: "Decision Discipline",
+    question: "Are predictive analytics or forecasting in use for any significant business decisions — pricing, demand planning, churn — not just hindsight reporting?",
+    level_indicators: {
+      level_1: "No predictive analytics; all reporting is hindsight.",
+      level_2: "Some forecasting; thin and underused.",
+      level_3: "Predictive analytics in production for at least one significant decision; outcomes tracked.",
+      level_4: "Multiple predictive models in production with managed lifecycle; uplift documented.",
+      level_5: "Predictive capability is differentiating; competitors operate with worse foresight.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT", "finance", "operations"] },
+    framework_citation: { framework: "Gartner BI Maturity (Predictive Tier)", reference: "Predictive Analytics", rationale: "Predictive maturity separates the top quartile of analytics-driven companies; the gap is widening with AI." },
+  },
+
+  // ----- Data Engineering -----
+  {
+    id: "m8_q7", module_number: 8, subcategory: "Data Engineering",
+    question: "Is there a managed data pipeline from source systems to analytical destinations — not Excel exports and hoped-for refreshes?",
+    level_indicators: {
+      level_1: "Manual exports from operational systems; pipelines are spreadsheet glue.",
+      level_2: "Some automated pipelines; coverage is uneven; failures are silent.",
+      level_3: "Managed ETL/ELT pipelines for top data domains; failures alerted; SLAs defined.",
+      level_4: "DataOps practice (CI/CD for data, observability, lineage) in place; pipelines treated as production code.",
+      level_5: "Data engineering is a managed discipline; pipelines are reliable infrastructure, not artisanal craft.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DataOps Manifesto + dbt Best Practices", reference: "Pipeline Management", rationale: "Manual data movement is the most common single-point-of-failure in analytics; DataOps eliminates it." },
+  },
+  {
+    id: "m8_q8", module_number: 8, subcategory: "Data Engineering",
+    question: "Is data lineage — where each data element comes from, how it's transformed — visible, not buried in undocumented SQL?",
+    level_indicators: {
+      level_1: "Lineage unknown; debugging takes archaeology.",
+      level_2: "Lineage in heads of senior analysts; tribal.",
+      level_3: "Documented lineage for top data domains; visible in catalog or BI tool.",
+      level_4: "Automated lineage capture; impact analysis on schema changes is fast.",
+      level_5: "Lineage is institutional; analysts and stakeholders reason about provenance routinely.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DAMA-DMBOK Data Lineage + DataOps", reference: "Lineage Tracking", rationale: "Without lineage, every data question becomes detective work; lineage is the cheapest documentation that pays back daily." },
+  },
+  {
+    id: "m8_q9", module_number: 8, subcategory: "Data Engineering",
+    question: "Are analytical environments separated from operational ones — analysts can't accidentally degrade production?",
+    level_indicators: {
+      level_1: "Analysts query production systems directly; performance impact is visible.",
+      level_2: "Some separation; long tail of direct production queries remains.",
+      level_3: "Dedicated analytical environment (data warehouse / lakehouse) populated from production; analysts query separately.",
+      level_4: "Multiple analytical tiers (real-time, near-real-time, batch); workloads isolated.",
+      level_5: "Analytics infrastructure scales independently of operations; one cannot impair the other.",
+    },
+    tags: { function: ["technical"], area: ["IT"] },
+    framework_citation: { framework: "Modern Data Stack Pattern (Fivetran/dbt/Snowflake)", reference: "Operational/Analytical Separation", rationale: "Production-targeting analytics is a self-inflicted reliability problem; separation is the architectural floor." },
+  },
+
+  // ----- Insight to Action -----
+  {
+    id: "m8_q10", module_number: 8, subcategory: "Insight to Action",
+    question: "Are insights produced by analytics actually acted on — with documented decisions and outcomes — or do they decay in dashboards nobody opens?",
+    level_indicators: {
+      level_1: "Dashboards proliferate; decisions don't change; insights decay unread.",
+      level_2: "Some insights drive decisions; most are reference material.",
+      level_3: "Documented insight-to-action loop: insights generate hypotheses, decisions, and tracked outcomes.",
+      level_4: "Insight effectiveness is measured; analyses producing no action are sunset.",
+      level_5: "Analytics is consequential — the company demonstrably moves on what it learns.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Gartner Decision Intelligence", reference: "Insight-to-Action Loop", rationale: "Most analytics fails at conversion to action; explicit loops are what separate decorative analytics from operational analytics." },
+  },
+  {
+    id: "m8_q11", module_number: 8, subcategory: "Insight to Action",
+    question: "Are dashboards curated — old / unused ones retired — or do they pile up and dilute trust?",
+    level_indicators: {
+      level_1: "Dashboards proliferate without retirement; trust in 'the right number' erodes.",
+      level_2: "Some retirement happens reactively; bulk persists.",
+      level_3: "Documented dashboard catalog with usage metrics; quarterly retirement cycle.",
+      level_4: "Dashboard count is bounded; new dashboards displace old ones.",
+      level_5: "Dashboard discipline is institutional; consumers know which dashboards are canonical.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "TDWI BI Best Practices", reference: "Dashboard Lifecycle", rationale: "Dashboard sprawl is the most common failure mode of self-service BI; lifecycle discipline is the cheapest control." },
+  },
+  {
+    id: "m8_q12", module_number: 8, subcategory: "Insight to Action",
+    question: "Is data literacy invested in — training, common vocabulary, examples — so that analytics is consumable beyond the analyst team?",
+    level_indicators: {
+      level_1: "No data literacy investment; non-analysts misread reports.",
+      level_2: "Ad hoc training; coverage is uneven.",
+      level_3: "Documented data literacy program; new hires trained; reference materials maintained.",
+      level_4: "Literacy is measured; managers expected to be data-fluent.",
+      level_5: "Data literacy is cultural; the company speaks data as a native language.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Gartner Data Literacy + Qlik Data Literacy Framework", reference: "Literacy Program", rationale: "Analytics that consumers can't interpret is wasted analytics; literacy is the multiplier on every analytics dollar." },
   },
 
   // ============================================================
-  // MODULE 9: Human Centered Design & Customer Journey
+  // MODULE 9: Customer / Patient Experience
+  // Phase 4 deep — Forrester CX Index + KPMG Connected Enterprise. 12 questions.
   // ============================================================
+
+  // ----- CX Strategy -----
   {
-    id: "m9_q1", module_number: 9, subcategory: "Design Thinking",
-    question: "Is user research conducted before building solutions?",
-    level_indicators: { level_1: "No user research", level_2: "Occasional feedback collection", level_3: "Structured user research program", level_4: "Continuous discovery with design sprints" },
+    id: "m9_q1", module_number: 9, subcategory: "CX Strategy",
+    question: "Is there a documented customer experience strategy — what 'good' looks like, what the company will and won't do for customers — owned at the executive level?",
+    level_indicators: {
+      level_1: "No CX strategy; customer experience is whatever happens.",
+      level_2: "Some CX awareness; not documented or owned.",
+      level_3: "Documented CX strategy with executive owner; reviewed quarterly.",
+      level_4: "CX strategy drives investment decisions; deviations require exception.",
+      level_5: "CX is a competitive identity; the company is known for it externally.",
+    },
+    tags: { function: ["strategic"], area: ["sales", "operations", "cross_functional"] },
+    framework_citation: { framework: "Forrester CX Index", reference: "CX Strategy Discipline", rationale: "Forrester research shows companies with documented, executive-owned CX strategies outperform on revenue growth + retention by ~2x over 3 years." },
   },
   {
-    id: "m9_q2", module_number: 9, subcategory: "Design Thinking",
-    question: "Is the customer journey mapped and optimized?",
-    level_indicators: { level_1: "No journey mapping", level_2: "Informal understanding", level_3: "Documented journey maps with improvement plans", level_4: "Real-time journey analytics with personalization" },
+    id: "m9_q2", module_number: 9, subcategory: "CX Strategy",
+    question: "Is the customer journey mapped — from awareness to retention — with friction points identified and remediation tracked?",
+    level_indicators: {
+      level_1: "No journey mapping; assumptions stand in for understanding.",
+      level_2: "Informal understanding; not documented or used in planning.",
+      level_3: "Documented journey maps for primary segments; friction points named with owners.",
+      level_4: "Journey analytics live; friction reduction tracked over time.",
+      level_5: "Journey is continuously optimized; the company anticipates customer pain before customers articulate it.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["sales", "operations"] },
+    framework_citation: { framework: "Forrester CX Index + KPMG Connected Enterprise", reference: "Journey Mapping Discipline", rationale: "Journey maps surface the hidden friction that NPS surveys miss; KPMG Connected Enterprise treats journey discipline as a 4-of-8 connected capability." },
   },
   {
-    id: "m9_q3", module_number: 9, subcategory: "Customer Experience",
-    question: "Is customer satisfaction measured systematically?",
-    level_indicators: { level_1: "No measurement", level_2: "Occasional surveys", level_3: "NPS/CSAT tracking with action plans", level_4: "Omnichannel CX measurement with AI-driven insights" },
+    id: "m9_q3", module_number: 9, subcategory: "CX Strategy",
+    question: "Are customer-facing decisions (pricing, support, returns, communications) made with documented customer impact analysis — not just internal cost-saving?",
+    level_indicators: {
+      level_1: "Customer-impact analysis absent; customer-facing decisions made on internal-cost lens.",
+      level_2: "Some impact considered informally; rarely documented.",
+      level_3: "Documented customer impact analysis required for major customer-facing changes.",
+      level_4: "Customer panel / advisory consulted; outcomes tracked post-decision.",
+      level_5: "Customer voice is institutional; major decisions are co-designed with customer representatives.",
+    },
+    tags: { function: ["strategic"], area: ["sales", "operations"] },
+    framework_citation: { framework: "Forrester CX Operating Model", reference: "Customer-impact Discipline", rationale: "Decisions made without customer-impact analysis erode CX silently; the discipline is the cheapest defense." },
+  },
+
+  // ----- Voice of Customer -----
+  {
+    id: "m9_q4", module_number: 9, subcategory: "Voice of Customer",
+    question: "Is customer feedback collected systematically — surveys (NPS / CSAT / CES), interviews, complaints, support tickets — and triaged?",
+    level_indicators: {
+      level_1: "Feedback is anecdotal; only the loudest customers are heard.",
+      level_2: "Some surveys run; rarely acted upon.",
+      level_3: "Documented VoC program: NPS / CSAT regular cadence, support ticket trends, complaint triage; reviewed monthly.",
+      level_4: "VoC drives product / process changes; closure rate measured.",
+      level_5: "VoC is institutional muscle; the company hears its customers and adjusts at the speed of feedback.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["sales", "operations"] },
+    framework_citation: { framework: "Forrester VoC Practice", reference: "Multi-source VoC", rationale: "Single-source VoC is biased VoC; multi-source aggregation is the only path to reliable customer understanding." },
+  },
+  {
+    id: "m9_q5", module_number: 9, subcategory: "Voice of Customer",
+    question: "Are customer-experience metrics (NPS, CSAT, retention, churn, time-to-resolve) tied to operating decisions — pricing, staffing, product investment?",
+    level_indicators: {
+      level_1: "CX metrics tracked but not operationally consequential.",
+      level_2: "Some operational tie-ins; mostly retrospective.",
+      level_3: "Documented CX-to-decision links: NPS dip triggers root-cause investigation; churn signals trigger retention programs.",
+      level_4: "CX metrics are leading indicators in the executive scorecard.",
+      level_5: "CX metrics are board-tracked; the company manages CX with the same rigor as financial metrics.",
+    },
+    tags: { function: ["strategic", "operational", "financial"], area: ["sales", "finance"] },
+    framework_citation: { framework: "Forrester CX Index", reference: "CX-to-Outcome Linkage", rationale: "CX measured but not acted on is performative; the link to operational decisions is what makes CX investment pay back." },
+  },
+  {
+    id: "m9_q6", module_number: 9, subcategory: "Voice of Customer",
+    question: "Are customer complaints routed to a single owner, triaged within SLA, and root-caused — not just closed and forgotten?",
+    level_indicators: {
+      level_1: "Complaints handled per ticket; no aggregation; no root cause.",
+      level_2: "Some triage; root cause inconsistent.",
+      level_3: "Documented complaint workflow: single owner, SLA, root-cause classification, remediation.",
+      level_4: "Complaint themes drive product / process changes; recurrence is measured.",
+      level_5: "Complaints are early-warning signals; the company invests in preventing them as a discipline.",
+    },
+    tags: { function: ["operational", "risk"], area: ["sales", "operations"] },
+    framework_citation: { framework: "Lean Six Sigma + Forrester Complaint Management", reference: "Root-cause Discipline", rationale: "Complaints unaddressed at root accumulate as churn; root-cause discipline turns complaints into improvement input." },
+  },
+
+  // ----- Digital Experience -----
+  {
+    id: "m9_q7", module_number: 9, subcategory: "Digital Experience",
+    question: "Can customers complete their most common tasks (purchase, schedule, support, account changes) digitally without calling — or is the phone the fallback?",
+    level_indicators: {
+      level_1: "Most common tasks require human contact; phone is the default.",
+      level_2: "Some self-service; deflection rate is low.",
+      level_3: "Documented self-service catalog covering the top customer tasks; deflection rate measured.",
+      level_4: "Continuous improvement on self-service; deflection rises year-over-year.",
+      level_5: "Digital-first is the default; humans handle exception, not routine.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["sales", "operations", "IT"] },
+    framework_citation: { framework: "Forrester CX Index Digital Pillar", reference: "Self-service Maturity", rationale: "Phone-as-default is a CX cost ceiling; digital self-service is the lever for both CX and economics." },
+  },
+  {
+    id: "m9_q8", module_number: 9, subcategory: "Digital Experience",
+    question: "Is the digital experience (web, app, portal) designed against actual user research — not what the team thinks customers want?",
+    level_indicators: {
+      level_1: "No user research; design driven by internal opinion.",
+      level_2: "Occasional research; not embedded in design cycles.",
+      level_3: "Structured user research program; designs validated with users before shipping.",
+      level_4: "Continuous discovery; user research is part of every product cycle.",
+      level_5: "User research is a competitive advantage; the company knows its customers better than competitors do.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["sales", "marketing"] },
+    framework_citation: { framework: "Nielsen Norman Group + IDEO Design Thinking", reference: "Research-led Design", rationale: "Design without research is opinion-led design; research-led design produces measurably better customer outcomes." },
+  },
+  {
+    id: "m9_q9", module_number: 9, subcategory: "Digital Experience",
+    question: "Is the digital experience accessible (WCAG / Section 508) — covering disabilities, screen readers, keyboard navigation — not just sighted-mouse default?",
+    level_indicators: {
+      level_1: "Accessibility not considered; the digital experience excludes a meaningful percentage of users.",
+      level_2: "Some accessibility awareness; not enforced.",
+      level_3: "Documented accessibility standards (WCAG AA target); audited before major releases.",
+      level_4: "Continuous accessibility validation; CI checks block regressions.",
+      level_5: "Accessibility is a competitive advantage and a legal-risk floor; the company is recognized for it.",
+    },
+    tags: { function: ["operational", "risk"], area: ["sales", "marketing", "IT"] },
+    framework_citation: { framework: "WCAG 2.2 + ADA / Section 508", reference: "Accessibility Standards", rationale: "Inaccessible digital experiences exclude users and create legal liability; WCAG AA is the current floor." },
+  },
+
+  // ----- Personalization & Loyalty -----
+  {
+    id: "m9_q10", module_number: 9, subcategory: "Personalization & Loyalty",
+    question: "Are customer interactions tailored — based on segment, history, preferences — or do all customers see the same generic experience?",
+    level_indicators: {
+      level_1: "All customers see the same experience; no segmentation, no personalization.",
+      level_2: "Basic segmentation (e.g. by purchase history); thin personalization.",
+      level_3: "Documented personalization strategy with measured uplift; key segments served differently.",
+      level_4: "Real-time personalization across digital touchpoints; orchestration via customer data platform.",
+      level_5: "Personalization is a competitive moat; customers feel known.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["sales", "marketing"] },
+    framework_citation: { framework: "Forrester Personalization Maturity + KPMG Connected Enterprise", reference: "Personalized Experiences", rationale: "Generic experiences in a personalization-mature market are competitive disadvantage; the gap widens with AI." },
+  },
+  {
+    id: "m9_q11", module_number: 9, subcategory: "Personalization & Loyalty",
+    question: "Is retention investment (loyalty, account management, proactive outreach) measured against churn risk — or is retention an afterthought?",
+    level_indicators: {
+      level_1: "No retention strategy; churn is what it is.",
+      level_2: "Some retention activity; not tied to risk segmentation.",
+      level_3: "Documented retention program with risk-segmented outreach; measured against churn rate.",
+      level_4: "Predictive churn modeling drives retention; intervention ROI is measured.",
+      level_5: "Retention is a competitive capability; LTV / CAC ratio leads category.",
+    },
+    tags: { function: ["strategic", "operational", "financial"], area: ["sales", "finance"] },
+    framework_citation: { framework: "Forrester Customer Loyalty + Reichheld Loyalty Effect", reference: "Predictive Retention", rationale: "Retention investments without risk segmentation are scattershot; segmentation is the lever for ROI." },
+  },
+  {
+    id: "m9_q12", module_number: 9, subcategory: "Personalization & Loyalty",
+    question: "Are customer-data systems (CRM, support, marketing automation, e-commerce) integrated — single customer view — or is each system a silo?",
+    level_indicators: {
+      level_1: "No integration; the same customer is fragmented across multiple systems.",
+      level_2: "Some integration; identity matching is unreliable.",
+      level_3: "Single customer view via CDP / integrated CRM; key systems share identity.",
+      level_4: "Real-time customer data flows across all touchpoints; consistency is enforced.",
+      level_5: "Customer data is treated as a product; consumers (sales, support, marketing) build on a reliable single source.",
+    },
+    tags: { function: ["technical", "operational"], area: ["sales", "marketing", "IT"] },
+    framework_citation: { framework: "KPMG Connected Enterprise", reference: "Single Customer View", rationale: "Fragmented customer data prevents personalization, retention modeling, and unified support; integration is the lever." },
   },
 
   // ============================================================
-  // MODULE 10: Leadership, Business Strategy & Communications
+  // MODULE 10: Executive Communication & Influence
+  // Phase 4 deep — HBR Leadership + IT-CMF Executive Communication. 12 questions.
   // ============================================================
+
+  // ----- Executive Voice -----
   {
-    id: "m10_q1", module_number: 10, subcategory: "Executive Leadership",
-    question: "Does the leadership team have a shared vision for technology's role?",
-    level_indicators: { level_1: "No shared vision", level_2: "Fragmented views", level_3: "Aligned vision with some gaps", level_4: "Unified vision driving organizational culture" },
+    id: "m10_q1", module_number: 10, subcategory: "Executive Voice",
+    question: "Does the technology leader have a regular forum (briefing, council, board readout) to communicate technology direction and threats to the executive team?",
+    level_indicators: {
+      level_1: "No regular tech forum; tech communication is reactive.",
+      level_2: "Forum exists but is irregular and often skipped.",
+      level_3: "Standing monthly tech briefing on the executive calendar; well-attended.",
+      level_4: "Tech briefings drive cross-functional decisions; execs walk in with questions and walk out with assignments.",
+      level_5: "Tech communication is institutional; the executive team is conversant with technology direction without needing translation.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "IT-CMF Executive Communication", reference: "Standing Forums", rationale: "Without a regular forum, tech leadership communication is ad hoc and forgettable; standing forums turn presence into influence." },
   },
   {
-    id: "m10_q2", module_number: 10, subcategory: "Executive Leadership",
-    question: "Is there effective stakeholder management for technology initiatives?",
-    level_indicators: { level_1: "No stakeholder management", level_2: "Reactive communication", level_3: "Proactive stakeholder engagement plan", level_4: "Embedded change management with champions" },
+    id: "m10_q2", module_number: 10, subcategory: "Executive Voice",
+    question: "Are tech updates translated to business language — outcomes, dollars, risks — not stack diagrams and jargon?",
+    level_indicators: {
+      level_1: "Tech communication is jargon-heavy; non-tech executives tune out.",
+      level_2: "Some translation; inconsistent across communicators.",
+      level_3: "Standard translation discipline: every tech communication leads with business outcome, framework citation, and decision asked for.",
+      level_4: "Translation is institutional; technology leaders practice it as a craft.",
+      level_5: "Tech communication is studied across the company; the language is shared across functions.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "HBR Leadership + IT-CMF", reference: "Business-Translation Discipline", rationale: "Tech leaders unable to translate to business outcomes get treated as cost centers; translation is the lever for influence." },
   },
   {
-    id: "m10_q3", module_number: 10, subcategory: "Communications",
-    question: "Are technology successes and value communicated to the organization?",
-    level_indicators: { level_1: "No communication", level_2: "Occasional updates", level_3: "Regular value communication program", level_4: "Technology brand within the organization" },
+    id: "m10_q3", module_number: 10, subcategory: "Executive Voice",
+    question: "Is the technology leader prepared for board interaction — not just functional reviews, but actual board agendas, materials, executive Q&A?",
+    level_indicators: {
+      level_1: "Tech leader rarely sees the board; board agenda decided without tech input.",
+      level_2: "Periodic board appearances; preparation is light.",
+      level_3: "Documented board prep discipline: materials reviewed, questions anticipated, framing rehearsed.",
+      level_4: "Tech leader is a comfortable, valued board contributor; board defers to them on tech-strategic questions.",
+      level_5: "Tech leader is a fiduciary contributor; their position shapes board decisions on M&A, budget, and risk.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "HBR CIO Effectiveness Research", reference: "Board Preparation", rationale: "Board credibility is the difference between tech-leader-as-officer and tech-leader-as-staff; preparation is the lever." },
+  },
+
+  // ----- Stakeholder Influence -----
+  {
+    id: "m10_q4", module_number: 10, subcategory: "Stakeholder Influence",
+    question: "Does the executive team share a vision for technology's role — not just nominal alignment, but the same elevator pitch?",
+    level_indicators: {
+      level_1: "Each executive describes tech's role differently; no shared narrative.",
+      level_2: "Some alignment exists at the top; muddled below.",
+      level_3: "Documented shared vision; every C-level can give the 5-minute version consistently.",
+      level_4: "Vision travels downward; managers can describe it; new joiners absorb it.",
+      level_5: "Vision is durable culture; new acquisitions and partnerships inherit it.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "HBR Leadership + Roger Martin Integrative Thinking", reference: "Shared Vision Discipline", rationale: "Vision drift among executives produces misaligned investment; shared narrative is the cheapest alignment mechanism." },
+  },
+  {
+    id: "m10_q5", module_number: 10, subcategory: "Stakeholder Influence",
+    question: "Is stakeholder management proactive — relationships built before they're needed — or reactive (hello when there's a crisis)?",
+    level_indicators: {
+      level_1: "Reactive only; tech leader appears only when something breaks.",
+      level_2: "Some proactive engagement; coverage is uneven.",
+      level_3: "Documented stakeholder map with engagement cadence per stakeholder type.",
+      level_4: "Stakeholder relationships are warm and trust-tested; tech leader has earned the benefit of the doubt.",
+      level_5: "Stakeholder trust is a competitive asset; transformations move faster because relationships are pre-built.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "IT-CMF Stakeholder Management", reference: "Proactive Engagement", rationale: "Stakeholder relationships built only in crisis are stakeholder relationships at their weakest; proactive engagement is the cheapest insurance." },
+  },
+  {
+    id: "m10_q6", module_number: 10, subcategory: "Stakeholder Influence",
+    question: "When tech leadership pushes back on a request — feasibility, cost, risk — does the rest of the executive team respect the pushback as informed counsel?",
+    level_indicators: {
+      level_1: "Pushback is dismissed; tech is a 'no' department to be worked around.",
+      level_2: "Pushback is heard but not weighed; political capital required to win.",
+      level_3: "Pushback is treated as informed counsel; debate happens on merit.",
+      level_4: "Pushback often shapes decisions; the executive team seeks tech's view actively.",
+      level_5: "Tech-leader counsel is fiduciary; refusing to take it would feel like ignoring the CFO on a financial decision.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "HBR Persuasion Research + IT-CMF", reference: "Counsel Credibility", rationale: "Tech leaders whose pushback is dismissed have failed at influence; building credibility is the longest-running tech leadership project." },
+  },
+
+  // ----- Internal Communication -----
+  {
+    id: "m10_q7", module_number: 10, subcategory: "Internal Communication",
+    question: "Are technology successes — wins, ROI, customer impact — communicated to the broader organization, not just hidden in IT?",
+    level_indicators: {
+      level_1: "Tech wins invisible; the organization sees IT as overhead.",
+      level_2: "Some communication; uneven coverage.",
+      level_3: "Documented communication program: monthly tech-impact updates, success stories shared internally.",
+      level_4: "Tech contribution is visible across the company; managers reference tech wins in their own narratives.",
+      level_5: "Technology is a brand inside the company; people want to work with the tech team.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "IT-CMF Internal Communications", reference: "Tech Brand", rationale: "Invisible wins don't build investment confidence; visible wins compound into hiring, partnerships, and budget." },
+  },
+  {
+    id: "m10_q8", module_number: 10, subcategory: "Internal Communication",
+    question: "Are technology constraints (capacity, dependencies, technical debt) communicated honestly — not minimized to avoid uncomfortable conversations?",
+    level_indicators: {
+      level_1: "Constraints minimized; commitments made that can't be kept; trust erodes.",
+      level_2: "Constraints sometimes shared; inconsistently.",
+      level_3: "Documented capacity / debt / dependency communication; trade-offs visible to stakeholders.",
+      level_4: "Honesty is institutional; stakeholders trust the math.",
+      level_5: "Constraint transparency is a competitive advantage internally; leaders make better decisions because they have accurate inputs.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Patrick Lencioni Vulnerability-Based Trust + HBR", reference: "Honest Constraint Communication", rationale: "Constraint minimization is short-term political win and long-term trust loss; transparency builds durable credibility." },
+  },
+  {
+    id: "m10_q9", module_number: 10, subcategory: "Internal Communication",
+    question: "Are major technology decisions communicated to the broader organization — what was decided, why, and what changes — not just announced as fait accompli?",
+    level_indicators: {
+      level_1: "Decisions land as surprises; rationale unknown; resistance follows.",
+      level_2: "Some decisions explained; many not.",
+      level_3: "Documented decision-communication template: decision, rationale, alternatives considered, what changes.",
+      level_4: "Communication precedes major changes; questions answered before objections form.",
+      level_5: "Decision communication is institutional; the organization understands the why before it experiences the what.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Kotter 8-Step + HBR Change Communication", reference: "Decision Transparency", rationale: "Surprised stakeholders resist; informed stakeholders adapt; communication is the cheapest change-management investment." },
+  },
+
+  // ----- Stakeholder Inclusion -----
+  {
+    id: "m10_q10", module_number: 10, subcategory: "Stakeholder Inclusion",
+    question: "Are diverse stakeholders (functional leaders, end users, frontline staff) included in technology decisions — not just IT and a sponsor?",
+    level_indicators: {
+      level_1: "IT decides; users find out at rollout.",
+      level_2: "Some inclusion; mostly token consultation.",
+      level_3: "Documented inclusion patterns: user research, functional steering committees, frontline panels.",
+      level_4: "Inclusion is institutional; decisions feel co-owned across functions.",
+      level_5: "Inclusion is cultural; the company is known for participative tech decisions and benefits from the resulting adoption.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR + Kotter 8-Step", reference: "Participative Decision-making", rationale: "Decisions made narrowly are decisions adopted narrowly; inclusion is the cheapest predictor of successful change." },
+  },
+  {
+    id: "m10_q11", module_number: 10, subcategory: "Stakeholder Inclusion",
+    question: "Do stakeholders feel heard — that their input changed something visible — or that 'consultation' is theater?",
+    level_indicators: {
+      level_1: "Consultation is theater; stakeholders feel that their input doesn't matter.",
+      level_2: "Some stakeholders feel heard; many do not.",
+      level_3: "Documented closure loops: consultation outcomes communicated back; stakeholders see what changed.",
+      level_4: "Trust in consultation is high; stakeholders engage substantively.",
+      level_5: "The company is recognized externally for inclusive decision-making; talent and partners are attracted by it.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR (Awareness + Desire) + Patrick Lencioni Trust Pyramid", reference: "Trust in Process", rationale: "Hollow consultation erodes trust faster than no consultation; closure loops are the cheapest fix." },
+  },
+  {
+    id: "m10_q12", module_number: 10, subcategory: "Stakeholder Inclusion",
+    question: "Is technology leadership measured on stakeholder satisfaction (internal NPS / leadership pulse) — not just on operational metrics?",
+    level_indicators: {
+      level_1: "Tech leadership measured purely on uptime / project delivery; stakeholder satisfaction not measured.",
+      level_2: "Some informal pulse-checking; not part of scorecard.",
+      level_3: "Internal NPS / leadership pulse measured biannually; tech leadership scorecard includes it.",
+      level_4: "Stakeholder satisfaction is a leading indicator on the executive scorecard; trends drive coaching.",
+      level_5: "Tech leadership is recognized for stakeholder partnership as a category strength.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "HBR Leadership + Forrester Internal CX", reference: "Stakeholder Pulse", rationale: "What you measure shapes what you optimize; stakeholder satisfaction measurement makes relationship a tracked discipline." },
   },
 
   // ============================================================
-  // MODULE 11: CIDO Organization Structure & Operations
+  // MODULE 11: IT Team Structure & Operations
+  // Phase 4 deep — ITIL 4 + IT-CMF. 12 questions.
   // ============================================================
+
+  // ----- Organization Design -----
   {
     id: "m11_q1", module_number: 11, subcategory: "Organization Design",
-    question: "Is the IT/Digital team structure clearly defined?",
-    level_indicators: { level_1: "No formal structure", level_2: "Basic org chart", level_3: "Defined roles, responsibilities, and career paths", level_4: "Adaptive team structure aligned to business capabilities" },
+    question: "Is the IT / digital team structure clearly defined — roles, reporting lines, scope of accountability — not just an org chart that no longer matches reality?",
+    level_indicators: {
+      level_1: "No formal structure; ad hoc reporting; accountability ambiguous.",
+      level_2: "Basic org chart; mismatched with actual reporting in practice.",
+      level_3: "Documented roles + responsibilities + career paths; org chart matches operations.",
+      level_4: "Adaptive structure aligned to business capabilities; reorganized purposefully when capability shifts demand.",
+      level_5: "Team topology is a strategic asset; the company evolves structure deliberately to enable strategy.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT"] },
+    framework_citation: { framework: "Team Topologies (Skelton & Pais) + IT-CMF", reference: "Team Topology", rationale: "Team Topologies' research shows team structure shapes architecture; deliberate topology design is the cheapest scaling lever." },
   },
   {
     id: "m11_q2", module_number: 11, subcategory: "Organization Design",
-    question: "Are IT service levels defined and measured?",
-    level_indicators: { level_1: "No SLAs", level_2: "Informal expectations", level_3: "Documented SLAs with monitoring", level_4: "SLOs/SLIs with error budgets and continuous improvement" },
+    question: "Are RACI / decision rights documented for technology work — who's responsible, accountable, consulted, informed — for every meaningful decision?",
+    level_indicators: {
+      level_1: "No RACI; every decision starts with 'who decides this?'",
+      level_2: "RACI exists for some processes; coverage uneven.",
+      level_3: "Documented RACI for major tech processes (incident, change, capacity, vendor); reviewed annually.",
+      level_4: "RACI is enforced at process; decisions move quickly.",
+      level_5: "Decision rights are institutional muscle; new joiners absorb them; the company scales without bottlenecks.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "ITIL 4 + IT-CMF Decision Rights", reference: "RACI Discipline", rationale: "Without documented decision rights, every escalation costs leadership time; RACI is the cheapest path to throughput." },
   },
   {
-    id: "m11_q3", module_number: 11, subcategory: "Operations",
-    question: "Is there a service desk or helpdesk function?",
-    level_indicators: { level_1: "No formal support", level_2: "Ad hoc support", level_3: "Ticketed helpdesk with SLAs", level_4: "Self-service portal with AI-assisted resolution" },
+    id: "m11_q3", module_number: 11, subcategory: "Organization Design",
+    question: "Are team capacities — engineering, ops, product, security — known, planned, and capacity-balanced rather than overcommitted?",
+    level_indicators: {
+      level_1: "Capacity unknown; overcommit is constant; firefighting is normal.",
+      level_2: "Some capacity awareness; planning is approximate.",
+      level_3: "Documented capacity per team; quarterly planning balances demand and capacity.",
+      level_4: "Capacity-vs-demand visible; protected slack reserved; surge capacity sourced when needed.",
+      level_5: "Capacity is institutional; commitments are honored; firefighting is rare and analyzed when it occurs.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 Capacity Management + Lean", reference: "Capacity Discipline", rationale: "Overcommit is the slowest-acting morale and quality killer; capacity discipline prevents it." },
+  },
+
+  // ----- Service Operations -----
+  {
+    id: "m11_q4", module_number: 11, subcategory: "Service Operations",
+    question: "Is there a service desk — defined SLAs, ticket routing, escalation paths — or is IT support 'send Slack messages and hope'?",
+    level_indicators: {
+      level_1: "No formal support; ad hoc Slack messages and emails.",
+      level_2: "Some ticketing; bypass is common.",
+      level_3: "Ticketed service desk with SLAs, routing, escalation; consumers know how to engage.",
+      level_4: "Self-service portal handles common requests; AI-assisted resolution where appropriate.",
+      level_5: "Service experience is a positive — internal teams prefer the IT process to working around it.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "ITIL 4 Service Desk", reference: "Service Desk Discipline", rationale: "Bypass-driven IT support is unmeasurable IT support; service-desk discipline is the precondition for improvement." },
+  },
+  {
+    id: "m11_q5", module_number: 11, subcategory: "Service Operations",
+    question: "Are service levels (uptime, response time, resolution time) defined as numbers — and met as a discipline?",
+    level_indicators: {
+      level_1: "No SLAs; service quality is an opinion.",
+      level_2: "Informal expectations; not measured.",
+      level_3: "Documented SLAs with monitoring; reported monthly; gaps addressed.",
+      level_4: "SLOs / SLIs with error budgets and continuous improvement; investments funded by SLO gaps.",
+      level_5: "Service-level discipline is a competitive asset; consumers can rely on the math.",
+    },
+    tags: { function: ["operational"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 SLM + Google SRE", reference: "SLO Discipline", rationale: "Aspirational service levels don't drive investment; explicit SLOs do." },
+  },
+  {
+    id: "m11_q6", module_number: 11, subcategory: "Service Operations",
+    question: "Is incident management documented — declared incidents, named commanders, post-incident reviews — not improvised per outage?",
+    level_indicators: {
+      level_1: "Incidents handled chaotically; no commander; no post-mortem.",
+      level_2: "Some incident discipline; coverage uneven.",
+      level_3: "Documented incident process: declare, assemble, command, communicate, resolve, post-mortem.",
+      level_4: "Post-mortems blameless and learnings tracked; incident frequency falls year-over-year.",
+      level_5: "Incident response is a competitive asset; the company recovers faster than peers and learns more from each event.",
+    },
+    tags: { function: ["operational", "risk"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 Incident Management + Google SRE", reference: "Incident Discipline", rationale: "Improvised incident response is variable in outcome; disciplined incident response compounds learning." },
+  },
+
+  // ----- Change & Release -----
+  {
+    id: "m11_q7", module_number: 11, subcategory: "Change & Release",
+    question: "Are changes (deployments, infrastructure changes, configuration changes) controlled — reviewed, scheduled, and reversible — not pushed under pressure?",
+    level_indicators: {
+      level_1: "Changes pushed without process; outages from changes are common.",
+      level_2: "Some change discipline; many bypasses.",
+      level_3: "Documented change process: standard / normal / emergency; reviewed and scheduled appropriately.",
+      level_4: "High deploy frequency with low change-fail rate; rollback is routine.",
+      level_5: "Change management enables velocity (DORA elite tier); changes flow as low-friction routine.",
+    },
+    tags: { function: ["operational", "technical", "risk"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 Change Enablement + DORA", reference: "Change Discipline", rationale: "Uncontrolled change is the leading cause of avoidable outages; controlled change enables velocity." },
+  },
+  {
+    id: "m11_q8", module_number: 11, subcategory: "Change & Release",
+    question: "Is release management coordinated — releases planned, dependencies tracked, rollback paths defined — for changes that span multiple systems or teams?",
+    level_indicators: {
+      level_1: "Releases coordinated by yelling; dependencies discovered at impact.",
+      level_2: "Some coordination; gaps remain.",
+      level_3: "Documented release process for cross-team changes; rollback paths required.",
+      level_4: "Release calendar visible across teams; orchestration mature.",
+      level_5: "Release is institutional muscle; the company ships large changes with confidence.",
+    },
+    tags: { function: ["operational", "technical"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 Release Management + DORA", reference: "Release Discipline", rationale: "Cross-team release without coordination is failure-prone; managed release is the lever for safe scale." },
+  },
+  {
+    id: "m11_q9", module_number: 11, subcategory: "Change & Release",
+    question: "Are problem-management routines in place — recurring issues identified, root-caused, and prevented — not just symptoms patched?",
+    level_indicators: {
+      level_1: "Each incident treated in isolation; recurring issues persist.",
+      level_2: "Some root-causing; inconsistent.",
+      level_3: "Documented problem-management process: trend analysis, root cause, preventive action.",
+      level_4: "Recurrence rate of known issues falls; problem backlog actively reduced.",
+      level_5: "The company is known for not making the same mistake twice; institutional learning is a competitive moat.",
+    },
+    tags: { function: ["operational"], area: ["IT"] },
+    framework_citation: { framework: "ITIL 4 Problem Management", reference: "Problem Discipline", rationale: "Problem management is what separates incident response from incident prevention; its absence is the most common cause of operational degradation over time." },
+  },
+
+  // ----- Workforce & Culture -----
+  {
+    id: "m11_q10", module_number: 11, subcategory: "Workforce & Culture",
+    question: "Are IT roles + skills mapped — known gaps, hiring plan, training plan — not 'we'll hire when something breaks'?",
+    level_indicators: {
+      level_1: "No skills map; hiring is reactive; gaps cause outages and burnout.",
+      level_2: "Some skills awareness; hiring plan is informal.",
+      level_3: "Documented skills inventory + gap analysis + hiring + training plan; reviewed annually.",
+      level_4: "Skills development is continuous; bench depth covers core skills.",
+      level_5: "The IT team is a magnet for talent; people want to work there.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT"] },
+    framework_citation: { framework: "IT-CMF Workforce Practice + SFIA Skills Framework", reference: "Skills Inventory", rationale: "Reactive hiring is expensive hiring; documented skills + gap planning is the cheapest workforce continuity investment." },
+  },
+  {
+    id: "m11_q11", module_number: 11, subcategory: "Workforce & Culture",
+    question: "Is on-call / out-of-hours load distributed sustainably — no single person carries the company on weekends — and is it compensated fairly?",
+    level_indicators: {
+      level_1: "On-call falls on a few; burnout is constant; turnover follows.",
+      level_2: "Rotation exists; uneven distribution; compensation is informal.",
+      level_3: "Documented on-call rotation + compensation policy; load measured and balanced.",
+      level_4: "On-call burden is a tracked metric; investments to reduce it are funded.",
+      level_5: "On-call is sustainable; the company can run 24/7 services without consuming its team.",
+    },
+    tags: { function: ["operational", "risk"], area: ["IT"] },
+    framework_citation: { framework: "Google SRE + ITIL 4", reference: "Sustainable On-Call", rationale: "Unsustainable on-call is the most common cause of senior-engineer churn; explicit policy + compensation is the cheapest retention investment." },
+  },
+  {
+    id: "m11_q12", module_number: 11, subcategory: "Workforce & Culture",
+    question: "Is the IT team measured on outcomes — business impact, reliability, customer satisfaction — or on activity (ticket count, hours worked)?",
+    level_indicators: {
+      level_1: "Activity-only metrics; tickets closed, hours logged; outcomes invisible.",
+      level_2: "Some outcome tracking; activity dominates.",
+      level_3: "Documented outcome metrics: SLO attainment, change-fail rate, internal NPS, business KPIs supported.",
+      level_4: "Outcomes are the core scorecard; activity is hygiene.",
+      level_5: "IT-team contribution is measurable in business terms; the team is funded against demonstrated value.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA + IT-CMF Outcome Measurement", reference: "Outcome-led IT Performance", rationale: "Activity metrics measure busyness; outcome metrics measure value; the latter is what the rest of the business funds." },
   },
 
   // ============================================================
@@ -878,41 +2497,341 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   },
 
   // ============================================================
-  // MODULE 13: Portfolio & Vendor Management
+  // MODULE 13: Portfolio, Vendors & SaaS Spend
+  // Phase 4 deep — Gartner ITPPM + SaaS Optimization. 12 questions.
   // ============================================================
+
+  // ----- Portfolio Discipline -----
   {
-    id: "m13_q1", module_number: 13, subcategory: "Portfolio Management",
-    question: "Is there a formal IT project portfolio management process?",
-    level_indicators: { level_1: "No portfolio view", level_2: "Project list exists", level_3: "Prioritized portfolio with governance", level_4: "Dynamic portfolio optimization with real-time health metrics" },
+    id: "m13_q1", module_number: 13, subcategory: "Portfolio Discipline",
+    question: "Is there a portfolio view of all in-flight technology projects — what's running, who owns each, what stage — visible to leadership?",
+    level_indicators: {
+      level_1: "No portfolio view; projects discovered when they fail or invoice arrives.",
+      level_2: "Spreadsheet list of major projects; minor ones invisible.",
+      level_3: "Documented portfolio with owner, stage, status, dependency map; reviewed monthly.",
+      level_4: "Dynamic portfolio with real-time health metrics; anomalies detected early.",
+      level_5: "Portfolio is a managed asset; the company knows what it's investing in and why at any moment.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Gartner ITPPM", reference: "Portfolio Visibility", rationale: "Without a portfolio view, every project competes invisibly for capacity; visibility is the first lever of throughput." },
   },
   {
-    id: "m13_q2", module_number: 13, subcategory: "Vendor Management",
-    question: "Are vendor relationships actively managed?",
-    level_indicators: { level_1: "Ad hoc vendor dealings", level_2: "Contract tracking", level_3: "Vendor scorecards with regular reviews", level_4: "Strategic vendor partnerships with innovation collaboration" },
+    id: "m13_q2", module_number: 13, subcategory: "Portfolio Discipline",
+    question: "Are projects prioritized against each other on consistent criteria — value, effort, strategic fit — not by whoever lobbies hardest?",
+    level_indicators: {
+      level_1: "Loudest voice wins prioritization; criteria are ad hoc.",
+      level_2: "Some criteria applied; inconsistently.",
+      level_3: "Documented prioritization framework (value × effort, strategic alignment scoring); applied to every funding decision.",
+      level_4: "Portfolio rebalanced quarterly based on outcomes; underperformers are sunset.",
+      level_5: "Prioritization is institutional discipline; politics rarely overrides the framework.",
+    },
+    tags: { function: ["strategic"], area: ["IT", "cross_functional", "finance"] },
+    framework_citation: { framework: "Gartner ITPPM", reference: "Prioritization Framework", rationale: "Without consistent criteria, prioritization is politics; criteria-based prioritization is the cheapest path to portfolio coherence." },
   },
   {
-    id: "m13_q3", module_number: 13, subcategory: "Vendor Management",
-    question: "Is there a software/SaaS inventory?",
-    level_indicators: { level_1: "No inventory", level_2: "Partial tracking", level_3: "Complete inventory with license management", level_4: "Automated SaaS management with usage optimization" },
+    id: "m13_q3", module_number: 13, subcategory: "Portfolio Discipline",
+    question: "Are projects regularly reviewed against business case — kept, adjusted, or killed — not just allowed to run to completion regardless of changing context?",
+    level_indicators: {
+      level_1: "Projects approved at start, completed regardless of changing relevance.",
+      level_2: "Some review at gates; rarely results in cancellation.",
+      level_3: "Documented stage-gate review: every project must defend its case at quarterly checkpoints; cancellation is a normal outcome.",
+      level_4: "Portfolio attrition (kill rate) is a tracked metric; dead projects are killed quickly.",
+      level_5: "Project killing is a respected discipline; the company stops sunk-cost spending and reallocates.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Gartner ITPPM", reference: "Stage-Gate Discipline", rationale: "Stage-gates prevent sunk-cost spending; without them, the portfolio gradually fills with projects nobody believes in." },
+  },
+
+  // ----- Vendor Lifecycle -----
+  {
+    id: "m13_q4", module_number: 13, subcategory: "Vendor Lifecycle",
+    question: "Do you maintain a vendor inventory — every IT / SaaS / contractor relationship, with cost, owner, renewal date, and contract terms?",
+    level_indicators: {
+      level_1: "No vendor inventory; renewals surprise the company; shadow IT proliferates.",
+      level_2: "Major vendors tracked; long tail invisible.",
+      level_3: "Maintained inventory of all IT vendors with cost, owner, renewal date, contract terms, business function; reviewed quarterly.",
+      level_4: "Renewal calendar tracked 90 days ahead; auto-renewals captured before they fire.",
+      level_5: "Vendor inventory is the operational backbone of vendor management; new vendors are catalogued at signing.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: { framework: "Gartner Vendor Management + TBM Council", reference: "Vendor Inventory", rationale: "Without an inventory, vendor management is a series of surprises; inventory is the precondition for every other discipline." },
+  },
+  {
+    id: "m13_q5", module_number: 13, subcategory: "Vendor Lifecycle",
+    question: "Are vendor performance + value reviewed regularly — scorecards, reference checks, alternative comparisons — not just at renewal?",
+    level_indicators: {
+      level_1: "Vendor performance unreviewed; renewals signed because they were last year's signature.",
+      level_2: "Some review at renewal; thin and reactive.",
+      level_3: "Documented scorecard per vendor (delivery, quality, value, alignment); reviewed at least annually.",
+      level_4: "Performance feedback is shared with vendors; underperformers are coached or replaced.",
+      level_5: "Strategic vendor partnerships have innovation roadmaps; tactical vendors are interchangeable and managed competitively.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: { framework: "Gartner Vendor Management", reference: "Vendor Scorecard", rationale: "Vendors optimize for their revenue, not your outcomes, unless you hold them accountable; scorecards are the lever." },
+  },
+  {
+    id: "m13_q6", module_number: 13, subcategory: "Vendor Lifecycle",
+    question: "Are vendor contracts renegotiated or competed at renewal — not auto-renewed at the vendor's preferred uplift?",
+    level_indicators: {
+      level_1: "Auto-renewal is the default; uplifts pass without challenge.",
+      level_2: "Some negotiation on big contracts; long tail auto-renews.",
+      level_3: "Documented renewal-prep process: usage analysis, market benchmarking, alternatives evaluated, negotiation strategy.",
+      level_4: "Renewals reliably negotiate price, terms, or service improvements.",
+      level_5: "Procurement / vendor-management discipline is institutional; the company captures vendor savings as a habit.",
+    },
+    tags: { function: ["financial"], area: ["IT", "finance"] },
+    framework_citation: { framework: "Gartner Procurement Discipline + TBM Council", reference: "Renewal Negotiation", rationale: "Auto-renewals cost 15-20% more than negotiated renewals; renewal discipline is the highest-ROI vendor work." },
+  },
+
+  // ----- SaaS Optimization -----
+  {
+    id: "m13_q7", module_number: 13, subcategory: "SaaS Optimization",
+    question: "Do you maintain a SaaS subscription inventory with active-user counts and usage data — not just a list of names?",
+    level_indicators: {
+      level_1: "No SaaS inventory; subscriptions discovered at renewal invoice.",
+      level_2: "Spreadsheet list; usage data unknown.",
+      level_3: "Maintained inventory with cost, owner, renewal, contract terms, seat / usage data; reviewed quarterly.",
+      level_4: "Usage data drives renew / cancel / right-size decisions; new SaaS purchases gated through procurement.",
+      level_5: "SaaS portfolio actively pruned; redundant / low-usage tools consolidated quarterly.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: { framework: "TBM Council + SaaS Optimization Practice", reference: "SaaS Inventory + Usage", rationale: "SaaS sprawl is among the largest hidden costs in modern tech budgets; inventory + usage data is the precondition for control." },
+  },
+  {
+    id: "m13_q8", module_number: 13, subcategory: "SaaS Optimization",
+    question: "Are unused / underused licenses reclaimed and reassigned regularly — not left to expire as silent waste?",
+    level_indicators: {
+      level_1: "Licenses bought and forgotten; idle seats accumulate.",
+      level_2: "Periodic ad hoc reclaim; coverage uneven.",
+      level_3: "Quarterly license-utilization review; idle seats reclaimed before next true-up.",
+      level_4: "Automated license management; harvest-and-reassign workflow continuous.",
+      level_5: "License waste rate is below industry benchmark; license discipline is institutional.",
+    },
+    tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
+    framework_citation: { framework: "TBM Council", reference: "License Optimization", rationale: "License waste runs 20-30% across major platforms; reclaim is the cheapest tech savings available." },
+  },
+  {
+    id: "m13_q9", module_number: 13, subcategory: "SaaS Optimization",
+    question: "Are vendors consolidated where overlap exists — multiple monitoring tools, multiple project-management tools, multiple chat platforms?",
+    level_indicators: {
+      level_1: "Vendor overlap is rampant; multiple tools doing the same job.",
+      level_2: "Overlap acknowledged; not addressed.",
+      level_3: "Vendor consolidation is a managed program; redundant tools are sunset on schedule.",
+      level_4: "Consolidation roadmap drives renewal cycles; integration cost reduction tracked.",
+      level_5: "Vendor portfolio is intentionally shaped — strategic concentration where it pays, deliberate diversification where lock-in risk demands.",
+    },
+    tags: { function: ["financial", "operational", "strategic"], area: ["IT", "finance"] },
+    framework_citation: { framework: "TBM Council Vendor Consolidation", reference: "Consolidation Discipline", rationale: "Consolidation captures both direct savings (volume discounts) and indirect savings (lower integration cost, fewer renewals to manage)." },
+  },
+
+  // ----- Spend Discipline -----
+  {
+    id: "m13_q10", module_number: 13, subcategory: "Spend Discipline",
+    question: "Do you benchmark IT spend (per employee, per revenue, per category) against industry peers at least annually?",
+    level_indicators: {
+      level_1: "No benchmarking; budget is whatever last year's was.",
+      level_2: "Internal year-over-year comparison; external benchmarking absent.",
+      level_3: "Annual benchmarking against industry peers (Gartner IT Key Metrics or equivalent).",
+      level_4: "Quarterly benchmarking; outliers trigger investigation.",
+      level_5: "Benchmarking is integrated into investment governance; the company knows where it intends to lead vs. follow.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: { framework: "Gartner IT Key Metrics + TBM Council", reference: "Benchmarking Discipline", rationale: "Without external benchmarks, internal arguments about IT spend have no anchor; benchmarking gives boards a reference point." },
+  },
+  {
+    id: "m13_q11", module_number: 13, subcategory: "Spend Discipline",
+    question: "Are shadow-IT purchases (cards, expensed SaaS, departmental contracts) discovered, catalogued, and folded into the central inventory?",
+    level_indicators: {
+      level_1: "Shadow IT invisible; surfaces only at audit or breach.",
+      level_2: "Some shadow IT discovered reactively.",
+      level_3: "Documented shadow-IT discovery process: expense audits, SSO logs, network traffic; catalogued quarterly.",
+      level_4: "Shadow IT is reduced through governance + better central offerings; new shadow purchases rare.",
+      level_5: "The company has a single, accurate view of all IT spend; shadow IT is structurally minimized.",
+    },
+    tags: { function: ["financial", "operational", "risk"], area: ["IT", "finance"] },
+    framework_citation: { framework: "Gartner Shadow IT Management + TBM Council", reference: "Shadow-IT Discovery", rationale: "Shadow IT is the largest unmeasured tech spend; discovery is the precondition for management." },
+  },
+  {
+    id: "m13_q12", module_number: 13, subcategory: "Spend Discipline",
+    question: "Is spend allocated to value (Run / Grow / Transform) and reviewed against a target mix — not just spent against last year's distribution?",
+    level_indicators: {
+      level_1: "No Run/Grow/Transform allocation; spend is per-account historical.",
+      level_2: "Informal estimate exists; not reported or reviewed.",
+      level_3: "Tech spend formally allocated to Run / Grow / Transform quarterly; reviewed against target mix (e.g. 60/25/15).",
+      level_4: "Mix shifts are decisions, not accidents; investments rebalanced toward growth and transformation.",
+      level_5: "Run/Grow/Transform allocation is the lens for every funding conversation; the business actively reshapes the portfolio.",
+    },
+    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
+    framework_citation: { framework: "TBM Council Run/Grow/Transform", reference: "Spend Allocation Lens", rationale: "Run/Grow/Transform is the most cited boardroom metric in tech finance; without it, investment decisions stay tactical." },
   },
 
   // ============================================================
-  // MODULE 14: Agile, DevOps & Innovation Management
+  // MODULE 14: Delivery, DevOps & Innovation
+  // Phase 4 deep — DORA Metrics + SAFe / Spotify Health Check. 12 questions.
   // ============================================================
+
+  // ----- DORA Metrics -----
   {
-    id: "m14_q1", module_number: 14, subcategory: "Agile Practices",
-    question: "Are agile methodologies used for project delivery?",
-    level_indicators: { level_1: "Waterfall only", level_2: "Agile experimentation", level_3: "Established agile practices with trained teams", level_4: "Scaled agile with business agility" },
+    id: "m14_q1", module_number: 14, subcategory: "Delivery Velocity",
+    question: "What is your deployment frequency — and how do you compare to DORA elite (multiple per day) vs low (less than monthly)?",
+    level_indicators: {
+      level_1: "Deploy less than monthly; DORA Low; releases are events.",
+      level_2: "Deploy weekly to monthly; DORA Medium-Low.",
+      level_3: "Deploy weekly or several times per week; DORA Medium-High.",
+      level_4: "Deploy daily; DORA High.",
+      level_5: "Deploy on demand, multiple times per day; DORA Elite.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA / Accelerate State of DevOps", reference: "Deployment Frequency", rationale: "DORA's research consistently shows deployment frequency is the strongest correlate of organizational performance — speed correlates with quality." },
   },
   {
-    id: "m14_q2", module_number: 14, subcategory: "DevOps",
-    question: "Is there a CI/CD pipeline for software delivery?",
-    level_indicators: { level_1: "Manual deployments", level_2: "Some automation", level_3: "CI/CD with automated testing", level_4: "Full DevSecOps with continuous deployment" },
+    id: "m14_q2", module_number: 14, subcategory: "Delivery Velocity",
+    question: "What is your lead time for changes — from commit to production — and how does it compare to DORA elite (less than one hour)?",
+    level_indicators: {
+      level_1: "Lead time > 6 months; DORA Low.",
+      level_2: "Lead time 1-6 months; DORA Medium.",
+      level_3: "Lead time 1 day to 1 week; DORA Medium-High.",
+      level_4: "Lead time hours to 1 day; DORA High.",
+      level_5: "Lead time < 1 hour; DORA Elite.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA / Accelerate", reference: "Lead Time", rationale: "Lead time measures the friction of the change pipeline; reducing it forces every quality and reliability investment." },
   },
   {
-    id: "m14_q3", module_number: 14, subcategory: "Innovation",
-    question: "Is there a process for evaluating and adopting new technologies?",
-    level_indicators: { level_1: "No process", level_2: "Ad hoc evaluation", level_3: "Technology radar with evaluation framework", level_4: "Innovation lab with structured experimentation" },
+    id: "m14_q3", module_number: 14, subcategory: "Delivery Velocity",
+    question: "What is your change-fail rate — what percent of deploys cause a production incident, hotfix, or rollback?",
+    level_indicators: {
+      level_1: "Change-fail rate > 60%; deploys are scary; bypass is common.",
+      level_2: "Change-fail rate 30-60%; deploys produce regular incidents.",
+      level_3: "Change-fail rate 15-30%; DORA Medium.",
+      level_4: "Change-fail rate 0-15%; DORA High to Elite.",
+      level_5: "Change-fail rate consistently below 10%; deploys are routine and confidence is earned.",
+    },
+    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
+    framework_citation: { framework: "DORA / Accelerate", reference: "Change-Fail Rate", rationale: "Change-fail rate measures pipeline + testing + culture quality; it is the leading indicator of operational risk in delivery." },
+  },
+  {
+    id: "m14_q4", module_number: 14, subcategory: "Delivery Velocity",
+    question: "What is your mean time to recovery (MTTR) when a production incident hits — minutes, hours, or days?",
+    level_indicators: {
+      level_1: "MTTR > 1 week; DORA Low; incidents drag.",
+      level_2: "MTTR 1 day to 1 week; DORA Medium-Low.",
+      level_3: "MTTR < 1 day; DORA Medium.",
+      level_4: "MTTR < 1 hour; DORA High.",
+      level_5: "MTTR < 30 min consistently; DORA Elite — recovery is muscle memory.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA / Accelerate + Google SRE", reference: "MTTR Discipline", rationale: "MTTR is the floor on customer trust during incidents; investments in observability, runbooks, and on-call quality compound here." },
+  },
+
+  // ----- DevOps Practice -----
+  {
+    id: "m14_q5", module_number: 14, subcategory: "DevOps Practice",
+    question: "Is testing automated — unit, integration, end-to-end — and run on every commit, not just before release?",
+    level_indicators: {
+      level_1: "Manual testing dominates; automated coverage minimal.",
+      level_2: "Some automated tests; coverage gaps exposed regularly.",
+      level_3: "Comprehensive automated test suite running on every commit; coverage measured.",
+      level_4: "Test pyramid balanced (unit-heavy, fewer integration, focused E2E); flaky tests rare and treated as defects.",
+      level_5: "Tests are a respected engineering asset; new code without tests is unusual; refactoring is safe.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA + Google Testing Pyramid", reference: "Test Automation Practice", rationale: "Manual testing is rate-limited testing; automated testing is the precondition for high-frequency deploys." },
+  },
+  {
+    id: "m14_q6", module_number: 14, subcategory: "DevOps Practice",
+    question: "Are deployments automated end-to-end — including config, infrastructure, and monitoring — not partial pipelines that need manual steps?",
+    level_indicators: {
+      level_1: "Deploys involve manual steps; production drift between code and infrastructure.",
+      level_2: "Some automation; manual interventions remain.",
+      level_3: "Fully automated deploys for major services; rollback is a one-button operation.",
+      level_4: "Infrastructure-as-code covers everything; deploys are reproducible.",
+      level_5: "Deploy automation is institutional; unautomated deploys are exceptions, not norm.",
+    },
+    tags: { function: ["technical", "operational"], area: ["IT"] },
+    framework_citation: { framework: "DORA + Continuous Delivery (Humble & Farley)", reference: "Deployment Automation", rationale: "Manual deploys are the floor of operational risk; automation is the enabler for everything else." },
+  },
+  {
+    id: "m14_q7", module_number: 14, subcategory: "DevOps Practice",
+    question: "Is security testing part of the pipeline (DevSecOps) — SAST, dependency scanning, secrets detection — not bolted on at audit?",
+    level_indicators: {
+      level_1: "No automated security testing; vulnerabilities surface at audit or incident.",
+      level_2: "Some security scans; ignored when noisy.",
+      level_3: "DevSecOps in pipeline: SAST, dependency scanning, secrets detection; findings actively managed.",
+      level_4: "Security findings have SLAs by severity; backlog actively reduced.",
+      level_5: "Security is shifted left; engineers consider security in design without prompting.",
+    },
+    tags: { function: ["technical", "risk"], area: ["IT"] },
+    framework_citation: { framework: "OWASP DevSecOps + DORA", reference: "Shift-Left Security", rationale: "Security found late costs ~50x more than security found at design; shift-left is the cheapest security investment available." },
+  },
+
+  // ----- Agile + Innovation -----
+  {
+    id: "m14_q8", module_number: 14, subcategory: "Agile Practice",
+    question: "Do delivery teams have working agile / scrum / kanban practices — sprints / cadences, retros that produce changes, working backlogs — or is it agile theater?",
+    level_indicators: {
+      level_1: "Waterfall delivery; long-cycle commitments; late surprises.",
+      level_2: "Some agile rituals; theater dominates; outcomes don't change.",
+      level_3: "Established agile teams: working cadence, retros producing changes, refined backlogs, velocity tracking.",
+      level_4: "Scaled agile across teams (LeSS / SAFe / Spotify-flavored); coordination is mature.",
+      level_5: "Agility is cultural; the company adapts plans without ceremony.",
+    },
+    tags: { function: ["operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Scrum Guide + SAFe + Spotify Health Check", reference: "Agile Practice Maturity", rationale: "Agile theater is more expensive than waterfall because it adds rituals without delivering adaptability; healthy agile is rare and valuable." },
+  },
+  {
+    id: "m14_q9", module_number: 14, subcategory: "Agile Practice",
+    question: "Are teams empowered to make implementation decisions — with strategic guardrails — or do they wait for permission on every choice?",
+    level_indicators: {
+      level_1: "Every decision escalated; teams operate as ticket-takers.",
+      level_2: "Some autonomy on small decisions; major decisions bottlenecked.",
+      level_3: "Documented decision rights for delivery teams; escalation paths defined for the rare cases.",
+      level_4: "Teams own outcomes; leadership sets direction and removes blockers.",
+      level_5: "Empowerment is institutional; the company moves faster because permission is rarely the bottleneck.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Team Topologies + Spotify Squad Model", reference: "Team Empowerment", rationale: "Bottlenecked teams are slow teams; empowerment is the cheapest velocity investment with the highest cultural return." },
+  },
+
+  // ----- Innovation -----
+  {
+    id: "m14_q10", module_number: 14, subcategory: "Innovation",
+    question: "Is there a documented process for evaluating and adopting new technologies — radar, experiments, graduation — not just whatever a senior engineer wants?",
+    level_indicators: {
+      level_1: "No process; new tech adopted on individual preference.",
+      level_2: "Some informal evaluation; gates are weak.",
+      level_3: "Documented technology radar (assess / trial / adopt / hold); experiments produce decisions.",
+      level_4: "Innovation pipeline funded; experiment-to-adoption rate is healthy.",
+      level_5: "Innovation is institutional muscle; the company is recognized as an informed early adopter.",
+    },
+    tags: { function: ["strategic", "technical"], area: ["IT"] },
+    framework_citation: { framework: "Thoughtworks Tech Radar + Gartner Hype Cycle", reference: "Innovation Discipline", rationale: "Without an innovation process, new tech adoption swings between FOMO and resistance; deliberate evaluation produces durable choices." },
+  },
+  {
+    id: "m14_q11", module_number: 14, subcategory: "Innovation",
+    question: "Are engineers given protected time for innovation / improvement work — not just feature work — to invest in capability?",
+    level_indicators: {
+      level_1: "100% feature work; technical debt and innovation suffer.",
+      level_2: "Innovation time exists nominally; consumed by features in practice.",
+      level_3: "Documented innovation / improvement allocation (e.g., 10-20% of capacity); protected against feature pressure.",
+      level_4: "Innovation outputs are tracked: experiments shipped, debt retired, processes improved.",
+      level_5: "The company's innovation cadence is a competitive advantage; engineers are attracted by it.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT"] },
+    framework_citation: { framework: "Google 20% Time + Atlassian ShipIt", reference: "Innovation Time", rationale: "Innovation without protected time is hopeful; explicit allocation is the lever for sustainable capability investment." },
+  },
+  {
+    id: "m14_q12", module_number: 14, subcategory: "Innovation",
+    question: "Are innovation outcomes (experiments, prototypes, learnings) shared institutionally — not just lost in individual notebooks?",
+    level_indicators: {
+      level_1: "Innovation outcomes are personal; no institutional learning.",
+      level_2: "Some sharing happens informally.",
+      level_3: "Documented innovation review / showcase cadence; outcomes catalogued.",
+      level_4: "Patterns from past experiments shape new ones; institutional learning compounds.",
+      level_5: "The company has a documented record of past bets — what worked, what didn't, why — and uses it routinely.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Senge Learning Organization + Atlassian", reference: "Institutional Learning", rationale: "Lost institutional learning is the most expensive form of waste in innovation; sharing is the cheapest defense." },
   },
 
   // ============================================================
@@ -1172,22 +3091,172 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   },
 
   // ============================================================
-  // MODULE 16: Future of Work & Workforce Development
+  // MODULE 16: Workforce, Skills & Change
+  // Phase 4 deep — Prosci ADKAR + Kotter 8-Step. 12 questions.
   // ============================================================
+
+  // ----- ADKAR: Awareness + Desire -----
   {
-    id: "m16_q1", module_number: 16, subcategory: "Change Management",
-    question: "Is there a change management approach for technology initiatives?",
-    level_indicators: { level_1: "No change management", level_2: "Ad hoc communication", level_3: "Structured change management framework", level_4: "Embedded change capability with trained champions" },
+    id: "m16_q1", module_number: 16, subcategory: "Change Awareness & Desire",
+    question: "When a technology change is launched, do affected employees understand WHY — the business reason, the customer outcome — not just WHAT is changing?",
+    level_indicators: {
+      level_1: "Changes announced as faits accomplis; affected employees learn at deployment.",
+      level_2: "Some communication; employees know what; rationale is thin.",
+      level_3: "Documented communication plan per change: rationale, customer / business outcome, what changes, what doesn't.",
+      level_4: "Communication is layered (executive sponsor, manager, peer); awareness is measured before launch.",
+      level_5: "Awareness work is institutional; the company communicates change as a craft.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR", reference: "A — Awareness", rationale: "Prosci's research consistently shows the Awareness step is the most under-invested and the most predictive of adoption; without it, every later step compounds the initial gap." },
   },
   {
-    id: "m16_q2", module_number: 16, subcategory: "Workforce Development",
-    question: "Are employees being upskilled for digital capabilities?",
-    level_indicators: { level_1: "No training program", level_2: "Basic technical training", level_3: "Digital literacy program with learning paths", level_4: "Continuous learning culture with personalized development" },
+    id: "m16_q2", module_number: 16, subcategory: "Change Awareness & Desire",
+    question: "Is the case for change made compelling — what's in it for the affected person, not just for the company?",
+    level_indicators: {
+      level_1: "Change benefits framed in company-only terms; employees ask 'what's in it for me?' and don't get an answer.",
+      level_2: "Some personal-benefit framing; thin and not credible.",
+      level_3: "Documented WIIFM (What's In It For Me) per stakeholder group: time saved, friction removed, capability gained.",
+      level_4: "Manager-led conversations help individuals connect change to their personal context.",
+      level_5: "Desire to change is built — employees pull the change rather than being pushed; resistance is exception.",
+    },
+    tags: { function: ["operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR", reference: "D — Desire", rationale: "Desire cannot be ordered; it is built. WIIFM-driven communication is the cheapest desire-building investment." },
   },
   {
-    id: "m16_q3", module_number: 16, subcategory: "Workforce Development",
-    question: "Is remote/hybrid work supported with appropriate technology?",
-    level_indicators: { level_1: "No remote capability", level_2: "Basic remote access", level_3: "Full collaboration platform", level_4: "Digital workplace with async-first culture" },
+    id: "m16_q3", module_number: 16, subcategory: "Change Awareness & Desire",
+    question: "Is there an executive sponsor for major changes — visibly active throughout, not just at the kickoff and the celebration?",
+    level_indicators: {
+      level_1: "Sponsor in name only; visible at launch and silent thereafter.",
+      level_2: "Sponsor episodically engaged; pattern-of-presence inconsistent.",
+      level_3: "Documented sponsor commitment: regular check-ins, blocker removal, public reinforcement.",
+      level_4: "Sponsor is a known accountable owner; program success or failure attaches to them.",
+      level_5: "Sponsorship is institutional discipline; sponsors are coached on change leadership before assignment.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR + Kotter Step 1 (Sense of Urgency) + Step 2 (Guiding Coalition)", reference: "Active Sponsorship", rationale: "Prosci research identifies sponsor presence as the single strongest predictor of change success; sponsor absence is the most common cause of change failure." },
+  },
+
+  // ----- ADKAR: Knowledge + Ability -----
+  {
+    id: "m16_q4", module_number: 16, subcategory: "Knowledge & Ability",
+    question: "Are employees actively upskilled for the digital capabilities the company is investing in — not just told to figure it out?",
+    level_indicators: {
+      level_1: "No training program; employees expected to absorb new tools on their own.",
+      level_2: "Basic tool training; underutilized.",
+      level_3: "Documented digital-literacy program with learning paths per role; participation tracked.",
+      level_4: "Continuous learning culture with personalized development; capability uplift measured.",
+      level_5: "Skills development is a competitive moat; the company is recognized as a place where people grow.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR", reference: "K — Knowledge", rationale: "Knowledge is the most common adoption gap; structured upskilling is the cheapest investment with the highest individual return." },
+  },
+  {
+    id: "m16_q5", module_number: 16, subcategory: "Knowledge & Ability",
+    question: "Is there a training budget for digital skills — not zero, not symbolic — proportionate to the investment in tools and platforms?",
+    level_indicators: {
+      level_1: "No training budget; tools deployed; capability assumed.",
+      level_2: "Symbolic training budget; rarely used.",
+      level_3: "Documented training budget per employee per year; planned learning paths.",
+      level_4: "Training spend is tracked against tool spend; ratio benchmarked.",
+      level_5: "Training is funded as capital investment; the company defends the spend like any other capability investment.",
+    },
+    tags: { function: ["financial", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR + IT-CMF Workforce Practice", reference: "Training Investment", rationale: "Tools without training are paid software people don't use; the training budget is the multiplier on every tool investment." },
+  },
+  {
+    id: "m16_q6", module_number: 16, subcategory: "Knowledge & Ability",
+    question: "Are employees given protected time + practice opportunities to build new capabilities — not just access to the tool — so the skill actually develops?",
+    level_indicators: {
+      level_1: "No protected time; learning is supposed to happen on personal time or between fires.",
+      level_2: "Some allowance; consumed by operational pressure.",
+      level_3: "Documented learning time per role; practice opportunities embedded in the work.",
+      level_4: "Capability development tracked at individual level; manager check-ins reinforce growth.",
+      level_5: "Capability acquisition is a respected discipline; growth is institutional.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR", reference: "A — Ability", rationale: "Knowledge without practice does not become ability; protected time is the lever that turns one into the other." },
+  },
+
+  // ----- ADKAR: Reinforcement -----
+  {
+    id: "m16_q7", module_number: 16, subcategory: "Reinforcement",
+    question: "Are new behaviors reinforced after launch — through rituals, recognition, performance reviews, manager coaching — not just announced and abandoned?",
+    level_indicators: {
+      level_1: "No reinforcement; old behaviors return within months.",
+      level_2: "Some reinforcement happens reactively; coverage uneven.",
+      level_3: "Documented reinforcement plan: 30/60/90/180-day check-ins, manager coaching, recognition, performance integration.",
+      level_4: "Reinforcement is a tracked discipline; behavior persistence is measured.",
+      level_5: "Reinforcement is cultural; new behaviors stick because the system supports them.",
+    },
+    tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR + Lean Six Sigma Sustain", reference: "R — Reinforcement / Sustain", rationale: "Reinforcement is the most common point of failure in change programs; without it, regression is inevitable." },
+  },
+  {
+    id: "m16_q8", module_number: 16, subcategory: "Reinforcement",
+    question: "Is adoption of new tools / processes measured at 30 / 60 / 90 / 180 days — not just declared 'done' at rollout?",
+    level_indicators: {
+      level_1: "Adoption not measured; declared done at launch.",
+      level_2: "Some adoption tracking; thin and infrequent.",
+      level_3: "Documented adoption metrics tracked at 30 / 60 / 90 / 180 days; gaps drive intervention.",
+      level_4: "Adoption is a tracked KPI per change program; root-cause investigation on shortfalls.",
+      level_5: "Adoption discipline is institutional; the company knows its realization rate on change programs.",
+    },
+    tags: { function: ["operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "Prosci ADKAR + KPMG ROO Realization Tracking", reference: "Adoption Measurement", rationale: "Unmeasured adoption is unverified adoption; the discipline is the lower bound on credibility." },
+  },
+  {
+    id: "m16_q9", module_number: 16, subcategory: "Reinforcement",
+    question: "Are change champions — peer advocates inside affected teams — identified, trained, and active during the rollout?",
+    level_indicators: {
+      level_1: "No champions; change is a top-down mandate.",
+      level_2: "Some informal champions; not coordinated.",
+      level_3: "Documented champion network: identified, trained, equipped with talking points; visible during rollout.",
+      level_4: "Champions are a respected role; supported with time and recognition; provide feedback loop.",
+      level_5: "Champion network is a competitive capability; new changes ride existing networks.",
+    },
+    tags: { function: ["operational"], area: ["cross_functional"] },
+    framework_citation: { framework: "Kotter Step 2 (Guiding Coalition) + Prosci Change Network", reference: "Change Champions", rationale: "Peer-to-peer advocacy moves the middle of the adoption curve; without champions, change is a top-down monologue." },
+  },
+
+  // ----- Workforce + Hybrid -----
+  {
+    id: "m16_q10", module_number: 16, subcategory: "Workforce & Hybrid",
+    question: "Is remote / hybrid work supported with the right technology — collaboration platforms, async tooling, secure access — not just VPN and hope?",
+    level_indicators: {
+      level_1: "No remote capability; office-dependence is structural.",
+      level_2: "Basic remote access (VPN); collaboration is reactive video calls.",
+      level_3: "Full collaboration platform: documents, async chat, video, knowledge base; remote-friendly by default.",
+      level_4: "Digital workplace with async-first culture; productivity unaffected by location.",
+      level_5: "Workforce flexibility is a competitive advantage in hiring and retention; the company is location-independent.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "Atlassian Distributed Work + Microsoft Hybrid Work Index", reference: "Hybrid Work Capability", rationale: "Remote-readiness is a hiring and resilience advantage; the technology investment is small relative to the talent-pool expansion." },
+  },
+  {
+    id: "m16_q11", module_number: 16, subcategory: "Workforce & Hybrid",
+    question: "Are AI tools (assistants, copilots, summarizers) deliberately rolled out — with policy, training, and use cases — rather than employees adopting consumer ChatGPT in shadow?",
+    level_indicators: {
+      level_1: "No AI tooling strategy; employees use consumer ChatGPT with company data; risk is hidden.",
+      level_2: "Some AI access provided; without training or policy.",
+      level_3: "Documented AI rollout: approved tools, policy, training; productive use cases identified per function.",
+      level_4: "AI uplift measured per function; productivity gains documented.",
+      level_5: "AI-enabled workforce is a competitive capability; people work differently than peers' employees do.",
+    },
+    tags: { function: ["strategic", "operational", "risk"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "NIST AI RMF + Microsoft Workforce AI Practices", reference: "Workforce AI Adoption", rationale: "Shadow AI use is data leakage and missed productivity at the same time; deliberate rollout captures the upside while controlling the downside." },
+  },
+  {
+    id: "m16_q12", module_number: 16, subcategory: "Workforce & Hybrid",
+    question: "Is the technology workforce (IT, data, security, product) sized and skilled for what the strategy demands — not just for what's already running?",
+    level_indicators: {
+      level_1: "Workforce sized for run; growth and transformation under-resourced.",
+      level_2: "Some forward sizing; reactive hiring dominates.",
+      level_3: "Documented workforce plan tied to strategy: which roles internal vs. fractional vs. partner, hiring targets, skill development paths.",
+      level_4: "Workforce plan is reviewed quarterly; capability gaps closed proactively.",
+      level_5: "Workforce planning is a strategic discipline; the company has the people it needs for the strategy it set.",
+    },
+    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
+    framework_citation: { framework: "IT-CMF Workforce Practice + SFIA Skills Framework", reference: "Workforce Strategy Alignment", rationale: "Workforce sized only for current operations cannot deliver future strategy; explicit alignment of workforce to strategy is the precondition for strategic delivery." },
   },
 ];
 
