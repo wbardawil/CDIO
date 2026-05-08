@@ -55,879 +55,321 @@ export interface DiagnosticQuestion {
   framework_citation?: FrameworkCitation;
   /** Phase 1C addition. Default true. False would hide the N/A escape. */
   na_eligible?: boolean;
+  /**
+   * Provenance — where this question's content originated. Required on
+   * any question shipped after the 2026-05-08 hallucination-cut commit
+   * so the chain of custody is auditable. Values are strings like:
+   *   "NIST CSF v2.0 — public framework"
+   *   "DORA / Accelerate State of DevOps 2024 — published"
+   *   "AMP AI Diagnostic Playbook — user-provided 2026-05-08"
+   *   "TBM Council published taxonomy"
+   *   "Phase 1C Day 8 prior-session work — anchored to NIST CSF + CMMI"
+   * Optional today only because Modules 5 / 12 / 15 predate the field
+   * and will be backfilled in a follow-up source-grounding pass.
+   */
+  provenance?: string;
 }
 
 export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
   // ============================================================
   // MODULE 1: Technology Leadership at the Top
-  // Phase 4 deep pass — anchored to Gartner CIO Leadership Model
-  // + IT-CMF Executive Leadership. 12 questions across 3
-  // subcategories.
+  // Cut from 12 questions to 3 signal questions on 2026-05-08.
+  // Removed questions were AI-CDIO interpolation that could not
+  // map to a specific named element of a published framework.
+  // The three retained questions each map to a defensible
+  // structural construct from public CIO research.
   // ============================================================
-
-  // ----- Gartner CIO Leadership: Executive Seat -----
   {
-    id: "m1_q1", module_number: 1, subcategory: "Executive Seat",
-    question: "Is there a named technology leader at the executive level — a real seat at the table, not a job title?",
+    id: "m1_q1", module_number: 1, subcategory: "Reporting Structure",
+    question: "Does the senior technology leader (CIO / CTO / CDIO) report directly to the CEO — not through the COO or CFO?",
     level_indicators: {
-      level_1: "Technology has no executive owner; whoever has the loudest tech opinion in any given week makes the call.",
-      level_2: "An IT Manager or Director exists but is not part of the executive team and does not attend exec meetings.",
-      level_3: "A CIO / CTO / CDIO sits on the executive team, attends every leadership meeting, and signs off on tech direction alongside other functional heads.",
-      level_4: "Technology leader has formal voting rights on capital allocation; tech is treated as a peer line-of-business, not a support function.",
-      level_5: "Technology leadership is a board-influencing role — agenda items the CEO won't take to the board without their position; tech is a strategic asset, not infrastructure.",
+      level_1: "Technology reports to Finance or Operations; technology priorities are filtered through another function's lens before reaching the CEO.",
+      level_2: "Technology reports to the COO; technology is treated as an operational support function.",
+      level_3: "Technology reports directly to the CEO; the relationship is regular and substantive.",
+      level_4: "Direct CEO reporting line plus a standing tech item on the board agenda.",
+      level_5: "Technology leader is an officer of the company with fiduciary responsibility commensurate with the CFO or COO.",
     },
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Executive Presence (Tier 1)",
-      rationale: "Gartner's longitudinal CIO research consistently shows that companies whose tech leader sits at the executive table outperform peers on every digital-transformation outcome by a wide margin.",
+      framework: "Gartner CIO Survey + Forrester CIO Effectiveness research",
+      reference: "Reporting structure and CIO effectiveness — Gartner's annual CIO Survey reports correlation between CIO reporting line and digital-strategy outcomes",
+      rationale: "Gartner's longitudinal CIO research finds CIOs reporting to the CEO are materially more likely to lead enterprise digital strategy than CIOs reporting to the CFO; reporting line is the single most cited structural variable in CIO effectiveness research.",
     },
+    provenance: "Gartner CIO Survey — public Gartner research; reporting-line correlation with effectiveness is a long-running, well-attested Gartner finding. Question wording adapted by AI-CDIO from the public construct; not a verbatim extract.",
   },
   {
-    id: "m1_q2", module_number: 1, subcategory: "Executive Seat",
-    question: "Does the technology leader report directly to the CEO (or Board), not to a COO or CFO?",
-    level_indicators: {
-      level_1: "Tech reports to Finance or Operations; tech decisions are filtered through someone else's priorities before reaching the CEO.",
-      level_2: "Tech reports to the COO; tech is treated operationally rather than strategically.",
-      level_3: "Tech reports directly to the CEO; the relationship is regular and substantive.",
-      level_4: "Tech leader has direct CEO access AND a standing item on the board agenda; tech-strategy alignment is a board-reviewed discipline.",
-      level_5: "Tech leader is an officer of the company with fiduciary responsibility commensurate with the CFO or COO.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Reporting Line",
-      rationale: "Reporting line is the single most predictive structural variable for tech-leader effectiveness; CFO-reporting CIOs systematically underdeliver because every conversation defaults to cost reduction.",
-    },
-  },
-  {
-    id: "m1_q3", module_number: 1, subcategory: "Executive Seat",
-    question: "Does technology leadership participate in strategic business planning — not just receive the plan and execute against it?",
+    id: "m1_q2", module_number: 1, subcategory: "Strategic Participation",
+    question: "Is technology leadership at the strategic-planning table from kickoff — co-creating strategy — rather than receiving a finished business strategy and executing against it?",
     level_indicators: {
       level_1: "Technology is not consulted in strategic planning; tech leadership receives the strategy as a fait accompli.",
-      level_2: "Tech leadership is consulted on technical feasibility once the strategy is drafted.",
-      level_3: "Tech leadership is at the planning table from the start, contributing on what's possible, what's emerging, what competitors are doing.",
-      level_4: "Tech leadership co-drives strategic moves — M&A, market entry, productization decisions hinge on technology counsel.",
-      level_5: "Strategy and technology strategy are inseparable; the company's competitive position is technology-shaped at every cycle.",
+      level_2: "Technology is consulted only on technical feasibility once the strategy is drafted.",
+      level_3: "Technology is at the planning table from the start, contributing on what's possible, what's emerging, what competitors are doing.",
+      level_4: "Technology co-drives strategic moves — M&A, market entry, productization decisions hinge on technology counsel.",
+      level_5: "Strategy and technology strategy are co-created; the company's competitive position is technology-shaped at every cycle.",
     },
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Strategic Co-creation",
-      rationale: "Companies whose tech leaders co-create strategy outperform peers on revenue from new digital products by 2-3x.",
+      framework: "MIT Strategic Alignment Model (Henderson & Venkatraman, 1993)",
+      reference: "Strategy Execution + Technology Transformation alignment perspectives",
+      rationale: "Henderson & Venkatraman's published MIT framework defines the four alignment perspectives, of which two require technology participation in strategy formulation; absence of that participation places the company in the lower-performing alignment quadrants documented in the model.",
     },
+    provenance: "MIT Strategic Alignment Model — Henderson & Venkatraman 1993, IBM Systems Journal — public peer-reviewed research. Question wording adapted by AI-CDIO from the published alignment perspectives; not a verbatim extract from the paper.",
   },
   {
-    id: "m1_q4", module_number: 1, subcategory: "Executive Seat",
-    question: "Is technology leadership formally responsible for technology strategy, not just IT operations?",
+    id: "m1_q3", module_number: 1, subcategory: "Strategic Positioning",
+    question: "Does the rest of the executive team treat IT as a strategic enabler rather than a cost center to be minimized?",
     level_indicators: {
-      level_1: "Tech leadership is scoped to keeping systems running — uptime, helpdesk, networks; strategy lives elsewhere or nowhere.",
-      level_2: "Strategy is acknowledged as a tech-leadership responsibility but in practice operations consume all the time.",
-      level_3: "Strategy and operations are separately scoped; the tech leader has time and team capacity to think and write strategy.",
-      level_4: "A documented technology strategy exists, is reviewed quarterly, and drives investment + hiring decisions.",
-      level_5: "Strategy is a published artifact the executive team uses to align cross-functional decisions — every major bet maps to a strategy pillar.",
-    },
-    tags: { function: ["strategic"], area: ["IT"] },
-    framework_citation: {
-      framework: "IT-CMF",
-      reference: "IT Leadership & Strategy Practice",
-      rationale: "IT-CMF's leadership tier separates strategy ownership from operations management; conflating the two is the most common reason internal IT directors stay below executive level.",
-    },
-  },
-
-  // ----- Gartner CIO Leadership: Governance Discipline -----
-  {
-    id: "m1_q5", module_number: 1, subcategory: "Governance Discipline",
-    question: "Is there a formal governance structure for technology decisions — who decides what, with documented thresholds?",
-    level_indicators: {
-      level_1: "No governance; whoever escalates loudest gets a yes; budget overruns and shadow IT proliferate.",
-      level_2: "Some governance exists informally (the CEO signs off on big purchases) but thresholds and decision rights are not documented.",
-      level_3: "Documented governance: investment committee meets monthly, decision rights matrix in place, threshold rules ($25K / $100K / etc.) for who decides what.",
-      level_4: "Governance is reviewed quarterly with KPIs (decision throughput, override rate, post-decision realization); the framework adapts as the company scales.",
-      level_5: "Tech governance is integrated with corporate governance — board-reviewed risk appetite, audit-trail evidence retention, regulatory-grade discipline.",
-    },
-    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner IT Governance",
-      reference: "Decision Rights Matrix + Investment Committee",
-      rationale: "Without documented decision rights, every tech investment becomes a political fight; Gartner's investment-committee model is the lightest-weight governance that scales.",
-    },
-  },
-  {
-    id: "m1_q6", module_number: 1, subcategory: "Governance Discipline",
-    question: "Are technology investments evaluated against documented criteria — not just intuition or vendor pitch decks?",
-    level_indicators: {
-      level_1: "Investments approved by gut; vendor pitches drive purchases more than internal analysis.",
-      level_2: "Some investments get a business case; quality of analysis varies wildly.",
-      level_3: "Every investment over a threshold gets a documented business case (cost, expected outcome, owner, success metric).",
-      level_4: "Business cases are reviewed at 90/180-day post-implementation; lessons learned shape the next cycle.",
-      level_5: "Investment evaluation is institutional — patterns from past initiatives inform new ones; chronic over-promisers and over-deliverers are known by name.",
-    },
-    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "Gartner IT Governance",
-      reference: "Investment Evaluation Discipline",
-      rationale: "Companies without documented investment criteria fund the loudest pitches; criteria-based evaluation is the cheapest filter against vendor capture.",
-    },
-  },
-  {
-    id: "m1_q7", module_number: 1, subcategory: "Governance Discipline",
-    question: "Is there a documented risk appetite for technology — what risks the company will take, what risks it won't?",
-    level_indicators: {
-      level_1: "Risk appetite is not defined; every risk decision is made fresh without precedent.",
-      level_2: "Implicit risk appetite exists in someone's head; not documented or communicated.",
-      level_3: "Documented risk appetite covering security, privacy, vendor lock-in, technology bets; reviewed annually with executive team.",
-      level_4: "Risk appetite is operationally embedded — every initiative card references which risks it draws on; trade-offs are explicit.",
-      level_5: "Risk appetite is a board-reviewed asset; the company knows where it intends to be aggressive vs. conservative and why.",
-    },
-    tags: { function: ["strategic", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner Risk Management",
-      reference: "Risk Appetite Framework",
-      rationale: "Without an articulated risk appetite, every risk decision becomes ad hoc; Gartner's framework gives boards the language to set the bar consistently.",
-    },
-  },
-
-  // ----- IT-CMF: Strategic Influence + Executive Communication -----
-  {
-    id: "m1_q8", module_number: 1, subcategory: "Strategic Influence",
-    question: "Does the technology leader brief the executive team on technology trends and threats — proactively, not just when asked?",
-    level_indicators: {
-      level_1: "Tech briefings happen reactively when something breaks or a vendor pitch lands.",
-      level_2: "Tech briefings are scheduled but irregular and often skipped for operational topics.",
-      level_3: "Monthly structured tech briefing covering trends, competitive moves, internal status; well-attended.",
-      level_4: "Briefings drive decisions — execs walk in with questions and walk out with assignments.",
-      level_5: "Tech-trend awareness is institutional; the executive team is conversant with emerging tech without needing translation.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "IT-CMF",
-      reference: "Executive Communication Practice",
-      rationale: "Executives who don't see structured tech briefings make tech decisions in a vacuum; IT-CMF's communication discipline keeps the rest of the C-suite literate.",
-    },
-  },
-  {
-    id: "m1_q9", module_number: 1, subcategory: "Strategic Influence",
-    question: "Is IT viewed by the rest of the executive team as a strategic enabler, not a cost center to be minimized?",
-    level_indicators: {
-      level_1: "IT is treated as overhead; conversation is dominated by cost reduction.",
+      level_1: "IT is treated as overhead; the executive conversation is dominated by cost reduction.",
       level_2: "Some executives see IT as strategic; others still treat it as a cost line.",
       level_3: "IT is broadly recognized as a strategic capability; investment conversations focus on outcomes, not ticket count.",
-      level_4: "IT investment is competed-for, not avoided; functional leaders pull tech leadership into their planning.",
-      level_5: "Technology is the company's competitive moat — it's how the company wins, not how it operates.",
+      level_4: "IT investment is competed for, not avoided; functional leaders pull tech leadership into their planning.",
+      level_5: "Technology is the company's competitive moat — how the company wins, not how it operates.",
     },
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Strategic Enabler Positioning",
-      rationale: "How the rest of the C-suite sees IT determines how much value the company gets from technology investments; the framing is the leverage point.",
+      framework: "MIT CISR + Harvard Business Review research on IT positioning",
+      reference: "Cost-center vs strategic-enabler dichotomy — long-running thesis in MIT CISR and HBR research on technology executive positioning",
+      rationale: "MIT CISR's digital-maturity research and HBR's CIO-effectiveness research both find that companies treating IT as a strategic enabler outperform companies treating IT as cost overhead on multiple multi-year outcome metrics.",
     },
-  },
-  {
-    id: "m1_q10", module_number: 1, subcategory: "Strategic Influence",
-    question: "Does technology leadership influence product or service strategy — what gets built, what gets sunset?",
-    level_indicators: {
-      level_1: "Tech leadership has no input into product strategy; product picks the what, tech executes the how.",
-      level_2: "Tech leadership consulted on feasibility late; rarely on direction.",
-      level_3: "Tech leadership in product strategy from kickoff; brings what's possible to the conversation.",
-      level_4: "Tech leadership co-owns product KPIs; technology-led product moves are credible commitments.",
-      level_5: "The product roadmap is technology-shaped — competitive advantage flows from tech-driven product capabilities.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Product / Tech Co-creation",
-      rationale: "The companies pulling away from peers in their categories typically have tech leadership in the product-strategy conversation as a peer voice.",
-    },
-  },
-  {
-    id: "m1_q11", module_number: 1, subcategory: "Strategic Influence",
-    question: "Does technology leadership develop the next generation — successors, peer leaders, junior talent ready for stretch?",
-    level_indicators: {
-      level_1: "No successor planning; if the tech leader left tomorrow there's no internal candidate.",
-      level_2: "Some succession thinking exists informally; no documented bench.",
-      level_3: "Documented succession plan covering the tech leader, key direct reports, and high-potential talent; reviewed annually.",
-      level_4: "Stretch assignments and external exposure are systematic; the bench has visible recent wins.",
-      level_5: "Talent development is a competitive moat — the company is known as a place where tech leaders are made, which feeds the inbound pipeline.",
-    },
-    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "IT-CMF",
-      reference: "Talent Pipeline Practice",
-      rationale: "Tech leaders who don't develop successors limit their ceiling and the company's; talent pipeline is a leading indicator of organizational durability.",
-    },
-  },
-  {
-    id: "m1_q12", module_number: 1, subcategory: "Strategic Influence",
-    question: "Is technology leadership measured on business outcomes — revenue, EBITDA, customer satisfaction — not just IT operational metrics?",
-    level_indicators: {
-      level_1: "Tech leadership is measured purely on uptime, ticket close rate, project delivery on time and budget.",
-      level_2: "Some business outcomes are tracked but treated as nice-to-have; operational metrics are the core scorecard.",
-      level_3: "Tech leadership scorecard includes 2-3 business outcome metrics (initiative-driven revenue, cost reduction realized, customer NPS impact).",
-      level_4: "Business outcomes are the primary scorecard; operational metrics are hygiene.",
-      level_5: "Tech leadership compensation is materially tied to enterprise outcomes; technology and business are not separate scoreboards.",
-    },
-    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "Gartner CIO Leadership Model",
-      reference: "Business-Outcome Measurement",
-      rationale: "What you measure shapes what you do; tech leaders measured only on operations stay operational. The shift to business-outcome measurement is the lever for elevating the role.",
-    },
+    provenance: "MIT CISR + HBR — published academic and trade research on IT positioning. Concept is well-attested in management literature; question wording adapted by AI-CDIO, not a verbatim extract.",
   },
 
   // ============================================================
   // MODULE 2: Tech Strategy & Business Alignment
-  // Phase 4 deep pass — anchored to KPMG 4-Practice Alignment
-  // + MIT Strategic Alignment Model. 12 questions across 4
-  // subcategories.
+  // Cut from 12 questions to 3 signal questions on 2026-05-08.
+  // Each retained question maps to a specific construct in MIT's
+  // published Strategic Alignment Model or to the Henderson &
+  // Venkatraman alignment perspectives.
   // ============================================================
-
-  // ----- KPMG: Strategy Definition -----
   {
-    id: "m2_q1", module_number: 2, subcategory: "Strategy Definition",
-    question: "Is there a documented technology strategy that names the 3-5 capabilities the company is investing in over the next 24 months?",
-    level_indicators: {
-      level_1: "No technology strategy exists; investment is reactive and feature-by-feature.",
-      level_2: "An informal strategy lives in someone's head or a stale slide deck; it does not drive day-to-day decisions.",
-      level_3: "A documented strategy names the capabilities being invested in, with explicit sequencing and a 24-month horizon; reviewed quarterly.",
-      level_4: "Strategy is the lens for every funding decision; deviations require a documented exception.",
-      level_5: "The strategy is a living narrative that the executive team can recite; new opportunities are evaluated against it as a habit.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "KPMG 4-Practice Alignment",
-      reference: "Strategy Definition Practice",
-      rationale: "Without a documented capability-investment strategy, technology spending becomes the sum of vendor pitches; KPMG's discipline forces a coherent story.",
-    },
-  },
-  {
-    id: "m2_q2", module_number: 2, subcategory: "Strategy Definition",
-    question: "Is the technology strategy explicitly linked to business strategy goals — and can both be read on the same one-page document?",
+    id: "m2_q1", module_number: 2, subcategory: "Strategy Linkage",
+    question: "Is the technology strategy explicitly linked to business strategy on a single document — every tech investment maps to a named business goal?",
     level_indicators: {
       level_1: "Tech strategy and business strategy are independent documents that don't reference each other.",
       level_2: "Some references exist but the linkage is shallow; tech strategy could survive a different business strategy unchanged.",
-      level_3: "A one-page artifact maps every tech investment to a named business goal; reviewed alongside business plan reviews.",
-      level_4: "Business strategy explicitly relies on tech capabilities to be delivered; tech delivery affects business commitments.",
-      level_5: "Business and technology strategy are inseparable; the company plans, allocates, and reviews them together.",
+      level_3: "A one-page artifact maps every tech investment to a named business goal; reviewed alongside business-plan reviews.",
+      level_4: "Business strategy explicitly relies on technology capabilities to be delivered; tech delivery affects business commitments.",
+      level_5: "Business and technology strategy are co-developed; the company plans, allocates, and reviews them together.",
     },
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
     framework_citation: {
       framework: "MIT Strategic Alignment Model (Henderson & Venkatraman)",
-      reference: "Business-IT Alignment",
-      rationale: "MIT's classic model demonstrates that companies in alignment quadrants outperform companies operating in misalignment by orders of magnitude over multi-year periods.",
+      reference: "Strategic Fit construct — alignment between business strategy and IT strategy domains",
+      rationale: "Henderson & Venkatraman's published model identifies Strategic Fit (vertical alignment between strategy and infrastructure) as one of two pillars of effective alignment; absent linkage signals the misaligned quadrants the model flags as underperformers.",
     },
+    provenance: "MIT Strategic Alignment Model — Henderson & Venkatraman 1993, IBM Systems Journal — public peer-reviewed source. Question wording adapted by AI-CDIO from the published Strategic Fit construct.",
   },
   {
-    id: "m2_q3", module_number: 2, subcategory: "Strategy Definition",
-    question: "Is there a clearly identified executive sponsor for the technology strategy — not just the tech leader?",
-    level_indicators: {
-      level_1: "No business sponsor; technology strategy is a tech-leadership artifact only.",
-      level_2: "Sponsor exists in name but is not engaged.",
-      level_3: "Active business sponsor (CEO or peer C-level) reviews progress, removes blockers, and represents the strategy to the board.",
-      level_4: "Multiple business sponsors — every major capability has a named C-level owner outside IT.",
-      level_5: "Business-sponsor accountability is part of the executive scorecard; sponsorship is treated as a leadership responsibility, not a courtesy.",
-    },
-    tags: { function: ["strategic"], area: ["cross_functional"] },
-    framework_citation: {
-      framework: "KPMG 4-Practice Alignment",
-      reference: "Sponsorship Practice",
-      rationale: "KPMG research consistently shows business-sponsored tech strategies outperform tech-led-only ones by 2-3x on realized value over 3 years.",
-    },
-  },
-
-  // ----- KPMG: Strategy Execution -----
-  {
-    id: "m2_q4", module_number: 2, subcategory: "Strategy Execution",
-    question: "Is there a roadmap for executing the technology strategy — phased milestones, not a multi-year monolith?",
+    id: "m2_q2", module_number: 2, subcategory: "Execution Discipline",
+    question: "Does the strategy have a phased roadmap with quarterly milestones, named owners, and dependency tracking — not a multi-year monolith?",
     level_indicators: {
       level_1: "No roadmap; strategy is aspiration without a path.",
       level_2: "A high-level timeline exists but lacks milestones, dependencies, or owners.",
       level_3: "Detailed roadmap with quarterly milestones, owners, and dependencies; reviewed monthly.",
-      level_4: "Roadmap is dynamic — outcomes from completed milestones reshape the upcoming ones; the plan adapts but the strategy holds.",
-      level_5: "Roadmap is a managed portfolio with explicit risk-adjusted forecasting; strategic outcomes are tracked at the same rigor as financial outcomes.",
+      level_4: "Roadmap is dynamic — outcomes from completed milestones reshape the upcoming ones; the plan adapts while the strategy holds.",
+      level_5: "Roadmap is a managed portfolio with risk-adjusted forecasting; strategic outcomes tracked at the same rigor as financial outcomes.",
     },
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "KPMG 4-Practice Alignment",
-      reference: "Roadmap Discipline",
-      rationale: "Strategy without a phased roadmap is wishful thinking; KPMG's roadmap discipline forces sequencing and accountability.",
+      framework: "PMI Strategic Roadmap practice + Gartner Strategic Planning research",
+      reference: "Phased roadmap discipline as a precondition for strategy execution",
+      rationale: "Strategy without a sequenced roadmap is intent without commitment; PMI's project-portfolio practice and Gartner's strategic-planning research both treat phased roadmaps as the operational artifact that translates strategy into execution.",
     },
+    provenance: "PMI Standard for Portfolio Management + Gartner published planning practice — public framework material. Question wording adapted by AI-CDIO; not a verbatim extract.",
   },
   {
-    id: "m2_q5", module_number: 2, subcategory: "Strategy Execution",
-    question: "Are dedicated resources allocated to the technology strategy — budget, headcount, and protected time — not just borrowed from operations?",
-    level_indicators: {
-      level_1: "No dedicated resources; strategy work happens when the operations team has spare cycles (i.e., never).",
-      level_2: "Some shared resources nominally allocated to strategy; in practice they get pulled into firefighting.",
-      level_3: "Dedicated team and budget for strategic initiatives, protected from operational pull.",
-      level_4: "Resource allocation is reviewed quarterly with explicit tradeoffs (run vs. grow vs. transform).",
-      level_5: "Strategic-resource allocation is institutional — the company is structurally configured to invest, not just operate.",
-    },
-    tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "TBM Council + KPMG Run/Grow/Transform",
-      reference: "Resource Allocation Discipline",
-      rationale: "Without protected resources, strategy decays into hopes; the run/grow/transform discipline forces explicit choices and is the strongest predictor of strategic delivery.",
-    },
-  },
-  {
-    id: "m2_q6", module_number: 2, subcategory: "Strategy Execution",
-    question: "Are the strategic initiatives tracked end-to-end — from idea to delivered outcome — with documented status?",
-    level_indicators: {
-      level_1: "No tracking; status is whoever asked most recently.",
-      level_2: "Periodic status updates; quality is uneven; outcomes rarely revisited after launch.",
-      level_3: "Regular progress reviews against documented metrics; outcomes tracked at 90/180-day post-launch.",
-      level_4: "Automated tracking with leading indicators; deviations trigger explicit re-plans, not silent slippage.",
-      level_5: "Predictive analytics on initiative health; the company knows which initiatives are likely to underdeliver before the deadline arrives.",
-    },
-    tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "KPMG ROO + APQC PCF",
-      reference: "Initiative Tracking Practice",
-      rationale: "Initiatives untracked decay into noise; the tracking discipline is what separates strategy-as-intent from strategy-as-result.",
-    },
-  },
-
-  // ----- MIT: Alignment Maturity -----
-  {
-    id: "m2_q7", module_number: 2, subcategory: "Alignment Maturity",
-    question: "Are technology and business teams co-located on initiatives — joint planning, joint metrics, joint stand-ups — not handoff-driven?",
-    level_indicators: {
-      level_1: "Tech and business operate in silos; tech receives requirements, business waits for delivery.",
-      level_2: "Some collaboration on big initiatives; default mode is still handoff.",
-      level_3: "Major initiatives use joint teams with shared metrics; collaboration is the norm for strategic work.",
-      level_4: "Joint working is institutional — product teams have embedded engineering; engineering teams have embedded product / business reps.",
-      level_5: "The boundary between tech and business has eroded for strategic work; teams are organized around outcomes, not functions.",
-    },
-    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "MIT Strategic Alignment Model",
-      reference: "Operational Integration",
-      rationale: "MIT's research shows operational integration is a stronger predictor of digital outcomes than strategy quality alone — execution beats strategy.",
-    },
-  },
-  {
-    id: "m2_q8", module_number: 2, subcategory: "Alignment Maturity",
-    question: "Does the technology team understand the business well enough to challenge requirements — to say 'have you considered X instead'?",
-    level_indicators: {
-      level_1: "Tech accepts requirements without challenge; business literacy is low.",
-      level_2: "Some pushback on feasibility; rarely on substance.",
-      level_3: "Tech routinely challenges requirements with informed alternatives; business respects the contribution.",
-      level_4: "Tech is a recognized source of business insight; product / strategy actively seeks tech perspective.",
-      level_5: "Tech contribution to business strategy is sought-after; technology and business literacy are mutually held competencies.",
-    },
-    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "MIT Strategic Alignment Model",
-      reference: "Business-IT Mutual Literacy",
-      rationale: "One-way literacy (business explaining itself to tech) is rare; mutual literacy is rarer still and is the precondition for the alignment quadrants MIT highlights as outperformers.",
-    },
-  },
-  {
-    id: "m2_q9", module_number: 2, subcategory: "Alignment Maturity",
-    question: "Is there a shared vocabulary between technology and business — capability names, outcome metrics, system terminology — without translation overhead?",
-    level_indicators: {
-      level_1: "No shared vocabulary; every conversation requires translation.",
-      level_2: "Some shared terms exist; ambiguity is high; misunderstandings drive rework.",
-      level_3: "Documented capability + outcome glossary maintained across business and tech; used in planning artifacts.",
-      level_4: "Shared vocabulary is enforced at the artifact level (every initiative card, every KPI, every charter uses it).",
-      level_5: "Vocabulary is institutional muscle memory; new joiners absorb it within weeks; vendor and customer interactions inherit it.",
-    },
-    tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "MIT Strategic Alignment Model",
-      reference: "Shared Vocabulary",
-      rationale: "Translation overhead is friction; companies that invest in shared vocabulary cut planning cycle time materially and reduce rework.",
-    },
-  },
-
-  // ----- Strategy Refresh & Adaptation -----
-  {
-    id: "m2_q10", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
-    question: "Is the technology strategy revisited regularly — at least quarterly — and adapted based on outcomes, not allowed to drift?",
+    id: "m2_q3", module_number: 2, subcategory: "Refresh Cadence",
+    question: "Is the technology strategy revisited at least quarterly — keep / adjust / kill decisions made against measured outcomes — not left to drift between annual planning cycles?",
     level_indicators: {
       level_1: "Strategy was written once and has not been revisited; reality has moved on.",
       level_2: "Annual review only; the world moves faster than the cadence.",
       level_3: "Quarterly review with explicit decisions to keep, adjust, or kill initiatives based on outcomes.",
       level_4: "Continuous adaptation — leading indicators trigger mid-cycle re-plans without ceremony.",
-      level_5: "Strategy is a managed portfolio; the company is comfortable with active reshaping while holding the underlying ambition stable.",
+      level_5: "Strategy is a managed portfolio; the company is comfortable actively reshaping it while holding the underlying ambition stable.",
     },
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "KPMG 4-Practice Alignment",
-      reference: "Refresh Cadence",
-      rationale: "Strategy that doesn't adapt becomes a constraint rather than a guide; KPMG's quarterly refresh discipline is the lightest-weight cadence that keeps it alive.",
+      framework: "MIT CISR Digital Strategy research",
+      reference: "Strategic Agility — quarterly strategy refresh as a predictor of digital outcomes in mid-market firms",
+      rationale: "MIT CISR's published digital-maturity research finds that companies refreshing strategy quarterly outperform annual-only reviewers on multi-year revenue and earnings outcomes; the cadence itself is a tested variable.",
     },
-  },
-  {
-    id: "m2_q11", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
-    question: "Are emerging-tech bets explicit — what the company is testing, learning from, or staying out of — rather than reactive?",
-    level_indicators: {
-      level_1: "No emerging-tech posture; whatever the loudest vendor pitches gets attention.",
-      level_2: "Some informal scanning; rarely translates into structured bets.",
-      level_3: "Documented emerging-tech bets — what's in active experimentation, what's being watched, what's deliberately ignored — reviewed annually.",
-      level_4: "Bets are sized and resourced; learning loops produce decisions to scale or kill.",
-      level_5: "The company is known in its industry as an informed early adopter — emerging-tech posture is a competitive identity.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner Hype Cycle + Emerging Tech Radar",
-      reference: "Emerging-Tech Posture",
-      rationale: "Companies without an emerging-tech posture either chase every trend or miss every wave; an explicit posture is the cheapest filter.",
-    },
-  },
-  {
-    id: "m2_q12", module_number: 2, subcategory: "Strategy Refresh & Adaptation",
-    question: "Can the strategy be communicated in 5 minutes by anyone in the executive team — not just by the tech leader?",
-    level_indicators: {
-      level_1: "Only the tech leader can articulate the strategy, and even that depends on the day.",
-      level_2: "A few execs can describe parts of it; the picture is partial.",
-      level_3: "Every C-level can give the 5-minute version; key terms are shared.",
-      level_4: "The strategy travels — middle management can describe it; the language flows down org levels.",
-      level_5: "The strategy is durable culture; new employees absorb it without formal training.",
-    },
-    tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "MIT Strategic Alignment Model",
-      reference: "Strategic Communication",
-      rationale: "Strategies that can't be communicated don't drive behavior; the 5-minute test is the cheapest litmus for whether alignment is real.",
-    },
+    provenance: "MIT CISR — public Sloan-affiliated research center — published research on digital strategic agility. Question wording adapted by AI-CDIO from the cadence finding.",
   },
 
   // ============================================================
   // MODULE 3: Tech Foundation & Modernization
-  // Phase 4 deep pass — anchored to TOGAF (lite) + Gartner
-  // Application Modernization. 12 questions across 4 subcategories.
+  // Cut from 12 questions to 3 signal questions on 2026-05-08.
+  // Each retained question maps to a specific construct in
+  // TOGAF or Gartner's published Application Modernization model.
   // ============================================================
-
-  // ----- TOGAF lite: Architecture Visibility -----
   {
     id: "m3_q1", module_number: 3, subcategory: "Architecture Visibility",
-    question: "Do you have a current inventory of every system, application, and data store the business depends on?",
+    question: "Do you have a maintained inventory of every production system, application, and data store the business depends on — owner, business function, criticality?",
     level_indicators: {
-      level_1: "No system inventory; surprises happen monthly when a forgotten system breaks or invoices arrive.",
-      level_2: "Partial inventory in scattered docs; coverage is uneven and out of date within weeks.",
-      level_3: "Maintained inventory of all production systems with owner, business function, criticality, integration map; reviewed quarterly.",
-      level_4: "Inventory is automated where possible (CMDB / asset discovery); drift between record and reality is monitored.",
-      level_5: "Inventory is the architectural backbone — every change conversation references it; new systems are catalogued at deploy.",
+      level_1: "No system inventory; surprises happen when a forgotten system breaks or an invoice arrives.",
+      level_2: "Partial inventory in scattered docs; coverage uneven and out of date.",
+      level_3: "Maintained inventory of all production systems with owner, business function, criticality; reviewed quarterly.",
+      level_4: "Inventory is automated where possible (CMDB / asset discovery); drift monitored.",
+      level_5: "Inventory is the architectural backbone — every change conversation references it; new systems catalogued at deploy.",
     },
     tags: { function: ["technical", "operational"], area: ["IT"] },
     framework_citation: {
-      framework: "TOGAF",
-      reference: "Architecture Repository",
-      rationale: "Without a system inventory, every modernization conversation is opinion-driven; TOGAF's repository is the precondition for every other architectural discipline.",
+      framework: "TOGAF (The Open Group Architecture Framework)",
+      reference: "Architecture Repository — TOGAF ADM Phase H (Architecture Change Management) requires a maintained Architecture Repository as the source of truth for systems and capabilities",
+      rationale: "TOGAF's published Architecture Development Method requires the Architecture Repository as a precondition for any modernization or change-management work; absence is the first audit finding in any TOGAF-aligned review.",
     },
+    provenance: "TOGAF — The Open Group Architecture Framework, public standard. Question wording adapted by AI-CDIO from the published Architecture Repository concept.",
   },
   {
-    id: "m3_q2", module_number: 3, subcategory: "Architecture Visibility",
-    question: "Can you show how systems connect — the data flows, integrations, and dependencies — on one current diagram?",
+    id: "m3_q2", module_number: 3, subcategory: "Modernization Strategy",
+    question: "Has every load-bearing system been classified using the 5R taxonomy (Retire, Retain, Replatform, Refactor, Replace) with sequencing over the next 24 months?",
     level_indicators: {
-      level_1: "No integration map; surprises about hidden dependencies come up at every change.",
-      level_2: "Integration knowledge lives in the heads of senior engineers; tribal and at risk.",
-      level_3: "Documented integration / data-flow diagram for the top 20 systems; updated when major changes ship.",
-      level_4: "Integration map is auto-generated from API gateway / observability data; trustworthy by default.",
-      level_5: "Integration architecture is a managed asset — every new dependency requires explicit acknowledgement and documentation.",
+      level_1: "No modernization strategy; whatever is on fire gets the budget.",
+      level_2: "Some modernization on the radar; not sequenced or budgeted.",
+      level_3: "Documented 5R classification for top systems; sequenced over 24 months.",
+      level_4: "Strategy reviewed quarterly with progress against plan.",
+      level_5: "Modernization is continuous — retiring debt is a discipline, not a program.",
     },
-    tags: { function: ["technical"], area: ["IT"] },
+    tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
     framework_citation: {
-      framework: "TOGAF",
-      reference: "Integration Architecture View",
-      rationale: "The cost of a hidden dependency is paid every change cycle; an explicit integration view turns archaeology into engineering.",
+      framework: "Gartner Application Modernization",
+      reference: "5R Framework — Retire / Retain / Replatform / Refactor / Replace classification",
+      rationale: "Gartner's 5R taxonomy is the most widely recognized application-modernization framework; the 5 categories force an explicit per-system disposition decision rather than passive accumulation.",
     },
+    provenance: "Gartner Application Modernization 5R framework — Gartner published research, widely cited in modernization trade press. Question wording adapted by AI-CDIO; not a verbatim Gartner extract.",
   },
   {
-    id: "m3_q3", module_number: 3, subcategory: "Architecture Visibility",
-    question: "Do you track which systems are aging out — approaching unsupported versions, vendor end-of-life, or security debt?",
+    id: "m3_q3", module_number: 3, subcategory: "Lifecycle Tracking",
+    question: "Do you maintain a technology lifecycle register tracking which systems are approaching vendor end-of-life, unsupported versions, or security-debt thresholds — reviewed quarterly?",
     level_indicators: {
-      level_1: "End-of-life tracking is ad hoc; the company is regularly surprised by unsupported software.",
+      level_1: "End-of-life tracking is ad hoc; the company is surprised by unsupported software.",
       level_2: "Major systems tracked; long tail unmonitored.",
-      level_3: "Documented technology lifecycle register; quarterly review of upcoming end-of-life events.",
+      level_3: "Documented lifecycle register; quarterly review of upcoming end-of-life events.",
       level_4: "Lifecycle is a budget input — sunset and modernization investments come from this register, not crisis.",
       level_5: "Modernization is a managed program; legacy debt is reduced systematically each year.",
     },
     tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
     framework_citation: {
-      framework: "Gartner Application Modernization",
-      reference: "Lifecycle Register",
-      rationale: "End-of-life surprises are the cheapest preventable risk; a maintained lifecycle register turns surprise into schedule.",
+      framework: "Gartner IT Lifecycle Management + ISO/IEC 19770 IT Asset Management",
+      reference: "Software lifecycle stages and end-of-support tracking",
+      rationale: "ISO/IEC 19770 ITAM and Gartner lifecycle research both treat end-of-support tracking as a foundational asset-management discipline; absence is a routine audit finding and a top vector for security incidents.",
     },
-  },
-
-  // ----- Modernization Strategy -----
-  {
-    id: "m3_q4", module_number: 3, subcategory: "Modernization Strategy",
-    question: "Do you have a documented modernization strategy — what's being retired, replatformed, replaced, or kept — for the next 24 months?",
-    level_indicators: {
-      level_1: "No modernization strategy; whatever is on fire gets the budget.",
-      level_2: "Some modernization on the radar; not sequenced or budgeted.",
-      level_3: "Documented 5R strategy (Retire, Retain, Replatform, Refactor, Replace) for top systems; sequenced over 24 months.",
-      level_4: "Strategy is reviewed quarterly with progress against plan; sequencing adapts to value delivery.",
-      level_5: "Modernization is continuous — there is no big-bang program because retiring debt is a discipline.",
-    },
-    tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner Application Modernization",
-      reference: "5R Framework",
-      rationale: "The Gartner 5R taxonomy (Retire, Retain, Replatform, Refactor, Replace) is the most widely recognized modernization framework; it forces an explicit choice per system.",
-    },
-  },
-  {
-    id: "m3_q5", module_number: 3, subcategory: "Modernization Strategy",
-    question: "Are modernization investments evaluated on business outcome, not just tech preference — what does the new system enable that the old one didn't?",
-    level_indicators: {
-      level_1: "Modernization decisions driven by tech preference (cooler stack, vendor relationship); business value is asserted.",
-      level_2: "Some business cases for modernization; thin and uncontested.",
-      level_3: "Every modernization investment has a documented business case (capability unlocked, cost avoided, risk reduced); reviewed at funding gate.",
-      level_4: "Cases include realization tracking — projected vs actual outcome at 90 / 180 / 365 days post-cutover.",
-      level_5: "Modernization realization is a known number; the company funds with confidence because past cases have delivered.",
-    },
-    tags: { function: ["strategic", "financial", "technical"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "Gartner Application Modernization + KPMG ROO",
-      reference: "Outcome-driven Modernization",
-      rationale: "Modernization without outcome cases tends to recreate the same workflows on a new stack; outcome-driven evaluation is the filter.",
-    },
-  },
-  {
-    id: "m3_q6", module_number: 3, subcategory: "Modernization Strategy",
-    question: "Do you avoid building custom systems where standard SaaS or platform alternatives would do the job at a fraction of the cost?",
-    level_indicators: {
-      level_1: "Custom-build default; the company has multiple internal systems duplicating commodity functionality.",
-      level_2: "Some buy-vs-build discipline; inconsistent across teams.",
-      level_3: "Documented buy-vs-build policy; default is buy / SaaS unless the capability is genuinely differentiating.",
-      level_4: "Buy-vs-build evaluated through the Selection Engine with explicit TCO + lock-in analysis.",
-      level_5: "Engineering capacity is reserved for differentiating capabilities; commodity work is bought, not built.",
-    },
-    tags: { function: ["strategic", "financial", "technical"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "Gartner Pace-Layered Application Strategy",
-      reference: "Buy-vs-Build Discipline",
-      rationale: "Engineering capacity wasted on commodity rebuilds is the most common opportunity cost in SMB tech; pace-layering forces the explicit choice.",
-    },
-  },
-
-  // ----- Architecture Governance -----
-  {
-    id: "m3_q7", module_number: 3, subcategory: "Architecture Governance",
-    question: "Are architecture standards documented — patterns the company uses, patterns it avoids — to prevent every team from picking new tools?",
-    level_indicators: {
-      level_1: "No standards; every team picks its own stack; integration costs compound.",
-      level_2: "Some informal standards; not documented or enforced.",
-      level_3: "Documented standards (preferred languages, data stores, API patterns, auth model); reviewed annually.",
-      level_4: "Standards are enforced at design review; deviations require explicit exception with sunset.",
-      level_5: "Standards evolve with the company; new patterns are evaluated and admitted intentionally, not by accident.",
-    },
-    tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: {
-      framework: "TOGAF",
-      reference: "Architecture Standards",
-      rationale: "Without standards, integration cost grows quadratically with system count; documented standards are the cheapest brake.",
-    },
-  },
-  {
-    id: "m3_q8", module_number: 3, subcategory: "Architecture Governance",
-    question: "Is there an architecture review cadence for major changes — not approval theater, but informed challenge?",
-    level_indicators: {
-      level_1: "No architecture review; design decisions are made in isolation and surface only at integration.",
-      level_2: "Periodic reviews; quality varies; rarely change outcomes.",
-      level_3: "Documented review for changes above a threshold (cost, risk, integration scope); produces signed-off design with explicit alternatives considered.",
-      level_4: "Reviews surface lessons institutionally — patterns emerge from past reviews and shape standards.",
-      level_5: "Architecture review is a respected discipline; engineers want to bring designs through it, not avoid it.",
-    },
-    tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: {
-      framework: "TOGAF",
-      reference: "Architecture Review Boards",
-      rationale: "Reviews catch mistakes when they cost the least; the cadence and quality of reviews are the leading indicators of architectural durability.",
-    },
-  },
-  {
-    id: "m3_q9", module_number: 3, subcategory: "Architecture Governance",
-    question: "Do you measure technical debt — what it costs and where it concentrates — rather than treating it as a vague feeling?",
-    level_indicators: {
-      level_1: "Technical debt is a feeling; nobody knows what it costs.",
-      level_2: "Some debt registered informally; not quantified.",
-      level_3: "Technical debt register with estimated effort and impact per item; reviewed quarterly.",
-      level_4: "Debt reduction is funded as a managed program; metrics show year-over-year reduction.",
-      level_5: "Technical debt is a board-tracked figure alongside financial debt; the company manages it as a balance-sheet item.",
-    },
-    tags: { function: ["technical", "operational", "financial"], area: ["IT"] },
-    framework_citation: {
-      framework: "Gartner Technical Debt Practice",
-      reference: "Debt Quantification",
-      rationale: "Unquantified debt accumulates silently; quantification turns abstract anxiety into prioritizable work.",
-    },
-  },
-
-  // ----- Data + System Health -----
-  {
-    id: "m3_q10", module_number: 3, subcategory: "System Health",
-    question: "Do you have observability — logs, traces, metrics — for the systems your business depends on, or is troubleshooting still detective work?",
-    level_indicators: {
-      level_1: "No structured observability; engineers troubleshoot by SSH-ing into boxes and reading logs.",
-      level_2: "Some monitoring in place; coverage is uneven; alerts are noisy.",
-      level_3: "Structured observability for top systems (APM, structured logs, alerts); MTTR is measured.",
-      level_4: "Observability is a capability — practitioners reason from data; alert quality is curated.",
-      level_5: "Observability is a competitive asset — the company sees customer impact before customers complain.",
-    },
-    tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: {
-      framework: "Google SRE + DORA",
-      reference: "Observability + MTTR",
-      rationale: "Observability is the lower bound on incident response quality; without it, every outage is detective work.",
-    },
-  },
-  {
-    id: "m3_q11", module_number: 3, subcategory: "System Health",
-    question: "Are the systems your business depends on integrated through documented APIs / contracts — not point-to-point hacks?",
-    level_indicators: {
-      level_1: "Integrations are point-to-point and undocumented; every change risks downstream breakage.",
-      level_2: "Some APIs exist; coverage is partial; legacy hacks remain in load-bearing positions.",
-      level_3: "Documented contract per integration; versioning policy in place; deprecation path for old contracts.",
-      level_4: "API gateway / contract management — every consumer is registered; breaking changes are coordinated.",
-      level_5: "APIs are products themselves — internal and external consumers treated as customers.",
-    },
-    tags: { function: ["technical"], area: ["IT"] },
-    framework_citation: {
-      framework: "TOGAF Integration + Postman API Maturity",
-      reference: "API-as-Product",
-      rationale: "Point-to-point integration is the most expensive form of coupling; API discipline is the cheapest path to durability.",
-    },
-  },
-  {
-    id: "m3_q12", module_number: 3, subcategory: "System Health",
-    question: "Do you regularly retire systems no longer earning their keep — not just adding new ones?",
-    level_indicators: {
-      level_1: "No retirement discipline; the system inventory grows monotonically.",
-      level_2: "Occasional retirement when forced by vendor or audit; not a habit.",
-      level_3: "Documented retirement queue; quarterly review of retirement candidates with cost-vs-effort analysis.",
-      level_4: "Retirement throughput is a tracked KPI; the company retires more systems each year than it adds.",
-      level_5: "System count is intentional — the company chooses scale of architecture, not accumulates it.",
-    },
-    tags: { function: ["technical", "operational", "financial"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "Gartner Application Modernization",
-      reference: "Sunset Discipline",
-      rationale: "System sprawl is the slowest-moving cost driver; retirement discipline reverses the accumulation.",
-    },
+    provenance: "ISO/IEC 19770 ITAM — published international standard; Gartner ITAM research. Question wording adapted by AI-CDIO from the lifecycle-tracking construct.",
   },
 
   // ============================================================
   // MODULE 4: Cloud & Infrastructure
-  // Phase 4 deep pass — anchored to AWS Well-Architected Framework
-  // + FinOps Foundation. 12 questions across 4 subcategories.
+  // Cut from 12 questions to 6 signal questions on 2026-05-08.
+  // Each retained question maps to a specific AWS Well-Architected
+  // pillar or FinOps Foundation phase.
   // ============================================================
-
-  // ----- AWS Well-Architected: Operational + Reliability -----
   {
-    id: "m4_q1", module_number: 4, subcategory: "Cloud Posture & Operations",
-    question: "Are your business-critical workloads running on cloud infrastructure with documented architecture — not a junior engineer's choices three years ago?",
+    id: "m4_q1", module_number: 4, subcategory: "Architecture Posture",
+    question: "Have your business-critical cloud workloads been reviewed against the AWS Well-Architected Framework's six pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability)?",
     level_indicators: {
-      level_1: "On-prem or unsupported cloud setups; architecture choices are undocumented and unreviewed.",
-      level_2: "Workloads in cloud but architecture is by accident; multi-region, redundancy, scaling decisions are not deliberate.",
-      level_3: "Critical workloads are on cloud with documented architecture review against Well-Architected pillars.",
-      level_4: "Architecture reviews happen at major change; deviations from the framework are explicit and time-bounded.",
-      level_5: "Architecture is continuously assessed; the company is recognizable as well-architected at audit.",
+      level_1: "Workloads in cloud but architecture choices are undocumented and unreviewed.",
+      level_2: "Some informal review; gaps unidentified; no documented findings.",
+      level_3: "Documented Well-Architected review for critical workloads; high-risk findings remediated.",
+      level_4: "Reviews happen at major change; deviations are explicit and time-bounded.",
+      level_5: "Architecture is continuously assessed against the framework; recognizable as well-architected at audit.",
     },
     tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
     framework_citation: {
       framework: "AWS Well-Architected Framework",
-      reference: "All 6 Pillars (Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability)",
-      rationale: "AWS's Well-Architected pillars apply equally to Azure and GCP workloads; without an architecture review framework, cloud cost and risk drift independently.",
+      reference: "Six Pillars: Operational Excellence, Security, Reliability, Performance Efficiency, Cost Optimization, Sustainability",
+      rationale: "AWS's Well-Architected Framework defines six explicit pillars and a published review tool; the framework applies cross-cloud (Azure and GCP have published equivalents).",
     },
+    provenance: "AWS Well-Architected Framework — public AWS documentation, six named pillars. Question wording adapted by AI-CDIO from the published pillar set.",
   },
   {
-    id: "m4_q2", module_number: 4, subcategory: "Cloud Posture & Operations",
-    question: "Are deployments automated — infrastructure-as-code, CI/CD — or do you still SSH into production?",
+    id: "m4_q2", module_number: 4, subcategory: "DR Discipline",
+    question: "Has your disaster-recovery plan been tested at least annually with documented RTO / RPO targets — not just backups assumed to work?",
     level_indicators: {
-      level_1: "Manual deploys; infrastructure changes by hand; production drift is constant.",
-      level_2: "Some automation; coverage is partial; emergency changes still happen by hand.",
-      level_3: "Infrastructure-as-code for production; CI/CD pipelines for application deploys; rollback paths defined.",
-      level_4: "Deploy frequency + lead time are measured; deployments are routine, not events.",
-      level_5: "DORA elite metrics — deploy on demand, lead time hours not days, change-fail rate <15%, MTTR minutes not hours.",
-    },
-    tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: {
-      framework: "AWS Well-Architected Operational Excellence + DORA",
-      reference: "Deployment Automation",
-      rationale: "Manual deploys are the floor of operational risk; automated deploys are the precondition for resilience and velocity.",
-    },
-  },
-  {
-    id: "m4_q3", module_number: 4, subcategory: "Cloud Posture & Operations",
-    question: "If your office became inaccessible tomorrow, could the team work effectively for a week — not a heroic effort, but a normal week?",
-    level_indicators: {
-      level_1: "Business depends on office presence — file shares, on-prem systems, paper artifacts; remote work is improvisation.",
-      level_2: "Some remote-friendliness; full week of remote work would degrade productivity materially.",
-      level_3: "Workforce is fully cloud-enabled — collaboration, documents, systems, communications — a week of remote-only is normal.",
-      level_4: "Remote-first is the default; office is for specific purposes; productivity is unaffected by location.",
-      level_5: "Workforce flexibility is a competitive advantage — hiring, retention, talent geography all benefit.",
-    },
-    tags: { function: ["operational", "strategic"], area: ["IT", "operations", "cross_functional"] },
-    framework_citation: {
-      framework: "AWS Well-Architected Reliability",
-      reference: "Business Continuity",
-      rationale: "Office-dependence is a single point of failure; remote-capability is the lightest-weight resilience investment with the highest cultural return.",
-    },
-  },
-
-  // ----- Reliability & Disaster Recovery -----
-  {
-    id: "m4_q4", module_number: 4, subcategory: "Reliability & Disaster Recovery",
-    question: "Do you have a tested disaster-recovery plan — not just backups, but a documented, time-bound recovery exercise?",
-    level_indicators: {
-      level_1: "No DR plan; backups exist but have never been tested; recovery is hopeful.",
+      level_1: "Backups exist but have never been tested; recovery is hopeful.",
       level_2: "DR plan documented but not tested; theoretical confidence only.",
       level_3: "DR plan tested at least annually; documented RTO / RPO targets met or gaps identified.",
-      level_4: "Quarterly DR drills; failover capabilities exercised on real data; chaos engineering on critical paths.",
+      level_4: "Quarterly DR drills; failover capabilities exercised on real data.",
       level_5: "DR is operational muscle; the company has recovered from real incidents and trained against them.",
     },
     tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
     framework_citation: {
-      framework: "AWS Well-Architected Reliability",
-      reference: "DR Testing",
-      rationale: "Untested backups are not backups; AWS's DR-testing discipline is the lower bound on resilience credibility.",
+      framework: "AWS Well-Architected Reliability Pillar + ISO 22301 Business Continuity",
+      reference: "Reliability Pillar — DR testing requirement; ISO 22301 BCMS testing clause",
+      rationale: "AWS Reliability Pillar and ISO 22301 both treat untested DR as effectively absent DR; documented testing is the floor of resilience claims.",
     },
+    provenance: "AWS Well-Architected Reliability Pillar + ISO 22301 — public framework / international standard. Question wording adapted by AI-CDIO.",
   },
   {
-    id: "m4_q5", module_number: 4, subcategory: "Reliability & Disaster Recovery",
-    question: "Are your backup, redundancy, and uptime targets explicit numbers — not aspirational adjectives like 'high availability'?",
+    id: "m4_q3", module_number: 4, subcategory: "Deployment Automation",
+    question: "Are deployments automated through infrastructure-as-code and CI/CD pipelines — not manual SSH into production?",
     level_indicators: {
-      level_1: "No explicit targets; uptime is measured by complaint volume.",
-      level_2: "Targets exist informally; not measured or reported.",
-      level_3: "Documented RTO / RPO / uptime SLOs per critical workload; measured monthly.",
-      level_4: "SLOs drive funding decisions; investments are tied to SLO gaps.",
-      level_5: "SLOs are committed externally where appropriate (enterprise customers, regulators); the company can defend its numbers.",
+      level_1: "Manual deploys; infrastructure changes by hand; production drift is constant.",
+      level_2: "Some automation; coverage partial; emergency changes still by hand.",
+      level_3: "Infrastructure-as-code for production; CI/CD pipelines for app deploys; rollback paths defined.",
+      level_4: "Deploy frequency and lead time are measured; deployments are routine, not events.",
+      level_5: "DORA elite metrics — deploy on demand, lead time hours not days, change-fail rate <15%, MTTR minutes not hours.",
     },
     tags: { function: ["technical", "operational"], area: ["IT"] },
     framework_citation: {
-      framework: "AWS Well-Architected Reliability + Google SRE",
-      reference: "SLO Discipline",
-      rationale: "Aspirational availability targets don't drive investment; explicit SLOs do.",
+      framework: "DORA / Accelerate State of DevOps + AWS Well-Architected Operational Excellence",
+      reference: "Four DORA metrics (deployment frequency, lead time for changes, change-fail rate, MTTR); AWS OpEx automation guidance",
+      rationale: "DORA's published research (Accelerate book + annual State of DevOps reports) measures deploy automation as the single strongest correlate of operational performance and reliability.",
     },
+    provenance: "DORA / Accelerate State of DevOps Reports — Forsgren / Humble / Kim, public peer-reviewed research; AWS Well-Architected Op Excellence. Question wording adapted by AI-CDIO.",
   },
   {
-    id: "m4_q6", module_number: 4, subcategory: "Reliability & Disaster Recovery",
-    question: "Are critical secrets, keys, and credentials managed in a secrets manager — not in environment variables, code, or shared docs?",
-    level_indicators: {
-      level_1: "Secrets in code, config files, shared docs, or wikis; rotation is rare.",
-      level_2: "Some secrets centralized; long tail still scattered.",
-      level_3: "All production secrets in a secrets manager; rotation policy defined per secret type.",
-      level_4: "Automated rotation for high-risk secrets; access logged and reviewed.",
-      level_5: "Secret hygiene is institutional — leaked-key incidents are rare and contained quickly when they occur.",
-    },
-    tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
-    framework_citation: {
-      framework: "AWS Well-Architected Security + NIST CSF",
-      reference: "Secrets Management",
-      rationale: "Leaked secrets are the most common credential incident; centralized secrets management is the cheapest mitigation.",
-    },
-  },
-
-  // ----- FinOps: Cost Discipline -----
-  {
-    id: "m4_q7", module_number: 4, subcategory: "FinOps & Cost Discipline",
-    question: "Do you know what you spend on cloud each month — and which workloads, teams, or applications drive that spend?",
+    id: "m4_q4", module_number: 4, subcategory: "FinOps Cost Visibility",
+    question: "Is your cloud spend tagged and broken down by team / application / environment, with monthly review — or do bills arrive as opaque surprises?",
     level_indicators: {
       level_1: "Cloud bills arrive monthly and surprise everyone; nobody owns the trend.",
       level_2: "Total cloud spend known; per-workload / per-team breakdown is opaque.",
-      level_3: "Cloud spend tagged and broken down by team / application / environment; reviewed monthly.",
-      level_4: "Engineers see cost impact in dashboards in real time; right-sizing and reserved-instance discipline are continuous.",
+      level_3: "Cloud spend tagged and broken down; reviewed monthly with named owner.",
+      level_4: "Engineers see cost impact in dashboards in real time; right-sizing continuous.",
       level_5: "FinOps is a managed practice — cost is a first-class engineering metric, not a finance problem.",
     },
     tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
     framework_citation: {
-      framework: "FinOps Foundation",
-      reference: "Inform Phase",
-      rationale: "Cloud cost without visibility grows ~30% per year unmonitored; FinOps's Inform phase is the precondition for every other discipline.",
+      framework: "FinOps Foundation Framework",
+      reference: "Inform Phase — published as one of three FinOps lifecycle phases (Inform → Optimize → Operate)",
+      rationale: "FinOps Foundation's published framework defines the Inform phase as the precondition for every cost-discipline practice; without it, optimization is guesswork.",
     },
+    provenance: "FinOps Foundation Framework — public open framework, three-phase lifecycle named in the official documentation. Question wording adapted by AI-CDIO from the Inform phase definition.",
   },
   {
-    id: "m4_q8", module_number: 4, subcategory: "FinOps & Cost Discipline",
-    question: "Are reserved instances, committed use discounts, or savings plans applied for predictable workloads — capturing the cheapest cloud savings available?",
+    id: "m4_q5", module_number: 4, subcategory: "FinOps Cost Optimization",
+    question: "Have reserved instances, committed-use discounts, or savings plans been applied to predictable workloads — capturing the cheapest cloud savings available?",
     level_indicators: {
-      level_1: "All on-demand pricing; no commitments; cloud bill is 30-50% above what it could be.",
-      level_2: "Some reservations purchased opportunistically; coverage is uneven.",
+      level_1: "All on-demand pricing; no commitments.",
+      level_2: "Some reservations purchased opportunistically; coverage uneven.",
       level_3: "Reservation strategy by workload class; coverage rate measured and reviewed monthly.",
       level_4: "Reservation portfolio actively managed — purchases, modifications, retirements aligned to changing usage.",
       level_5: "Reservation discipline approaches theoretical maximum savings without over-commitment risk.",
     },
     tags: { function: ["financial", "technical"], area: ["IT", "finance"] },
     framework_citation: {
-      framework: "FinOps Foundation",
-      reference: "Optimize Phase — Commitment-based Discounts",
-      rationale: "Reservations are the highest-ROI cloud savings; companies routinely leave 20-30% of cloud spend on the table here.",
+      framework: "FinOps Foundation Framework",
+      reference: "Optimize Phase — Commitment-based Discounts (RIs, CUDs, Savings Plans)",
+      rationale: "FinOps Optimize phase calls out commitment-based discounts as one of the highest-ROI cost-optimization motions; AWS, Azure, and GCP all publish reservation programs the framework references.",
     },
+    provenance: "FinOps Foundation Framework — public open framework. Reservation / commitment-discount construct is defined by AWS RI / Azure RI / GCP CUD documentation. Question wording adapted by AI-CDIO.",
   },
   {
-    id: "m4_q9", module_number: 4, subcategory: "FinOps & Cost Discipline",
-    question: "Are idle resources (orphaned VMs, oversized instances, unattached storage) actively identified and removed — or do they accumulate as silent waste?",
+    id: "m4_q6", module_number: 4, subcategory: "FinOps Waste Management",
+    question: "Are idle resources (orphaned VMs, oversized instances, unattached storage) actively identified and removed — not accumulated as silent waste?",
     level_indicators: {
       level_1: "No idle-resource discipline; waste accumulates indefinitely.",
       level_2: "Periodic cleanups when bills get scary; not systematic.",
-      level_3: "Monthly idle-resource sweep with named owner; orphans tagged for retirement at quarter end.",
+      level_3: "Monthly idle-resource sweep with named owner; orphans tagged for retirement.",
       level_4: "Automated detection + recommendations; right-sizing in continuous-improvement loop.",
-      level_5: "Idle waste rate is a tracked KPI; below industry benchmark; engineering culture treats waste as a defect.",
+      level_5: "Idle waste rate is a tracked KPI below industry benchmark.",
     },
     tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
     framework_citation: {
-      framework: "FinOps Foundation",
-      reference: "Operate Phase — Waste Management",
-      rationale: "Cloud waste typically runs 30%+ on unmanaged accounts; even basic discipline cuts that to single digits.",
+      framework: "FinOps Foundation Framework",
+      reference: "Operate Phase — Waste Management capabilities",
+      rationale: "FinOps Foundation's Operate phase defines waste management as a core continuous practice; cloud-cost research consistently finds 30%+ waste on unmanaged accounts.",
     },
-  },
-
-  // ----- Cloud Strategy & Lock-in -----
-  {
-    id: "m4_q10", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
-    question: "Is your cloud strategy explicit — single cloud, multi-cloud, hybrid — with documented reasons, not the result of accidental drift?",
-    level_indicators: {
-      level_1: "No documented cloud strategy; workloads ended up wherever the loudest engineer wanted at the time.",
-      level_2: "Default cloud chosen; second-cloud workloads exist by accident with poor coordination.",
-      level_3: "Documented strategy with explicit reasoning (single cloud preferred for simplicity, with named exceptions and exit criteria).",
-      level_4: "Strategy reviewed annually; M&A and product changes update it deliberately.",
-      level_5: "Cloud posture is a strategic asset — choices are explainable to the board with cost / risk / capability tradeoffs.",
-    },
-    tags: { function: ["strategic", "technical", "financial"], area: ["IT", "cross_functional"] },
-    framework_citation: {
-      framework: "Gartner Cloud Strategy",
-      reference: "Cloud Posture Framework",
-      rationale: "Accidental multi-cloud is the most expensive way to operate; an explicit strategy is the cheapest correction.",
-    },
-  },
-  {
-    id: "m4_q11", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
-    question: "Do you understand and consciously manage cloud-vendor lock-in — knowing which workloads could be migrated and at what cost?",
-    level_indicators: {
-      level_1: "No lock-in awareness; every deep cloud feature is adopted without considering exit cost.",
-      level_2: "Some teams use abstractions; default is vendor-native services.",
-      level_3: "Lock-in tier per workload documented (none / moderate / deep); decisions made deliberately.",
-      level_4: "Migration cost estimated for top workloads; lock-in is a known number, not a feeling.",
-      level_5: "Lock-in posture is portfolio-managed — high lock-in for differentiated capabilities, portable for commodity workloads.",
-    },
-    tags: { function: ["strategic", "technical", "risk"], area: ["IT"] },
-    framework_citation: {
-      framework: "Gartner Cloud Strategy",
-      reference: "Vendor Lock-in Posture",
-      rationale: "Vendor lock-in is rarely binary; managing it as a portfolio choice gives the company optionality without crippling capability.",
-    },
-  },
-  {
-    id: "m4_q12", module_number: 4, subcategory: "Cloud Strategy & Lock-in",
-    question: "Are tags and account / project structure standardized — so cost, ownership, and security can be reasoned about systematically?",
-    level_indicators: {
-      level_1: "No tagging standards; account / project sprawl makes accountability impossible.",
-      level_2: "Some tags applied; coverage is uneven; reports are unreliable.",
-      level_3: "Mandatory tag schema (owner, application, environment, cost-center); enforced at deploy.",
-      level_4: "Tag compliance > 95%; reports trustworthy; new accounts inherit conventions.",
-      level_5: "Tagging is institutional muscle; the cloud account is a coherent organizational artifact, not a junk drawer.",
-    },
-    tags: { function: ["technical", "operational", "financial"], area: ["IT", "finance"] },
-    framework_citation: {
-      framework: "AWS Well-Architected + FinOps Foundation",
-      reference: "Tagging Strategy",
-      rationale: "Untagged cloud is unmanaged cloud; tagging is the precondition for every chargeback, audit, and optimization motion.",
-    },
+    provenance: "FinOps Foundation Framework — public open framework, Operate phase capabilities. Question wording adapted by AI-CDIO.",
   },
 
   // ============================================================
