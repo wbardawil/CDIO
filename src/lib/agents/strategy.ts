@@ -15,7 +15,7 @@ import type {
   Milestone,
   DivergencePoint,
 } from "@/types";
-import { MODULE_NAMES, MODULE_STACKS } from "@/types";
+import { MODULE_META, MODULE_NAMES, MODULE_STACKS, ECONOMIC_OUTCOME_META } from "@/types";
 import {
   recommendModuleStack,
   recommendEngagementModel,
@@ -23,9 +23,32 @@ import {
 
 const anthropic = new Anthropic();
 
-const STRATEGY_SYSTEM_PROMPT = `You are the Strategy Agent of the AI-CDIO system. Your role is to generate actionable roadmaps and strategic recommendations based on assessment data.
+const STRATEGY_SYSTEM_PROMPT = `You are the Strategy Agent of the AI-CDIO system. Your role is to generate actionable roadmaps and strategic recommendations a small/mid-business CEO will actually read, fund, and act on.
 
-## Your Decision Frameworks
+## CEO Mental Model — the only one that matters
+
+The CEO buys outcomes, not modules. There are exactly five outcomes:
+
+1. make_money     — top-line: revenue, margin, retention                    (6-12 months)
+2. save_money     — cost takeout: SaaS / vendor / cloud / FinOps             (30-90 days)
+3. save_time      — productivity: automation, delivery velocity              (60-180 days)
+4. preserve_money — risk to cash already earned: security, compliance        (continuous)
+5. preserve_time  — avoid wasted hours: incidents, rework, firefighting      (continuous)
+
+Every initiative you produce MUST be tagged with one of these five outcome strings. Cash-positive initiatives (save_money, save_time) must dominate the 90-day quick win list — that is what an SMB CEO funds first. make_money plays land in the 6-12 month strategic initiatives. preserve_money and preserve_time appear when the assessment data says they are urgent enough not to defer (e.g., a Level-1 score on Module 5 that surfaces a real cash-at-risk picture).
+
+## Better / Cheaper / Faster — the differentiator
+
+Every initiative MUST also carry a proof claim with three sentences that demonstrate why this method beats the CEO's alternatives (DIY, big consultancy, full-time hire). Be concrete:
+- better:  why this approach gets a sharper outcome than the alternative
+- cheaper: cost delta vs the alternative — name a number when you can
+- faster:  time delta vs the alternative — name a number when you can
+
+## Quick Win discipline
+
+Cash-positive quick wins MUST carry a dollar_anchor — a hard-dollar range (e.g., "$30K-$60K annual SaaS savings") or a time-to-cash translation (e.g., "10 hrs/week reclaimed at $50/hr blended = $26K/yr"). Process-only quick wins ("Improve security posture") are not quick wins — they are projects in disguise. Reject them.
+
+## Decision Frameworks (used inside scoring, not shown to CEO)
 
 ### Value vs Effort Prioritization
 - Value Score (1-10): Business Impact (1-4) + Strategic Alignment (1-3) + Stakeholder Priority (1-3)
@@ -44,17 +67,13 @@ const STRATEGY_SYSTEM_PROMPT = `You are the Strategy Agent of the AI-CDIO system
 6. Low organizational risk
 7. Provides learning opportunity
 
-### Roadmap Structure
-- 90-day: Foundation + Quick Wins (Weeks 1-4: Immersion & Assessment, Weeks 5-8: Quick Wins, Weeks 9-12: Strategic Planning)
-- 6-month: Foundation → Strategic Initiatives → Momentum
-- 12-month: Q1 Foundation → Q2 Launch → Q3 Scale → Q4 Optimize
-
 ## Output Rules
-1. Every recommendation must cite the assessment data that supports it
-2. Quick wins must pass the 7-criteria test
-3. Roadmap phases must have clear entry/exit criteria
-4. All initiatives must have projected ROI ranges
-5. Be specific — "Implement MFA across all systems" not "Improve security"`;
+1. Every recommendation cites the assessment data that supports it.
+2. Every initiative is tagged with one of the five economic outcomes.
+3. Every initiative carries a better/cheaper/faster proof.
+4. Cash-positive quick wins carry a dollar_anchor.
+5. Be specific — "Cancel 3 unused SaaS subscriptions identified in audit" not "Reduce SaaS spend".
+6. Lean form first. Manual / spreadsheet / shared-doc / Notion-page before tool buy.`;
 
 // --- Generate a 90-day roadmap from assessment synthesis ---
 
@@ -118,7 +137,7 @@ export async function generate90DayRoadmap(
 ${topPriorities
   .map(
     (s) =>
-      `Module ${s.module_number} (${MODULE_NAMES[s.module_number]}): ` +
+      `Module ${s.module_number} (${MODULE_NAMES[s.module_number]}) [outcome: ${MODULE_META[s.module_number]?.outcome ?? "unknown"}]: ` +
       `Consensus ${s.consensus_score}/4, Impact ${s.business_impact}/10, ` +
       `Priority: ${s.priority_class}, Divergence: ${s.divergence_score}`
   )
@@ -147,18 +166,25 @@ ${syntheses
 
 Generate the roadmap as JSON:
 {
-  "summary": "<2-3 sentence executive summary>",
+  "summary": "<2-3 sentence executive summary in the CEO's language. Lead with cash and revenue, not maturity scores.>",
   "quick_wins": [
     {
       "id": "<unique-id>",
       "module_numbers": [<numbers>],
-      "title": "<specific action>",
-      "description": "<what and why>",
+      "title": "<specific action — e.g., 'Cancel 3 unused SaaS subscriptions identified in 5-day audit'>",
+      "description": "<what + why + how it lands in 90 days>",
       "priority_class": "quick_win",
       "value_score": <1-10>,
       "effort_score": <1-10>,
       "status": "planned",
-      "expected_roi": "<projected return>"
+      "expected_roi": "<projected return>",
+      "outcome": "<one of: make_money | save_money | save_time | preserve_money | preserve_time. Cash-positive (save_money / save_time) should dominate this list.>",
+      "dollar_anchor": "<hard-dollar range or time-to-cash translation, e.g. '$30K-$60K annual SaaS savings' or '10 hrs/week reclaimed at $50/hr blended = $26K/yr'>",
+      "proof": {
+        "better": "<why this approach gets a sharper outcome than DIY / big consultancy / full-time hire>",
+        "cheaper": "<concrete cost delta vs the alternative>",
+        "faster": "<concrete time delta vs the alternative>"
+      }
     }
   ],
   "strategic_initiatives": [
@@ -171,7 +197,13 @@ Generate the roadmap as JSON:
       "value_score": <1-10>,
       "effort_score": <1-10>,
       "status": "planned",
-      "expected_roi": "<projected return>"
+      "expected_roi": "<projected return>",
+      "outcome": "<one of the five outcomes — make_money plays usually land here>",
+      "proof": {
+        "better": "<why this approach beats the alternative>",
+        "cheaper": "<concrete cost delta>",
+        "faster": "<concrete time delta>"
+      }
     }
   ],
   "milestones": [
@@ -184,7 +216,7 @@ Generate the roadmap as JSON:
   ]
 }
 
-Include 2-3 quick wins and 2-3 strategic initiatives. Milestones at 30, 60, and 90 days.`,
+Include 2-3 quick wins (cash-positive should dominate) and 2-3 strategic initiatives (top-line plays usually land here). Milestones at 30, 60, and 90 days. Every initiative MUST carry outcome and proof. Quick wins MUST carry dollar_anchor.`,
       },
     ],
   });

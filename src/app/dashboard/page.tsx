@@ -5,8 +5,8 @@ import { useSearchParams } from "next/navigation";
 import { SpiderChart } from "@/components/charts/spider-chart";
 import { PriorityMatrix } from "@/components/charts/priority-matrix";
 import { DivergenceReport } from "@/components/charts/divergence-report";
-import { MODULE_NAMES } from "@/types";
-import type { AssessmentSynthesis, DivergencePoint, PriorityClass } from "@/types";
+import { MODULE_NAMES, ECONOMIC_OUTCOME_META } from "@/types";
+import type { AssessmentSynthesis, DivergencePoint, PriorityClass, EconomicOutcome, Initiative } from "@/types";
 
 type Tab = "overview" | "stakeholders" | "divergences" | "roadmap";
 
@@ -372,26 +372,10 @@ function DashboardContent() {
                     </p>
                   </div>
                 )}
-                {data.roadmap.content?.quick_wins?.map((qw: any, i: number) => (
-                  <div key={i} className="border border-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Quick Win</span>
-                      <h3 className="font-medium text-sm">{qw.title}</h3>
-                    </div>
-                    <p className="text-sm text-gray-600">{qw.description}</p>
-                    {qw.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {qw.expected_roi}</p>}
-                  </div>
-                ))}
-                {data.roadmap.content?.strategic_initiatives?.map((si: any, i: number) => (
-                  <div key={i} className="border border-gray-100 rounded-lg p-4">
-                    <div className="flex items-center gap-2 mb-1">
-                      <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">Strategic</span>
-                      <h3 className="font-medium text-sm">{si.title}</h3>
-                    </div>
-                    <p className="text-sm text-gray-600">{si.description}</p>
-                    {si.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {si.expected_roi}</p>}
-                  </div>
-                ))}
+                <RoadmapByOutcome
+                  quickWins={data.roadmap.content?.quick_wins ?? []}
+                  strategic={data.roadmap.content?.strategic_initiatives ?? []}
+                />
               </div>
             ) : (
               <div className="text-center py-8">
@@ -429,5 +413,175 @@ function DashboardContent() {
         )}
       </main>
     </div>
+  );
+}
+
+// ============================================================
+// Roadmap rendering — grouped by economic outcome
+//
+// CEOs buy outcomes, not modules. The five buckets — make money,
+// save money, save time, preserve money, preserve time — are how
+// the result lands. Quick-win-vs-strategic is internal scoring.
+//
+// Falls back to a legacy flat view when the persisted roadmap
+// pre-dates the outcome reframe (no `outcome` tag on initiatives).
+// ============================================================
+
+const OUTCOME_ORDER: EconomicOutcome[] = ["make_money", "save_money", "save_time", "preserve_money", "preserve_time"];
+
+const OUTCOME_PALETTE: Record<EconomicOutcome, { chip: string; ring: string }> = {
+  make_money:     { chip: "bg-emerald-100 text-emerald-800", ring: "border-emerald-200" },
+  save_money:     { chip: "bg-blue-100 text-blue-800",       ring: "border-blue-200" },
+  save_time:      { chip: "bg-violet-100 text-violet-800",   ring: "border-violet-200" },
+  preserve_money: { chip: "bg-amber-100 text-amber-800",     ring: "border-amber-200" },
+  preserve_time:  { chip: "bg-rose-100 text-rose-800",       ring: "border-rose-200" },
+};
+
+type InitiativeWithBucket = Initiative & { _bucket: "quick_win" | "strategic" };
+
+function RoadmapByOutcome({
+  quickWins,
+  strategic,
+}: {
+  quickWins: Initiative[];
+  strategic: Initiative[];
+}) {
+  const all: InitiativeWithBucket[] = [
+    ...quickWins.map((i) => ({ ...i, _bucket: "quick_win" as const })),
+    ...strategic.map((i) => ({ ...i, _bucket: "strategic" as const })),
+  ];
+
+  // Backward compatibility: if NO initiatives have `outcome`, fall back to
+  // the legacy flat view so old persisted roadmaps still render.
+  const anyTagged = all.some((i) => i.outcome);
+  if (!anyTagged) {
+    return <LegacyFlatRoadmap quickWins={quickWins} strategic={strategic} />;
+  }
+
+  const grouped: Record<EconomicOutcome, InitiativeWithBucket[]> = {
+    make_money: [],
+    save_money: [],
+    save_time: [],
+    preserve_money: [],
+    preserve_time: [],
+  };
+  const untagged: InitiativeWithBucket[] = [];
+  for (const i of all) {
+    if (i.outcome) grouped[i.outcome].push(i);
+    else untagged.push(i);
+  }
+
+  return (
+    <div className="space-y-8">
+      {OUTCOME_ORDER.map((outcome) => {
+        const items = grouped[outcome];
+        if (items.length === 0) return null;
+        const meta = ECONOMIC_OUTCOME_META[outcome];
+        const palette = OUTCOME_PALETTE[outcome];
+        return (
+          <section key={outcome}>
+            <header className="mb-3">
+              <div className="flex items-center gap-2">
+                <span className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide ${palette.chip}`}>
+                  {meta.label}
+                </span>
+                <span className="text-xs text-gray-500">{items.length} {items.length === 1 ? "play" : "plays"}</span>
+              </div>
+            </header>
+            <div className="space-y-3">
+              {items.map((i, idx) => (
+                <InitiativeCard key={i.id ?? `${outcome}-${idx}`} initiative={i} palette={palette} />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+      {untagged.length > 0 && (
+        <section>
+          <header className="mb-3">
+            <span className="px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-gray-100 text-gray-700">Other</span>
+          </header>
+          <div className="space-y-3">
+            {untagged.map((i, idx) => (
+              <InitiativeCard key={i.id ?? `untagged-${idx}`} initiative={i} palette={{ chip: "bg-gray-100 text-gray-700", ring: "border-gray-200" }} />
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
+
+function InitiativeCard({
+  initiative,
+  palette,
+}: {
+  initiative: InitiativeWithBucket;
+  palette: { chip: string; ring: string };
+}) {
+  return (
+    <div className={`border rounded-lg p-4 ${palette.ring}`}>
+      <div className="flex items-start justify-between gap-3 mb-1">
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-0.5 rounded text-xs font-medium ${initiative._bucket === "quick_win" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}>
+            {initiative._bucket === "quick_win" ? "Quick Win" : "Strategic"}
+          </span>
+          <h3 className="font-medium text-sm">{initiative.title}</h3>
+        </div>
+        {initiative.dollar_anchor && (
+          <span className="shrink-0 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700">
+            {initiative.dollar_anchor}
+          </span>
+        )}
+      </div>
+      <p className="text-sm text-gray-600 mb-2">{initiative.description}</p>
+      {initiative.expected_roi && !initiative.dollar_anchor && (
+        <p className="text-xs text-green-600">Expected ROI: {initiative.expected_roi}</p>
+      )}
+      {initiative.proof && (
+        <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+          <ProofCell label="Better"  value={initiative.proof.better} />
+          <ProofCell label="Cheaper" value={initiative.proof.cheaper} />
+          <ProofCell label="Faster"  value={initiative.proof.faster} />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ProofCell({ label, value }: { label: string; value: string }) {
+  if (!value) return null;
+  return (
+    <div>
+      <div className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">{label}</div>
+      <div className="text-gray-700">{value}</div>
+    </div>
+  );
+}
+
+function LegacyFlatRoadmap({ quickWins, strategic }: { quickWins: Initiative[]; strategic: Initiative[] }) {
+  return (
+    <>
+      {quickWins.map((qw, i) => (
+        <div key={`qw-${i}`} className="border border-gray-100 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Quick Win</span>
+            <h3 className="font-medium text-sm">{qw.title}</h3>
+          </div>
+          <p className="text-sm text-gray-600">{qw.description}</p>
+          {qw.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {qw.expected_roi}</p>}
+        </div>
+      ))}
+      {strategic.map((si, i) => (
+        <div key={`si-${i}`} className="border border-gray-100 rounded-lg p-4">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">Strategic</span>
+            <h3 className="font-medium text-sm">{si.title}</h3>
+          </div>
+          <p className="text-sm text-gray-600">{si.description}</p>
+          {si.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {si.expected_roi}</p>}
+        </div>
+      ))}
+    </>
   );
 }
