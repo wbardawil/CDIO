@@ -8,9 +8,11 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
 
-**Current state (2026-05-07, end of Day 11 — doc-lock complete in cross-environment continuation session):**
+**Current state (2026-05-13, post-Phase-1C — outcome reframe shipped, Vendor Lifecycle scope under review):**
 
-This session was the inflection point. We shifted the platform from feature-led to outcomes-led, expanded scope to include execution oversight, and committed to a multi-corpus RAG / selective multi-agent architecture. **Code state unchanged from end of Day 10.** Strategy + roadmap heavily updated. **As of this commit, Day 11 architectural decisions A-G are committed to docs:**
+Phase 1A ✅, Phase 1B ✅, Phase 1C Days 8-17 ✅ (Quick Win Stack 3/3 + Decision Packages + role/area tagging + lean SMB defenses + Quick Scan board memo + adaptive questioning + framework citations + AMP integration), Phase 1D Days 21-28 ✅ (Charter, Initiative Pilot, Selection Engine v1 with Tech/AI/Partner via `domain` param, Network Catalog with P0 privacy, Cadence, Status Reports, MCP foundation). **Latest session (2026-05-13) shipped the 5-economic-outcome reframe + standards validation audit + flagged Vendor Lifecycle Management as a candidate Year-1 named service line pending founder decision.** See "2026-05-13 session" section immediately below for full state + pending decisions.
+
+**For historical Day 11 lock (referenced repeatedly across the codebase as `9f3a2a6`), see Day 11 evening section further below. As of this commit, Day 11 architectural decisions A-G remain committed to docs:**
 - `STRATEGY-2026.md` — new "Architectural Laws" section (Laws 1-7)
 - `ROADMAP.md` — Phase 1D rewritten 4 → 8 days; Module 17 flagged Year-2 candidate; Phase 2.5 Build-vs-Buy folded into generic Selection Engine
 - `ARCHITECTURE.md` — multi-corpus RAG model, per-practitioner tenant isolation, selective multi-agent boundaries, Network Catalog privacy model
@@ -35,6 +37,93 @@ This session was the inflection point. We shifted the platform from feature-led 
 - ✅ **AMP Playbook integration locked in STRATEGY-2026.md** — separate AMP Playbook Integration section above Architectural Lineage. Phase 2.5 reduced 12 → 8 days by reusing AMP's 5 governance components (AI Maturity Model dims), 4 opportunity categories (AI Use-Case Library taxonomy), 100→17→7 funnel (AI Roadmap Generator), and 5×5 scoring (Selection Engine `domain: "ai"`). AI Operator Bootcamp logged as Year 2+ commercial product candidate.
 - ✅ **Day 13: Practitioner /preview surface + try-it interactive mode** shipped earlier in this session — read-only methodology preview at `/preview` with depth-status badges, plus `/preview/module/[n]/try` for role-filtered + scoring-math testing without DB writes.
 - ⏳ Day 13 (next session): Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma)
+
+---
+
+## 2026-05-13 session — Outcome reframe shipped + Standards Validation audit + Vendor Lifecycle scope review pending
+
+This session shipped two upgrades downstream of the assessment surface and surfaced one scope-expansion question the founder must decide before more code lands.
+
+### What shipped (commit `d9b0a3c` on `claude/continue-ai-cdio-vBHyN`)
+
+**1. The 5 Economic Outcomes reframe — roadmap output restructured around CEO consumption layer**
+
+The 16 modules are how the platform MEASURES. The five economic outcomes are how the CEO CONSUMES the output:
+
+| # | Outcome | Modules that produce it | Time-to-value |
+|---|---|---|---|
+| 1 | `make_money` (top-line) | M1, M2, M6, M7, M8, M9, M10 | 6-12 mo |
+| 2 | `save_money` (cost takeout) | M4, M12, M13 | 30-90 days |
+| 3 | `save_time` (productivity) | M14, M15 | 60-180 days |
+| 4 | `preserve_money` (risk to cash) | M3, M5 | continuous |
+| 5 | `preserve_time` (avoid firefighting) | M11, M16 | continuous |
+
+Concrete changes:
+- New `EconomicOutcome` type + `ECONOMIC_OUTCOME_META` table in `src/types/index.ts` (each outcome carries a CEO-facing pain question for the planned pain-anchored entry)
+- Every `MODULE_META[1..16]` declares its primary `outcome`
+- `Initiative` type extended with optional `outcome`, `proof: { better, cheaper, faster }`, and `dollar_anchor` (legacy fields preserved for backward compat)
+- Strategy agent system prompt rewritten — cash-positive quick wins must carry hard-dollar anchors; process-only quick wins ("improve security posture") rejected; better/cheaper/faster proof required per initiative
+- Dashboard roadmap tab renders grouped by the 5 outcomes in CEO priority order; dollar-anchor pill prominent; proof grid under each card; legacy fallback for old persisted roadmaps
+
+**2. Standards Validation audit (`docs/STANDARDS-VALIDATION.md`)**
+
+One-time cross-walk of all 128 verbatim playbook diagnostic questions to recognized public standards (NIST CSF v2.0, NIST AI RMF, TOGAF, ITIL 4, AWS Well-Architected, FinOps, DORA, APQC PCF, Lean Six Sigma DMAIC, Prosci ADKAR, Gartner Analytics Maturity, KPMG ROO, TBM Council, Forrester CX).
+
+- **Mapping density: 128/128 (100%)** — every question maps to a recognized standard category or methodology stage
+- **Average standard top-level category coverage: 75-80%**
+- Five highest-leverage gaps flagged for Phase 2 question bank: M14 direct DORA metrics, M5 Recover function (RTO/RPO), M13 SaaS renewal management, M6 master/reference data, M2 strategy refresh cadence
+- Static doc — regenerate only when a standard updates or questions change
+
+This gives the founder defensible "we cover 78% of NIST CSF Protect" claims for CEO conversations without committing to live control-by-control product surface.
+
+### Where we paused — the next-direction decision
+
+The session surfaced four legitimate next moves. None has been committed:
+
+1. **Pain-anchored entry** — 5 outcome-flavored questions before the 128-question diagnostic; closes the loop from CEO mental model to assessment. ~2-3h.
+2. **Verbal scale** (Solid / Spotty / Nothing yet / Don't know + optional evidence box) replacing yes/no/partial/na. Independent UX upgrade, ~3-4h.
+3. **Browser-test the outcome reframe first** — generate a roadmap on a real synthesized assessment, verify the 5-outcome grouping + dollar-anchors + proof grid render as intended before adding upstream changes.
+4. **Vendor Lifecycle Management as a named service line** — **scope expansion under founder review.** Founder's two current client projects are ERP and CRM RFPs; vendor sourcing is the highest-leverage place to keep the "bad tech bets die" promise. See Vendor Lifecycle section below for the case.
+
+### Vendor Lifecycle Management — scope-expansion review (PENDING DECISION)
+
+Founder raised the question: should AI-CDIO ship a promotable **Lean Vendor Lifecycle Management** service line? Customer demand exists today (ERP + CRM RFPs in flight).
+
+**The case for:**
+- Direct alignment with the Differentiated Promise's "bad tech bets die before they cost you money"
+- Serves Pillar 1 (project success) and Pillar 2 (tech ROI) directly
+- Maps to Customer #0 and #1's actual current revenue work (ERP and CRM RFPs)
+- Phase 2 dogfooding loop is literally vendor sourcing engagements
+- Better/cheaper/faster claim writes itself: 5x faster than Fortune 500 procurement, 1/5th the cost of Big-4 vendor selection, evidence-based decision memo
+
+**The case against / friction:**
+- Quick Win Stack (M5/M12/M15) is locked at 90-day delivery; ERP/CRM selection alone is 8-10 weeks — Vendor Lifecycle is strategic-initiative work, not quick-win work
+- Adds a 4th named service line that isn't in STRATEGY-2026, GTM, or PRICING — strategic decision worth documenting before code
+- Re-prioritizes the current Phase 1C sprint plan (which already drifted in practice — see ROADMAP entry below)
+
+**Lean SMB version of the lifecycle (8 stages, NOT Fortune 500 procurement):**
+
+| # | Stage | Always or Conditional |
+|---|---|---|
+| 1 | Need Statement (1-page versioned) | Always |
+| 2 | Short-List Curation (3-5 vendors, verification check) | Always |
+| 3 | RFP (lean — 8-15p, 30-50 weighted reqs, 5-8 vendors invited, 2-3 wk window) | Conditional — core platform / $50K+/yr / multi-year |
+| 4 | Demo & Evaluation (structured rubric, uncited-score cap) | Always |
+| 5 | Reference & Risk Check (1-2 refs per finalist + risk red-flag list) | Always |
+| 6 | Recommendation Memo (CEO markdown, Independence Statement, Pause path, sensitivity analysis) | Always |
+| 7 | Contract & Pilot Setup (flag-only contract review, pilot success criteria + go/no-go) | Always |
+| 8 | Handoff & Renewal Calendar (90-day post-impl check, 90-day-advance renewal alert) | Always |
+
+**Build cuts under discussion (NOT committed):**
+- **Cut A — Selection Engine v2 Tier 1 only** (1-2 days): Independence Statement + Uncited-score cap + Pause Recommendation + CEO markdown output. Promotable as "Independent Vendor Selection." Many engagements never need formal RFP.
+- **Sprint 1 — RFP-capable Selection v2** (3-4 days): Cut A + RFP builder + requirements builder + vendor invitation tracking + response capture + RFP doc generator. Matches founder's current ERP/CRM work.
+- **Sprint 2 — Lifecycle completion** (2-3 days): versioned Need Statement + reference call template + risk red-flag checklist + renewal calendar + pilot success criteria + go/no-go on Initiative Pilot.
+- **Total Sprint 1 + 2 — Full Lean Vendor Lifecycle (5-7 days).**
+
+**Founder decision required (before any of this code lands):**
+- If Vendor Lifecycle becomes a Year-1 named service line: update STRATEGY-2026.md (add as 4th service line), GTM.md (positioning), PRICING.md (bundle position), ROADMAP.md (Sprint 1 + 2 slotted before or after Phase 2 dogfood). ~30 min of doc work.
+- If Vendor Lifecycle stays a Phase 1D Day 24 capability extension (no separate service line): only ROADMAP.md needs a small update (Day 24 deepening) and no GTM/PRICING change.
+- If Vendor Lifecycle deferred: keep existing roadmap; ship pain-entry + verbal-scale next as planned.
 
 ---
 

@@ -1,11 +1,89 @@
 # AI-CDIO: Build Roadmap
 
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
-> **Last refreshed:** 2026-05-07 evening (Phase 1C Day 11 — final scope lock for the day. THREE BIG CORRECTIONS from earlier today: **(1)** Phase 1C re-sequenced with **AI + Data first**: Module 6 (Data & AI Capabilities) deep + AI Accelerator MVP land BEFORE Modules 12, 15, 2 — because AI is the buy-trigger CEOs are hot for now, and 50 days is too long to wait. **(2)** Audience locked: Year 1 customer is the founder's CEO clients (via him), not other fractionals. Phase 2 reframed accordingly — no design partner pilots in Year 1; founder uses platform on Ambar + 1-2 more REAL clients. Other fractionals come Phase 3+. **(3)** Phase 2.5 AI Accelerator reduced from 12 days to 6-7 days because the MVP shipped early in Phase 1C — Phase 2.5 only handles heavyweight pieces.).
+> **Last refreshed:** 2026-05-13 (post-Phase-1C session — outcome reframe shipped + standards validation audit + Vendor Lifecycle Management flagged as candidate Year-1 named service line pending founder decision; see "2026-05-13 sprint re-baseline" section immediately below).
+>
+> **Previous refresh:** 2026-05-07 evening (Phase 1C Day 11 — final scope lock for the day; the THREE BIG CORRECTIONS from that day are preserved in the historical notes below).
 >
 > **Earlier today (Phase 1C Day 11):** outcomes-led strategy rewrite; 16 modules renamed + framework-anchored + one-liners added; Module 2 deep promoted to Phase 1C; Tier 1 AI leverage added.
 >
 > **Previous refresh:** 2026-04-29 (Phase 1B Day 6 MECE rewrite — AI lens removed from Phase 1C, legal foundation moved into Phase 1.5, pricing slotted into Phase 2, Phase 2.5 expanded to 12 days — note: Phase 2.5 has now been REDUCED back to 6-7 days as of 2026-05-07 evening because the AI Accelerator MVP moved to Phase 1C).
+
+## 2026-05-13 sprint re-baseline (read this BEFORE the historical Current State section below)
+
+### Actual state of Phase 1C-1D (as of 2026-05-13)
+
+The historical "Current State (April 2026)" section below reflects the build state in mid-April. Since then, Phase 1C Days 8-17 and Phase 1D Days 21-28 have all shipped per `docs/SESSION_HANDOFF.md`. As of today:
+
+| Phase | State |
+|---|---|
+| Phase 1A — Foundation (Days 1-3) | ✅ Complete |
+| Phase 1B — Practitioner Ops + Safety (Days 4-7) | ✅ Code complete (env-var spillover only) |
+| Phase 1C — Methodology Depth (Days 8-17) | ✅ Complete — Module 5/12/15 deep, Decision Packages, role/area tagging, lean SMB defenses, Quick Scan board memo, adaptive questioning, framework citations layer, AMP integration |
+| Phase 1.5 — Production Deploy + Legal + Cost Telemetry (Days 18-20) | ⏳ Not yet shipped — pending custom domain decision |
+| Phase 1D — Charter + Initiative Pilot + Selection Engine + Network Catalog + Cadence + Status Reports + MCP (Days 21-28) | ✅ Complete — Selection Engine v1 ships Tech/AI/Partner via `domain` param; Network Catalog with P0 privacy; MCP foundation |
+
+### What shipped 2026-05-13 (after Phase 1D Day 28)
+
+Two upgrades downstream of the assessment surface:
+
+1. **5 Economic Outcome reframe** — roadmap output restructured around CEO consumption layer. 16 modules are how we measure; 5 outcomes (make money / save money / save time / preserve money / preserve time) are how the CEO consumes. See `docs/STRATEGY-2026.md` "The 5 Economic Outcomes" section. Code in commit `d9b0a3c` on `claude/continue-ai-cdio-vBHyN`.
+2. **Standards Validation audit** (`docs/STANDARDS-VALIDATION.md`) — one-time cross-walk of all 128 verbatim playbook questions to recognized public standards. Mapping density 128/128 (100%), average standard top-level category coverage 75-80%. Static doc, regenerate on standard/question change.
+
+### Sprint plan currently UNDER REVIEW — four candidate next moves
+
+The session ended with the founder weighing four directions. **None has been committed.** Listed by leverage:
+
+1. **Vendor Lifecycle Management as Year-1 named service line** (5-7 days total: Sprint 1 + 2). Customer-pull evidence: founder's two current client projects are ERP and CRM RFPs. Direct alignment with the Differentiated Promise's "bad tech bets die before they cost you money." Strategic decision pending. See `docs/SESSION_HANDOFF.md` "Vendor Lifecycle Management" section for full case + lean SMB 8-stage lifecycle + Sprint 1/2 split.
+2. **Pain-anchored entry** (~2-3h) — 5 outcome-flavored questions before the 128-question diagnostic. Closes the loop from CEO mental model to assessment.
+3. **Verbal scale on diagnostic** (~3-4h) — Solid / Spotty / Nothing yet / Don't know + optional evidence box replacing yes/no/partial/na. Independent UX upgrade.
+4. **Browser-test the outcome reframe first** — generate a roadmap on a real synthesized assessment, verify the 5-outcome grouping renders as intended.
+
+### Vendor Lifecycle Management — candidate Year-1 named service line (PENDING FOUNDER DECISION)
+
+**Status: scope-expansion review only. Not committed. Not in build plan until founder decides.**
+
+**Case for shipping it in Year 1:**
+- Founder's two current client projects (ERP + CRM RFPs) need it TODAY — customer #0 evidence is concrete
+- Direct alignment with the Differentiated Promise's "bad tech bets die before they cost you money"
+- Serves Pillar 1 (project success) and Pillar 2 (tech ROI) directly
+- Better/cheaper/faster claim writes itself: 5x faster than Fortune 500 procurement, 1/5th the cost of Big-4 vendor selection, evidence-based decision memo
+
+**Friction:**
+- Quick Win Stack (M5/M12/M15) is locked at 90-day delivery; ERP/CRM selection alone is 8-10 weeks — Vendor Lifecycle is strategic-initiative work, not quick-win work
+- Adds a 4th named service line not in STRATEGY-2026 / GTM / PRICING — requires doc work before code
+- Re-prioritizes Phase 1C continuation (which has already drifted from the locked plan)
+
+**Lean SMB 8-stage lifecycle (NOT Fortune 500 procurement):**
+
+| # | Stage | Always or Conditional |
+|---|---|---|
+| 1 | Need Statement (1-page versioned, stakeholder-validated) | Always |
+| 2 | Short-List Curation (3-5 vendors, verification check) | Always |
+| 3 | RFP (lean — 8-15p, 30-50 weighted reqs, 5-8 vendors invited, 2-3 wk window) | Conditional — core platform / $50K+/yr / multi-year |
+| 4 | Demo & Evaluation (structured rubric, uncited-score cap) | Always |
+| 5 | Reference & Risk Check (1-2 refs per finalist + risk red-flag list) | Always |
+| 6 | Recommendation Memo (CEO markdown, Independence Statement, Pause path, sensitivity analysis) | Always |
+| 7 | Contract & Pilot Setup (flag-only contract review, pilot success criteria + go/no-go) | Always |
+| 8 | Handoff & Renewal Calendar (90-day post-impl check, 90-day-advance renewal alert) | Always |
+
+**Build cuts under discussion:**
+- **Cut A — Selection Engine v2 Tier 1 only** (1-2 days): Independence Statement + Uncited-score cap + Pause Recommendation + CEO markdown output. Promotable as "Independent Vendor Selection."
+- **Sprint 1 — RFP-capable Selection v2** (3-4 days): Cut A + RFP builder + requirements builder + vendor invitation tracking + response capture + RFP doc generator. Matches founder's current ERP/CRM work.
+- **Sprint 2 — Lifecycle completion** (2-3 days): versioned Need Statement + reference call template + risk red-flag checklist + renewal calendar + pilot success criteria + go/no-go on Initiative Pilot.
+- **Total Sprint 1 + 2 — Full Lean Vendor Lifecycle (5-7 days).**
+
+**If founder commits to Vendor Lifecycle as a Year-1 named service line:**
+- Update STRATEGY-2026.md (add as 4th named service line alongside Quick Win Stack + 90-Day Commitment + AI Accelerator)
+- Update GTM.md (positioning: "Fortune 500 rigor at SMB speed. No RFP theater. No procurement bottleneck. 8 disciplined stages from need to renewal calendar.")
+- Update PRICING.md (bundle position: inside retainer / separate engagement / hybrid)
+- Update this roadmap (slot Sprint 1 + 2 — either inserted before Phase 2 dogfood, or run as Phase 2 dogfood vehicle)
+
+**If founder defers Vendor Lifecycle:**
+- Keep existing roadmap
+- Next code direction = pain-anchored entry OR verbal scale OR test reframe in browser
+
+---
 
 ## Current State (April 2026)
 

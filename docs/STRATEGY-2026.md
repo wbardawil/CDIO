@@ -111,6 +111,42 @@ This is the inversion from the previous version of this doc: features are now su
 
 ---
 
+## The 5 Economic Outcomes — How CEOs Consume the Output (added 2026-05-13)
+
+The 4 outcome pillars above are the **strategic claims** the platform makes about why a fractional CDIO with AI-CDIO outperforms the CEO's alternatives. They are pillar-level commitments anchored in 2025-2026 research.
+
+The **5 economic outcomes** below are the **CEO-facing consumption layer** — how the outputs of the platform land on a CEO's desk. The 16 modules are how AI-CDIO MEASURES; the 5 economic outcomes are how the CEO CONSUMES. Every initiative, quick win, and project produced by the platform is tagged with one of these five outcomes so the CEO reads the result in the language they think in.
+
+| # | Economic outcome | Modules that primarily produce it | Time-to-value | Maps to pillar |
+|---|---|---|---|---|
+| 1 | **Make money** (top-line: revenue, margin, retention) | M1, M2, M6, M7, M8, M9, M10 | 6-12 months | Pillar 1 + Pillar 4 |
+| 2 | **Save money** (cost takeout: SaaS / vendor / cloud / FinOps) | M4, M12, M13 | 30-90 days | Pillar 2 |
+| 3 | **Save time** (productivity: automation, delivery velocity) | M14, M15 | 60-180 days | Pillar 1 + Pillar 2 |
+| 4 | **Preserve money** (risk to cash already earned) | M3, M5 | continuous | Pillar 1 (avoid failure) |
+| 5 | **Preserve time** (avoid wasted hours: incidents, rework, firefighting) | M11, M16 | continuous | Pillar 1 (operational discipline) |
+
+**Why two layers (pillars and outcomes) instead of one:**
+
+- **Pillars are the strategic argument** — what the platform structurally delivers (project success, tech ROI, monthly alignment, moats). Used in `STRATEGY-2026.md`, the Differentiated Promise, the 90-Day Commitment Matrix. Pillar language is what the founder says when he's pitching the methodology.
+- **Outcomes are the consumption layer** — how output gets re-organized for the CEO when an actual roadmap, charter, or status report is generated. Outcome language is what the CEO reads on the page. Cash-positive outcomes (save_money, save_time) dominate the 90-day quick win list; make_money outcomes dominate the 6-12 month strategic initiative list; preserve outcomes appear only when assessment data says they are urgent (e.g., Level-1 score on M5 with real cash at risk).
+
+**Where this lands in code:**
+- `src/types/index.ts` — `EconomicOutcome` type, `ECONOMIC_OUTCOME_META` table, `outcome: EconomicOutcome` field on every `MODULE_META[1..16]`, `modulesByOutcome()` helper
+- `src/types/index.ts` — `Initiative` type carries optional `outcome`, `proof: { better, cheaper, faster }`, `dollar_anchor` fields (legacy fields preserved for backward compat)
+- `src/lib/agents/strategy.ts` — system prompt rewritten around the 5-outcome mental model; cash-positive quick wins must carry hard-dollar anchors; process-only quick wins explicitly rejected; better/cheaper/faster proof required per initiative
+- `src/app/dashboard/page.tsx` — roadmap tab renders grouped by the 5 outcomes in CEO priority order (Make money → Save money → Save time → Preserve money → Preserve time) with dollar-anchor pill + proof grid; falls back to legacy flat view when persisted roadmaps pre-date the reframe
+
+**The five outcomes each carry a CEO-facing pain question** (seed for planned pain-anchored entry pass before the 128-question diagnostic):
+- Make money: *"Where is technology blocking revenue you could be earning right now?"*
+- Save money: *"What is the biggest tech bill you would happily kill if you could prove it does not matter?"*
+- Save time: *"Where are people doing work a machine could do reliably?"*
+- Preserve money: *"What single tech failure would wipe out a quarter of cash if it happened tomorrow?"*
+- Preserve time: *"Where is your team firefighting the same thing month after month?"*
+
+**Decision filter (extension to the three-question filter at the bottom of this doc):** every roadmap output and every quick win MUST tag itself with one of these five outcomes. If it cannot, it is either misdiagnosed or it is process work disguised as outcome work — reject and rewrite.
+
+---
+
 ## The Practitioner's Feeling Map
 
 These are the four feelings that drive the practitioner's purchase, retention, and advocacy. Every shipped feature is graded against them.
