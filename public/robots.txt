@@ -1,0 +1,11 @@
+# AI-CDIO — robots.txt
+#
+# Iteration phase: disallow all crawlers while we dogfood on real client
+# data. Phase 1.5 Day 18 (production launch) will replace this with an
+# allow-all once legal + verified email + custom domain land per
+# docs/STRATEGY-2026.md Architectural Law 8.
+#
+# Keep this file in place until that gate clears.
+
+User-agent: *
+Disallow: /
