@@ -30,14 +30,28 @@ Two upgrades downstream of the assessment surface:
 1. **5 Economic Outcome reframe** — roadmap output restructured around CEO consumption layer. 16 modules are how we measure; 5 outcomes (make money / save money / save time / preserve money / preserve time) are how the CEO consumes. See `docs/STRATEGY-2026.md` "The 5 Economic Outcomes" section. Code in commit `d9b0a3c` on `claude/continue-ai-cdio-vBHyN`.
 2. **Standards Validation audit** (`docs/STANDARDS-VALIDATION.md`) — one-time cross-walk of all 128 verbatim playbook questions to recognized public standards. Mapping density 128/128 (100%), average standard top-level category coverage 75-80%. Static doc, regenerate on standard/question change.
 
-### Sprint plan currently UNDER REVIEW — four candidate next moves
+### Sprint plan — DECIDED 2026-05-13: Pre-Purchase Technology Audit ships first
 
-The session ended with the founder weighing four directions. **None has been committed.** Listed by leverage:
+After weighing four directions (Vendor Lifecycle / pain-entry / verbal-scale / browser-test), the founder surfaced a sharper service concept — the **Pre-Purchase Technology Audit** — and the recommendation locked: **ship the Audit Engine first.**
 
-1. **Vendor Lifecycle Management as Year-1 named service line** (5-7 days total: Sprint 1 + 2). Customer-pull evidence: founder's two current client projects are ERP and CRM RFPs. Direct alignment with the Differentiated Promise's "bad tech bets die before they cost you money." Strategic decision pending. See `docs/SESSION_HANDOFF.md` "Vendor Lifecycle Management" section for full case + lean SMB 8-stage lifecycle + Sprint 1/2 split.
-2. **Pain-anchored entry** (~2-3h) — 5 outcome-flavored questions before the 128-question diagnostic. Closes the loop from CEO mental model to assessment.
-3. **Verbal scale on diagnostic** (~3-4h) — Solid / Spotty / Nothing yet / Don't know + optional evidence box replacing yes/no/partial/na. Independent UX upgrade.
-4. **Browser-test the outcome reframe first** — generate a roadmap on a real synthesized assessment, verify the 5-outcome grouping renders as intended.
+**Why the Audit beat the alternatives** (see `docs/STRATEGY-2026.md` "Named Service Lines" for the full case):
+- It is the most literal operationalization of the Differentiated Promise's strongest line ("bad tech bets die before they cost you money") — the sharpest expression of Pillar 2
+- Fastest to deliver (days, not weeks), most defensible, naturally recurring (every major purchase is a new audit)
+- It is the **wedge**: a CEO who'd never sign a retainer pays to stress-test a $400K ERP decision; the audit earns the broader engagement
+- Customer #0 evidence is live TODAY: founder's two current client projects are ERP and CRM purchase decisions
+- Direct path to the first hard `docs/OUTCOMES.md` entries
+
+**Decided sequence:**
+1. **Doc-pass** (this commit) — Pre-Purchase Audit added as a named service line across STRATEGY-2026 / ROADMAP / SESSION_HANDOFF / CONTRACT-TEMPLATES / GTM / PRICING
+2. **Audit Engine build (~3-4 days)** — data model + 5-lens orchestration (RAG-grounded per lens) + intake gate (blank-field-as-finding) + 4-part output template + Method Capture + workspace surface (`/clients/[orgId]/audits/new`)
+3. **Founder runs it on live ERP/CRM decisions** as customer #0 → first hard outcome-log entries
+4. **Full Lean Vendor Lifecycle becomes the upsell** — deferred until the Audit has produced real outcome evidence
+5. Pain-anchored entry + verbal scale + browser-test of the outcome reframe → after the Audit ships
+
+**Deferred (not abandoned):**
+- **Lean Vendor Lifecycle Management** (8-stage, 5-7 days) — now positioned as the upsell from an audited client. Full case preserved in `docs/SESSION_HANDOFF.md`.
+- **Pain-anchored entry** (~2-3h) and **verbal scale** (~3-4h) — UX upgrades, sequenced after the Audit.
+- **Browser-test the outcome reframe** — fold into the Audit Engine QA pass since both touch the workspace.
 
 ### Vendor Lifecycle Management — candidate Year-1 named service line (PENDING FOUNDER DECISION)
 

@@ -76,7 +76,20 @@ One-time cross-walk of all 128 verbatim playbook diagnostic questions to recogni
 
 This gives the founder defensible "we cover 78% of NIST CSF Protect" claims for CEO conversations without committing to live control-by-control product surface.
 
-### Where we paused — the next-direction decision
+### DECIDED 2026-05-13 — Pre-Purchase Technology Audit ships first
+
+After the four-way deliberation below, the founder surfaced a sharper concept: an **independent Pre-Purchase Technology Audit** — a discrete fixed-fee engagement that sits between a principal and a major tech/system purchase, before the check is signed, loyal only to the accountable principal. Verdict: BUY / DON'T BUY / RENEGOTIATE / HOLD, with evidence and the money quantified.
+
+**Decision: build the Audit Engine FIRST, ahead of the full Vendor Lifecycle, pain-entry, and verbal-scale.** Rationale + full spec in `docs/STRATEGY-2026.md` "Named Service Lines (added 2026-05-13)". Sequence in `docs/ROADMAP.md` "2026-05-13 sprint re-baseline".
+
+- It is the sharpest expression of Pillar 2 + the Differentiated Promise's "bad tech bets die before they cost you money"
+- Wedge product: a CEO who'd never sign a retainer pays to stress-test a $400K ERP decision; the audit earns the engagement
+- Customer #0 evidence is live today (founder's ERP + CRM purchase decisions)
+- ~3-4 day build; the full Lean Vendor Lifecycle becomes the deferred upsell
+
+Doc-pass committed as part of this session. Audit Engine build starts immediately after.
+
+### (Historical) The four-way deliberation that preceded the decision
 
 The session surfaced four legitimate next moves. None has been committed:
 

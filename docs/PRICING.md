@@ -16,6 +16,15 @@
 ---
 
 
+## Pre-Purchase Technology Audit — discrete fixed-fee shape (added 2026-05-13)
+
+The named Pre-Purchase Technology Audit service line does **not** fit the recurring-tier model below. It is a **discrete, fixed-fee engagement** — one decision, one verdict, days to deliver. Pricing shape (numbers provisional, locked at the Phase 2 Day 35-38 review alongside everything else here):
+
+- **Fixed fee per audit**, scaled to the size of the decision being audited — anchored to a fraction of the money at stake, not to hours. Provisional sketch: a tiered fixed fee indexed to total contract value of the purchase under audit (e.g. bands for sub-$100K / $100K-$500K / $500K+ decisions). Final numbers from real engagements + Day 19+ cost telemetry.
+- **ROI math that sells it:** the audit fee is justified the moment it catches a single overpayment, mis-fit, or lock-in trap. A $260K overpayment caught on an ERP decision pays for the audit many times over — the deliverable quantifies its own ROI in the board summary by design.
+- **Not bundled into the retainer tiers** — it is a standalone engagement that frequently *precedes* and *sells* a retainer. Treat as a separate SKU at Day 35-38 pricing review.
+- **Independence is a pricing constraint, not just a stance:** zero vendor fees / referral / commission, ever. Revenue is principal-paid only. This is contractually warranted (see `docs/CONTRACT-TEMPLATES.md` clause 5).
+
 ## Two Customer Segments, Five Tiers
 
 ### Fractional CDIO/CTO (Practitioner Segment)

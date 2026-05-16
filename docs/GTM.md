@@ -135,6 +135,21 @@
 
 ---
 
+## Named Service: Pre-Purchase Technology Audit (added 2026-05-13)
+
+The sharpest wedge in the GTM motion. A discrete, fixed-fee engagement sold into the moment of maximum leverage: a major technology/system purchase about to be signed.
+
+**Positioning line:** *"Before you sign: an independent audit loyal only to you. Not the vendor, not the team that already wants it. Buy, don't buy, or renegotiate — with the evidence and the money quantified. One decision, one verdict, board-ready in days."*
+
+**Why it sells when the retainer doesn't:** a CEO who would never commit to a fractional retainer will pay to de-risk a six-figure decision they're personally accountable for. The audit is the foot in the door; the broader engagement is earned from the outcome ("you caught the $260K overpay on the ERP — what else are we about to get wrong?").
+
+**Buyer trigger:** an ERP / CRM / core-system purchase, a vendor proposal on the desk, an internal champion pushing, a principal who gets fired if it's wrong. Founder-market fit is exact — the founder's two current client projects are precisely this.
+
+**Sales motion:**
+- LinkedIn content: anonymized audit findings ("a client was about to overpay $260K on an ERP — here's the lens that caught it")
+- Direct: "Send me the vendor proposal and what gets you fired if this is wrong. I'll tell you buy / don't / renegotiate in [N] days, with the money quantified."
+- Upsell path: audit → "you need someone watching every major decision, not just this one" → fractional engagement OR full Lean Vendor Lifecycle
+
 ## The 14-Day Validation Sprint
 
 **Day 1-2:**

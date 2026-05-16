@@ -77,6 +77,24 @@ Each category lists the founder's stated intent. Attorney drafts the actual lang
 - "Practitioner's recommendations from AI-CDIO are advisory. Final decisions on technology investments, vendor selections, and strategic direction rest with Client. Practitioner shall not be liable for outcomes resulting from Client's decisions, except as set forth in standard professional services indemnification clauses."
 - "EU AI Act / GDPR jurisdiction clause: Client acknowledges that AI-CDIO platform processes Client data on US-based infrastructure (Supabase, Vercel) with appropriate Data Processing Agreement in place. EU clients receive standard contractual clauses on request."
 
+### 5. Pre-Purchase Technology Audit — advisory-not-liable clause (NEW 2026-05-13)
+
+**Purpose:** the Pre-Purchase Technology Audit (named service line, see `docs/STRATEGY-2026.md`) produces a decisive verdict — BUY / DON'T BUY / RENEGOTIATE / HOLD — on a major technology purchase. The verdict is advisory. The accountable principal owns the decision. This clause protects the practitioner legally; the independence stance protects credibility. Same discipline as the Pillar 4 AI-claim boundary.
+
+**Stated intent:**
+> *The audit's loyalty is to the principal who is personally accountable if the purchase goes wrong — never the vendor, never the internal champion. The verdict is the practitioner's honest professional judgment on the evidence available. The decision, and accountability for it, remains the principal's.*
+
+**Sample clauses to draft (placeholders for Phase 2 Day 30 attorney review):**
+- "The Pre-Purchase Technology Audit delivers Practitioner's independent professional opinion (BUY / DON'T BUY / RENEGOTIATE / HOLD) based on information made available by Client during the engagement. The verdict is advisory. Final purchasing authority and accountability rest solely with Client."
+- "Practitioner's verdict is rendered on the evidence Client provides. Where Client cannot provide an input the audit requires (strategy served, current operating model, vendor proposal), Practitioner may render a HOLD verdict and that limitation is itself a documented finding. Practitioner is not liable for outcomes arising from incomplete or inaccurate information supplied by Client or the vendor."
+- "Practitioner receives no fee, referral, commission, or consideration of any kind from any vendor evaluated. The engagement is Client-paid only. Practitioner warrants this independence in writing in every audit deliverable (the Independence Statement)."
+- "The audit is one decision per engagement. It does not include implementation design, contract negotiation, or organizational rollout. Those are separate engagements scoped separately."
+
+**Notes for attorney:**
+- The HOLD verdict + 'blank input is a finding' logic must be defensible: the practitioner is paid for judgment, including the judgment that the evidence is insufficient to proceed.
+- The Independence Statement (no vendor fees, ever) is the credibility spine and should be contractually warranted, not just asserted in marketing.
+- Mirror the Pillar 4 AI-claim-boundary language: advisory tool / professional opinion, not an outcome guarantee.
+
 ## Attorney brief (for Phase 2 Day 30 review)
 
 **Targeting:** SMB engagement contracts (10-250 employee organizations). US-first; EU language as opt-in if Client is EU-based.

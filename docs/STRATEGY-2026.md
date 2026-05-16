@@ -147,6 +147,47 @@ The **5 economic outcomes** below are the **CEO-facing consumption layer** — h
 
 ---
 
+## Named Service Lines (added 2026-05-13)
+
+The platform supports discrete, sellable service lines a fractional CDIO runs ON the platform. As of 2026-05-13 there are three named services plus the core engagement:
+
+| Service line | What it is | Shape | Where it lives in the build |
+|---|---|---|---|
+| **Core Fractional Engagement** | The 90-Day Commitment Matrix engagement | Monthly retainer | Phases 1A-1D + 2.5 (the whole platform) |
+| **Pre-Purchase Technology Audit** ⭐ NEW | Independent audit of a single major tech/system purchase BEFORE the check is signed. Loyal only to the accountable principal. Verdict: BUY / DON'T BUY / RENEGOTIATE / HOLD, with evidence and the money quantified. | Discrete fixed-fee engagement (days, not weeks) | NEW Audit Engine — parallel to the Selection Engine. **Recommended first vendor-domain service to ship (ahead of full Vendor Lifecycle).** |
+| **Lean Vendor Lifecycle Management** | The full 8-stage selection process (Need → Shortlist → RFP → Demo → Reference → Memo → Contract → Renewal) | Project engagement (5-8 weeks) | Selection Engine v2 + RFP module. The *upsell* from a client who got audited once and realized they need someone watching every major decision. |
+| **AI Accelerator** | AI Readiness + Roadmap + Governance | Bundled into core or sold standalone | Phase 2.5 |
+
+### The Pre-Purchase Technology Audit (the sharpest expression of Pillar 2)
+
+**Why this is a named service line, not just a feature:** it is the most literal operationalization of the Differentiated Promise's strongest line — *"bad tech bets die before they cost you money."* It is the highest-leverage, fastest-to-deliver, most-defensible, most-recurring slice of vendor work, and it is the natural **wedge**: a CEO who would never sign a fractional retainer WILL pay to have a $400K ERP decision stress-tested before signing — and that audit is how the broader engagement is earned.
+
+**Stance (the spine):** loyalty to the principal who is personally accountable if the purchase goes wrong — never to the vendor, never to the internal champion who already wants it. The auditor assumes the vendor's framing is wrong until proven otherwise and audits the *decision*, not the demo. The most important finding is usually the thing nobody in the room asked. One decision per audit; it ends at the verdict (no implementation design, no negotiation, no rollout scoping — that boundary is what keeps this a days-long product instead of a multi-week engagement).
+
+**The five lenses** are a recombination of the existing 16-module body of knowledge aimed at a single decision point (which is why they are RAG-groundable from day one):
+
+| Lens | Grounds in modules |
+|---|---|
+| 1 — Strategy Fit | M2 (Tech Strategy & Alignment), M1 (Tech Leadership) |
+| 2 — Operating-Model Fit | M11 (IT Ops), M15 (Process), M16 (Change) |
+| 3 — Total Cost & Lock-in | M12 (Tech Finance), M13 (Vendors/SaaS), M3 (Architecture debt) |
+| 4 — Vendor Incentive & Capability | M13 (Vendor Management) |
+| 5 — Reversibility & Risk | M5 (Risk), M3 (technical debt) |
+
+**Output (4 artifacts):** (A) Strategy-fit verdict, decisive, one paragraph; (B) operating-model-aligned requirements brief (what it must do, mapped to how the org actually runs — not the vendor's feature list); (C) per-lens finding + evidence + flag (KILL / GO / RENEGOTIATE); (D) one-page board summary a board reads in 60 seconds, headlined by a single number (overpayment $ or cheaper-path savings $). Every finding carries a "because." Quantify overpayment and the 10x-cheaper path in real numbers. **A fourth verdict state — HOLD — exists for insufficient evidence** (the Pause Recommendation discipline applied: a consultant who says "I won't sign off until I see the data migration plan" is trusted more than one who always has an answer). The verdict ties to the 5 economic outcomes — "sold as make-money, evidence says save-time at best, and the time saved doesn't clear the 3-year cost" is the sentence that kills bad deals.
+
+**Method Capture:** every audit ends by listing verbatim the questions actually asked, grouped by lens, marking which did the most work. This is the Phase 4 Knowledge Reuse panel applied — the eighth audit benefits from audits 1-7. Portfolio-level: tag which lens produced the decisive finding so the practitioner learns which lens does the most work for which client type.
+
+**The intake gate is load-bearing.** If the principal cannot produce the strategy this serves or how the org runs today, that is not a blocker — **it is the first finding.** "You are about to sign a $400K deal and cannot articulate the strategy it serves" is a board-stopping sentence. The platform builds intake so a blank field becomes evidence, not an error.
+
+**Liability boundary (same discipline as the Pillar 4 AI-claim boundary):** the verdict is advisory. The principal owns the decision. `docs/CONTRACT-TEMPLATES.md` carries an advisory-not-liable clause (Phase 2 Day 30 attorney review). The independence stance protects credibility; the contract clause protects legally. The engagement is principal-paid, never vendor-adjacent — this is never free vendor pre-sales.
+
+**Relationship to the Selection Engine:** the Audit Engine is *parallel* to the Selection Engine, not a mode of it. Selection = build a matrix to PICK among options (forward-looking). Audit = adversarially stress-test a choice already mostly made and return a verdict (backward-challenging). The Audit can optionally consume a Selection Engine output as one input; its native posture is adversarial, not comparative.
+
+**Decision (2026-05-13):** the Pre-Purchase Technology Audit is the recommended **first vendor-domain service to ship**, ahead of the full Lean Vendor Lifecycle. Sequence: ship the Audit Engine (~3-4 days) → run it on the founder's live ERP/CRM decisions as customer #0 → first hard `docs/OUTCOMES.md` entries ("killed the $400K ERP overspend at [client], cheaper path saved $260K over 3 years") → those entries sell both the Audit-as-a-service and the broader fractional engagement. The full Lean Vendor Lifecycle becomes the upsell, deferred until the Audit has produced real outcome evidence.
+
+---
+
 ## The Practitioner's Feeling Map
 
 These are the four feelings that drive the practitioner's purchase, retention, and advocacy. Every shipped feature is graded against them.
