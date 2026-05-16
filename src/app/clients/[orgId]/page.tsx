@@ -254,6 +254,12 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
               Selections
             </Link>
             <Link
+              href={`/clients/${org.id}/audits`}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Audits
+            </Link>
+            <Link
               href={`/clients/${org.id}/cadence`}
               className="text-sm text-gray-600 hover:text-gray-900"
             >
