@@ -342,6 +342,30 @@ export function AuditDetailClient({
             </div>
           )}
 
+          {/* Advisory-not-liable footer — prints with the deliverable.
+              Surfaces the liability boundary ON the artifact itself,
+              not only in the contract stub, for the window before
+              Phase 2 Day 30 attorney review. */}
+          <div className="border-t border-gray-200 pt-4 text-[11px] leading-relaxed text-gray-500">
+            <p className="font-semibold text-gray-600 mb-1">
+              Independence &amp; advisory boundary
+            </p>
+            <p>
+              This audit is the practitioner&apos;s independent professional
+              opinion (BUY / DON&apos;T BUY / RENEGOTIATE / HOLD), rendered on
+              the evidence made available during the engagement. The verdict
+              is <strong>advisory</strong>: final purchasing authority and
+              accountability rest solely with the principal. Where a required
+              input could not be supplied, that limitation is itself a
+              documented finding and may default the verdict to HOLD. The
+              practitioner receives no fee, referral, commission, or
+              consideration of any kind from any vendor evaluated — this
+              engagement is principal-paid only. The audit covers one decision
+              and ends at the verdict; it does not include implementation
+              design, contract negotiation, or organizational rollout.
+            </p>
+          </div>
+
           <div className="print:hidden">
             <button
               onClick={() => window.print()}

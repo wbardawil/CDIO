@@ -170,3 +170,76 @@ When Phase 1.5 lands, this doc gets a second section covering:
 - Cost telemetry surfacing dashboards (`/admin/metrics` per ROADMAP Phase 3 Day 59)
 
 Not in scope today. Today is: deploy fast, iterate fast, keep the iteration URL private.
+
+---
+
+## GO-LIVE CHECKLIST — close the proof loop (R1, ~30 min, founder-side)
+
+> Added 2026-05-13. This is the single consolidated pass that turns the
+> branch's built capability into the platform's first logged outcome.
+> Until this is done, nothing shipped this session can be dogfooded, so
+> nothing produces Day-90 evidence. Per docs/STRATEGY-2026.md Day 90
+> kill switch, logged CEO outcomes — not features — are the metric.
+> Do these in order.
+
+**Branch note:** all 2026-05-13 work is on `claude/continue-ai-cdio-vBHyN`,
+not `main`. Decide your deploy target: either point the Vercel project
+at this branch, or merge to `main` after step 4 verifies clean (R2).
+
+### 1. Fix the Vercel 500 (env vars + redeploy)
+
+The `cdio-rho.vercel.app` 500 is missing/misconfigured Clerk env vars,
+not a code bug (app builds + runs locally).
+
+- Vercel → Project → Settings → Environment Variables → add **all
+  REQUIRED** vars from `.env.example` (repo root). Homepage specifically
+  needs the 6 Clerk vars; deeper routes need Supabase + Anthropic.
+- Scope each to **Production** (and Preview if you want branch URLs).
+- ⚠️ **Redeploy.** Env-var changes do NOT apply to existing
+  deployments — Vercel → Deployments → latest → ⋯ → Redeploy.
+- Clerk dashboard → your app → Domains → add the Vercel URL as an
+  allowed origin.
+- Verify: load `/scan` (no auth), `/sign-in` (Clerk roundtrip).
+
+### 2. Apply the two Audit migrations (in order)
+
+From your local machine (DB creds live in your `.env.local`; never
+paste into the Supabase dashboard per project rule):
+
+```
+node scripts/migrate.js   # ensure schema-v16-audits.sql is applied
+node scripts/migrate.js   # then schema-v17-audit-companion.sql
+```
+
+(If `migrate.js` doesn't auto-pick new files, point it at
+`src/lib/db/schema-v16-audits.sql` then `schema-v17-audit-companion.sql`.)
+v17 is an additive idempotent ALTER — safe. Order matters: v16 creates
+the table, v17 adds the `companion` column.
+
+### 3. Smoke-test the Audit Engine
+
+- Open a client → **Audits** → **+ New audit**.
+- Title it after a real live decision (an ERP / CRM / contact-center
+  call you are actually weighing).
+- Fill what you have. Leave one required field blank deliberately to
+  confirm the gap-as-finding behavior.
+- **Generate companion** → confirm the lens-by-lens question sheet +
+  "do not leave without asking" renders.
+- **Run the audit** (~30-60s) → confirm verdict badge, headline money,
+  board summary, 5 lens findings, Method Capture, and the advisory
+  footer print correctly (Print / Save as PDF).
+
+### 4. Log the first outcome
+
+After running it on a real decision, write one entry in
+`docs/OUTCOMES.md`: what the audit caught, the money quantified, the
+verdict. **This single entry is the Day-90 kill-switch evidence.** It
+matters more than any further feature.
+
+### Done =
+
+The 500 is gone, both migrations applied, one real audit run on a live
+decision, one `OUTCOMES.md` entry written. At that point: merge the
+branch to `main` (R2), update `CLAUDE.md` Current Sprint to reality
+(R3), and the evidence-driven tightening batch begins (R6 + the 4
+logged intake hardenings).
