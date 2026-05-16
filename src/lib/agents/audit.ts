@@ -19,6 +19,8 @@ import {
   type AuditIntake,
   type AuditOutput,
   type AuditMethodCapture,
+  type AuditCompanion,
+  type AuditCompanionLens,
   type AuditLensKey,
   type AuditVerdict,
   type LensFlag,
@@ -151,7 +153,16 @@ ${intake.vendor_proposal || "(not provided)"}
 ${intake.current_operating_model || "(not provided)"}
 
 5. The strategy this is supposed to serve:
-${intake.strategy_served || "(not provided)"}`;
+${intake.strategy_served || "(not provided)"}
+
+6. Prior technology attempts in THIS area and how they went:
+${intake.prior_attempts || "(not provided — probe this; a prior failed rollout in the same function is the strongest predictor the next one fails for the same org-behavior reason)"}
+
+7. AI/model ownership (if this purchase involves AI/ML):
+${intake.ai_model_ownership || "(not provided — if this is an AI purchase, unstated model/data ownership is itself a lock-in red flag; Lens 3/4)"}
+
+8. What each option demonstrated — live/on-the-fly vs scripted/canned:
+${intake.demo_observations || "(not provided — separate demo polish + perceived industry familiarity, which is cheap to remediate, from technical capability, which is structural; Lens 4)"}`;
 
   const gapBlock = gaps.finding
     ? `\n\n## INTAKE GAPS (a blank required input is itself the first finding)\nMissing: ${gaps.missing.join(
@@ -313,4 +324,119 @@ Rules: every finding carries a "because" in evidence. Quantify money in real num
   };
 
   return { output, method_capture };
+}
+
+// ============================================================
+// Live Audit Companion — the pre-meeting output mode.
+//
+// Same stance, same five lenses. But the output is not a verdict;
+// it is the exact structural questions to ask IN THE ROOM while
+// the vendor is performing — tailored to this specific purchase.
+// The post-hoc verdict documents judgment after the fact; the
+// companion puts the question in the practitioner's mouth in real
+// time. Cases caught live (model lock-in surfaced only when asked;
+// on-the-fly demo capability the room missed) are exactly what
+// this front-loads.
+// ============================================================
+
+export async function generateCompanion(
+  audit: { id: string; org_id: string; title: string; intake: AuditIntake }
+): Promise<AuditCompanion> {
+  const intake = audit.intake;
+  const playbookContext = await buildPlaybookContext(intake);
+
+  const intakeBlock = `## WHAT WE KNOW GOING IN
+
+System: ${intake.system_name || "(unspecified)"} | Vendor: ${
+    intake.vendor_name || "(unspecified)"
+  } | Cost: ${intake.total_cost || "(unspecified)"}
+Accountable principal: ${intake.principal_role || "(unspecified)"} — fired if wrong: ${
+    intake.accountability || "(unspecified)"
+  }
+Strategy it should serve: ${intake.strategy_served || "(unstated — itself a question to ask)"}
+How the org runs today: ${intake.current_operating_model || "(unstated)"}
+Prior attempts in this area: ${intake.prior_attempts || "(unknown — ask what was tried before and why it failed)"}
+AI/model ownership: ${intake.ai_model_ownership || "(unstated — if AI is involved, this is a must-ask)"}
+Demo observations so far: ${intake.demo_observations || "(none yet — this meeting is the test)"}`;
+
+  const message = await logAnthropicCall({
+    agentName: "audit.generateCompanion",
+    metadata: { auditId: audit.id, orgId: audit.org_id },
+    call: () =>
+      anthropic.messages.create({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 2048,
+        system:
+          AUDIT_SYSTEM_PROMPT +
+          `\n\n## MODE: PRE-MEETING COMPANION\nYou are NOT rendering a verdict. You are arming the practitioner who is about to walk into the room with the vendor. Produce the exact structural questions to ask live — the ones that surface what nobody else in the room is looking at. For each, name what evasion or a weak answer looks like, so the practitioner recognizes it in real time. Keep questions blunt and askable out loud.` +
+          (playbookContext
+            ? `\n\n## PLAYBOOK GROUNDING\n${playbookContext.substring(0, 3000)}`
+            : ""),
+        messages: [
+          {
+            role: "user",
+            content: `Prepare the practitioner for the meeting on "${audit.title}".
+
+${intakeBlock}
+
+Produce JSON ONLY:
+
+{
+  "meeting_context": "<one line: what this meeting is and what it must surface>",
+  "lenses": [
+    { "lens": "strategy_fit", "questions": ["<blunt question to ask out loud>", "..."], "watch_for": "<what evasion / a weak answer sounds like>" },
+    { "lens": "operating_model_fit", "questions": ["..."], "watch_for": "..." },
+    { "lens": "total_cost_lockin", "questions": ["..."], "watch_for": "..." },
+    { "lens": "vendor_incentive", "questions": ["..."], "watch_for": "..." },
+    { "lens": "reversibility_risk", "questions": ["..."], "watch_for": "..." }
+  ],
+  "do_not_leave_without_asking": "<the single question most likely to surface the structural finding nobody else in the room is looking at>"
+}
+
+3-5 questions per lens, blunt and askable. If AI/model ownership is unstated and the purchase involves AI, the lock-in question is mandatory under total_cost_lockin. If prior attempts are unknown, "what did you try before in this area and why did it not stick?" is mandatory under operating_model_fit. If no live demo has happened, "configure that against our actual requirement, right now, in front of us" belongs under vendor_incentive.`,
+          },
+        ],
+      }),
+  });
+
+  const text = message.content[0].type === "text" ? message.content[0].text : "";
+  const jsonMatch = text.match(/\{[\s\S]*\}/);
+  if (!jsonMatch) {
+    throw new Error("Companion agent returned no parseable JSON");
+  }
+
+  const parsed = JSON.parse(jsonMatch[0]) as {
+    meeting_context?: string;
+    lenses?: Array<{ lens?: string; questions?: unknown; watch_for?: string }>;
+    do_not_leave_without_asking?: string;
+  };
+
+  const validLenses = new Set<string>(LENS_ORDER);
+  const lenses: AuditCompanionLens[] = (parsed.lenses ?? [])
+    .filter(
+      (l): l is { lens: string; questions: unknown; watch_for?: string } =>
+        typeof l?.lens === "string" && validLenses.has(l.lens)
+    )
+    .map((l) => ({
+      lens: l.lens as AuditLensKey,
+      questions: Array.isArray(l.questions)
+        ? (l.questions as unknown[])
+            .filter((q): q is string => typeof q === "string")
+            .slice(0, 6)
+        : [],
+      watch_for: typeof l.watch_for === "string" ? l.watch_for : "",
+    }));
+
+  return {
+    generated_at: new Date().toISOString(),
+    meeting_context:
+      typeof parsed.meeting_context === "string"
+        ? parsed.meeting_context.trim()
+        : audit.title,
+    lenses,
+    do_not_leave_without_asking:
+      typeof parsed.do_not_leave_without_asking === "string"
+        ? parsed.do_not_leave_without_asking.trim()
+        : "",
+  };
 }

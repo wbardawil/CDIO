@@ -13,6 +13,9 @@ const intakeSchema = z.object({
   vendor_proposal: z.string().max(20000).optional(),
   current_operating_model: z.string().max(20000).optional(),
   strategy_served: z.string().max(20000).optional(),
+  prior_attempts: z.string().max(20000).optional(),
+  ai_model_ownership: z.string().max(20000).optional(),
+  demo_observations: z.string().max(20000).optional(),
   selection_id: z.string().uuid().nullable().optional(),
 });
 

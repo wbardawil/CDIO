@@ -118,8 +118,58 @@ export interface AuditIntake {
   current_operating_model: string;
   // 5. The strategy this is supposed to serve
   strategy_served: string;
+
+  // --- Intake hardenings (2026-05-13, justified by real engagements) ---
+
+  // Prior technology attempts in THIS area and how they went. The
+  // single strongest predictor of absorption failure — a failed
+  // prior rollout in the same function (e.g. a WhatsApp bot the
+  // commercial team never configured) means the next purchase
+  // likely fails for the same org-behavior reason, not the tool.
+  // Blank here is itself probed by Lens 2 / Lens 5.
+  prior_attempts: string;
+
+  // When the purchase involves AI/ML: who owns the model + data
+  // layer? Can we bring our own model? Can it run on infra we
+  // control? Vendors are deliberately vague here; this forces the
+  // question at intake instead of leaving it to mid-demo discovery.
+  ai_model_ownership: string;
+
+  // What each option actually DEMONSTRATED — live/on-the-fly vs
+  // scripted/canned. Separates demo polish + perceived industry
+  // familiarity (cheap to remediate) from technical capability
+  // (structural). Lens 4 reasons over this directly.
+  demo_observations: string;
+
   // Optional link to a Selection the audit reviews (if the org ran one).
   selection_id: string | null;
+}
+
+// --- Live Audit Companion ---
+//
+// The pre-meeting output mode of the same engine. Generated BEFORE
+// the vendor meeting: a lens-by-lens question sheet tailored to
+// THIS purchase — the exact structural probes to ask in the room
+// while the vendor is performing. The post-hoc verdict documents
+// judgment after the fact; the companion puts the question in the
+// practitioner's mouth in real time. Closes the loop with Method
+// Capture so the highest-leverage questions compound meeting over
+// meeting.
+
+export interface AuditCompanionLens {
+  lens: AuditLensKey;
+  questions: string[];   // exact probes to ask in the room
+  watch_for: string;     // what evasion / a bad answer looks like
+}
+
+export interface AuditCompanion {
+  generated_at: string;
+  meeting_context: string;  // one line: what this meeting is for
+  lenses: AuditCompanionLens[];
+  // The single question the practitioner must not leave the room
+  // without asking — the one most likely to surface the structural
+  // finding nobody else in the room is looking at.
+  do_not_leave_without_asking: string;
 }
 
 /** Which intake fields are blank — a blank field is itself a finding. */
@@ -140,6 +190,7 @@ export interface Audit {
   intake: AuditIntake;
   output: AuditOutput | null;
   method_capture: AuditMethodCapture[] | null;
+  companion: AuditCompanion | null;
   ran_at: string | null;
 }
 
@@ -174,16 +225,40 @@ export function evaluateIntakeGaps(intake: AuditIntake): AuditIntakeGaps {
   const missing = REQUIRED_INTAKE_FIELDS.filter(
     (f) => !String(intake[f] ?? "").trim()
   );
-  if (missing.length === 0) {
+
+  // Conditional AI probe: fires independently of required-field
+  // gaps. If the purchase smells AI/ML and model ownership is
+  // blank, that omission is itself a lock-in red flag worth a
+  // finding even when every required field is filled.
+  const haystack =
+    `${intake.system_name} ${intake.vendor_name} ${intake.vendor_proposal}`.toLowerCase();
+  const looksAI = /\b(ai|ml|llm|model|agent|gpt|genai|copilot|voice ai)\b/.test(
+    haystack
+  );
+  const aiOwnershipUnstated =
+    looksAI && !String(intake.ai_model_ownership ?? "").trim();
+
+  if (missing.length === 0 && !aiOwnershipUnstated) {
     return { missing: [], finding: null };
   }
-  const phrases = missing.map((f) => INTAKE_FIELD_LABEL[f] ?? f);
-  const finding =
-    `The principal is moving toward a purchase of ${
-      intake.system_name?.trim() || "an unspecified system"
-    } but cannot articulate: ${phrases.join("; ")}. ` +
-    `This gap is itself the first finding — a decision this size should not proceed ` +
-    `until each of these is on the table. Verdict defaults to HOLD until resolved.`;
+
+  let finding = "";
+  if (missing.length > 0) {
+    const phrases = missing.map((f) => INTAKE_FIELD_LABEL[f] ?? f);
+    finding =
+      `The principal is moving toward a purchase of ${
+        intake.system_name?.trim() || "an unspecified system"
+      } but cannot articulate: ${phrases.join("; ")}. ` +
+      `This gap is itself the first finding — a decision this size should not proceed ` +
+      `until each of these is on the table. Verdict defaults to HOLD until resolved.`;
+  }
+  if (aiOwnershipUnstated) {
+    finding +=
+      (finding ? " " : "") +
+      `This purchase involves AI/ML and model/data ownership is unstated — ` +
+      `surface before signing: can we bring our own model, who owns the data layer, ` +
+      `can it run on infrastructure we control? Unstated model ownership is a lock-in red flag.`;
+  }
   return { missing, finding };
 }
 

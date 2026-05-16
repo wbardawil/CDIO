@@ -18,6 +18,9 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
     vendor_proposal: "",
     current_operating_model: "",
     strategy_served: "",
+    prior_attempts: "",
+    ai_model_ownership: "",
+    demo_observations: "",
   });
 
   const set = (k: keyof typeof form) => (
@@ -48,6 +51,9 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
             vendor_proposal: form.vendor_proposal.trim(),
             current_operating_model: form.current_operating_model.trim(),
             strategy_served: form.strategy_served.trim(),
+            prior_attempts: form.prior_attempts.trim(),
+            ai_model_ownership: form.ai_model_ownership.trim(),
+            demo_observations: form.demo_observations.trim(),
           },
         }),
       });
@@ -188,6 +194,61 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           value={form.strategy_served}
           onChange={set("strategy_served")}
           placeholder="Doubling headcount in 18 months; current ERP can't scale past X…"
+        />
+      </div>
+
+      <div>
+        <label className={labelCls}>
+          Prior attempts in this area &mdash; and how they went
+        </label>
+        <p className={hintCls}>
+          The single strongest predictor of failure. A previous tool the
+          team never configured or followed (e.g. a WhatsApp bot the
+          commercial area never set up) means the next purchase likely
+          fails for the same org-behavior reason &mdash; not the tool.
+        </p>
+        <textarea
+          className={field}
+          rows={3}
+          value={form.prior_attempts}
+          onChange={set("prior_attempts")}
+          placeholder="Atom WhatsApp bot 2024 — failed; commercial area never did the process configuration; campaigns changed too often…"
+        />
+      </div>
+
+      <div>
+        <label className={labelCls}>
+          AI / model ownership <span className="text-gray-400">(if AI/ML involved)</span>
+        </label>
+        <p className={hintCls}>
+          Who owns the model + data layer? Can we bring our own model? Can
+          it run on infrastructure we control? Vendors stay vague here on
+          purpose &mdash; unstated model ownership is a lock-in red flag.
+        </p>
+        <textarea
+          className={field}
+          rows={3}
+          value={form.ai_model_ownership}
+          onChange={set("ai_model_ownership")}
+          placeholder="Vendor said the voice-AI agent must use their LLM; no BYO-model; data layer on their infra…"
+        />
+      </div>
+
+      <div>
+        <label className={labelCls}>
+          Demo observations <span className="text-gray-400">(live vs scripted, per option)</span>
+        </label>
+        <p className={hintCls}>
+          What did each option actually demonstrate? Separate demo polish
+          and perceived industry familiarity (cheap to remediate) from
+          technical capability shown live, on the fly (structural).
+        </p>
+        <textarea
+          className={field}
+          rows={3}
+          value={form.demo_observations}
+          onChange={set("demo_observations")}
+          placeholder="Vendor A: scripted demo, knew our industry vocabulary. Vendor B: configured custom catalogs on the fly against our requirements, lean team…"
         />
       </div>
 

@@ -48,6 +48,8 @@ After weighing four directions (Vendor Lifecycle / pain-entry / verbal-scale / b
 4. **Full Lean Vendor Lifecycle becomes the upsell** — deferred until the Audit has produced real outcome evidence
 5. Pain-anchored entry + verbal scale + browser-test of the outcome reframe → after the Audit ships
 
+**Audit Engine extension — shipped same session (2026-05-13):** Live Companion (pre-meeting lens-by-lens question sheet) + 3 intake hardenings (prior_attempts, ai_model_ownership conditional probe, demo_observations). Extension of the governed Audit service line, not a new line — justified by 4 real founder engagements. ~1.5-2 day extension on the Audit Engine.
+
 **Deferred (not abandoned):**
 - **Lean Vendor Lifecycle Management** (8-stage, 5-7 days) — now positioned as the upsell from an audited client. Full case preserved in `docs/SESSION_HANDOFF.md`.
 - **Pain-anchored entry** (~2-3h) and **verbal scale** (~3-4h) — UX upgrades, sequenced after the Audit.

@@ -89,6 +89,13 @@ After the four-way deliberation below, the founder surfaced a sharper concept: a
 
 Doc-pass committed as part of this session. Audit Engine build starts immediately after.
 
+### Audit Engine extension — Live Companion + 3 intake hardenings (2026-05-13)
+
+Not a new service line — a **second output mode of the already-governed Audit Engine** (proportionate discipline: extension of a blessed service line gets a handoff note, not a separate doc-pass). Justified directly by four real founder engagements (voice-AI LLM lock-in; university CRM process-discipline gap; ERP demo polish-vs-capability; gov agency over-priced quote).
+
+- **3 intake hardenings:** explicit `prior_attempts` field (prior tech attempts in this area + how they went — the strongest absorption-failure predictor; would have hard-locked the university CRM finding); conditional `ai_model_ownership` probe (who owns the model/data layer, can we BYO-model, can it run on infra we control — the voice-AI lock-in case); `demo_observations` field (what each option demonstrated live vs scripted — the ERP polish-vs-capability case).
+- **Live Audit Companion:** the engine generates a pre-meeting, lens-by-lens question sheet tailored to *this* purchase — the exact probes to ask in the room while the vendor is performing. Closes the loop with Method Capture so the highest-leverage questions feed the next meeting. Rationale: the founder is IN these presentations live; the post-hoc deliverable alone doesn't serve the actual workflow. Cases 1 and 3 were caught live, mid-demo — the tool must put the structural question in the founder's mouth in real time, not just document it afterward.
+
 ### (Historical) The four-way deliberation that preceded the decision
 
 The session surfaced four legitimate next moves. None has been committed:
