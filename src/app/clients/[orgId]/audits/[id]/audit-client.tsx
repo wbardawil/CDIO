@@ -98,8 +98,14 @@ export function AuditDetailClient({
           {audit.title}
         </h2>
         <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
-          <Row label="System" value={audit.intake.system_name} />
-          <Row label="Vendor" value={audit.intake.vendor_name} />
+          <Row label="Decision" value={audit.intake.decision} />
+          <Row
+            label="Options"
+            value={(audit.intake.options ?? [])
+              .map((o) => o.label)
+              .filter(Boolean)
+              .join(" vs ")}
+          />
           <Row label="Total cost" value={audit.intake.total_cost} />
           <Row label="Accountable" value={audit.intake.principal_role} />
         </dl>

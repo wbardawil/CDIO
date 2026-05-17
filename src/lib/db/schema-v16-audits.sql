@@ -63,6 +63,21 @@ CREATE INDEX IF NOT EXISTS audits_practitioner_id_idx
 CREATE INDEX IF NOT EXISTS audits_status_idx
   ON public.audits(org_id, status);
 
+-- Self-contained: define the updated_at trigger function here with
+-- CREATE OR REPLACE so this migration applies cleanly on any database,
+-- in any order, even if the earlier schema file that originally
+-- introduced public.touch_updated_at() was never applied. Idempotent
+-- and identical to the canonical definition — harmless to redefine.
+CREATE OR REPLACE FUNCTION public.touch_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at = now();
+  RETURN NEW;
+END;
+$$;
+
 DROP TRIGGER IF EXISTS audits_touch_updated_at ON public.audits;
 CREATE TRIGGER audits_touch_updated_at
   BEFORE UPDATE ON public.audits

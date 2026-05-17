@@ -136,9 +136,15 @@ export default async function AuditsListPage({
                           {a.title}
                         </p>
                         <p className="text-xs text-gray-500 mt-1">
-                          {a.intake.system_name || "—"}
-                          {a.intake.vendor_name
-                            ? ` · ${a.intake.vendor_name}`
+                          {(a.intake.options?.length ?? 0)}{" "}
+                          {(a.intake.options?.length ?? 0) === 1
+                            ? "option"
+                            : "options"}
+                          {a.intake.options && a.intake.options.length > 0
+                            ? ` · ${a.intake.options
+                                .map((o) => o.label)
+                                .filter(Boolean)
+                                .join(" vs ")}`
                             : ""}
                           {a.intake.total_cost
                             ? ` · ${a.intake.total_cost}`

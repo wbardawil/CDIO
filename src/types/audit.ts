@@ -104,44 +104,61 @@ export interface AuditMethodCapture {
   highest_leverage_index: number; // index into questions[] that did the most work
 }
 
+/**
+ * One candidate under the decision. A real pre-purchase decision
+ * almost always has 2-3 finalists, not one. `material` is RAW —
+ * the practitioner pastes the actual proposal / quote / SOW /
+ * email / notes for this option, unedited. The engine extracts
+ * structure; the practitioner does not summarize.
+ */
+export interface AuditOption {
+  id: string;
+  label: string;     // "HubSpot" / "Salesforce" / "Stay on incumbent + manual"
+  material: string;  // raw pasted proposal / quote / SOW / notes for this option
+}
+
+/**
+ * V1 intake (2026-05-13 rebuild). Built around how engagements
+ * actually arrive: ONE decision, MULTIPLE options, inputs are raw
+ * pasted documents and transcripts — not tidy authored prose.
+ * Every context field is "paste, do not summarize." The engine
+ * does the structuring. Blank structural fields are not errors —
+ * they become the first finding (evaluateIntakeGaps).
+ */
 export interface AuditIntake {
-  // 1. What is being bought, from whom, at what total cost?
-  system_name: string;
-  vendor_name: string;
-  total_cost: string;            // free text so it carries currency + term
-  // 2. Who is the accountable principal? What gets them fired?
+  // The ONE decision, in plain language. "Which CRM for the
+  // university", "Replace the ERP or extend the incumbent".
+  decision: string;
+
+  // Who is personally accountable, and what gets them fired if
+  // this is wrong. The audit's loyalty anchor.
   principal_role: string;
-  accountability: string;        // "what gets them fired if this is wrong"
-  // 3. The vendor proposal / quote / SOW / feature list
-  vendor_proposal: string;
-  // 4. How the org actually runs today in the area this touches
-  current_operating_model: string;
-  // 5. The strategy this is supposed to serve
-  strategy_served: string;
+  accountability: string;
 
-  // --- Intake hardenings (2026-05-13) ---
+  // All-in cost if known, free text so it carries currency + term.
+  total_cost: string;
 
-  // Prior technology attempts in THIS area and how they went. The
-  // single strongest predictor of absorption failure — a failed
-  // prior rollout in the same function (e.g. a tool the owning team
-  // never finished configuring) means the next purchase likely
-  // fails for the same org-behavior reason, not the tool.
-  // Blank here is itself probed by Lens 2 / Lens 5.
-  prior_attempts: string;
+  // The candidates under the decision. 1..N. Each carries its own
+  // raw material (proposal / quote / SOW / notes), unedited.
+  options: AuditOption[];
 
-  // When the purchase involves AI/ML: who owns the model + data
-  // layer? Can we bring our own model? Can it run on infra we
-  // control? Vendors are deliberately vague here; this forces the
-  // question at intake instead of leaving it to mid-demo discovery.
-  ai_model_ownership: string;
+  // Raw paste — the strategy this is supposed to serve. Where the
+  // business is trying to play and how it intends to win. Blank
+  // here is itself a Lens 1 finding.
+  strategy_context: string;
 
-  // What each option actually DEMONSTRATED — live/on-the-fly vs
-  // scripted/canned. Separates demo polish + perceived industry
-  // familiarity (cheap to remediate) from technical capability
-  // (structural). Lens 4 reasons over this directly.
-  demo_observations: string;
+  // Raw paste — how the org runs today in this area, prior tech
+  // attempts and how they went, meeting transcripts, process
+  // notes. The strongest absorption-failure signal lives here.
+  // Lens 2 / Lens 5 reason over this.
+  operating_context: string;
 
-  // Optional link to a Selection the audit reviews (if the org ran one).
+  // Raw paste — anything else relevant: emails, described
+  // diagrams, side notes. The engine mines it.
+  extra_context: string;
+
+  // Optional link to a Selection the audit reviews (if the org
+  // ran one).
   selection_id: string | null;
 }
 
@@ -194,80 +211,99 @@ export interface Audit {
   ran_at: string | null;
 }
 
+// Structural inputs whose absence is itself a finding. Total cost
+// and extra_context are not here — their absence is noted by the
+// agent, not treated as a board-stopping gap.
 const REQUIRED_INTAKE_FIELDS: (keyof AuditIntake)[] = [
-  "system_name",
-  "vendor_name",
-  "total_cost",
+  "decision",
   "principal_role",
   "accountability",
-  "vendor_proposal",
-  "current_operating_model",
-  "strategy_served",
+  "strategy_context",
+  "operating_context",
 ];
 
 const INTAKE_FIELD_LABEL: Record<string, string> = {
-  system_name: "the system/technology being bought",
-  vendor_name: "the vendor",
-  total_cost: "the total cost",
+  decision: "the decision actually being made",
   principal_role: "who is personally accountable",
   accountability: "what gets the accountable principal fired if this is wrong",
-  vendor_proposal: "the vendor proposal / quote / SOW",
-  current_operating_model: "how the organization actually runs today",
-  strategy_served: "the strategy this purchase is supposed to serve",
+  strategy_context: "the strategy this is supposed to serve",
+  operating_context: "how the organization actually runs today in this area",
 };
 
+function optionsWithMaterial(intake: AuditIntake): AuditOption[] {
+  return (intake.options ?? []).filter(
+    (o) => String(o?.label ?? "").trim() && String(o?.material ?? "").trim()
+  );
+}
+
 /**
- * A blank intake field is not an error — it is the first finding.
- * "You are about to sign for <system> and cannot articulate <X>"
- * is a board-stopping sentence the audit surfaces deliberately.
+ * A blank structural field is not an error — it is the first
+ * finding. "About to sign and cannot articulate <X>" is a
+ * board-stopping sentence the audit surfaces deliberately.
  */
 export function evaluateIntakeGaps(intake: AuditIntake): AuditIntakeGaps {
   const missing = REQUIRED_INTAKE_FIELDS.filter(
     (f) => !String(intake[f] ?? "").trim()
   );
 
-  // Conditional AI probe: fires independently of required-field
-  // gaps. If the purchase smells AI/ML and model ownership is
-  // blank, that omission is itself a lock-in red flag worth a
-  // finding even when every required field is filled.
-  const haystack =
-    `${intake.system_name} ${intake.vendor_name} ${intake.vendor_proposal}`.toLowerCase();
-  const looksAI = /\b(ai|ml|llm|model|agent|gpt|genai|copilot|voice ai)\b/.test(
-    haystack
-  );
-  const aiOwnershipUnstated =
-    looksAI && !String(intake.ai_model_ownership ?? "").trim();
+  const noOptions = optionsWithMaterial(intake).length === 0;
 
-  if (missing.length === 0 && !aiOwnershipUnstated) {
+  // Conditional AI probe: fires independently of field gaps. If the
+  // decision smells AI/ML and nothing anywhere addresses model/data
+  // ownership, that omission is itself a lock-in red flag.
+  const haystack = [
+    intake.decision,
+    intake.strategy_context,
+    intake.operating_context,
+    intake.extra_context,
+    ...(intake.options ?? []).map((o) => `${o.label} ${o.material}`),
+  ]
+    .join(" ")
+    .toLowerCase();
+  const looksAI =
+    /\b(ai|ml|llm|model|agent|gpt|genai|copilot|voice ai|chatbot)\b/.test(
+      haystack
+    );
+  const ownershipMentioned =
+    /\b(own (the )?(model|data)|byo|bring your own|on-?prem|our infrastructure|infrastructure we control|model ownership|data ownership|self-?host)\b/.test(
+      haystack
+    );
+  const aiOwnershipUnstated = looksAI && !ownershipMentioned;
+
+  if (missing.length === 0 && !noOptions && !aiOwnershipUnstated) {
     return { missing: [], finding: null };
   }
 
-  let finding = "";
+  const parts: string[] = [];
   if (missing.length > 0) {
     const phrases = missing.map((f) => INTAKE_FIELD_LABEL[f] ?? f);
-    finding =
-      `The principal is moving toward a purchase of ${
-        intake.system_name?.trim() || "an unspecified system"
-      } but cannot articulate: ${phrases.join("; ")}. ` +
-      `This gap is itself the first finding — a decision this size should not proceed ` +
-      `until each of these is on the table. Verdict defaults to HOLD until resolved.`;
+    parts.push(
+      `The room is moving toward ${
+        intake.decision?.trim() || "a major purchase"
+      } but cannot articulate: ${phrases.join(
+        "; "
+      )}. This gap is itself the first finding — a decision this size should not proceed until each of these is on the table. Verdict defaults to HOLD until resolved.`
+    );
+  }
+  if (noOptions) {
+    parts.push(
+      `No option has been entered with its actual material (proposal / quote / notes). An audit needs at least one concrete option on the table; with none, there is nothing to stress-test and the verdict is HOLD.`
+    );
   }
   if (aiOwnershipUnstated) {
-    finding +=
-      (finding ? " " : "") +
-      `This purchase involves AI/ML and model/data ownership is unstated — ` +
-      `surface before signing: can we bring our own model, who owns the data layer, ` +
-      `can it run on infrastructure we control? Unstated model ownership is a lock-in red flag.`;
+    parts.push(
+      `This decision involves AI/ML and model/data ownership is unstated anywhere — surface before signing: can we bring our own model, who owns the data layer, can it run on infrastructure we control? Unstated model ownership is a lock-in red flag.`
+    );
   }
-  return { missing, finding };
+  return { missing, finding: parts.join(" ") };
 }
 
 export function isRunnable(intake: AuditIntake): boolean {
   // Runnable even with gaps — gaps produce a HOLD verdict + the
-  // gap-as-finding. The only hard requirement is enough to name
-  // the decision: system + vendor.
+  // gap-as-finding. Hard minimum: a named decision and at least one
+  // option that actually has material to stress-test.
   return Boolean(
-    String(intake.system_name ?? "").trim() &&
-      String(intake.vendor_name ?? "").trim()
+    String(intake.decision ?? "").trim() &&
+      optionsWithMaterial(intake).length > 0
   );
 }

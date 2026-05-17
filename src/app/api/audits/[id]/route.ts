@@ -4,18 +4,21 @@ import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
 import { createServiceClient } from "@/lib/db/supabase";
 import { isRunnable, type Audit, type AuditIntake } from "@/types/audit";
 
+const optionSchema = z.object({
+  id: z.string().min(1).max(64),
+  label: z.string().max(300),
+  material: z.string().max(60000),
+});
+
 const intakeSchema = z.object({
-  system_name: z.string().max(300).optional(),
-  vendor_name: z.string().max(300).optional(),
-  total_cost: z.string().max(300).optional(),
+  decision: z.string().max(2000).optional(),
   principal_role: z.string().max(300).optional(),
   accountability: z.string().max(2000).optional(),
-  vendor_proposal: z.string().max(20000).optional(),
-  current_operating_model: z.string().max(20000).optional(),
-  strategy_served: z.string().max(20000).optional(),
-  prior_attempts: z.string().max(20000).optional(),
-  ai_model_ownership: z.string().max(20000).optional(),
-  demo_observations: z.string().max(20000).optional(),
+  total_cost: z.string().max(300).optional(),
+  options: z.array(optionSchema).max(8).optional(),
+  strategy_context: z.string().max(60000).optional(),
+  operating_context: z.string().max(60000).optional(),
+  extra_context: z.string().max(60000).optional(),
   selection_id: z.string().uuid().nullable().optional(),
 });
 

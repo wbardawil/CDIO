@@ -3,37 +3,70 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
+type OptionDraft = { id: string; label: string; material: string };
+
+function newOption(): OptionDraft {
+  return {
+    id:
+      typeof crypto !== "undefined" && crypto.randomUUID
+        ? crypto.randomUUID()
+        : `opt_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+    label: "",
+    material: "",
+  };
+}
+
 export function NewAuditForm({ orgId }: { orgId: string }) {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const [form, setForm] = useState({
-    title: "",
-    system_name: "",
-    vendor_name: "",
-    total_cost: "",
-    principal_role: "",
-    accountability: "",
-    vendor_proposal: "",
-    current_operating_model: "",
-    strategy_served: "",
-    prior_attempts: "",
-    ai_model_ownership: "",
-    demo_observations: "",
-  });
+  const [decision, setDecision] = useState("");
+  const [principalRole, setPrincipalRole] = useState("");
+  const [accountability, setAccountability] = useState("");
+  const [totalCost, setTotalCost] = useState("");
+  const [strategyContext, setStrategyContext] = useState("");
+  const [operatingContext, setOperatingContext] = useState("");
+  const [extraContext, setExtraContext] = useState("");
+  const [options, setOptions] = useState<OptionDraft[]>([newOption()]);
 
-  const set = (k: keyof typeof form) => (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => setForm((f) => ({ ...f, [k]: e.target.value }));
+  function patchOption(id: string, patch: Partial<OptionDraft>) {
+    setOptions((prev) =>
+      prev.map((o) => (o.id === id ? { ...o, ...patch } : o))
+    );
+  }
+  function addOption() {
+    setOptions((prev) => [...prev, newOption()]);
+  }
+  function removeOption(id: string) {
+    setOptions((prev) =>
+      prev.length <= 1 ? prev : prev.filter((o) => o.id !== id)
+    );
+  }
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
-    if (!form.title.trim()) {
-      setError("Give the audit a title (e.g. “Ambar ERP — Acme vs incumbent”).");
+    if (!decision.trim()) {
+      setError(
+        "Name the decision in one line (e.g. “Which CRM for the university”). Everything else can be partial — gaps become findings."
+      );
       return;
     }
+    const cleanOptions = options
+      .map((o) => ({
+        id: o.id,
+        label: o.label.trim(),
+        material: o.material.trim(),
+      }))
+      .filter((o) => o.label || o.material);
+    if (cleanOptions.length === 0) {
+      setError(
+        "Add at least one option with its real material pasted in. With nothing concrete on the table there is nothing to stress-test."
+      );
+      return;
+    }
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/audits", {
@@ -41,25 +74,22 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           org_id: orgId,
-          title: form.title.trim(),
+          title: decision.trim().slice(0, 280),
           intake: {
-            system_name: form.system_name.trim(),
-            vendor_name: form.vendor_name.trim(),
-            total_cost: form.total_cost.trim(),
-            principal_role: form.principal_role.trim(),
-            accountability: form.accountability.trim(),
-            vendor_proposal: form.vendor_proposal.trim(),
-            current_operating_model: form.current_operating_model.trim(),
-            strategy_served: form.strategy_served.trim(),
-            prior_attempts: form.prior_attempts.trim(),
-            ai_model_ownership: form.ai_model_ownership.trim(),
-            demo_observations: form.demo_observations.trim(),
+            decision: decision.trim(),
+            principal_role: principalRole.trim(),
+            accountability: accountability.trim(),
+            total_cost: totalCost.trim(),
+            options: cleanOptions,
+            strategy_context: strategyContext.trim(),
+            operating_context: operatingContext.trim(),
+            extra_context: extraContext.trim(),
           },
         }),
       });
       if (!res.ok) {
         const j = await res.json().catch(() => ({}));
-        throw new Error(j.error || "Failed to create audit");
+        throw new Error(j.error || j.details || "Failed to create audit");
       }
       const { audit } = await res.json();
       router.push(`/clients/${orgId}/audits/${audit.id}`);
@@ -69,198 +99,234 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
     }
   }
 
-  const field =
-    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500";
-  const labelCls = "block text-sm font-medium text-gray-900 mb-1";
-  const hintCls = "text-xs text-gray-500 mb-1.5";
+  const input =
+    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-800";
+  const area = input + " font-mono text-[13px] leading-relaxed";
+  const label = "block text-sm font-semibold text-gray-900 mb-1";
+  const hint = "text-xs text-gray-500 mb-2";
+  const sectionNo =
+    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold";
 
   return (
-    <form onSubmit={submit} className="space-y-6">
+    <form onSubmit={submit} className="space-y-10 pb-16">
+      {/* Philosophy banner */}
+      <div className="rounded-xl bg-slate-900 text-slate-100 p-5">
+        <p className="text-sm font-semibold mb-1">
+          Don&apos;t fill a form. Dump what you have.
+        </p>
+        <p className="text-[13px] leading-relaxed text-slate-300">
+          Paste the actual proposals, quotes, SOWs, meeting notes and
+          transcripts &mdash; <strong>raw and unedited</strong>, across every
+          option on the table. The audit reads it and structures it; you do
+          not summarize. Blank fields are not errors &mdash; a decision this
+          size that can&apos;t articulate its strategy or operating reality is
+          itself the first finding. Loyalty is to you and the person
+          accountable &mdash; never the vendor.
+        </p>
+      </div>
+
       {error && (
-        <div className="px-4 py-3 bg-rose-50 border border-rose-200 rounded-lg text-sm text-rose-800">
+        <div className="rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">
           {error}
         </div>
       )}
 
-      <div>
-        <label className={labelCls}>Audit title</label>
-        <p className={hintCls}>One decision per audit. Name the decision.</p>
-        <input
-          className={field}
-          value={form.title}
-          onChange={set("title")}
-          placeholder="Ambar ERP — Acme Cloud vs stay on incumbent"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelCls}>System / technology being bought</label>
-          <input
-            className={field}
-            value={form.system_name}
-            onChange={set("system_name")}
-            placeholder="Cloud ERP platform"
-          />
+      {/* 1 — The decision */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className={sectionNo}>1</span>
+          <h2 className="text-lg font-bold text-gray-900">The decision</h2>
         </div>
         <div>
-          <label className={labelCls}>Vendor</label>
-          <input
-            className={field}
-            value={form.vendor_name}
-            onChange={set("vendor_name")}
-            placeholder="Acme Cloud"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label className={labelCls}>Total cost</label>
-        <p className={hintCls}>
-          All-in if you know it. Include term (e.g. &quot;$420K over 3 years
-          incl. implementation&quot;).
-        </p>
-        <input
-          className={field}
-          value={form.total_cost}
-          onChange={set("total_cost")}
-          placeholder="$420,000 over 3 years"
-        />
-      </div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
-          <label className={labelCls}>Accountable principal (role)</label>
-          <input
-            className={field}
-            value={form.principal_role}
-            onChange={set("principal_role")}
-            placeholder="COO"
-          />
-        </div>
-        <div>
-          <label className={labelCls}>
-            What gets them fired if this is wrong?
+          <label className={label}>
+            What decision is actually being made? (one line)
           </label>
+          <p className={hint}>
+            One decision per audit. Not the vendor &mdash; the decision.
+          </p>
           <input
-            className={field}
-            value={form.accountability}
-            onChange={set("accountability")}
-            placeholder="Quarter-close breaks; board loses confidence"
+            className={input}
+            value={decision}
+            onChange={(e) => setDecision(e.target.value)}
+            placeholder="Which CRM for the university — new platform vs extend the incumbent"
           />
         </div>
-      </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className={label}>Accountable principal (role)</label>
+            <input
+              className={input}
+              value={principalRole}
+              onChange={(e) => setPrincipalRole(e.target.value)}
+              placeholder="CRO"
+            />
+          </div>
+          <div>
+            <label className={label}>
+              What gets them fired if this is wrong?
+            </label>
+            <input
+              className={input}
+              value={accountability}
+              onChange={(e) => setAccountability(e.target.value)}
+              placeholder="Sales quota miss; automation never materializes"
+            />
+          </div>
+        </div>
+        <div>
+          <label className={label}>All-in cost (if known)</label>
+          <input
+            className={input}
+            value={totalCost}
+            onChange={(e) => setTotalCost(e.target.value)}
+            placeholder="$341K incl. implementation, 3-year term"
+          />
+        </div>
+      </section>
 
-      <div>
-        <label className={labelCls}>Vendor proposal / quote / SOW</label>
-        <p className={hintCls}>
-          Paste it. Feature list, pricing, SOW — whatever you have.
+      {/* 2 — Options */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className={sectionNo}>2</span>
+          <h2 className="text-lg font-bold text-gray-900">
+            Options on the table
+          </h2>
+          <span className="text-xs text-gray-500">
+            {options.length} {options.length === 1 ? "option" : "options"} —
+            the audit compares them
+          </span>
+        </div>
+        <p className={hint}>
+          Real decisions have 2&ndash;3 finalists. For each, paste the actual
+          proposal / quote / SOW / email / notes &mdash; verbatim. Don&apos;t
+          tidy it. The engine extracts structure across all options and names
+          the recommended one.
         </p>
-        <textarea
-          className={field}
-          rows={6}
-          value={form.vendor_proposal}
-          onChange={set("vendor_proposal")}
-          placeholder="Paste the proposal text…"
-        />
-      </div>
 
-      <div>
-        <label className={labelCls}>
-          How the organization runs today (in this area)
-        </label>
-        <p className={hintCls}>
-          Current process, tools, who does what. The audit checks fit against
-          the org you have, not the one the vendor assumes.
-        </p>
-        <textarea
-          className={field}
-          rows={4}
-          value={form.current_operating_model}
-          onChange={set("current_operating_model")}
-          placeholder="Today finance closes on spreadsheets + the incumbent ERP; 2 people own it…"
-        />
-      </div>
+        <div className="space-y-4">
+          {options.map((o, i) => (
+            <div
+              key={o.id}
+              className="rounded-xl border border-gray-200 bg-white p-4"
+            >
+              <div className="flex items-center gap-3 mb-3">
+                <span className="text-xs font-bold text-gray-400">
+                  OPTION {i + 1}
+                </span>
+                <input
+                  className={input + " flex-1"}
+                  value={o.label}
+                  onChange={(e) =>
+                    patchOption(o.id, { label: e.target.value })
+                  }
+                  placeholder="Option name — e.g. HubSpot / Salesforce / Stay on incumbent + manual"
+                />
+                {options.length > 1 && (
+                  <button
+                    type="button"
+                    onClick={() => removeOption(o.id)}
+                    className="shrink-0 text-xs text-gray-400 hover:text-rose-600"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <textarea
+                className={area}
+                rows={6}
+                value={o.material}
+                onChange={(e) =>
+                  patchOption(o.id, { material: e.target.value })
+                }
+                placeholder="Paste this option's proposal / quote / SOW / pricing / your notes — raw, unedited. The engine structures it."
+              />
+            </div>
+          ))}
+        </div>
 
-      <div>
-        <label className={labelCls}>The strategy this is supposed to serve</label>
-        <p className={hintCls}>
-          Where the business is trying to play and how it intends to win.
-          Blank here is itself a finding.
-        </p>
-        <textarea
-          className={field}
-          rows={4}
-          value={form.strategy_served}
-          onChange={set("strategy_served")}
-          placeholder="Doubling headcount in 18 months; current ERP can't scale past X…"
-        />
-      </div>
+        <button
+          type="button"
+          onClick={addOption}
+          className="text-sm font-semibold text-slate-800 hover:text-slate-950"
+        >
+          + Add another option
+        </button>
+      </section>
 
-      <div>
-        <label className={labelCls}>
-          Prior attempts in this area &mdash; and how they went
-        </label>
-        <p className={hintCls}>
-          The single strongest predictor of failure. A previous tool the
-          team never configured or followed means the next purchase likely
-          fails for the same org-behavior reason &mdash; not the tool.
-        </p>
-        <textarea
-          className={field}
-          rows={3}
-          value={form.prior_attempts}
-          onChange={set("prior_attempts")}
-          placeholder="e.g. similar tool bought two years ago — the owning team never completed configuration and abandoned it within months…"
-        />
-      </div>
+      {/* 3 — Context */}
+      <section className="space-y-4">
+        <div className="flex items-center gap-3">
+          <span className={sectionNo}>3</span>
+          <h2 className="text-lg font-bold text-gray-900">
+            Context (paste raw — don&apos;t summarize)
+          </h2>
+        </div>
 
-      <div>
-        <label className={labelCls}>
-          AI / model ownership <span className="text-gray-400">(if AI/ML involved)</span>
-        </label>
-        <p className={hintCls}>
-          Who owns the model + data layer? Can we bring our own model? Can
-          it run on infrastructure we control? Vendors stay vague here on
-          purpose &mdash; unstated model ownership is a lock-in red flag.
-        </p>
-        <textarea
-          className={field}
-          rows={3}
-          value={form.ai_model_ownership}
-          onChange={set("ai_model_ownership")}
-          placeholder="e.g. vendor requires their own model; no bring-your-own-model option; data layer runs only on their infrastructure…"
-        />
-      </div>
+        <div>
+          <label className={label}>The strategy this is supposed to serve</label>
+          <p className={hint}>
+            Where the business is trying to play and how it intends to win.
+            Blank here is itself a finding.
+          </p>
+          <textarea
+            className={area}
+            rows={4}
+            value={strategyContext}
+            onChange={(e) => setStrategyContext(e.target.value)}
+            placeholder="Paste the strategy doc excerpt / board narrative / your notes on where the business is going…"
+          />
+        </div>
 
-      <div>
-        <label className={labelCls}>
-          Demo observations <span className="text-gray-400">(live vs scripted, per option)</span>
-        </label>
-        <p className={hintCls}>
-          What did each option actually demonstrate? Separate demo polish
-          and perceived industry familiarity (cheap to remediate) from
-          technical capability shown live, on the fly (structural).
-        </p>
-        <textarea
-          className={field}
-          rows={3}
-          value={form.demo_observations}
-          onChange={set("demo_observations")}
-          placeholder="e.g. Option A: polished scripted demo, fluent in our industry terms. Option B: configured against our actual requirement live, on the fly…"
-        />
-      </div>
+        <div>
+          <label className={label}>
+            How the org runs today + prior attempts + transcripts
+          </label>
+          <p className={hint}>
+            Current process, who does what, tools in place, and especially{" "}
+            <strong>what was tried before in this area and why it
+            didn&apos;t stick</strong> &mdash; the strongest predictor of
+            whether this one fails for the same reason. Paste meeting
+            transcripts here too.
+          </p>
+          <textarea
+            className={area}
+            rows={6}
+            value={operatingContext}
+            onChange={(e) => setOperatingContext(e.target.value)}
+            placeholder="Paste raw: current process + tools, prior tool the team never finished configuring, call transcripts, who owns the process…"
+          />
+        </div>
 
-      <div className="flex items-center gap-3">
+        <div>
+          <label className={label}>
+            Anything else relevant{" "}
+            <span className="font-normal text-gray-400">(optional)</span>
+          </label>
+          <p className={hint}>
+            Emails, a described process diagram, side notes. The engine mines
+            it.
+          </p>
+          <textarea
+            className={area}
+            rows={3}
+            value={extraContext}
+            onChange={(e) => setExtraContext(e.target.value)}
+            placeholder="Paste anything else — the engine will use it…"
+          />
+        </div>
+      </section>
+
+      <div className="flex items-center gap-4 border-t border-gray-200 pt-6">
         <button
           type="submit"
           disabled={submitting}
-          className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="px-6 py-3 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-950 disabled:opacity-50"
         >
-          {submitting ? "Creating…" : "Create audit"}
+          {submitting ? "Creating…" : "Create audit →"}
         </button>
         <span className="text-xs text-gray-500">
-          You can run with partial intake — gaps become findings.
+          Next screen: generate the in-room companion, then run the
+          five-lens verdict.
         </span>
       </div>
     </form>

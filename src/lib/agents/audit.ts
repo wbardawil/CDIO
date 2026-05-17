@@ -103,8 +103,12 @@ async function buildPlaybookContext(intake: AuditIntake): Promise<string> {
   for (const lens of LENS_ORDER) {
     const meta = AUDIT_LENS_META[lens];
     try {
+      const optionLabels = (intake.options ?? [])
+        .map((o) => o.label)
+        .filter(Boolean)
+        .join(" ");
       const query =
-        `${meta.label}: ${intake.system_name} ${intake.vendor_name} ` +
+        `${meta.label}: ${intake.decision} ${optionLabels} ` +
         `total cost lock-in operating model strategy fit risk reversibility`;
       const chunks = await searchPlaybook(query, {
         moduleNumbers: meta.modules,
@@ -137,32 +141,43 @@ export async function runAudit(
 
   const playbookContext = await buildPlaybookContext(intake);
 
-  const intakeBlock = `## INTAKE
+  const options = intake.options ?? [];
+  const optionsText =
+    options.length > 0
+      ? options
+          .map(
+            (o, i) =>
+              `### Option ${i + 1}: ${o.label || "(unlabeled)"}\n${
+                o.material?.trim() ||
+                "(no material pasted for this option — that absence is itself a finding)"
+              }`
+          )
+          .join("\n\n")
+      : "(no options entered — there is nothing concrete to stress-test; verdict HOLD)";
 
-1. System/technology being bought: ${intake.system_name || "(not provided)"}
-   Vendor: ${intake.vendor_name || "(not provided)"}
-   Total cost: ${intake.total_cost || "(not provided)"}
+  const intakeBlock = `## INTAKE — RAW. Inputs below are pasted documents, quotes, transcripts and notes across MULTIPLE options. They are NOT tidy authored prose. Extract the structure yourself. Do not penalize the practitioner for messy input — mining messy reality is your job.
 
-2. Accountable principal role: ${intake.principal_role || "(not provided)"}
-   What gets them fired if this is wrong: ${intake.accountability || "(not provided)"}
+## THE DECISION
+${intake.decision || "(not provided — the room cannot name the decision; that is itself the first finding)"}
 
-3. Vendor proposal / quote / SOW / feature list:
-${intake.vendor_proposal || "(not provided)"}
+## ACCOUNTABLE PRINCIPAL
+Role: ${intake.principal_role || "(not provided)"}
+Fired if this is wrong: ${intake.accountability || "(not provided)"}
+All-in cost: ${intake.total_cost || "(not provided)"}
 
-4. How the organization actually runs today in the area this touches:
-${intake.current_operating_model || "(not provided)"}
+## OPTIONS UNDER CONSIDERATION (${options.length})
+Compare them. Name the recommended option explicitly in the verdict, or recommend none / renegotiate / hold.
 
-5. The strategy this is supposed to serve:
-${intake.strategy_served || "(not provided)"}
+${optionsText}
 
-6. Prior technology attempts in THIS area and how they went:
-${intake.prior_attempts || "(not provided — probe this; a prior failed rollout in the same function is the strongest predictor the next one fails for the same org-behavior reason)"}
+## STRATEGY CONTEXT (raw paste — extract what matters; blank is a Lens 1 finding)
+${intake.strategy_context || "(not provided)"}
 
-7. AI/model ownership (if this purchase involves AI/ML):
-${intake.ai_model_ownership || "(not provided — if this is an AI purchase, unstated model/data ownership is itself a lock-in red flag; Lens 3/4)"}
+## OPERATING CONTEXT (raw paste — how the org runs today, prior attempts and how they went, transcripts. The strongest absorption-failure signal lives here. Lens 2 / Lens 5.)
+${intake.operating_context || "(not provided)"}
 
-8. What each option demonstrated — live/on-the-fly vs scripted/canned:
-${intake.demo_observations || "(not provided — separate demo polish + perceived industry familiarity, which is cheap to remediate, from technical capability, which is structural; Lens 4)"}`;
+## ADDITIONAL CONTEXT (raw paste — emails, described diagrams, side notes)
+${intake.extra_context || "(none provided)"}`;
 
   const gapBlock = gaps.finding
     ? `\n\n## INTAKE GAPS (a blank required input is itself the first finding)\nMissing: ${gaps.missing.join(
@@ -345,19 +360,23 @@ export async function generateCompanion(
   const intake = audit.intake;
   const playbookContext = await buildPlaybookContext(intake);
 
-  const intakeBlock = `## WHAT WE KNOW GOING IN
+  const options = intake.options ?? [];
+  const optionsLine =
+    options.length > 0
+      ? options.map((o) => o.label || "(unlabeled)").join(" vs ")
+      : "(no options entered yet)";
 
-System: ${intake.system_name || "(unspecified)"} | Vendor: ${
-    intake.vendor_name || "(unspecified)"
-  } | Cost: ${intake.total_cost || "(unspecified)"}
+  const intakeBlock = `## WHAT WE KNOW GOING IN (raw context — extract what matters)
+
+Decision: ${intake.decision || "(unspecified — itself a question to ask)"}
+Options on the table: ${optionsLine}
 Accountable principal: ${intake.principal_role || "(unspecified)"} — fired if wrong: ${
     intake.accountability || "(unspecified)"
   }
-Strategy it should serve: ${intake.strategy_served || "(unstated — itself a question to ask)"}
-How the org runs today: ${intake.current_operating_model || "(unstated)"}
-Prior attempts in this area: ${intake.prior_attempts || "(unknown — ask what was tried before and why it failed)"}
-AI/model ownership: ${intake.ai_model_ownership || "(unstated — if AI is involved, this is a must-ask)"}
-Demo observations so far: ${intake.demo_observations || "(none yet — this meeting is the test)"}`;
+All-in cost: ${intake.total_cost || "(unspecified)"}
+Strategy it should serve: ${intake.strategy_context || "(unstated — itself a question to ask)"}
+How the org runs today / prior attempts / transcripts: ${intake.operating_context || "(unstated — ask what was tried before in this area and why it didn't stick)"}
+Additional context: ${intake.extra_context || "(none)"}`;
 
   const message = await logAnthropicCall({
     agentName: "audit.generateCompanion",
