@@ -76,6 +76,13 @@ the Audit was extended into the product the founder described:
   hardened: GAPS **P1-30** (at-rest encryption of archived client
   docs — close before real-client dogfood) and **P1-31** (bucket RLS
   + service-role-off-route, folded into the Day-30 migration).
+- **`docs/LEVERS-FRAMEWORK.md` added** (founder request). It is a
+  reference lens, NOT an operating override and NOT in the Read-First
+  chain. Fit review in-file: adopt pillars 3 (test-before-heavy-code,
+  applied first to the UNPROVEN extraction/grading) + 4 (a *leading*
+  indicator for `OUTCOMES.md`); park pillars 2 + 5 (revenue formula /
+  financial model) to Phase 2 Day 37-38 — they tension the locked
+  "Year-1 metric is outcomes, not customer count" decision.
 
 ### Next
 1. Founder runs ONE real decision end-to-end (evidence → verdict →
