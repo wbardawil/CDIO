@@ -68,6 +68,14 @@ the Audit was extended into the product the founder described:
   decision is the next gate, not more features.
 - v10–v15 still NOT applied → "Create this initiative" errors until
   the founder runs them (DEPLOY.md). Audit/extraction work without it.
+- **ARCHITECTURE.md was out of date / I skipped it (process miss).**
+  Now reconciled: Tech Stack table gains an explicit File/Evidence
+  Storage row; AI row corrected to Sonnet 4 `claude-sonnet-4-20250514`
+  (doc previously said "4.5+" — founder call: doc matches code, no
+  model change). Storage security is **documented + scheduled**, not
+  hardened: GAPS **P1-30** (at-rest encryption of archived client
+  docs — close before real-client dogfood) and **P1-31** (bucket RLS
+  + service-role-off-route, folded into the Day-30 migration).
 
 ### Next
 1. Founder runs ONE real decision end-to-end (evidence → verdict →

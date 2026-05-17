@@ -366,8 +366,9 @@ agent_logs (per-practitioner + per-client cost tracking, Phase 1.5)
 |-------|-----------|--------|
 | Frontend | Next.js 16 (Turbopack) + TypeScript + Tailwind 4 | ✅ |
 | Auth | Clerk 7 (multi-tenant: practitioners with N clients) | ✅ Wired |
-| AI | Claude Sonnet 4.5+ (single-agent default; multi-agent for Phase 2.5+ flows) | ✅ Wired |
+| AI | Claude Sonnet 4 — `claude-sonnet-4-20250514` (single-agent default; multi-agent for Phase 2.5+ flows) | ✅ Wired |
 | Database | Supabase Postgres + pgvector + RLS (RLS policies pre-wired, full per-user JWT activation Day 30+) | ✅ Wired |
+| File / Evidence Storage | Supabase Storage — private bucket `audit-evidence` (archived audit source documents: proposals, quotes, SOWs, transcripts) | ⚠ Added 2026-05-17 (branch `claude/review-cdio-handoff-4bR8R`). Best-effort write via service role from the extract API route. **Bucket access policy + at-rest encryption of these client documents are NOT yet designed** — see GAPS P1-30/P1-31; in scope for the Day-30 service-role→RLS migration. |
 | Email | Resend (`onboarding@resend.dev` for testing; verified domain Phase 1.5 Day 19) | ✅ Wired Day 4 |
 | Charts | Recharts | ✅ |
 | Hosting | Vercel | ❌ Phase 1.5 Day 18 |
@@ -396,6 +397,15 @@ Three levels of tenancy:
 - Every API route validates `practitioner_id` matches the requested resource's owner
 - Supabase RLS policies tied to `auth.uid()` and `practitioner_id`
 - Service role used ONLY in background jobs, never in API routes (after Day 30 migration)
+- **Storage tenancy (added 2026-05-17):** the `audit-evidence` bucket has no
+  RLS/access policy yet. Objects are namespaced by path
+  (`org/{orgId}/{batchId}/…`) but path-namespacing is NOT enforcement.
+  Day-30 scope MUST add: a Storage RLS policy keyed to `practitioner_id`
+  ownership of the org, and moving the service-role write off the API
+  route (it is GAPS P0-8's pattern, now extended to Storage). Archived
+  client proposals/contracts are at least as sensitive as Network
+  Catalog data (which requires column-level encryption per the Security
+  Model) — at-rest encryption beyond Supabase default is GAPS P1-30.
 
 ---
 
