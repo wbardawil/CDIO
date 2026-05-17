@@ -144,8 +144,47 @@ laws + the shell + the Audit-as-proof). Build, against that spec:
 5. Verify (tsc + next build), commit + push `main`, then run the
    five-law review gate in `EXPERIENCE-SPINE.md` before claiming done.
 
-Do NOT add new engines/features. The spine, then stop. Then the founder
-runs a real Audit and the v10–v15 migrations.
+Do NOT invent new engines. The spine first. Then the Purchase track
+below (it rides the same spine — not a new island).
+
+### Parallel track — Purchase / "help buy" (founder reprioritization, 2026-05-13)
+
+**Why this is now a priority, not a deferred upsell:** the founder is
+actively advising **2 paying clients buying technology right now**
+(live ERP/CRM-class purchases). The Audit needs *new* prospects to
+monetize; the Purchase capability serves clients he is *already paid
+by* — the faster path to a real logged Day-90 outcome. Pulling it
+forward is the customer-#0 logic the strategy is built on, not a
+scope violation. (STRATEGY-2026 "Named Service Lines" + ROADMAP
+updated to reflect the pull-forward.)
+
+**Key truth: ~70% already exists.** The Selection Engine (schema-v12,
+`src/types/selection.ts`, `src/app/api/selections/*`,
+`src/app/clients/[orgId]/selections/*`) is the scoring core: weighted
+criteria (4 dims), multi-candidate scoring, tech/ai/partner domains,
+recommendation, list/editor UI. It is **gated only by the v12
+migration not being applied** — apply it and it works for the 2
+clients today with zero new code.
+
+Build order for the Purchase track (AFTER the spine, ON the spine):
+1. Confirm Selection Engine works once v12 is applied; wire it into
+   the workspace-shell (Law 1 — no island).
+2. Lean Vendor Lifecycle wrapper on top of the existing Selection
+   Engine — the documented 8 stages, but only the gaps not already
+   covered by Selection: **Need Statement** (1-page, versioned),
+   **RFP builder** (conditional — core platform), **reference & risk
+   check**, **board-ready Recommendation Memo** (outcome-first per
+   Spine Law 5), **renewal calendar**. Reuse Selection's scoring as
+   the spine of stages 2/4/6; do not rebuild scoring.
+3. Audit ↔ Purchase hand-off: an Audit verdict of "renegotiate/hold"
+   seeds a Selection/Lifecycle from the Audit's requirements brief
+   (one journey, not two tools — Spine).
+4. Same discipline: plain language on top, framework underneath,
+   verify, commit/push main, five-law review gate.
+
+The Audit and the Purchase track are different engines, ONE app, ONE
+spine, ONE journey. Build the spine so both feel like one thing, then
+the Purchase wrapper. Founder runs both on real clients in parallel.
 
 ---
 

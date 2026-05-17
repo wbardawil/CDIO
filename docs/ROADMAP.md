@@ -45,8 +45,8 @@ After weighing four directions (Vendor Lifecycle / pain-entry / verbal-scale / b
 1. **Doc-pass** (this commit) — Pre-Purchase Audit added as a named service line across STRATEGY-2026 / ROADMAP / SESSION_HANDOFF / CONTRACT-TEMPLATES / GTM / PRICING
 2. **Audit Engine build (~3-4 days)** — data model + 5-lens orchestration (RAG-grounded per lens) + intake gate (blank-field-as-finding) + 4-part output template + Method Capture + workspace surface (`/clients/[orgId]/audits/new`)
 3. **Founder runs it on live ERP/CRM decisions** as customer #0 → first hard outcome-log entries
-4. **Full Lean Vendor Lifecycle becomes the upsell** — deferred until the Audit has produced real outcome evidence
-5. Pain-anchored entry + verbal scale + browser-test of the outcome reframe → after the Audit ships
+4. **Lean Vendor Lifecycle — PULLED FORWARD (2026-05-13 later) to a parallel track**, not a deferred upsell. Trigger: customer #0 is advising 2 paying clients on live tech purchases now → faster real Day-90 outcome than the Audit (which needs new prospects). Scoring core (Selection Engine) already built, gated only by the v12 migration; Lifecycle is the thin wrapper. Build parallel to the Experience Spine, ON the spine. Execution plan: `docs/SESSION_HANDOFF.md` "Parallel track — Purchase". Strategy rationale: `docs/STRATEGY-2026.md` Named Service Lines "Reprioritization".
+5. Pain-anchored entry + verbal scale + browser-test of the outcome reframe → after the spine + Purchase track
 
 **Audit Engine extension — shipped same session (2026-05-13):** Live Companion (pre-meeting lens-by-lens question sheet) + 3 intake hardenings (prior_attempts, ai_model_ownership conditional probe, demo_observations). Extension of the governed Audit service line, not a new line — justified by 4 real founder engagements. ~1.5-2 day extension on the Audit Engine.
 
