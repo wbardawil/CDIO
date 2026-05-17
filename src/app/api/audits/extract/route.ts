@@ -72,6 +72,21 @@ export async function POST(request: NextRequest) {
     parsed.push(await parseUpload(f.name, buf));
   }
 
+  // Parse-only: the practitioner is attaching files to ONE option
+  // and is telling us which option they belong to — no AI guessing
+  // needed, just the raw text back to drop into that option.
+  if (String(form.get("mode") ?? "") === "parse") {
+    return NextResponse.json({
+      parsed: parsed.map((p) => ({
+        name: p.name,
+        ok: p.ok,
+        note: p.note,
+        truncated: p.truncated,
+        text: p.text,
+      })),
+    });
+  }
+
   const anyUsable = parsed.some((p) => p.ok && p.text.trim());
   if (!anyUsable) {
     return NextResponse.json(

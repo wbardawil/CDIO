@@ -4,7 +4,13 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AuditExtractionMeta, AuditFieldSource } from "@/types/audit";
 
-type OptionDraft = { id: string; label: string; material: string };
+type OptionFileNote = { name: string; ok: boolean; note?: string };
+type OptionDraft = {
+  id: string;
+  label: string;
+  material: string;
+  fileNotes?: OptionFileNote[];
+};
 
 function newOption(): OptionDraft {
   return {
@@ -18,6 +24,137 @@ function newOption(): OptionDraft {
 }
 
 const ACCEPT = ".pdf,.docx,.xlsx,.txt,.md,.markdown,.csv,.tsv,.json";
+// Matches optionSchema.material max in /api/audits.
+const MAX_OPTION_MATERIAL = 60000;
+
+/** Per-option file attach. The practitioner is telling us which
+ *  option these files belong to, so no AI is used — the files are
+ *  parsed to raw text and appended to this option's material,
+ *  verbatim (the audit mines raw reality itself). */
+function OptionFiles({
+  orgId,
+  option,
+  patch,
+}: {
+  orgId: string;
+  option: OptionDraft;
+  patch: (patch: Partial<OptionDraft>) => void;
+}) {
+  const ref = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+
+  async function take(files: FileList | File[]) {
+    const list = Array.from(files);
+    if (list.length === 0) return;
+    setErr(null);
+    setBusy(true);
+    try {
+      const fd = new FormData();
+      fd.append("org_id", orgId);
+      fd.append("mode", "parse");
+      for (const f of list) fd.append("files", f);
+      const res = await fetch("/api/audits/extract", {
+        method: "POST",
+        body: fd,
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok)
+        throw new Error(j.error || j.details || "Could not read those files");
+
+      const parsed: Array<{
+        name: string;
+        ok: boolean;
+        note?: string;
+        text: string;
+      }> = j.parsed ?? [];
+
+      let material = option.material;
+      for (const p of parsed) {
+        if (!p.ok || !p.text.trim()) continue;
+        const block = `===== FILE: ${p.name} =====\n${p.text.trim()}`;
+        material = material.trim()
+          ? `${material.trim()}\n\n${block}`
+          : block;
+      }
+      const notes: OptionFileNote[] = parsed.map((p) => ({
+        name: p.name,
+        ok: p.ok,
+        note: p.note,
+      }));
+      let capped = false;
+      if (material.length > MAX_OPTION_MATERIAL) {
+        material = material.slice(0, MAX_OPTION_MATERIAL);
+        capped = true;
+      }
+      if (capped) {
+        notes.push({
+          name: "(combined)",
+          ok: false,
+          note: "Trimmed to fit this option — split very long material across options or trim it.",
+        });
+      }
+      patch({ material, fileNotes: notes });
+    } catch (e) {
+      setErr(e instanceof Error ? e.message : "Could not read those files");
+    } finally {
+      setBusy(false);
+      if (ref.current) ref.current.value = "";
+    }
+  }
+
+  return (
+    <div
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        e.preventDefault();
+        if (e.dataTransfer.files?.length) take(e.dataTransfer.files);
+      }}
+    >
+      <input
+        ref={ref}
+        type="file"
+        multiple
+        accept={ACCEPT}
+        className="hidden"
+        onChange={(e) => e.target.files && take(e.target.files)}
+      />
+      <div className="mt-2 flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => ref.current?.click()}
+          disabled={busy}
+          className="text-xs font-semibold text-slate-700 hover:text-slate-950 disabled:opacity-50"
+        >
+          {busy
+            ? "Reading…"
+            : "+ Attach files to this option (or drop here)"}
+        </button>
+        <span className="text-[11px] text-gray-400">
+          appended raw to the material above
+        </span>
+      </div>
+      {err && (
+        <p className="mt-1 text-[11px] text-rose-700">{err}</p>
+      )}
+      {option.fileNotes && option.fileNotes.length > 0 && (
+        <ul className="mt-1.5 space-y-0.5">
+          {option.fileNotes.map((f, i) => (
+            <li key={i} className="text-[11px] flex items-start gap-1.5">
+              <span className={f.ok ? "text-emerald-600" : "text-rose-600"}>
+                {f.ok ? "✓" : "✕"}
+              </span>
+              <span className="text-gray-600">
+                <span className="font-medium">{f.name}</span>
+                {f.note && <span className="text-gray-500"> — {f.note}</span>}
+              </span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
 
 export function NewAuditForm({ orgId }: { orgId: string }) {
   const router = useRouter();
@@ -388,6 +525,11 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                 placeholder="This option's proposal / quote / SOW / pricing / notes — raw."
               />
               <Provenance field={`option:${i}`} />
+              <OptionFiles
+                orgId={orgId}
+                option={o}
+                patch={(p) => patchOption(o.id, p)}
+              />
             </div>
           ))}
         </div>
