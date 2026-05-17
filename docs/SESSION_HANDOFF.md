@@ -17,7 +17,68 @@ Full rule + rationale: `CLAUDE.md` (top).
 
 ---
 
-## ▶ START HERE — 2026-05-13 spine handoff (new session reads this FIRST)
+## ▶ START HERE — 2026-05-17 evidence-in handoff (read this FIRST)
+
+Work is on branch **`claude/review-cdio-handoff-4bR8R`**, mirrored to
+`main` (Vercel auto-deploys `main`). Spine shipped (prior section) and
+the Audit was extended into the product the founder described:
+**evidence in → grade → audit-ready initiative.**
+
+### What shipped (this session)
+1. **Bulk evidence upload** on the new-audit screen. Drop PDF / Word
+   (.docx) / Excel (.xlsx) / text / `.vtt`/`.srt` transcripts; server
+   parses them and a Sonnet pass returns a structured intake DRAFT.
+   Every field carries provenance (file + verbatim quote + confidence);
+   "not found" is shown, never invented. New: `src/lib/audit/
+   extract.ts`, `POST /api/audits/extract`.
+2. **Per-option file attach** — files dropped on an option are parsed
+   (no AI) and appended raw to that option's material. Parse-only
+   `mode=parse` on the same route.
+3. **Methodology = invisible grader.** The audit run surfaces the few
+   best-practice gaps that change the outcome (plain, severity,
+   evidence) instead of charts; output now leads with the business
+   pain, then verdict + money, then gaps.
+4. **Audit-ready initiative.** The audit emits a structured,
+   best-practice-shaped plan; one click creates a real Initiative via
+   `/api/initiatives`. Audit → Initiative is now a closed loop.
+5. **Originals archived** to a private Supabase Storage bucket
+   (`audit-evidence`, best-effort) so the verdict is reconstructable
+   later. `intake.evidence[]` records the paths.
+6. Hardened: honest ~4 MB upload cap (Vercel body limit), audit run
+   `max_tokens` 4096 → 8192 (output got bigger), `.vtt/.srt`
+   transcripts supported; `.doc/.xls/.ppt` get an actionable
+   convert-and-re-upload message (no risky legacy parser shipped).
+
+`intake`/`output` are jsonb → **no DB migration** for any of the above.
+
+### State additions (truthful — must validate)
+- **`audit-evidence` Storage bucket dependency.** Created lazily via
+  service role on first upload; if the service role can't create
+  buckets in the founder's Supabase, originals silently aren't
+  archived (extraction still works, files flagged "not archived").
+  Go-live item — see DEPLOY.md.
+- **Vercel ~4.5 MB request-body limit is real.** Bulk upload capped at
+  ~4 MB total; the proper fix (browser → storage presigned upload) is
+  deferred. Big files go via per-option attach.
+- **`.doc/.xls/.ppt` are not auto-read** (legacy binary; maintained
+  pure-JS readers are unmaintained or carry advisories). User must
+  Save-As to PDF/.docx/.xlsx.
+- **Extraction + grading quality is UNPROVEN.** Not run against a real
+  document yet. This is the core risk; founder validation on one real
+  decision is the next gate, not more features.
+- v10–v15 still NOT applied → "Create this initiative" errors until
+  the founder runs them (DEPLOY.md). Audit/extraction work without it.
+
+### Next
+1. Founder runs ONE real decision end-to-end (evidence → verdict →
+   initiative). Fix what actually breaks, not what might.
+2. Apply v10–v15 + confirm the `audit-evidence` bucket exists/private.
+3. Only then consider: presigned direct-upload, `.pptx`, per-finding
+   citations on the verdict, signed-URL download of archived originals.
+
+---
+
+## ▶ START HERE — 2026-05-13 spine handoff (prior session)
 
 ### Repos in play
 - **`wbardawil/CDIO`** — THE product (this repo). Next.js app. Local:

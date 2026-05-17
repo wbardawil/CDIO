@@ -17,6 +17,7 @@ const EMPTY_INTAKE: AuditIntake = {
   extra_context: "",
   selection_id: null,
   extraction: null,
+  evidence: [],
 };
 
 const optionSchema = z.object({
@@ -51,6 +52,7 @@ const createSchema = z.object({
                 chars: z.number(),
                 ok: z.boolean(),
                 note: z.string().optional(),
+                storage_path: z.string().optional(),
               })
             )
             .max(20),
@@ -64,6 +66,16 @@ const createSchema = z.object({
           ),
         })
         .nullable()
+        .optional(),
+      evidence: z
+        .array(
+          z.object({
+            name: z.string().max(300),
+            storage_path: z.string().max(500),
+            from: z.string().max(300),
+          })
+        )
+        .max(30)
         .optional(),
     })
     .optional(),

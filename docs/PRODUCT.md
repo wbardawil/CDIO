@@ -37,6 +37,7 @@ Built first as a tool the founder uses on his own fractional practice. Validated
 | **Engagement Manager** | Monthly status reports, QBR decks, board memos, project charters. Generated from client data + AI narrative. Editable in-app. |
 | **Engagement Cadence** | Per-client milestone tracker (commitments, target dates, success criteria). Auto-populated from roadmap + status + decisions. **Shareable read-only link** for client visibility — token-based, no portal, no client accounts. |
 | **Value/ROI Tracker** | Commitment → delivery tracking. Monthly value dashboards. Renewal-ready ROI proof. |
+| **Pre-Purchase Audit** | Drop the evidence you already have (interviews, transcripts, proposals, quotes, SOWs, spreadsheets — bulk). It extracts the business pain, the project and the options with provenance, grades them against the methodology invisibly, returns a plain verdict + the few best-practice gaps that change the outcome, and emits a one-click audit-ready Initiative. Originals archived for defensibility. |
 | **Templates Library** | Vendor evaluations, M&A tech DD, risk registers, governance frameworks, stakeholder comms matrices. |
 | **Knowledge Reuse** | "I solved this at Client A" → suggested for Client B. Cross-client learning per practitioner. |
 | **MCP Server** | Expose every engine as MCP tools so practitioners can call them from Claude.ai, Cursor, Codex, or any MCP-compatible AI surface. |

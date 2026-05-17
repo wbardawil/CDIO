@@ -216,9 +216,39 @@ node scripts/migrate.js   # then schema-v17-audit-companion.sql
 v17 is an additive idempotent ALTER — safe. Order matters: v16 creates
 the table, v17 adds the `companion` column.
 
+### 2b. Evidence-in dependencies (added 2026-05-17)
+
+The Audit now ingests evidence in bulk and emits an audit-ready
+initiative. Two founder-side dependencies:
+
+- **`audit-evidence` Storage bucket.** The app tries to create it
+  lazily via the service role on first upload. Confirm in Supabase →
+  Storage that `audit-evidence` exists and is **private** (not public).
+  If the service role lacks bucket-create permission, create it
+  manually (private) — otherwise originals silently aren't archived
+  (extraction still works; files show "not archived").
+- **v10–v15 migrations** must be applied for **"Create this
+  initiative"** to work (it writes to `initiatives`). The audit,
+  extraction and verdict work without them; only the one-click
+  initiative hand-off needs them. `node scripts/migrate.js` through
+  v15, in order.
+- No new env vars. `intake`/`output` are jsonb, so no audit-table
+  migration for the evidence-in fields.
+
 ### 3. Smoke-test the Audit Engine
 
 - Open a client → **Audits** → **+ New audit**.
+- **Evidence-in path:** drop a real proposal/transcript (PDF/.docx/
+  .xlsx/.vtt, keep the upload under ~4 MB) → confirm the form
+  self-fills with the pain, project and options, each showing its
+  source file + confidence, and that anything not in the files is
+  flagged "not found" (NOT invented). Attach a file to one option →
+  confirm its text is appended raw to that option.
+- After the run, confirm: the verdict leads with the pain, the
+  best-practice **gaps** render plainly (no module codes), and
+  **"Create this initiative"** produces a real Initiative (needs v10–
+  v15). Spot-check that extracted money matches the source document
+  verbatim — this is the trust test.
 - Title it after a real live decision (an ERP / CRM / contact-center
   call you are actually weighing).
 - Fill what you have. Leave one required field blank deliberately to

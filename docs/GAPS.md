@@ -62,6 +62,21 @@
 
 ---
 
+## P1 — Audit evidence ingestion (added 2026-05-17, branch `claude/review-cdio-handoff-4bR8R`)
+
+The Audit now ingests evidence in bulk, grades against the methodology,
+and emits an audit-ready initiative. Open gaps from that slice:
+
+| # | Gap | Why it matters | Effort | When |
+|---|-----|----------------|--------|------|
+| P1-25 | **Extraction + grading quality unproven** — never run against a real proposal/transcript. Faithful option separation, verbatim money, "not_found" honesty, and real (not generic) best-practice gaps are asserted, not validated. | This is the core thesis. If extraction hallucinates, the verdict a CEO acts on is poisoned. | Founder runs 1 real decision | **NEXT GATE** |
+| P1-26 | **`audit-evidence` Storage bucket dependency** — created lazily by the service role; if it can't (perms/policy), originals silently aren't archived. Bucket must exist + be private + service-role-writable. | "Store the originals" (founder decision) is best-effort until verified. Go-live item alongside v10–v15. | 0.25 day (verify) | Go-live |
+| P1-27 | **Vercel ~4.5 MB request-body limit** — bulk upload honestly capped at ~4 MB; large real proposals must use per-option attach. Proper fix = browser → storage presigned upload (bypasses the function body). | A 6 MB PDF "just fails" without the presigned path; per-option is the workaround, not the fix. | 1.5 days | Post-validation |
+| P1-28 | **Legacy `.doc/.xls/.ppt` not auto-read** — actionable convert message only (maintained pure-JS readers are unmaintained or carry advisories). | Some client evidence is legacy Office; user must Save-As. Acceptable v1, revisit if real files demand it. | 1 day (if needed) | If demanded |
+| P1-29 | **No signed-URL download** of archived originals from the audit screen — paths are stored, not yet retrievable in-UI. | Audit trail is captured but not browsable; reconstructing means going to Supabase directly. | 0.5 day | Post-validation |
+
+---
+
 ## P2 — Scale + Polish (Phase 3 + early 4)
 
 | # | Gap | Why Medium | Effort |

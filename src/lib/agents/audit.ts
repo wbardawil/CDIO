@@ -205,7 +205,10 @@ ${intake.extra_context || "(none provided)"}`;
     call: () =>
       anthropic.messages.create({
         model: "claude-sonnet-4-20250514",
-        max_tokens: 4096,
+        // Output now carries the pain, 3-6 gaps, an initiative,
+        // five lenses, requirements + method capture — 4096 risks
+        // a truncated, unparseable JSON object.
+        max_tokens: 8192,
         system:
           AUDIT_SYSTEM_PROMPT +
           (playbookContext

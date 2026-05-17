@@ -4,7 +4,12 @@ import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AuditExtractionMeta, AuditFieldSource } from "@/types/audit";
 
-type OptionFileNote = { name: string; ok: boolean; note?: string };
+type OptionFileNote = {
+  name: string;
+  ok: boolean;
+  note?: string;
+  storagePath?: string;
+};
 type OptionDraft = {
   id: string;
   label: string;
@@ -23,7 +28,8 @@ function newOption(): OptionDraft {
   };
 }
 
-const ACCEPT = ".pdf,.docx,.xlsx,.txt,.md,.markdown,.csv,.tsv,.json";
+const ACCEPT =
+  ".pdf,.docx,.xlsx,.txt,.md,.markdown,.csv,.tsv,.json,.log,.vtt,.srt,.doc,.xls,.ppt";
 // Matches optionSchema.material max in /api/audits.
 const MAX_OPTION_MATERIAL = 60000;
 
@@ -67,6 +73,7 @@ function OptionFiles({
         ok: boolean;
         note?: string;
         text: string;
+        storage_path?: string;
       }> = j.parsed ?? [];
 
       let material = option.material;
@@ -81,6 +88,7 @@ function OptionFiles({
         name: p.name,
         ok: p.ok,
         note: p.note,
+        storagePath: p.storage_path,
       }));
       let capped = false;
       if (material.length > MAX_OPTION_MATERIAL) {
@@ -271,6 +279,29 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
       return;
     }
 
+    // Archived originals (bulk + per-option) so the verdict is
+    // reconstructable later.
+    const evidence: { name: string; storage_path: string; from: string }[] =
+      [];
+    for (const f of extractMeta?.files ?? []) {
+      if (f.storage_path)
+        evidence.push({
+          name: f.name,
+          storage_path: f.storage_path,
+          from: "upload",
+        });
+    }
+    options.forEach((o, idx) => {
+      for (const fn of o.fileNotes ?? []) {
+        if (fn.storagePath)
+          evidence.push({
+            name: fn.name,
+            storage_path: fn.storagePath,
+            from: o.label.trim() || `Option ${idx + 1}`,
+          });
+      }
+    });
+
     setSubmitting(true);
     try {
       const res = await fetch("/api/audits", {
@@ -291,6 +322,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
             operating_context: operatingContext.trim(),
             extra_context: extraContext.trim(),
             extraction: extractMeta,
+            evidence: evidence.slice(0, 30),
           },
         }),
       });
@@ -368,10 +400,12 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           Drop what you already have — the audit reads it for you.
         </p>
         <p className="text-[13px] text-gray-500 mb-4 max-w-xl mx-auto">
-          Interviews, meeting transcripts, proposals, quotes, SOWs,
-          spreadsheets, notes. PDF · Word · Excel · text, in bulk. It extracts
-          the pain, the project and the options and fills this in — you just
-          check it. Nothing is stored; it&apos;s read once.
+          Interviews, transcripts (incl. .vtt/.srt), proposals, quotes, SOWs,
+          spreadsheets, notes. PDF · Word · Excel · text. It extracts the pain,
+          the project and the options and fills this in — you just check it.
+          Originals are archived privately so the verdict stays defensible.
+          Keep a single upload under ~4&nbsp;MB (host limit) — attach big
+          per-option files lower down.
         </p>
         <input
           ref={fileInput}

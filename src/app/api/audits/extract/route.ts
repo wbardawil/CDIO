@@ -3,8 +3,9 @@
 // The friction killer: the practitioner drops the interviews,
 // transcripts and documents he already has; the system reads them
 // and returns a pre-filled, source-cited intake draft to review.
-// Stateless — nothing is persisted here (no raw client documents
-// stored); the draft is saved only when the audit itself is created.
+// The original files are archived to private storage (best-effort)
+// so the verdict stays defensible months later; the structured
+// draft itself is persisted only when the audit is created.
 
 import { NextRequest, NextResponse } from "next/server";
 import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
@@ -13,8 +14,10 @@ import {
   extractIntake,
   MAX_UPLOAD_FILES,
   MAX_FILE_BYTES,
+  MAX_TOTAL_UPLOAD_BYTES,
   type ParsedFile,
 } from "@/lib/audit/extract";
+import { storeEvidence } from "@/lib/audit/evidence-store";
 
 export const runtime = "nodejs"; // pdf/docx/xlsx parsing needs Node
 export const maxDuration = 60; // extraction is a Sonnet call
@@ -52,9 +55,29 @@ export async function POST(request: NextRequest) {
       { status: 400 }
     );
   }
+  const totalBytes = files.reduce((n, f) => n + f.size, 0);
+  if (totalBytes > MAX_TOTAL_UPLOAD_BYTES) {
+    return NextResponse.json(
+      {
+        error: `This upload is ${Math.round(
+          totalBytes / 1024 / 1024
+        )} MB. The host caps a single upload at ~${Math.round(
+          MAX_TOTAL_UPLOAD_BYTES / 1024 / 1024
+        )} MB — send fewer/smaller files at the top, or attach the big ones per option lower down.`,
+      },
+      { status: 413 }
+    );
+  }
+
+  const batchId =
+    typeof crypto !== "undefined" && crypto.randomUUID
+      ? crypto.randomUUID()
+      : `${Date.now()}`;
 
   const parsed: ParsedFile[] = [];
+  let i = 0;
   for (const f of files) {
+    i += 1;
     if (f.size > MAX_FILE_BYTES) {
       parsed.push({
         name: f.name,
@@ -69,7 +92,24 @@ export async function POST(request: NextRequest) {
       continue;
     }
     const buf = Buffer.from(await f.arrayBuffer());
-    parsed.push(await parseUpload(f.name, buf));
+    // Archive the original first (best-effort — never blocks the
+    // read), then parse it for extraction.
+    const storagePath = await storeEvidence(
+      orgId,
+      batchId,
+      i,
+      f.name,
+      f.type,
+      buf
+    );
+    const pf = await parseUpload(f.name, buf);
+    pf.storagePath = storagePath ?? undefined;
+    if (!storagePath) {
+      pf.note = pf.note
+        ? `${pf.note} (not archived)`
+        : "Read OK, but the original could not be archived.";
+    }
+    parsed.push(pf);
   }
 
   // Parse-only: the practitioner is attaching files to ONE option
@@ -83,6 +123,7 @@ export async function POST(request: NextRequest) {
         note: p.note,
         truncated: p.truncated,
         text: p.text,
+        storage_path: p.storagePath,
       })),
     });
   }

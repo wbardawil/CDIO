@@ -85,9 +85,23 @@ export interface AuditFieldSource {
   confidence: ExtractionConfidence;
 }
 
+// One archived original document (private storage path), so the
+// verdict stays reconstructable long after the audit ran.
+export interface AuditEvidenceFile {
+  name: string;
+  storage_path: string;
+  from: string; // "upload" or the option label it was attached to
+}
+
 export interface AuditExtractionMeta {
   at: string; // ISO timestamp
-  files: { name: string; chars: number; ok: boolean; note?: string }[];
+  files: {
+    name: string;
+    chars: number;
+    ok: boolean;
+    note?: string;
+    storage_path?: string;
+  }[];
   // keyed by intake field ("decision", "business_pain", …, or
   // "option:<index>" for a per-option source)
   field_sources: Record<string, AuditFieldSource>;
@@ -241,6 +255,10 @@ export interface AuditIntake {
   // Provenance when the intake was built from uploaded evidence.
   // Absent on hand-typed audits.
   extraction?: AuditExtractionMeta | null;
+
+  // Archived original documents (bulk + per-option), kept so the
+  // verdict is defensible months later. Absent on hand-typed audits.
+  evidence?: AuditEvidenceFile[];
 }
 
 // --- Live Audit Companion ---
