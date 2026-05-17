@@ -69,6 +69,66 @@ export const AUDIT_LENS_META: Record<
   },
 };
 
+// --- Evidence extraction provenance ---
+//
+// The intake is built from evidence the client already has
+// (interviews, transcripts, documents) dropped in bulk. Each
+// extracted field carries where it came from, so the verdict is
+// defensible and the practitioner can verify rather than retype.
+// "not_found" is honest absence — never an invented value.
+
+export type ExtractionConfidence = "high" | "low" | "not_found";
+
+export interface AuditFieldSource {
+  file: string; // source file name
+  quote: string; // short verbatim snippet it was drawn from
+  confidence: ExtractionConfidence;
+}
+
+export interface AuditExtractionMeta {
+  at: string; // ISO timestamp
+  files: { name: string; chars: number; ok: boolean; note?: string }[];
+  // keyed by intake field ("decision", "business_pain", …, or
+  // "option:<index>" for a per-option source)
+  field_sources: Record<string, AuditFieldSource>;
+}
+
+// --- Best-practice grading (the methodology, used invisibly) ---
+//
+// The 16-module methodology is not a questionnaire here — it is
+// the grader. The audit surfaces only the few gaps that matter,
+// in plain language, each anchored (invisibly) to a module and
+// backed by evidence.
+
+export interface AuditGap {
+  gap: string; // plain: what is off vs best practice
+  why_it_matters: string; // the consequence, plain
+  best_practice: string; // plain statement of the best practice
+  module_number: number; // 1..16 — scaffolding, not shown as "M7"
+  evidence: string; // the "because", grounded in the evidence
+  severity: "critical" | "high" | "moderate";
+}
+
+// --- The audit-ready Initiative ---
+//
+// The audit does not end at a verdict-essay. It emits a
+// structured plan, shaped to comply with best practice by
+// construction, that maps 1:1 onto the Initiative create API.
+
+export interface AuditInitiativeStepDraft {
+  title: string;
+  description: string; // what to do + the best practice it satisfies
+  module_number: number | null;
+}
+
+export interface AuditInitiativeDraft {
+  title: string;
+  goal: string; // serves the pain / closes the gaps
+  domain: "tech" | "ai" | "security" | "process" | "data" | "other";
+  module_number: number | null; // primary best-practice anchor
+  steps: AuditInitiativeStepDraft[];
+}
+
 export type LensFlag = "KILL" | "GO" | "RENEGOTIATE";
 
 /** One lens's finding in the C-section of the deliverable. */
@@ -95,6 +155,15 @@ export interface AuditOutput {
   // e.g. "$260,000 overpayment over 3 years" or
   // "$1.2M cheaper path available" — free text so it can carry units.
   headline_money: string;
+  // Plain restatement of the business pain this decision must
+  // solve — the first thing the practitioner reads.
+  business_pain?: string;
+  // The few best-practice gaps that matter (graded vs the
+  // methodology, surfaced plainly). 3-6, severity-ordered.
+  gaps?: AuditGap[];
+  // The audit-ready Initiative — one click from here to a
+  // structured, best-practice-shaped plan.
+  recommended_initiative?: AuditInitiativeDraft;
 }
 
 /** Method Capture — the reusable checklist. Always produced. */
@@ -130,6 +199,14 @@ export interface AuditIntake {
   // university", "Replace the ERP or extend the incumbent".
   decision: string;
 
+  // The business pain this decision must solve, well-described.
+  // Extracted from the evidence; the first thing surfaced.
+  business_pain?: string;
+
+  // The project / object well-described — what is actually being
+  // done, in plain terms, beyond just the decision sentence.
+  project_summary?: string;
+
   // Who is personally accountable, and what gets them fired if
   // this is wrong. The audit's loyalty anchor.
   principal_role: string;
@@ -160,6 +237,10 @@ export interface AuditIntake {
   // Optional link to a Selection the audit reviews (if the org
   // ran one).
   selection_id: string | null;
+
+  // Provenance when the intake was built from uploaded evidence.
+  // Absent on hand-typed audits.
+  extraction?: AuditExtractionMeta | null;
 }
 
 // --- Live Audit Companion ---

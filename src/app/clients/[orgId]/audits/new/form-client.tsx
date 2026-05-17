@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import type { AuditExtractionMeta, AuditFieldSource } from "@/types/audit";
 
 type OptionDraft = { id: string; label: string; material: string };
 
@@ -16,12 +17,24 @@ function newOption(): OptionDraft {
   };
 }
 
+const ACCEPT = ".pdf,.docx,.xlsx,.txt,.md,.markdown,.csv,.tsv,.json";
+
 export function NewAuditForm({ orgId }: { orgId: string }) {
   const router = useRouter();
+  const fileInput = useRef<HTMLInputElement>(null);
+
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const [extracting, setExtracting] = useState(false);
+  const [extractMeta, setExtractMeta] = useState<AuditExtractionMeta | null>(
+    null
+  );
+  const [dragging, setDragging] = useState(false);
+
   const [decision, setDecision] = useState("");
+  const [businessPain, setBusinessPain] = useState("");
+  const [projectSummary, setProjectSummary] = useState("");
   const [principalRole, setPrincipalRole] = useState("");
   const [accountability, setAccountability] = useState("");
   const [totalCost, setTotalCost] = useState("");
@@ -29,6 +42,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
   const [operatingContext, setOperatingContext] = useState("");
   const [extraContext, setExtraContext] = useState("");
   const [options, setOptions] = useState<OptionDraft[]>([newOption()]);
+  const [showMore, setShowMore] = useState(false);
 
   function patchOption(id: string, patch: Partial<OptionDraft>) {
     setOptions((prev) =>
@@ -44,12 +58,65 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
     );
   }
 
+  async function handleFiles(files: FileList | File[]) {
+    const list = Array.from(files);
+    if (list.length === 0) return;
+    setError(null);
+    setExtracting(true);
+    try {
+      const fd = new FormData();
+      fd.append("org_id", orgId);
+      for (const f of list) fd.append("files", f);
+      const res = await fetch("/api/audits/extract", {
+        method: "POST",
+        body: fd,
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setExtractMeta((j.meta as AuditExtractionMeta) ?? null);
+        throw new Error(j.error || j.details || "Could not read those files");
+      }
+      const d = j.draft ?? {};
+      // Pre-fill — but only overwrite a field if extraction found
+      // something, so a second upload augments rather than wipes.
+      if (d.decision) setDecision(d.decision);
+      if (d.business_pain) setBusinessPain(d.business_pain);
+      if (d.project_summary) setProjectSummary(d.project_summary);
+      if (d.principal_role) setPrincipalRole(d.principal_role);
+      if (d.accountability) setAccountability(d.accountability);
+      if (d.total_cost) setTotalCost(d.total_cost);
+      if (d.strategy_context) setStrategyContext(d.strategy_context);
+      if (d.operating_context) setOperatingContext(d.operating_context);
+      if (d.extra_context) setExtraContext(d.extra_context);
+      if (Array.isArray(d.options) && d.options.length > 0) {
+        setOptions(
+          d.options.map(
+            (o: { label?: string; material?: string }) => ({
+              ...newOption(),
+              label: o.label ?? "",
+              material: o.material ?? "",
+            })
+          )
+        );
+      }
+      setExtractMeta((j.meta as AuditExtractionMeta) ?? null);
+      setShowMore(true);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not read those files"
+      );
+    } finally {
+      setExtracting(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  }
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     if (!decision.trim()) {
       setError(
-        "Name the decision in one line (e.g. “Which CRM for the university”). Everything else can be partial — gaps become findings."
+        "Name the decision in one line (e.g. “Which CRM for the university”). Upload your docs above and it fills itself — or type it. Gaps become findings."
       );
       return;
     }
@@ -62,7 +129,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
       .filter((o) => o.label || o.material);
     if (cleanOptions.length === 0) {
       setError(
-        "Add at least one option with its real material pasted in. With nothing concrete on the table there is nothing to stress-test."
+        "Add at least one option with its real material. With nothing concrete on the table there is nothing to stress-test."
       );
       return;
     }
@@ -77,6 +144,8 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           title: decision.trim().slice(0, 280),
           intake: {
             decision: decision.trim(),
+            business_pain: businessPain.trim(),
+            project_summary: projectSummary.trim(),
             principal_role: principalRole.trim(),
             accountability: accountability.trim(),
             total_cost: totalCost.trim(),
@@ -84,6 +153,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
             strategy_context: strategyContext.trim(),
             operating_context: operatingContext.trim(),
             extra_context: extraContext.trim(),
+            extraction: extractMeta,
           },
         }),
       });
@@ -107,22 +177,102 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
   const sectionNo =
     "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold";
 
+  function Provenance({ field }: { field: string }) {
+    const s: AuditFieldSource | undefined =
+      extractMeta?.field_sources?.[field];
+    if (!s) return null;
+    if (s.confidence === "not_found") {
+      return (
+        <p className="mt-1 text-[11px] text-amber-700">
+          Not found in your files — fill this in, or it becomes the audit&apos;s
+          first finding.
+        </p>
+      );
+    }
+    return (
+      <p
+        className="mt-1 text-[11px] text-gray-500"
+        title={s.quote ? `“${s.quote}”` : undefined}
+      >
+        <span
+          className={`inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle ${
+            s.confidence === "high" ? "bg-emerald-500" : "bg-amber-500"
+          }`}
+        />
+        from <span className="font-medium text-gray-700">{s.file}</span>
+        {s.confidence === "low" && " · double-check this one"}
+      </p>
+    );
+  }
+
+  const parsedFiles = extractMeta?.files ?? [];
+
   return (
     <form onSubmit={submit} className="space-y-10 pb-16">
-      {/* Philosophy banner */}
-      <div className="rounded-xl bg-slate-900 text-slate-100 p-5">
-        <p className="text-sm font-semibold mb-1">
-          Don&apos;t fill a form. Dump what you have.
+      {/* The friction killer — evidence in, draft out. */}
+      <div
+        onDragOver={(e) => {
+          e.preventDefault();
+          setDragging(true);
+        }}
+        onDragLeave={() => setDragging(false)}
+        onDrop={(e) => {
+          e.preventDefault();
+          setDragging(false);
+          if (e.dataTransfer.files?.length) handleFiles(e.dataTransfer.files);
+        }}
+        className={`rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
+          dragging
+            ? "border-slate-800 bg-slate-50"
+            : "border-gray-300 bg-white"
+        }`}
+      >
+        <p className="text-sm font-semibold text-gray-900 mb-1">
+          Drop what you already have — the audit reads it for you.
         </p>
-        <p className="text-[13px] leading-relaxed text-slate-300">
-          Paste the actual proposals, quotes, SOWs, meeting notes and
-          transcripts &mdash; <strong>raw and unedited</strong>, across every
-          option on the table. The audit reads it and structures it; you do
-          not summarize. Blank fields are not errors &mdash; a decision this
-          size that can&apos;t articulate its strategy or operating reality is
-          itself the first finding. Loyalty is to you and the person
-          accountable &mdash; never the vendor.
+        <p className="text-[13px] text-gray-500 mb-4 max-w-xl mx-auto">
+          Interviews, meeting transcripts, proposals, quotes, SOWs,
+          spreadsheets, notes. PDF · Word · Excel · text, in bulk. It extracts
+          the pain, the project and the options and fills this in — you just
+          check it. Nothing is stored; it&apos;s read once.
         </p>
+        <input
+          ref={fileInput}
+          type="file"
+          multiple
+          accept={ACCEPT}
+          className="hidden"
+          onChange={(e) => e.target.files && handleFiles(e.target.files)}
+        />
+        <button
+          type="button"
+          onClick={() => fileInput.current?.click()}
+          disabled={extracting}
+          className="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-950 disabled:opacity-50"
+        >
+          {extracting ? "Reading your files…" : "Choose files / drop here"}
+        </button>
+
+        {parsedFiles.length > 0 && (
+          <ul className="mt-4 text-left max-w-xl mx-auto space-y-1">
+            {parsedFiles.map((f) => (
+              <li
+                key={f.name}
+                className="text-xs flex items-start gap-2"
+              >
+                <span className={f.ok ? "text-emerald-600" : "text-rose-600"}>
+                  {f.ok ? "✓" : "✕"}
+                </span>
+                <span className="text-gray-700">
+                  <span className="font-medium">{f.name}</span>
+                  {f.note && (
+                    <span className="text-gray-500"> — {f.note}</span>
+                  )}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
 
       {error && (
@@ -131,56 +281,55 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         </div>
       )}
 
-      {/* 1 — The decision */}
+      {/* 1 — The pain & the project (led, plain). */}
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className={sectionNo}>1</span>
-          <h2 className="text-lg font-bold text-gray-900">The decision</h2>
+          <h2 className="text-lg font-bold text-gray-900">
+            The pain &amp; the project
+          </h2>
         </div>
+
+        <div>
+          <label className={label}>What is the business pain?</label>
+          <p className={hint}>
+            What actually hurts today, and what it costs. Plain language.
+          </p>
+          <textarea
+            className={area}
+            rows={3}
+            value={businessPain}
+            onChange={(e) => setBusinessPain(e.target.value)}
+            placeholder="e.g. Sales can't see pipeline across regions; deals slip; the team rebuilds the same report by hand every week."
+          />
+          <Provenance field="business_pain" />
+        </div>
+
+        <div>
+          <label className={label}>What is the project?</label>
+          <p className={hint}>What is actually being done, in plain terms.</p>
+          <textarea
+            className={area}
+            rows={3}
+            value={projectSummary}
+            onChange={(e) => setProjectSummary(e.target.value)}
+            placeholder="e.g. Replace the regional CRMs with one platform and migrate 3 years of pipeline data."
+          />
+          <Provenance field="project_summary" />
+        </div>
+
         <div>
           <label className={label}>
-            What decision is actually being made? (one line)
+            The decision being made (one line)
           </label>
-          <p className={hint}>
-            One decision per audit. Not the vendor &mdash; the decision.
-          </p>
+          <p className={hint}>One decision per audit. Not the vendor — the decision.</p>
           <input
             className={input}
             value={decision}
             onChange={(e) => setDecision(e.target.value)}
-            placeholder="Which CRM for the university — new platform vs extend the incumbent"
+            placeholder="New CRM platform vs extend the incumbent"
           />
-        </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label className={label}>Accountable principal (role)</label>
-            <input
-              className={input}
-              value={principalRole}
-              onChange={(e) => setPrincipalRole(e.target.value)}
-              placeholder="CRO"
-            />
-          </div>
-          <div>
-            <label className={label}>
-              What gets them fired if this is wrong?
-            </label>
-            <input
-              className={input}
-              value={accountability}
-              onChange={(e) => setAccountability(e.target.value)}
-              placeholder="Sales quota miss; automation never materializes"
-            />
-          </div>
-        </div>
-        <div>
-          <label className={label}>All-in cost (if known)</label>
-          <input
-            className={input}
-            value={totalCost}
-            onChange={(e) => setTotalCost(e.target.value)}
-            placeholder="$341K incl. implementation, 3-year term"
-          />
+          <Provenance field="decision" />
         </div>
       </section>
 
@@ -197,10 +346,8 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           </span>
         </div>
         <p className={hint}>
-          Real decisions have 2&ndash;3 finalists. For each, paste the actual
-          proposal / quote / SOW / email / notes &mdash; verbatim. Don&apos;t
-          tidy it. The engine extracts structure across all options and names
-          the recommended one.
+          Filled from your files when found. Each option keeps its raw
+          material (proposal / quote / SOW / notes) — verbatim, not tidied.
         </p>
 
         <div className="space-y-4">
@@ -219,7 +366,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                   onChange={(e) =>
                     patchOption(o.id, { label: e.target.value })
                   }
-                  placeholder="Option name — e.g. HubSpot / Salesforce / Stay on incumbent + manual"
+                  placeholder="Option name — e.g. HubSpot / Salesforce / Stay on incumbent"
                 />
                 {options.length > 1 && (
                   <button
@@ -238,8 +385,9 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                 onChange={(e) =>
                   patchOption(o.id, { material: e.target.value })
                 }
-                placeholder="Paste this option's proposal / quote / SOW / pricing / your notes — raw, unedited. The engine structures it."
+                placeholder="This option's proposal / quote / SOW / pricing / notes — raw."
               />
+              <Provenance field={`option:${i}`} />
             </div>
           ))}
         </div>
@@ -253,80 +401,113 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         </button>
       </section>
 
-      {/* 3 — Context */}
+      {/* 3 — More context the audit also uses (collapsed for speed). */}
       <section className="space-y-4">
-        <div className="flex items-center gap-3">
+        <button
+          type="button"
+          onClick={() => setShowMore((v) => !v)}
+          className="flex items-center gap-3 text-left"
+        >
           <span className={sectionNo}>3</span>
           <h2 className="text-lg font-bold text-gray-900">
-            Context (paste raw — don&apos;t summarize)
+            More context the audit also uses
           </h2>
-        </div>
+          <span className="text-xs text-gray-500">
+            {showMore ? "hide" : "show"} — optional, gaps become findings
+          </span>
+        </button>
 
-        <div>
-          <label className={label}>The strategy this is supposed to serve</label>
-          <p className={hint}>
-            Where the business is trying to play and how it intends to win.
-            Blank here is itself a finding.
-          </p>
-          <textarea
-            className={area}
-            rows={4}
-            value={strategyContext}
-            onChange={(e) => setStrategyContext(e.target.value)}
-            placeholder="Paste the strategy doc excerpt / board narrative / your notes on where the business is going…"
-          />
-        </div>
-
-        <div>
-          <label className={label}>
-            How the org runs today + prior attempts + transcripts
-          </label>
-          <p className={hint}>
-            Current process, who does what, tools in place, and especially{" "}
-            <strong>what was tried before in this area and why it
-            didn&apos;t stick</strong> &mdash; the strongest predictor of
-            whether this one fails for the same reason. Paste meeting
-            transcripts here too.
-          </p>
-          <textarea
-            className={area}
-            rows={6}
-            value={operatingContext}
-            onChange={(e) => setOperatingContext(e.target.value)}
-            placeholder="Paste raw: current process + tools, prior tool the team never finished configuring, call transcripts, who owns the process…"
-          />
-        </div>
-
-        <div>
-          <label className={label}>
-            Anything else relevant{" "}
-            <span className="font-normal text-gray-400">(optional)</span>
-          </label>
-          <p className={hint}>
-            Emails, a described process diagram, side notes. The engine mines
-            it.
-          </p>
-          <textarea
-            className={area}
-            rows={3}
-            value={extraContext}
-            onChange={(e) => setExtraContext(e.target.value)}
-            placeholder="Paste anything else — the engine will use it…"
-          />
-        </div>
+        {showMore && (
+          <div className="space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className={label}>Accountable principal (role)</label>
+                <input
+                  className={input}
+                  value={principalRole}
+                  onChange={(e) => setPrincipalRole(e.target.value)}
+                  placeholder="CRO"
+                />
+                <Provenance field="principal_role" />
+              </div>
+              <div>
+                <label className={label}>
+                  What gets them fired if this is wrong?
+                </label>
+                <input
+                  className={input}
+                  value={accountability}
+                  onChange={(e) => setAccountability(e.target.value)}
+                  placeholder="Quota miss; automation never materializes"
+                />
+                <Provenance field="accountability" />
+              </div>
+            </div>
+            <div>
+              <label className={label}>All-in cost (if known)</label>
+              <input
+                className={input}
+                value={totalCost}
+                onChange={(e) => setTotalCost(e.target.value)}
+                placeholder="$341K incl. implementation, 3-year term"
+              />
+              <Provenance field="total_cost" />
+            </div>
+            <div>
+              <label className={label}>
+                The strategy this is supposed to serve
+              </label>
+              <textarea
+                className={area}
+                rows={3}
+                value={strategyContext}
+                onChange={(e) => setStrategyContext(e.target.value)}
+                placeholder="Where the business is trying to play and how it intends to win…"
+              />
+              <Provenance field="strategy_context" />
+            </div>
+            <div>
+              <label className={label}>
+                How the org runs today + prior attempts + transcripts
+              </label>
+              <textarea
+                className={area}
+                rows={5}
+                value={operatingContext}
+                onChange={(e) => setOperatingContext(e.target.value)}
+                placeholder="Current process + tools, what was tried before and why it didn't stick, call transcripts…"
+              />
+              <Provenance field="operating_context" />
+            </div>
+            <div>
+              <label className={label}>
+                Anything else relevant{" "}
+                <span className="font-normal text-gray-400">(optional)</span>
+              </label>
+              <textarea
+                className={area}
+                rows={3}
+                value={extraContext}
+                onChange={(e) => setExtraContext(e.target.value)}
+                placeholder="Emails, a described diagram, side notes…"
+              />
+              <Provenance field="extra_context" />
+            </div>
+          </div>
+        )}
       </section>
 
       <div className="flex items-center gap-4 border-t border-gray-200 pt-6">
         <button
           type="submit"
-          disabled={submitting}
+          disabled={submitting || extracting}
           className="px-6 py-3 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-950 disabled:opacity-50"
         >
           {submitting ? "Creating…" : "Create audit →"}
         </button>
         <span className="text-xs text-gray-500">
-          Next screen: generate the in-room companion, then run the
-          five-lens verdict.
+          Next: the verdict, the gaps vs best practice, and an
+          audit-ready initiative.
         </span>
       </div>
     </form>

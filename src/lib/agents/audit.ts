@@ -24,6 +24,8 @@ import {
   type AuditLensKey,
   type AuditVerdict,
   type LensFlag,
+  type AuditGap,
+  type AuditInitiativeDraft,
 } from "@/types/audit";
 import { MODULE_NAMES } from "@/types";
 
@@ -80,8 +82,14 @@ LENS 5 - REVERSIBILITY AND RISK
 - Tie the verdict to economic reality: if it is sold as making money but the evidence says it only saves time (and not enough to clear the 3-year cost), say exactly that.
 - Match the buyer's language (Spanish or English) — mirror the language the intake is written in.
 
+## BEST-PRACTICE GRADING (the methodology, used invisibly)
+The PLAYBOOK GROUNDING below is the recognized best-practice corpus, organized by the 16 methodology modules. Grade the decision and the evidence against it. Do NOT show charts, scores, or module codes to the reader. Surface only the FEW gaps that actually matter (3-6 max): where the project, as evidenced, departs from best practice in a way that changes the outcome. Each gap is plain language, names the consequence, states the best practice plainly, and carries its evidence. Skip cosmetic gaps. An honest "no material gap on X" is fine — do not invent gaps to look thorough.
+
+## HELP, DON'T JUST JUDGE — THE AUDIT-READY INITIATIVE
+End with a structured initiative the practitioner can run as-is. It must (a) serve the business pain, (b) close the gaps you surfaced, (c) be shaped so following it complies with best practice by construction. Each step says what to do and the best practice it satisfies. This is the "it actually helped" payload — concrete, sequenced, not a wall of text.
+
 ## METHOD CAPTURE
-Always end by listing, verbatim, every question you actually asked to reach the verdict, grouped by lens, and marking which question did the most work for this case. This list is the reusable checklist.`;
+List, verbatim, every question you actually asked to reach the verdict, grouped by lens, and mark which question did the most work for this case. This list is the reusable checklist.`;
 
 interface RunAuditResult {
   output: AuditOutput;
@@ -160,6 +168,12 @@ export async function runAudit(
 ## THE DECISION
 ${intake.decision || "(not provided — the room cannot name the decision; that is itself the first finding)"}
 
+## BUSINESS PAIN (what actually hurts and what it costs)
+${intake.business_pain || "(not provided — if the evidence cannot articulate the pain, that is itself a Lens 1 finding)"}
+
+## THE PROJECT (what is actually being done)
+${intake.project_summary || "(not provided)"}
+
 ## ACCOUNTABLE PRINCIPAL
 Role: ${intake.principal_role || "(not provided)"}
 Fired if this is wrong: ${intake.accountability || "(not provided)"}
@@ -210,6 +224,19 @@ ${intakeBlock}${gapBlock}
 Run all five lenses. Produce the deliverable as JSON ONLY (no prose outside the JSON):
 
 {
+  "business_pain": "<the business pain this decision must solve, restated plainly in one or two sentences — the first thing the reader sees>",
+  "gaps": [
+    { "gap": "<plain: where the project departs from best practice in a way that changes the outcome>", "why_it_matters": "<the consequence, plain>", "best_practice": "<the best practice, stated plainly>", "module_number": <1-16, the methodology area this maps to>, "evidence": "<the because, grounded in the provided evidence>", "severity": "critical|high|moderate" }
+  ],
+  "recommended_initiative": {
+    "title": "<short, action-oriented>",
+    "goal": "<what done looks like — serves the pain, closes the gaps>",
+    "domain": "tech|ai|security|process|data|other",
+    "module_number": <1-16 primary best-practice anchor, or null>,
+    "steps": [
+      { "title": "<do this>", "description": "<how + the best practice it satisfies>", "module_number": <1-16 or null> }
+    ]
+  },
   "strategy_verdict": "<A — one decisive paragraph: should this be bought at all, in this category, given the strategy and operating model>",
   "requirements_brief": "<B — what the system must actually do, mapped to how the org runs today, NOT the vendor's feature list. Plain prose or markdown bullets.>",
   "lens_findings": [
@@ -231,7 +258,7 @@ Run all five lenses. Produce the deliverable as JSON ONLY (no prose outside the 
   ]
 }
 
-Rules: every finding carries a "because" in evidence. Quantify money in real numbers. If intake gaps exist and evidence is not overwhelming, overall_call is "hold" and board_summary leads with the gap. If the honest answer is "buy", say so without hedging.`,
+Rules: every finding and every gap carries a "because" in evidence. Quantify money in real numbers. Surface 3-6 gaps that actually matter — no cosmetic gaps, no padding. The recommended_initiative must serve the business pain and close those gaps, with each step naming the best practice it satisfies. If intake gaps exist and evidence is not overwhelming, overall_call is "hold" and board_summary leads with the gap. If the honest answer is "buy", say so without hedging. Plain language on every reader-facing string — no module codes, no chart-speak.`,
           },
         ],
       }),
@@ -244,6 +271,26 @@ Rules: every finding carries a "because" in evidence. Quantify money in real num
   }
 
   const parsed = JSON.parse(jsonMatch[0]) as {
+    business_pain?: string;
+    gaps?: Array<{
+      gap?: string;
+      why_it_matters?: string;
+      best_practice?: string;
+      module_number?: unknown;
+      evidence?: string;
+      severity?: string;
+    }>;
+    recommended_initiative?: {
+      title?: string;
+      goal?: string;
+      domain?: string;
+      module_number?: unknown;
+      steps?: Array<{
+        title?: string;
+        description?: string;
+        module_number?: unknown;
+      }>;
+    };
     strategy_verdict?: string;
     requirements_brief?: string;
     lens_findings?: Array<{
@@ -317,7 +364,71 @@ Rules: every finding carries a "because" in evidence. Quantify money in real num
           : 0,
     }));
 
+  const validSeverity = new Set(["critical", "high", "moderate"]);
+  const clampModule = (v: unknown): number | null => {
+    const n = typeof v === "number" ? v : Number(v);
+    return Number.isInteger(n) && n >= 1 && n <= 16 ? n : null;
+  };
+
+  const bestPracticeGaps: AuditGap[] = (parsed.gaps ?? [])
+    .filter(
+      (g): g is { gap: string } & Record<string, unknown> =>
+        typeof g?.gap === "string" && g.gap.trim().length > 0
+    )
+    .slice(0, 6)
+    .map((g) => ({
+      gap: String(g.gap).trim(),
+      why_it_matters:
+        typeof g.why_it_matters === "string" ? g.why_it_matters.trim() : "",
+      best_practice:
+        typeof g.best_practice === "string" ? g.best_practice.trim() : "",
+      module_number: clampModule(g.module_number) ?? 0,
+      evidence: typeof g.evidence === "string" ? g.evidence.trim() : "",
+      severity: validSeverity.has(String(g.severity))
+        ? (String(g.severity) as AuditGap["severity"])
+        : "moderate",
+    }));
+
+  const validDomains = new Set([
+    "tech",
+    "ai",
+    "security",
+    "process",
+    "data",
+    "other",
+  ]);
+  const ri = parsed.recommended_initiative;
+  let recommended_initiative: AuditInitiativeDraft | undefined;
+  if (ri && typeof ri.title === "string" && ri.title.trim()) {
+    recommended_initiative = {
+      title: ri.title.trim().slice(0, 300),
+      goal: typeof ri.goal === "string" ? ri.goal.trim() : "",
+      domain: validDomains.has(String(ri.domain))
+        ? (ri.domain as AuditInitiativeDraft["domain"])
+        : "tech",
+      module_number: clampModule(ri.module_number),
+      steps: (Array.isArray(ri.steps) ? ri.steps : [])
+        .filter(
+          (s): s is { title: string } & Record<string, unknown> =>
+            typeof s?.title === "string" && s.title.trim().length > 0
+        )
+        .slice(0, 12)
+        .map((s) => ({
+          title: String(s.title).trim().slice(0, 300),
+          description:
+            typeof s.description === "string" ? s.description.trim() : "",
+          module_number: clampModule(s.module_number),
+        })),
+    };
+  }
+
   const output: AuditOutput = {
+    business_pain:
+      typeof parsed.business_pain === "string"
+        ? parsed.business_pain.trim()
+        : intake.business_pain || "",
+    gaps: bestPracticeGaps,
+    recommended_initiative,
     strategy_verdict:
       typeof parsed.strategy_verdict === "string"
         ? parsed.strategy_verdict.trim()

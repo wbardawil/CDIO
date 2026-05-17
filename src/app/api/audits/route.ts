@@ -6,6 +6,8 @@ import type { Audit, AuditIntake } from "@/types/audit";
 
 const EMPTY_INTAKE: AuditIntake = {
   decision: "",
+  business_pain: "",
+  project_summary: "",
   principal_role: "",
   accountability: "",
   total_cost: "",
@@ -14,6 +16,7 @@ const EMPTY_INTAKE: AuditIntake = {
   operating_context: "",
   extra_context: "",
   selection_id: null,
+  extraction: null,
 };
 
 const optionSchema = z.object({
@@ -28,6 +31,8 @@ const createSchema = z.object({
   intake: z
     .object({
       decision: z.string().max(2000).optional(),
+      business_pain: z.string().max(8000).optional(),
+      project_summary: z.string().max(8000).optional(),
       principal_role: z.string().max(300).optional(),
       accountability: z.string().max(2000).optional(),
       total_cost: z.string().max(300).optional(),
@@ -36,6 +41,30 @@ const createSchema = z.object({
       operating_context: z.string().max(60000).optional(),
       extra_context: z.string().max(60000).optional(),
       selection_id: z.string().uuid().nullable().optional(),
+      extraction: z
+        .object({
+          at: z.string(),
+          files: z
+            .array(
+              z.object({
+                name: z.string(),
+                chars: z.number(),
+                ok: z.boolean(),
+                note: z.string().optional(),
+              })
+            )
+            .max(20),
+          field_sources: z.record(
+            z.string(),
+            z.object({
+              file: z.string(),
+              quote: z.string().max(400),
+              confidence: z.enum(["high", "low", "not_found"]),
+            })
+          ),
+        })
+        .nullable()
+        .optional(),
     })
     .optional(),
 });

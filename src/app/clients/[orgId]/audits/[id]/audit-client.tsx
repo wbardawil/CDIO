@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import {
   type Audit,
   type AuditLensKey,
@@ -9,6 +10,17 @@ import {
   evaluateIntakeGaps,
 } from "@/types/audit";
 import { AuditProgress } from "../audit-progress";
+
+const SEVERITY_STYLE: Record<string, string> = {
+  critical: "bg-rose-100 text-rose-800 border-rose-200",
+  high: "bg-amber-100 text-amber-800 border-amber-200",
+  moderate: "bg-slate-100 text-slate-700 border-slate-200",
+};
+const SEVERITY_RANK: Record<string, number> = {
+  critical: 0,
+  high: 1,
+  moderate: 2,
+};
 
 const LENS_ORDER: AuditLensKey[] = (
   Object.keys(AUDIT_LENS_META) as AuditLensKey[]
@@ -44,17 +56,60 @@ export function AuditDetailClient({
   orgId: string;
   initialAudit: Audit;
 }) {
-  // orgId retained for parity with the page contract / future
-  // in-place navigation; the shell already owns the back paths.
-  void orgId;
+  const router = useRouter();
 
   const [audit, setAudit] = useState<Audit>(initialAudit);
   const [running, setRunning] = useState(false);
   const [prepping, setPrepping] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showAnalysis, setShowAnalysis] = useState(false);
+  const [creatingInitiative, setCreatingInitiative] = useState(false);
+  const [createdInitiativeId, setCreatedInitiativeId] = useState<string | null>(
+    null
+  );
 
   const gaps = evaluateIntakeGaps(audit.intake);
+
+  async function createInitiative() {
+    const ri = audit.output?.recommended_initiative;
+    if (!ri) return;
+    setError(null);
+    setCreatingInitiative(true);
+    try {
+      const res = await fetch("/api/initiatives", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          org_id: orgId,
+          title: ri.title,
+          goal: ri.goal || ri.title,
+          domain: ri.domain,
+          module_number: ri.module_number ?? null,
+          steps: ri.steps.map((s) => ({
+            title: s.title,
+            description: s.description || null,
+          })),
+          practitioner_notes: `Generated from the pre-purchase audit "${audit.title}".`,
+        }),
+      });
+      const j = await res.json().catch(() => ({}));
+      if (!res.ok)
+        throw new Error(
+          j.error || j.details || "Could not create the initiative"
+        );
+      const id = j.initiative?.id as string | undefined;
+      if (id) {
+        setCreatedInitiativeId(id);
+        router.push(`/clients/${orgId}/initiatives/${id}`);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Could not create the initiative"
+      );
+    } finally {
+      setCreatingInitiative(false);
+    }
+  }
 
   async function run() {
     setError(null);
@@ -131,7 +186,19 @@ export function AuditDetailClient({
 
       {out ? (
         <>
-          {/* ===== Law 5: the 15-second read, first ===== */}
+          {/* The pain, first — what this is all for. */}
+          {(out.business_pain || audit.intake.business_pain) && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
+                The pain this has to solve
+              </p>
+              <p className="text-base text-gray-900 leading-relaxed">
+                {out.business_pain || audit.intake.business_pain}
+              </p>
+            </div>
+          )}
+
+          {/* ===== Law 5: the 15-second read ===== */}
           <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span
@@ -154,6 +221,123 @@ export function AuditDetailClient({
               {out.board_summary}
             </p>
           </div>
+
+          {/* What's off vs best practice — the methodology, surfaced
+              plainly. Only the few that change the outcome. */}
+          {out.gaps && out.gaps.length > 0 && (
+            <div className="bg-white rounded-xl border border-gray-200 p-6">
+              <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                What&apos;s off vs best practice
+              </h3>
+              <p className="text-xs text-gray-500 mb-4">
+                The few gaps that actually change the outcome — not a checklist.
+              </p>
+              <ul className="space-y-4">
+                {[...out.gaps]
+                  .sort(
+                    (a, b) =>
+                      (SEVERITY_RANK[a.severity] ?? 9) -
+                      (SEVERITY_RANK[b.severity] ?? 9)
+                  )
+                  .map((g, i) => (
+                    <li
+                      key={i}
+                      className="border-l-2 border-gray-200 pl-4"
+                    >
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-sm font-semibold text-gray-900">
+                          {g.gap}
+                        </span>
+                        <span
+                          className={`px-1.5 py-0.5 rounded text-[10px] font-bold border uppercase ${
+                            SEVERITY_STYLE[g.severity] ??
+                            "bg-gray-100 text-gray-700"
+                          }`}
+                        >
+                          {g.severity}
+                        </span>
+                      </div>
+                      {g.why_it_matters && (
+                        <p className="text-sm text-gray-800 mb-1">
+                          {g.why_it_matters}
+                        </p>
+                      )}
+                      {g.best_practice && (
+                        <p className="text-xs text-gray-600 mb-0.5">
+                          <span className="font-semibold">Best practice:</span>{" "}
+                          {g.best_practice}
+                        </p>
+                      )}
+                      {g.evidence && (
+                        <p className="text-xs text-gray-500">
+                          <span className="font-semibold">Because:</span>{" "}
+                          {g.evidence}
+                        </p>
+                      )}
+                    </li>
+                  ))}
+              </ul>
+            </div>
+          )}
+
+          {/* It actually helps — the audit-ready initiative, one
+              click to a structured, best-practice-shaped plan. */}
+          {out.recommended_initiative && (
+            <div className="bg-white rounded-xl border border-blue-200 p-6">
+              <div className="flex items-start justify-between gap-3 mb-1">
+                <h3 className="text-sm font-semibold text-gray-900">
+                  Your audit-ready initiative
+                </h3>
+                {createdInitiativeId ? (
+                  <span className="text-xs font-semibold text-emerald-700 print:hidden">
+                    ✓ Created
+                  </span>
+                ) : (
+                  <button
+                    onClick={createInitiative}
+                    disabled={creatingInitiative}
+                    className="shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 print:hidden"
+                  >
+                    {creatingInitiative
+                      ? "Creating…"
+                      : "Create this initiative →"}
+                  </button>
+                )}
+              </div>
+              <p className="text-base font-semibold text-gray-900 mt-1">
+                {out.recommended_initiative.title}
+              </p>
+              {out.recommended_initiative.goal && (
+                <p className="text-sm text-gray-700 mt-1 mb-3">
+                  {out.recommended_initiative.goal}
+                </p>
+              )}
+              <ol className="space-y-2">
+                {out.recommended_initiative.steps.map((s, i) => (
+                  <li key={i} className="flex gap-3 text-sm">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white text-[11px] font-bold">
+                      {i + 1}
+                    </span>
+                    <span>
+                      <span className="font-medium text-gray-900">
+                        {s.title}
+                      </span>
+                      {s.description && (
+                        <span className="text-gray-600">
+                          {" "}
+                          — {s.description}
+                        </span>
+                      )}
+                    </span>
+                  </li>
+                ))}
+              </ol>
+              <p className="mt-3 text-[11px] text-gray-400">
+                Shaped to comply with best practice by construction. Creating
+                it opens the initiative with these steps ready to assign.
+              </p>
+            </div>
+          )}
 
           {/* The full rigor — real, cited, lens-by-lens — but earned
               trust behind one explicit disclosure (Law 3 + Law 5). */}
@@ -204,6 +388,16 @@ export function AuditDetailClient({
                       {gaps.finding}
                     </div>
                   )}
+                  {audit.intake.extraction?.files?.length ? (
+                    <p className="mt-3 text-[11px] text-gray-400">
+                      Intake built from:{" "}
+                      {audit.intake.extraction.files
+                        .filter((f) => f.ok)
+                        .map((f) => f.name)
+                        .join(", ") || "uploaded evidence"}
+                      . Each field was reviewed before this audit ran.
+                    </p>
+                  ) : null}
                 </div>
 
                 {/* Strategy fit */}
