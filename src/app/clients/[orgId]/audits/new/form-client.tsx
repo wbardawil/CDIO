@@ -203,8 +203,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         </label>
         <p className={hintCls}>
           The single strongest predictor of failure. A previous tool the
-          team never configured or followed (e.g. a WhatsApp bot the
-          commercial area never set up) means the next purchase likely
+          team never configured or followed means the next purchase likely
           fails for the same org-behavior reason &mdash; not the tool.
         </p>
         <textarea
@@ -212,7 +211,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           rows={3}
           value={form.prior_attempts}
           onChange={set("prior_attempts")}
-          placeholder="Atom WhatsApp bot 2024 — failed; commercial area never did the process configuration; campaigns changed too often…"
+          placeholder="e.g. similar tool bought two years ago — the owning team never completed configuration and abandoned it within months…"
         />
       </div>
 
@@ -230,7 +229,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           rows={3}
           value={form.ai_model_ownership}
           onChange={set("ai_model_ownership")}
-          placeholder="Vendor said the voice-AI agent must use their LLM; no BYO-model; data layer on their infra…"
+          placeholder="e.g. vendor requires their own model; no bring-your-own-model option; data layer runs only on their infrastructure…"
         />
       </div>
 
@@ -248,7 +247,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           rows={3}
           value={form.demo_observations}
           onChange={set("demo_observations")}
-          placeholder="Vendor A: scripted demo, knew our industry vocabulary. Vendor B: configured custom catalogs on the fly against our requirements, lean team…"
+          placeholder="e.g. Option A: polished scripted demo, fluent in our industry terms. Option B: configured against our actual requirement live, on the fly…"
         />
       </div>
 

@@ -119,13 +119,13 @@ export interface AuditIntake {
   // 5. The strategy this is supposed to serve
   strategy_served: string;
 
-  // --- Intake hardenings (2026-05-13, justified by real engagements) ---
+  // --- Intake hardenings (2026-05-13) ---
 
   // Prior technology attempts in THIS area and how they went. The
   // single strongest predictor of absorption failure — a failed
-  // prior rollout in the same function (e.g. a WhatsApp bot the
-  // commercial team never configured) means the next purchase
-  // likely fails for the same org-behavior reason, not the tool.
+  // prior rollout in the same function (e.g. a tool the owning team
+  // never finished configuring) means the next purchase likely
+  // fails for the same org-behavior reason, not the tool.
   // Blank here is itself probed by Lens 2 / Lens 5.
   prior_attempts: string;
 

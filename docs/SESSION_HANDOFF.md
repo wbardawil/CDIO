@@ -4,6 +4,19 @@ This is the entry point for a fresh Claude Code session. It tells you **where we
 
 ---
 
+## ⛔ CLIENT CONFIDENTIALITY — ABSOLUTE RULE (read first, every session)
+
+Real client / customer / engagement details the founder shares to inform
+design or validate the tool are **in-session reasoning ONLY**. NEVER persist
+them into code, comments, placeholder/UI copy, prompts, seed/fixture data,
+docs, commit messages, or anything that lands in git. Every example must be
+invented and obviously fictional. Never name or make identifiable a real
+client, vendor, tool, person, deal, price, or situation. Permanent; every
+session and agent; a breach is the most serious failure in this project.
+Full rule + rationale: `CLAUDE.md` (top).
+
+---
+
 ## TL;DR (read this first)
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
@@ -91,19 +104,19 @@ Doc-pass committed as part of this session. Audit Engine build starts immediatel
 
 ### Audit Engine extension — Live Companion + 3 intake hardenings (2026-05-13)
 
-Not a new service line — a **second output mode of the already-governed Audit Engine** (proportionate discipline: extension of a blessed service line gets a handoff note, not a separate doc-pass). Justified directly by four real founder engagements (voice-AI LLM lock-in; university CRM process-discipline gap; ERP demo polish-vs-capability; gov agency over-priced quote).
+Not a new service line — a **second output mode of the already-governed Audit Engine** (proportionate discipline: extension of a blessed service line gets a handoff note, not a separate doc-pass). Justified by recurring decision-failure patterns surfaced during design review (model/data-layer lock-in; organizational-absorption gap from prior failed rollouts; demo-polish vs. demonstrated-capability; over-scoped pricing vs. cheaper path).
 
-- **3 intake hardenings:** explicit `prior_attempts` field (prior tech attempts in this area + how they went — the strongest absorption-failure predictor; would have hard-locked the university CRM finding); conditional `ai_model_ownership` probe (who owns the model/data layer, can we BYO-model, can it run on infra we control — the voice-AI lock-in case); `demo_observations` field (what each option demonstrated live vs scripted — the ERP polish-vs-capability case).
-- **Live Audit Companion:** the engine generates a pre-meeting, lens-by-lens question sheet tailored to *this* purchase — the exact probes to ask in the room while the vendor is performing. Closes the loop with Method Capture so the highest-leverage questions feed the next meeting. Rationale: the founder is IN these presentations live; the post-hoc deliverable alone doesn't serve the actual workflow. Cases 1 and 3 were caught live, mid-demo — the tool must put the structural question in the founder's mouth in real time, not just document it afterward.
+- **3 intake hardenings:** explicit `prior_attempts` field (prior tech attempts in this area + how they went — the strongest absorption-failure predictor); conditional `ai_model_ownership` probe (who owns the model/data layer, can we BYO-model, can it run on infra we control); `demo_observations` field (what each option demonstrated live vs scripted).
+- **Live Audit Companion:** the engine generates a pre-meeting, lens-by-lens question sheet tailored to *this* purchase — the exact probes to ask in the room while the vendor is performing. Closes the loop with Method Capture so the highest-leverage questions feed the next meeting. Rationale: the practitioner is IN these presentations live; the post-hoc deliverable alone doesn't serve the actual workflow. Structural findings are most often surfaced live, mid-demo — the tool must put the structural question in the practitioner's mouth in real time, not just document it afterward.
 
 ### Logged for the evidence-driven tightening batch (do NOT build speculatively — R6)
 
-These are captured from real founder engagements but deliberately deferred until ONE real audit run shows where output is actually weak (Threat 6 / R6 from the 2026-05-13 MECE assessment — six real cases prove the *thesis*, not yet the *output quality*):
+These are captured from recurring decision-failure patterns but deliberately deferred until ONE real audit run shows where output is actually weak (Threat 6 / R6 from the 2026-05-13 MECE assessment — the patterns prove the *thesis*, not yet the *output quality*):
 
-1. **4th intake hardening — vendor delivery structure / prime-vs-subcontract.** Real pattern: buyers pick a big-name firm as a capability proxy, but the work is delivered by a subcontracted individual the buyer never evaluated, on a 2-3x managerial/brand markup; the direct-to-expert path is never stated. Maps to Lens 4 (bullseye — vendor optimizes for the subcontract spread; conspicuously not showing who delivers), Lens 3 (the 10x-cheaper direct path), Lens 5 (the unnamed question: "who by name delivers, employee or subcontractor, can we contractually lock the named team?"). Drop-in: new intake field `vendor_delivery_structure` + a mandatory companion probe + the verdict shape (usually RENEGOTIATE → named-team contractual lock + price to real delivery cost; or cheaper-path direct). Same gap class as the AI-model-ownership and prior-attempts hardenings — high-signal structural question that should be forced at intake, not left to agent inference.
-2. **Whatever the first real run exposes** — the actual tightening priority comes from running it on a live ERP/CRM/contact-center decision, not from anticipated cases.
+1. **4th intake hardening — vendor delivery structure / prime-vs-subcontract.** Pattern: buyers pick a big-name firm as a capability proxy, but the work is delivered by a subcontracted individual the buyer never evaluated, on a 2-3x managerial/brand markup; the direct-to-expert path is never stated. Maps to Lens 4 (bullseye — vendor optimizes for the subcontract spread; conspicuously not showing who delivers), Lens 3 (the 10x-cheaper direct path), Lens 5 (the unnamed question: "who by name delivers, employee or subcontractor, can we contractually lock the named team?"). Drop-in: new intake field `vendor_delivery_structure` + a mandatory companion probe + the verdict shape (usually RENEGOTIATE → named-team contractual lock + price to real delivery cost; or cheaper-path direct). Same gap class as the AI-model-ownership and prior-attempts hardenings — high-signal structural question that should be forced at intake, not left to agent inference.
+2. **Whatever the first real run exposes** — the actual tightening priority comes from running it on a live decision, not from anticipated patterns.
 
-**Validation signal:** six independent real engagements (voice-AI LLM lock-in; university CRM process-discipline gap; ERP demo polish-vs-capability; gov agency over-quote; big-firm-vs-direct markup; + the original ERP catalog-on-the-fly case) all reduce to ONE constant — the room evaluates the *surface* (brand, demo polish, feature list, industry vocabulary, firm size) and misses the *structure* (model ownership, org absorption, delivery capability, cost path, who actually does the work). That is the entire thesis of the Audit Engine, now validated by six real cases the founder caught by decision-layer judgment, not domain expertise. The design is right; the discipline now is to prove output quality on one real run before adding the 7th anticipated probe.
+**Validation signal:** the recurring patterns reduce to ONE constant — the room evaluates the *surface* (brand, demo polish, feature list, industry vocabulary, firm size) and misses the *structure* (model ownership, org absorption, delivery capability, cost path, who actually does the work). That is the entire thesis of the Audit Engine. The design is right; the discipline now is to prove output quality on one real run before adding the next anticipated probe.
 
 ### (Historical) The four-way deliberation that preceded the decision
 

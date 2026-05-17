@@ -1,5 +1,11 @@
 # AI-CDIO: Strategy 2026
 
+> ⛔ **CLIENT CONFIDENTIALITY — ABSOLUTE RULE.** Real client / customer /
+> engagement details shared to inform design are in-session reasoning ONLY —
+> never persisted into code, docs, prompts, fixtures, commit messages, or any
+> committed artifact. Every example must be invented and obviously fictional.
+> Permanent, every session, every agent. Full rule + rationale: `CLAUDE.md` (top).
+
 **Status:** Active strategic source of truth. Supersedes any conflicting language in older docs.
 **Last refreshed:** 2026-05-07 (Day 11 evening — fifth and final update: **(1)** outcomes-and-feelings rewrite anchored in 2025-2026 research from McKinsey, BCG, KPMG, Gartner, Deloitte, WEF; **(2)** scope expanded to include Initiative Pilot + Selection Engine + Network Catalog as Phase 1D deliverables, founder confirmed execution oversight is in scope; **(3)** architectural laws locked: single-agent default, methodology FULL on every tier (no feature-gating), multi-corpus RAG with strict tenant isolation, memory primitives Phase 4 commitment; **(4)** Process Discipline locked — gstack skills are mandatory gates not optional polish; Architectural Lineage from gsd-2 + gstack documented; Network Catalog Privacy P0 spec; **(5)** AI + Data + Quick Win re-sequenced as Phase 1C priority (was Phase 2.5); audience shift locked — Year 1 customer is the CEO via the founder, Year 2+ customer is other fractionals; CEO-facing differentiated promise rewritten as a 3-promise structure with 90-Day Commitment Matrix.)
 

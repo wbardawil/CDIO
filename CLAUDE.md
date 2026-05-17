@@ -2,6 +2,33 @@
 
 # CLAUDE.md — AI-CDIO Project Context
 
+## ⛔ CLIENT CONFIDENTIALITY — ABSOLUTE, NON-NEGOTIABLE RULE (read before anything else)
+
+Real client / customer / engagement information that the founder shares to
+inform design, validate the tool, or stress-test a feature is **in-session
+reasoning context ONLY**. It MUST NEVER be persisted into any artifact:
+
+- NOT in code, comments, type definitions, or example/placeholder/UI copy
+- NOT in agent prompts, seed / demo / fixture / test data
+- NOT in documentation (any `.md` file), commit messages, or branch names
+- NOT in logs, screenshots committed to the repo, or anything that lands in git
+
+Every example in code or docs MUST be **invented and obviously fictional**.
+Never name, paraphrase, or make identifiable a real client, vendor, tool,
+person, deal, price, or situation the founder described. When in doubt, treat
+it as confidential and write a generic placeholder instead.
+
+This rule is permanent. It applies to every session, every agent, forever.
+A confidentiality breach is the single most serious failure in this project —
+it is worse than shipping no feature at all. If a prior session violated this,
+scrub the contamination immediately (code + docs + flag commit history) before
+doing anything else.
+
+(2026-05-13: this rule was added after client-engagement details shared
+verbally for design input were wrongly written into UI placeholders, docs, and
+commit messages. They were scrubbed from the working tree; the standing rule
+exists so it never recurs.)
+
 ## Read First
 
 Before doing ANY work in this repo, read these in order:
