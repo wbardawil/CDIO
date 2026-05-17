@@ -17,6 +17,62 @@ Full rule + rationale: `CLAUDE.md` (top).
 
 ---
 
+## ▶ START HERE — 2026-05-13 spine handoff (new session reads this FIRST)
+
+### Repos in play
+- **`wbardawil/CDIO`** — THE product (this repo). Next.js app. Local:
+  `C:\Users\Dell\projects\CDIO\app`. Remote: github.com/wbardawil/CDIO.
+  Deployed: `cdio-rho.vercel.app` (Vercel auto-deploys `main`).
+  **All work is on `main`** — the feature branch was merged in; there is
+  no separate working branch anymore. Commit + push to `main`.
+- **`wbardawil/gstack`** — build-process discipline ONLY (not product
+  code). Has the design discipline we must use: `design-review`,
+  `plan-design-review`, `design-consultation`, `plan-ceo-review`,
+  `autoplan`. Local: `~/.claude/skills/gstack/`.
+- **`wbardawil/gsd-2`** — architectural reference ONLY (progress/state
+  model). Not product code. Local: `C:/Users/Dell/projects/gsd-2/`.
+- GitHub MCP is restricted to exactly these three repos.
+
+### State (truthful)
+- DB migrations applied to Supabase: through ~v9, **plus v16 + v17**
+  (audits). **v10–v15 NOT applied** → Initiatives/Selections/Network
+  Catalog/Cadence still error on create until the founder runs them
+  (see DEPLOY.md GO-LIVE CHECKLIST). The Audit works.
+- Audit Engine V1 shipped (multi-option, paste-raw, premium intake).
+- Confidentiality breach remediated; absolute rule at top of CLAUDE.md,
+  AGENTS.md, this doc, STRATEGY-2026.md.
+- **Customer #0 reported being lost / overwhelmed using the product.**
+  Root cause: engines built, experience spine never built; gstack
+  design-review gate never run this session. This is the priority.
+
+### The next build — execute, don't re-debate (chosen by founder: "A")
+Governing spec: **`docs/EXPERIENCE-SPINE.md`** (read it — the five spine
+laws + the shell + the Audit-as-proof). Build, against that spec:
+
+1. **`src/components/workspace-shell.tsx`** — one shared chrome
+   component (prop-driven, no server-only imports so it works in the
+   client dashboard too): `Your clients ‹ {Client} ‹ {Where}` crumb
+   (each a link — kills the dead-end), client one-line state, the
+   single consistent section nav. Used on EVERY client-scoped screen.
+2. Wire it into: `src/app/clients/[orgId]/page.tsx` (replace bespoke
+   header), the three `audits/*` pages, AND `src/app/dashboard/page.tsx`
+   (the concrete dead-end the founder hit — add the shell + back path).
+   One shell everywhere = "feels like one thing."
+3. Audit detail (`audits/[id]/audit-client.tsx`): persistent 1-2-3
+   progress strip (Frame · Prep · Verdict); lead with the plain-English
+   verdict + money + recommendation; move the 5-lens analysis, evidence,
+   method capture behind a single **"Show the full analysis"**
+   disclosure (Law 5).
+4. Plain-language pass: kill surface jargon ("M2", "Strategic Bet",
+   "consensus 2.2/4", radar/matrix as first thing) per Law 3.
+5. Verify (tsc + next build), commit + push `main`, then run the
+   five-law review gate in `EXPERIENCE-SPINE.md` before claiming done.
+
+Do NOT add new engines/features. The spine, then stop. Then the founder
+runs a real Audit and the v10–v15 migrations.
+
+---
+
 ## TL;DR (read this first)
 
 AI-CDIO is the **methodology operating system for fractional CDIOs**. Built first as a tool the founder (Wadi Bardawil) uses on his own fractional practice. **Customer #0 = the founder.**
