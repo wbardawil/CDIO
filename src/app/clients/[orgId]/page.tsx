@@ -309,25 +309,49 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       <div className="bg-white border-b border-gray-200">
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex gap-6 overflow-x-auto">
-            {TABS.map((tab) => (
-              <div
-                key={tab.key}
-                className={`py-4 text-sm font-medium border-b-2 whitespace-nowrap ${
-                  tab.key === "overview"
-                    ? "border-blue-600 text-blue-600"
-                    : tab.status === "active"
-                      ? "border-transparent text-gray-500 cursor-not-allowed"
-                      : "border-transparent text-gray-300"
-                }`}
-              >
-                {tab.label}
-                {tab.status === "coming" && tab.comingWhen && (
-                  <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">
-                    {tab.comingWhen}
+            {TABS.map((tab) => {
+              const base =
+                "py-4 text-sm font-medium border-b-2 whitespace-nowrap";
+              // Overview = this page (active highlight, no nav).
+              if (tab.key === "overview") {
+                return (
+                  <span
+                    key={tab.key}
+                    className={`${base} border-blue-600 text-blue-600`}
+                  >
+                    {tab.label}
                   </span>
-                )}
-              </div>
-            ))}
+                );
+              }
+              // Assessment + Roadmap = the legacy dashboard (where the
+              // synthesis, divergence and roadmap engines live). These
+              // were dead <div>s — now real links.
+              if (tab.status === "active") {
+                return (
+                  <Link
+                    key={tab.key}
+                    href={`/dashboard?org=${org.id}`}
+                    className={`${base} border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-300`}
+                  >
+                    {tab.label}
+                  </Link>
+                );
+              }
+              // Coming-soon stubs stay intentionally inert.
+              return (
+                <span
+                  key={tab.key}
+                  className={`${base} border-transparent text-gray-300`}
+                >
+                  {tab.label}
+                  {tab.comingWhen && (
+                    <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">
+                      {tab.comingWhen}
+                    </span>
+                  )}
+                </span>
+              );
+            })}
           </nav>
         </div>
       </div>
