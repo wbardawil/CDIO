@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import type { Audit } from "@/types/audit";
+import { WorkspaceShell } from "@/components/workspace-shell";
 import { AuditDetailClient } from "./audit-client";
 
 export default async function AuditDetailPage({
@@ -26,7 +26,7 @@ export default async function AuditDetailPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, size_category, industry, is_sandbox")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
@@ -39,37 +39,45 @@ export default async function AuditDetailPage({
     .single();
   if (!audit) notFound();
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200 print:hidden">
-        <div className="max-w-4xl mx-auto px-6 py-4 flex items-center gap-3 text-sm">
-          <Link href="/clients" className="text-gray-500 hover:text-gray-900">
-            Portfolio
-          </Link>
-          <span className="text-gray-300">/</span>
-          <Link
-            href={`/clients/${org.id}`}
-            className="text-gray-500 hover:text-gray-900"
-          >
-            {org.name}
-          </Link>
-          <span className="text-gray-300">/</span>
-          <Link
-            href={`/clients/${org.id}/audits`}
-            className="text-gray-500 hover:text-gray-900"
-          >
-            Audits
-          </Link>
-          <span className="text-gray-300">/</span>
-          <span className="font-semibold text-gray-900 truncate">
-            {(audit as Audit).title}
-          </span>
-        </div>
-      </header>
+  const o = org as {
+    id: string;
+    name: string;
+    size_category: string;
+    industry: string;
+    is_sandbox: boolean;
+  };
+  const a = audit as Audit;
+  const SIZE_LABELS: Record<string, string> = {
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+  };
+  const nextThing =
+    a.status === "complete"
+      ? "Verdict ready"
+      : a.companion
+        ? "Next: run the verdict"
+        : "Next: prep the room";
+  const clientLine = [
+    SIZE_LABELS[o.size_category] ?? o.size_category,
+    o.industry,
+    nextThing,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
-      <main className="max-w-4xl mx-auto px-6 py-8">
-        <AuditDetailClient orgId={org.id} initialAudit={audit as Audit} />
-      </main>
-    </div>
+  return (
+    <WorkspaceShell
+      orgId={o.id}
+      orgName={o.name}
+      where={a.title}
+      clientLine={clientLine}
+      trail={[{ label: "Audits", href: `/clients/${o.id}/audits` }]}
+      activeSection="audits"
+      isSandbox={o.is_sandbox}
+      width="narrow"
+    >
+      <AuditDetailClient orgId={o.id} initialAudit={a} />
+    </WorkspaceShell>
   );
 }

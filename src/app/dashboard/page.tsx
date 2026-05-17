@@ -2,9 +2,11 @@
 
 import { useState, useEffect, useCallback, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { SpiderChart } from "@/components/charts/spider-chart";
 import { PriorityMatrix } from "@/components/charts/priority-matrix";
 import { DivergenceReport } from "@/components/charts/divergence-report";
+import { WorkspaceShell } from "@/components/workspace-shell";
 import { MODULE_NAMES, ECONOMIC_OUTCOME_META } from "@/types";
 import type { AssessmentSynthesis, DivergencePoint, PriorityClass, EconomicOutcome, Initiative } from "@/types";
 
@@ -20,8 +22,14 @@ interface StakeholderStatus {
   total_modules: number;
 }
 
+const SIZE_LABELS: Record<string, string> = {
+  small: "Small",
+  medium: "Medium",
+  large: "Large",
+};
+
 interface DashboardData {
-  org: { id: string; name: string; size_category: string; industry: string; employee_count: number };
+  org: { id: string; name: string; size_category: string; industry: string; employee_count: number; is_sandbox?: boolean };
   assessment: { id: string; status: string } | null;
   stakeholders: StakeholderStatus[];
   syntheses: AssessmentSynthesis[];
@@ -104,13 +112,18 @@ function DashboardContent() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md text-center">
-          <h2 className="text-xl font-semibold mb-2">No Organization Selected</h2>
+          <h2 className="text-xl font-semibold mb-2">No client selected</h2>
           <p className="text-gray-500 mb-4">
-            Start by onboarding your organization.
+            Open this from a client to see its dashboard.
           </p>
-          <a href="/onboarding" className="text-blue-600 hover:text-blue-800 font-medium">
-            Go to Onboarding
-          </a>
+          <div className="flex items-center justify-center gap-4 text-sm font-medium">
+            <Link href="/clients" className="text-blue-600 hover:text-blue-800">
+              ‹ Your clients
+            </Link>
+            <Link href="/onboarding" className="text-gray-500 hover:text-gray-800">
+              Onboard a client
+            </Link>
+          </div>
         </div>
       </div>
     );
@@ -120,8 +133,16 @@ function DashboardContent() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="bg-white rounded-xl border border-red-200 p-8 max-w-md text-center">
-          <h2 className="text-xl font-semibold text-red-600 mb-2">Error</h2>
-          <p className="text-gray-600">{error || "Failed to load data"}</p>
+          <h2 className="text-xl font-semibold text-red-600 mb-2">
+            Couldn&apos;t load this dashboard
+          </h2>
+          <p className="text-gray-600 mb-4">{error || "Failed to load data"}</p>
+          <Link
+            href={orgId ? `/clients/${orgId}` : "/clients"}
+            className="text-sm font-medium text-blue-600 hover:text-blue-800"
+          >
+            ‹ Back to the client
+          </Link>
         </div>
       </div>
     );
@@ -160,64 +181,77 @@ function DashboardContent() {
     ? (spiderScores.reduce((a, b) => a + b.score, 0) / spiderScores.length).toFixed(1)
     : "—";
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Nav */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-bold text-gray-900">AI-CDIO</h1>
-            <p className="text-sm text-gray-500">{data.org.name} — {data.org.size_category} / {data.org.industry}</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-              assessmentStatus === "completed"
-                ? "bg-green-100 text-green-700"
-                : assessmentStatus === "in_progress"
-                  ? "bg-amber-100 text-amber-700"
-                  : "bg-gray-100 text-gray-600"
-            }`}>
-              {assessmentStatus === "completed" ? "Assessment Complete" :
-               assessmentStatus === "in_progress" ? "Assessment In Progress" :
-               "Assessment Draft"}
-            </span>
-            {data.completion.total > 0 && (
-              <span className="text-xs text-gray-400">
-                {data.completion.percentage}% responses collected
-              </span>
-            )}
-          </div>
-        </div>
-      </header>
+  // The one next thing for this client — plain, in the shell line.
+  const nextThing = !hasSynthesis
+    ? allStakeholdersDone
+      ? "Next: run synthesis"
+      : `Next: collect responses (${data.completion.percentage}%)`
+    : !data.roadmap
+      ? "Next: generate the 90-day roadmap"
+      : "Synthesis & roadmap ready";
 
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <nav className="flex gap-8">
-            {([
-              { key: "stakeholders" as Tab, label: "Team Progress" },
-              { key: "overview" as Tab, label: "Maturity Overview" },
-              { key: "divergences" as Tab, label: `Alignment (${divergencePoints.length})` },
-              { key: "roadmap" as Tab, label: "90-Day Roadmap" },
-            ]).map((tab) => (
-              <button
-                key={tab.key}
-                onClick={() => setActiveTab(tab.key)}
-                className={`py-4 text-sm font-medium border-b-2 transition-colors ${
-                  activeTab === tab.key
-                    ? "border-blue-600 text-blue-600"
-                    : "border-transparent text-gray-500 hover:text-gray-700"
-                }`}
-              >
-                {tab.label}
-              </button>
-            ))}
-          </nav>
+  const clientLine = [
+    SIZE_LABELS[data.org.size_category] ?? data.org.size_category,
+    data.org.industry,
+    nextThing,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
+  return (
+    <WorkspaceShell
+      orgId={data.org.id}
+      orgName={data.org.name}
+      where="Dashboard"
+      clientLine={clientLine}
+      activeSection="dashboard"
+      isSandbox={data.org.is_sandbox}
+    >
+      {/* Dashboard sub-views + assessment status. The shell owns the
+          client-level nav; this strip switches views within it. */}
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200">
+        <nav className="flex gap-6 overflow-x-auto">
+          {([
+            { key: "stakeholders" as Tab, label: "Team progress" },
+            { key: "overview" as Tab, label: "Maturity" },
+            { key: "divergences" as Tab, label: `Alignment (${divergencePoints.length})` },
+            { key: "roadmap" as Tab, label: "90-day roadmap" },
+          ]).map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
+                activeTab === tab.key
+                  ? "border-blue-600 text-blue-600"
+                  : "border-transparent text-gray-500 hover:text-gray-700"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
+        </nav>
+        <div className="flex items-center gap-3 pb-2">
+          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+            assessmentStatus === "completed"
+              ? "bg-green-100 text-green-700"
+              : assessmentStatus === "in_progress"
+                ? "bg-amber-100 text-amber-700"
+                : "bg-gray-100 text-gray-600"
+          }`}>
+            {assessmentStatus === "completed" ? "Assessment complete" :
+             assessmentStatus === "in_progress" ? "Assessment in progress" :
+             "Assessment draft"}
+          </span>
+          {data.completion.total > 0 && (
+            <span className="text-xs text-gray-400">
+              {data.completion.percentage}% responses collected
+            </span>
+          )}
         </div>
       </div>
 
       {/* Content */}
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <div>
 
         {/* Stakeholders Tab */}
         {activeTab === "stakeholders" && (
@@ -296,53 +330,141 @@ function DashboardContent() {
           <div className="space-y-8">
             {!hasSynthesis ? (
               <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">No Synthesis Yet</h3>
+                <h3 className="text-lg font-semibold text-gray-700 mb-2">Nothing to show yet</h3>
                 <p className="text-gray-500 mb-4">
-                  Collect stakeholder assessments, then run synthesis to see the maturity overview.
+                  Collect the team&apos;s responses, then run synthesis to see where this organization stands.
                 </p>
                 <button onClick={() => setActiveTab("stakeholders")} className="text-blue-600 hover:text-blue-800 font-medium">
-                  View stakeholder progress
+                  See team progress
                 </button>
               </div>
             ) : (
               <>
-                {/* Summary cards */}
+                {/* Law 3 + Law 5 — lead with the plain answer, not a
+                    radar/matrix. The chart rigor is real but earned,
+                    behind an explicit disclosure. */}
+                {(() => {
+                  const n = data.syntheses.length;
+                  const topCount = data.syntheses.filter(
+                    (s: any) => s.priority_class === "top_priority"
+                  ).length;
+                  const qwCount = data.syntheses.filter(
+                    (s: any) => s.priority_class === "quick_win"
+                  ).length;
+                  const avg = Number(avgMaturity);
+                  const tier = Number.isNaN(avg)
+                    ? "not yet scored"
+                    : avg < 1.5
+                      ? "Initial"
+                      : avg < 2.5
+                        ? "Developing"
+                        : avg < 3.5
+                          ? "Defined"
+                          : avg < 4.5
+                            ? "Managed"
+                            : "Optimizing";
+                  return (
+                    <div className="bg-white rounded-xl border border-gray-200 p-6">
+                      <p className="text-lg text-gray-900 leading-relaxed">
+                        Across the {n} {n === 1 ? "area" : "areas"} assessed,
+                        this organization is{" "}
+                        <span className="font-bold">{tier}</span>
+                        {!Number.isNaN(avg) && (
+                          <span className="text-gray-500">
+                            {" "}
+                            ({avgMaturity} of 5)
+                          </span>
+                        )}
+                        .{" "}
+                        {topCount > 0 ? (
+                          <>
+                            <span className="font-semibold text-red-600">
+                              {topCount}
+                            </span>{" "}
+                            {topCount === 1 ? "area needs" : "areas need"}{" "}
+                            attention now
+                          </>
+                        ) : (
+                          <>No area is in the danger zone</>
+                        )}
+                        {qwCount > 0 && (
+                          <>
+                            , and{" "}
+                            <span className="font-semibold text-green-600">
+                              {qwCount}
+                            </span>{" "}
+                            {qwCount === 1 ? "is a" : "are"} quick{" "}
+                            {qwCount === 1 ? "win" : "wins"}
+                          </>
+                        )}
+                        .
+                        {divergencePoints.length > 0 && (
+                          <>
+                            {" "}
+                            The team disagrees on{" "}
+                            <button
+                              onClick={() => setActiveTab("divergences")}
+                              className="font-semibold text-amber-700 hover:text-amber-900 underline"
+                            >
+                              {divergencePoints.length}{" "}
+                              {divergencePoints.length === 1
+                                ? "point"
+                                : "points"}
+                            </button>{" "}
+                            worth resolving.
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  );
+                })()}
+
+                {/* Summary cards — plain counts, still above the fold. */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                   <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Average Maturity</p>
+                    <p className="text-sm text-gray-500">Average maturity</p>
                     <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {avgMaturity}<span className="text-lg text-gray-400">/5</span>
+                      {avgMaturity}<span className="text-lg text-gray-400"> of 5</span>
                     </p>
                   </div>
                   <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Top Priorities</p>
+                    <p className="text-sm text-gray-500">Need attention now</p>
                     <p className="text-3xl font-bold text-red-600 mt-1">
                       {data.syntheses.filter((s: any) => s.priority_class === "top_priority").length}
                     </p>
                   </div>
                   <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Divergences</p>
+                    <p className="text-sm text-gray-500">Team disagreements</p>
                     <p className="text-3xl font-bold text-amber-600 mt-1">
                       {divergencePoints.length}
                     </p>
                   </div>
                   <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Quick Wins</p>
+                    <p className="text-sm text-gray-500">Quick wins</p>
                     <p className="text-3xl font-bold text-green-600 mt-1">
                       {data.syntheses.filter((s: any) => s.priority_class === "quick_win").length}
                     </p>
                   </div>
                 </div>
 
-                {/* Charts */}
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                  <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <SpiderChart scores={spiderScores} title="Digital Maturity Radar" />
+                {/* The radar + priority matrix — real rigor, behind an
+                    explicit disclosure (Law 3: never the first thing). */}
+                <details className="group bg-white rounded-xl border border-gray-200">
+                  <summary className="flex items-center justify-between gap-3 px-6 py-4 cursor-pointer text-sm font-semibold text-gray-800 list-none">
+                    <span>Show the full analysis</span>
+                    <span className="text-gray-400 font-normal">
+                      maturity radar · priority matrix
+                    </span>
+                  </summary>
+                  <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div className="border border-gray-100 rounded-lg p-6">
+                      <SpiderChart scores={spiderScores} title="Maturity radar" />
+                    </div>
+                    <div className="border border-gray-100 rounded-lg p-6">
+                      <PriorityMatrix modules={matrixModules} />
+                    </div>
                   </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-6">
-                    <PriorityMatrix modules={matrixModules} />
-                  </div>
-                </div>
+                </details>
               </>
             )}
           </div>
@@ -411,8 +533,8 @@ function DashboardContent() {
             )}
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </WorkspaceShell>
   );
 }
 

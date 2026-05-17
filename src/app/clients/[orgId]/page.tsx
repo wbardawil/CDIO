@@ -1,12 +1,11 @@
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
-import { UserButton } from "@clerk/nextjs";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { MODULE_NAMES } from "@/types";
+import { WorkspaceShell } from "@/components/workspace-shell";
 import { ResetAssessmentButton } from "@/components/reset-assessment-button";
 import { DeleteSandboxOrgButton } from "@/components/delete-sandbox-org-button";
-import { SandboxBanner } from "@/components/sandbox-banner";
 import { StakeholderRowActions } from "@/components/stakeholder-row-actions";
 import {
   ModuleInsightsPanel,
@@ -34,21 +33,11 @@ const INDUSTRY_LABELS: Record<string, string> = {
   other: "Other",
 };
 
-type Tab = {
-  key: string;
-  label: string;
-  status: "active" | "coming";
-  comingWhen?: string;
+const SIZE_LABELS: Record<string, string> = {
+  small: "Small",
+  medium: "Medium",
+  large: "Large",
 };
-
-const TABS: Tab[] = [
-  { key: "overview", label: "Overview", status: "active" },
-  { key: "assessment", label: "Assessment", status: "active" },
-  { key: "roadmap", label: "Roadmap", status: "active" },
-  { key: "deliverables", label: "Deliverables", status: "coming", comingWhen: "Week 2" },
-  { key: "decisions", label: "Decisions", status: "coming", comingWhen: "Week 4" },
-  { key: "value", label: "Value", status: "coming", comingWhen: "Week 6+" },
-];
 
 interface Stakeholder {
   id: string;
@@ -221,142 +210,38 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
 
   const activeModules = org.active_modules ?? [];
 
+  // The one next thing for this client — the spine's Law 1/Law 4
+  // promise rendered as a single plain sentence in the shell.
+  const nextThing =
+    stage === "awaiting-responses"
+      ? `Next: collect stakeholder responses (${completionPct}%)`
+      : stage === "ready-to-synthesize"
+        ? "Next: run synthesis on the Dashboard"
+        : stage === "no-stakeholders"
+          ? "Next: add stakeholders"
+          : "Next: start an assessment";
+
+  const clientLine = [
+    SIZE_LABELS[org.size_category] ?? org.size_category,
+    INDUSTRY_LABELS[org.industry] ?? org.industry,
+    nextThing,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <SandboxBanner isSandbox={org.is_sandbox} variant="workspace" />
-      {/* Top nav */}
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/clients" className="text-sm text-gray-500 hover:text-gray-700">
-              ← Portfolio
-            </Link>
-            <span className="text-gray-300">/</span>
-            <h1 className="text-base font-semibold text-gray-900">{org.name}</h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <Link
-              href={`/clients/${org.id}/charter`}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Charter
-            </Link>
-            <Link
-              href={`/clients/${org.id}/initiatives`}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Initiatives
-            </Link>
-            <Link
-              href={`/clients/${org.id}/selections`}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Selections
-            </Link>
-            <Link
-              href={`/clients/${org.id}/audits`}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Audits
-            </Link>
-            <Link
-              href={`/clients/${org.id}/cadence`}
-              className="text-sm text-gray-600 hover:text-gray-900"
-            >
-              Cadence
-            </Link>
-            <span className="text-sm text-gray-600 hidden sm:inline">
-              {practitioner.name ?? practitioner.email ?? "Practitioner"}
-            </span>
-            <UserButton />
-          </div>
-        </div>
-      </header>
-
-      {/* Org meta */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6 py-5">
-          <div className="flex items-baseline gap-3 flex-wrap">
-            <h2 className="text-2xl font-bold text-gray-900">{org.name}</h2>
-            <span className="text-sm text-gray-500">
-              {INDUSTRY_LABELS[org.industry] ?? org.industry} · {org.employee_count} employees · {org.monthly_hours} hrs/mo
-            </span>
-          </div>
-          <div className="flex items-center gap-4 mt-2 text-xs text-gray-500 flex-wrap">
-            <span>
-              <span className="font-medium text-gray-700">{stakeholderRows.length}</span> stakeholders
-            </span>
-            <span className="text-gray-300">·</span>
-            <span>
-              Active modules: <span className="font-medium text-gray-700">{activeModules.length}</span> of 16
-            </span>
-            {latestAssessment && (
-              <>
-                <span className="text-gray-300">·</span>
-                <span>
-                  Assessment: <span className="font-medium text-gray-700">{latestAssessment.status}</span>
-                  {totalExpected > 0 && (
-                    <span className="ml-1">({totalCompleted}/{totalExpected} responses, {completionPct}%)</span>
-                  )}
-                </span>
-              </>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* Tabs */}
-      <div className="bg-white border-b border-gray-200">
-        <div className="max-w-7xl mx-auto px-6">
-          <nav className="flex gap-6 overflow-x-auto">
-            {TABS.map((tab) => {
-              const base =
-                "py-4 text-sm font-medium border-b-2 whitespace-nowrap";
-              // Overview = this page (active highlight, no nav).
-              if (tab.key === "overview") {
-                return (
-                  <span
-                    key={tab.key}
-                    className={`${base} border-blue-600 text-blue-600`}
-                  >
-                    {tab.label}
-                  </span>
-                );
-              }
-              // Assessment + Roadmap = the legacy dashboard (where the
-              // synthesis, divergence and roadmap engines live). These
-              // were dead <div>s — now real links.
-              if (tab.status === "active") {
-                return (
-                  <Link
-                    key={tab.key}
-                    href={`/dashboard?org=${org.id}`}
-                    className={`${base} border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-300`}
-                  >
-                    {tab.label}
-                  </Link>
-                );
-              }
-              // Coming-soon stubs stay intentionally inert.
-              return (
-                <span
-                  key={tab.key}
-                  className={`${base} border-transparent text-gray-300`}
-                >
-                  {tab.label}
-                  {tab.comingWhen && (
-                    <span className="ml-1.5 px-1.5 py-0.5 bg-gray-100 text-gray-400 rounded text-[10px] uppercase tracking-wider">
-                      {tab.comingWhen}
-                    </span>
-                  )}
-                </span>
-              );
-            })}
-          </nav>
-        </div>
-      </div>
-
-      <main className="max-w-7xl mx-auto px-6 py-8">
+    <WorkspaceShell
+      orgId={org.id}
+      orgName={org.name}
+      where="Overview"
+      clientLine={clientLine}
+      activeSection="overview"
+      isSandbox={org.is_sandbox}
+      practitionerName={
+        practitioner.name ?? practitioner.email ?? undefined
+      }
+    >
+      <div>
         {/* Next-step banner — state aware */}
         <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
           {stage === "awaiting-responses" && (
@@ -488,20 +373,14 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
 
         {scoredEntries.length > 0 && <ModuleInsightsPanel scores={scoredEntries} />}
 
-        {/* Quiet secondary action — always available, never the hero */}
-        <div className="flex items-center justify-between mt-2">
-          <Link
-            href={`/dashboard?org=${org.id}`}
-            className="text-sm text-blue-600 hover:text-blue-800 font-medium"
-          >
-            Open full dashboard →
-          </Link>
-          {activeModules.length > 0 && (
-            <p className="text-xs text-gray-400 text-right max-w-2xl">
-              In scope: {activeModules.map((n) => MODULE_NAMES[n]).filter(Boolean).join(" · ")}
-            </p>
-          )}
-        </div>
+        {/* Modules in scope — quiet context, never the hero. The way
+            into the synthesis/roadmap engines is the shell's
+            consistent "Dashboard" nav, not a duplicate link here. */}
+        {activeModules.length > 0 && (
+          <p className="text-xs text-gray-400 mt-2 max-w-3xl">
+            In scope: {activeModules.map((n) => MODULE_NAMES[n]).filter(Boolean).join(" · ")}
+          </p>
+        )}
 
         {/* Sandbox-only tools — visible only on sandbox-flagged clients */}
         {org.is_sandbox && (
@@ -522,7 +401,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             </div>
           </div>
         )}
-      </main>
-    </div>
+      </div>
+    </WorkspaceShell>
   );
 }

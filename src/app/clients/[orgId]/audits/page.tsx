@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { WorkspaceShell } from "@/components/workspace-shell";
 import {
   type Audit,
   AUDIT_VERDICT_LABEL,
@@ -28,7 +29,7 @@ export default async function AuditsListPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, size_category, industry, is_sandbox")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
@@ -41,36 +42,51 @@ export default async function AuditsListPage({
 
   const items = (audits ?? []) as Audit[];
 
+  const SIZE_LABELS: Record<string, string> = {
+    small: "Small",
+    medium: "Medium",
+    large: "Large",
+  };
+  const o = org as {
+    id: string;
+    name: string;
+    size_category: string;
+    industry: string;
+    is_sandbox: boolean;
+  };
+  const clientLine = [
+    SIZE_LABELS[o.size_category] ?? o.size_category,
+    o.industry,
+    items.length === 0
+      ? "Next: run your first pre-purchase audit"
+      : `${items.length} ${items.length === 1 ? "audit" : "audits"}`,
+  ]
+    .filter(Boolean)
+    .join(" · ");
+
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
-        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-3 text-sm">
-            <Link href="/clients" className="text-gray-500 hover:text-gray-900">
-              Portfolio
-            </Link>
-            <span className="text-gray-300">/</span>
-            <Link
-              href={`/clients/${org.id}`}
-              className="text-gray-500 hover:text-gray-900"
-            >
-              {org.name}
-            </Link>
-            <span className="text-gray-300">/</span>
-            <span className="font-semibold text-gray-900">
-              Pre-Purchase Audits
-            </span>
-          </div>
+    <WorkspaceShell
+      orgId={o.id}
+      orgName={o.name}
+      where="Audits"
+      clientLine={clientLine}
+      activeSection="audits"
+      isSandbox={o.is_sandbox}
+    >
+      <div>
+        {/* The one primary action on this screen. */}
+        <div className="flex items-center justify-between gap-4 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900">
+            Pre-purchase audits
+          </h2>
           <Link
-            href={`/clients/${org.id}/audits/new`}
-            className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
+            href={`/clients/${o.id}/audits/new`}
+            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700"
           >
             + New audit
           </Link>
         </div>
-      </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
         <div className="mb-6 px-4 py-3 bg-slate-900 text-slate-100 rounded-lg text-sm">
           <strong>Independent. Loyal only to you.</strong> This audit sits
           between you and a major technology purchase, before the check is
@@ -90,7 +106,7 @@ export default async function AuditsListPage({
               board-ready.
             </p>
             <Link
-              href={`/clients/${org.id}/audits/new`}
+              href={`/clients/${o.id}/audits/new`}
               className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
             >
               + Start your first audit
@@ -127,7 +143,7 @@ export default async function AuditsListPage({
               return (
                 <li key={a.id}>
                   <Link
-                    href={`/clients/${org.id}/audits/${a.id}`}
+                    href={`/clients/${o.id}/audits/${a.id}`}
                     className="block bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
@@ -142,7 +158,7 @@ export default async function AuditsListPage({
                             : "options"}
                           {a.intake.options && a.intake.options.length > 0
                             ? ` · ${a.intake.options
-                                .map((o) => o.label)
+                                .map((opt) => opt.label)
                                 .filter(Boolean)
                                 .join(" vs ")}`
                             : ""}
@@ -168,7 +184,7 @@ export default async function AuditsListPage({
             })}
           </ul>
         )}
-      </main>
-    </div>
+      </div>
+    </WorkspaceShell>
   );
 }
