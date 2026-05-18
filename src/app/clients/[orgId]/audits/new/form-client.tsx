@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { AuditExtractionMeta, AuditFieldSource } from "@/types/audit";
+import { AUDIT_STAGE_LABEL, AUDIT_STAGES } from "@/types/audit";
 
 type OptionFileNote = {
   name: string;
@@ -186,6 +187,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
   const [strategyContext, setStrategyContext] = useState("");
   const [operatingContext, setOperatingContext] = useState("");
   const [extraContext, setExtraContext] = useState("");
+  const [stage, setStage] = useState("");
   const [options, setOptions] = useState<OptionDraft[]>([newOption()]);
   const [showMore, setShowMore] = useState(false);
 
@@ -321,6 +323,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
             strategy_context: strategyContext.trim(),
             operating_context: operatingContext.trim(),
             extra_context: extraContext.trim(),
+            stage: stage || null,
             extraction: extractMeta,
             evidence: evidence.slice(0, 30),
           },
@@ -630,6 +633,26 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                 placeholder="$341K incl. implementation, 3-year term"
               />
               <Provenance field="total_cost" />
+            </div>
+            <div>
+              <label className={label}>Decision stage</label>
+              <p className={hint}>
+                Where this is in the buying lifecycle — the verdict means
+                different things at each stage. Leave on “infer” and the
+                audit reads it from the evidence and states the assumption.
+              </p>
+              <select
+                className={input}
+                value={stage}
+                onChange={(e) => setStage(e.target.value)}
+              >
+                <option value="">Infer from the evidence</option>
+                {AUDIT_STAGES.map((s) => (
+                  <option key={s} value={s}>
+                    {AUDIT_STAGE_LABEL[s]}
+                  </option>
+                ))}
+              </select>
             </div>
             <div>
               <label className={label}>

@@ -15,6 +15,7 @@ import { searchPlaybook } from "@/lib/playbook/retrieve";
 import { logAnthropicCall } from "@/lib/observability/agent-logs";
 import {
   AUDIT_LENS_META,
+  AUDIT_STAGE_LABEL,
   evaluateIntakeGaps,
   type AuditIntake,
   type AuditOutput,
@@ -39,6 +40,14 @@ Your job is not to evaluate the tool the vendor is selling. It is to find the st
 - Assume the vendor's framing is wrong until proven otherwise. Audit the decision, not the demo.
 - The most important finding is usually the thing nobody in the room asked.
 - One decision per audit. You do not design implementation, run negotiations, or scope an org rollout. You end at the verdict.
+
+## STAGE DISCIPLINE
+This engine is built for the pre-signature decision. The stage changes what the verdict MEANS, so never assume it silently.
+- A DECISION STAGE is given in the intake, or it is "(not provided)". If given, calibrate to it. If not given, infer it from the evidence and STATE the assumption you ran under in the FIRST line of the board summary (e.g. "This audit assumes the decision is pre-signature; if a contract is already signed the call changes.").
+- Exploring / shortlisted: weight the requirements brief and the kill-the-category question; do not push RENEGOTIATE on terms that do not exist yet.
+- Contract on the table: the full adversarial review exactly as written. This is the engine's home stage.
+- Signed / in implementation: the question is no longer "buy?". It is exit cost, salvage, containment, and what leverage (if any) remains. Say so plainly and reframe. Use RENEGOTIATE only if leverage plausibly still exists; otherwise BUY / DON'T BUY are moot — name that rather than forcing a four-way verdict that no longer fits, and make the board summary about limiting damage.
+- If the stated stage and the evidence conflict (stage says "exploring" but a signed SOW is in the evidence), that conflict is itself a finding and the verdict is HOLD until the stage is confirmed.
 
 ## THE FIVE LENSES (run every one; under each, ask the probes and answer them with evidence)
 
@@ -147,6 +156,10 @@ export async function runAudit(
   const intake = audit.intake;
   const gaps = evaluateIntakeGaps(intake);
 
+  const stageLine = intake.stage
+    ? AUDIT_STAGE_LABEL[intake.stage]
+    : "(not provided — infer the stage from the evidence and STATE the assumption you run under in the board summary; do not silently assume pre-signature)";
+
   const playbookContext = await buildPlaybookContext(intake);
 
   const options = intake.options ?? [];
@@ -178,6 +191,9 @@ ${intake.project_summary || "(not provided)"}
 Role: ${intake.principal_role || "(not provided)"}
 Fired if this is wrong: ${intake.accountability || "(not provided)"}
 All-in cost: ${intake.total_cost || "(not provided)"}
+
+## DECISION STAGE (where in the buying lifecycle this is — governs what the verdict means)
+${stageLine}
 
 ## OPTIONS UNDER CONSIDERATION (${options.length})
 Compare them. Name the recommended option explicitly in the verdict, or recommend none / renegotiate / hold.
@@ -488,6 +504,11 @@ Accountable principal: ${intake.principal_role || "(unspecified)"} — fired if 
     intake.accountability || "(unspecified)"
   }
 All-in cost: ${intake.total_cost || "(unspecified)"}
+Decision stage: ${
+    intake.stage
+      ? AUDIT_STAGE_LABEL[intake.stage]
+      : "(unstated — infer it and note the assumption; do not assume pre-signature)"
+  }
 Strategy it should serve: ${intake.strategy_context || "(unstated — itself a question to ask)"}
 How the org runs today / prior attempts / transcripts: ${intake.operating_context || "(unstated — ask what was tried before in this area and why it didn't stick)"}
 Additional context: ${intake.extra_context || "(none)"}`;

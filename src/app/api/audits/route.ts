@@ -15,6 +15,7 @@ const EMPTY_INTAKE: AuditIntake = {
   strategy_context: "",
   operating_context: "",
   extra_context: "",
+  stage: null,
   selection_id: null,
   extraction: null,
   evidence: [],
@@ -41,6 +42,16 @@ const createSchema = z.object({
       strategy_context: z.string().max(60000).optional(),
       operating_context: z.string().max(60000).optional(),
       extra_context: z.string().max(60000).optional(),
+      stage: z
+        .enum([
+          "exploring",
+          "shortlisted",
+          "contract_on_table",
+          "signed",
+          "in_implementation",
+        ])
+        .nullable()
+        .optional(),
       selection_id: z.string().uuid().nullable().optional(),
       extraction: z
         .object({

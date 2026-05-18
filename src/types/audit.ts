@@ -22,6 +22,32 @@ export type AuditStatus =
   | "complete"     // verdict rendered
   | "cancelled";
 
+// Where in the buying lifecycle the decision is. The verdict MEANS
+// different things at different stages, so the engine never assumes
+// it silently — it is given, or inferred-and-stated.
+export type AuditStage =
+  | "exploring"
+  | "shortlisted"
+  | "contract_on_table"
+  | "signed"
+  | "in_implementation";
+
+export const AUDIT_STAGE_LABEL: Record<AuditStage, string> = {
+  exploring: "Exploring — problem / options still open",
+  shortlisted: "Shortlisted — options narrowed, not yet negotiating",
+  contract_on_table: "Contract on the table — terms in hand, about to sign",
+  signed: "Signed — already committed / paid",
+  in_implementation: "In implementation — rolling out / live",
+};
+
+export const AUDIT_STAGES: AuditStage[] = [
+  "exploring",
+  "shortlisted",
+  "contract_on_table",
+  "signed",
+  "in_implementation",
+];
+
 export type AuditVerdict = "buy" | "dont_buy" | "renegotiate" | "hold";
 
 export const AUDIT_VERDICT_LABEL: Record<AuditVerdict, string> = {
@@ -247,6 +273,12 @@ export interface AuditIntake {
   // Raw paste — anything else relevant: emails, described
   // diagrams, side notes. The engine mines it.
   extra_context: string;
+
+  // Where in the buying lifecycle this decision is. Optional: when
+  // absent the engine infers it from the evidence and states the
+  // assumption it ran under — it never silently assumes pre-signature.
+  // Not a required gap: a blank stage is inferred, not HOLD-forcing.
+  stage?: AuditStage | null;
 
   // Optional link to a Selection the audit reviews (if the org
   // ran one).
