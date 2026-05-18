@@ -92,6 +92,13 @@ export async function POST(request: NextRequest) {
     .single();
 
   if (error || !data) {
+    console.error(
+      "[initiatives POST] insert failed:",
+      error?.code,
+      error?.message,
+      error?.details,
+      error?.hint
+    );
     return NextResponse.json(
       { error: "Failed to create initiative", details: error?.message },
       { status: 500 }

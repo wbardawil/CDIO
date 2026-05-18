@@ -157,3 +157,8 @@ CREATE POLICY initiatives_service_full_access
 DROP POLICY IF EXISTS initiative_tokens_service_full_access ON public.initiative_tokens;
 CREATE POLICY initiative_tokens_service_full_access
   ON public.initiative_tokens FOR ALL USING (true) WITH CHECK (true);
+
+-- Table-privilege grant (added 2026-05-18). RLS/BYPASSRLS do NOT
+-- substitute for table GRANTs: without this, API-role writes fail
+-- with SQLSTATE 42501. Idempotent; mirrors the schema-v16 precedent.
+GRANT ALL ON public.initiatives, public.initiative_tokens TO anon, authenticated, service_role;

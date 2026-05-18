@@ -107,3 +107,8 @@ CREATE POLICY cadence_tokens_service_full_access
 DROP POLICY IF EXISTS status_reports_service_full_access ON public.status_reports;
 CREATE POLICY status_reports_service_full_access
   ON public.status_reports FOR ALL USING (true) WITH CHECK (true);
+
+-- Table-privilege grant (added 2026-05-18). RLS/BYPASSRLS do NOT
+-- substitute for table GRANTs: without this, API-role writes fail
+-- with SQLSTATE 42501. Idempotent; mirrors the schema-v16 precedent.
+GRANT ALL ON public.cadence_tokens, public.status_reports TO anon, authenticated, service_role;

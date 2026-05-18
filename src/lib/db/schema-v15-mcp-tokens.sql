@@ -38,3 +38,8 @@ ALTER TABLE public.mcp_tokens ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS mcp_tokens_service_full_access ON public.mcp_tokens;
 CREATE POLICY mcp_tokens_service_full_access
   ON public.mcp_tokens FOR ALL USING (true) WITH CHECK (true);
+
+-- Table-privilege grant (added 2026-05-18). RLS/BYPASSRLS do NOT
+-- substitute for table GRANTs: without this, API-role writes fail
+-- with SQLSTATE 42501. Idempotent; mirrors the schema-v16 precedent.
+GRANT ALL ON public.mcp_tokens TO anon, authenticated, service_role;
