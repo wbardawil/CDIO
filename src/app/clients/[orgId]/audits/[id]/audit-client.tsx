@@ -11,10 +11,13 @@ import {
 } from "@/types/audit";
 import { AuditProgress } from "../audit-progress";
 
+// Severity reads sand → ink, never alarm. Only "critical" earns brick
+// (the one stop signal). Amber is reserved for the single action,
+// never spent on informational chips (DESIGN.md: one amber per screen).
 const SEVERITY_STYLE: Record<string, string> = {
   critical: "bg-raised text-brick border-brick",
-  high: "bg-amber-soft text-amber-deep border-amber",
-  moderate: "bg-surface text-ink border-hair",
+  high: "bg-surface text-ink border-hair-strong",
+  moderate: "bg-surface text-muted border-hair",
 };
 const SEVERITY_RANK: Record<string, number> = {
   critical: 0,
@@ -29,7 +32,7 @@ const LENS_ORDER: AuditLensKey[] = (
 const VERDICT_STYLE: Record<string, string> = {
   buy: "bg-evergreen text-white",
   dont_buy: "bg-brick text-white",
-  renegotiate: "bg-amber text-white",
+  renegotiate: "bg-ink text-white",
   hold: "bg-ink text-white",
 };
 
@@ -46,7 +49,7 @@ const VERDICT_RECO: Record<string, string> = {
 const FLAG_STYLE: Record<string, string> = {
   KILL: "bg-raised text-brick border-brick",
   GO: "bg-evergreen-soft text-evergreen-deep border-evergreen",
-  RENEGOTIATE: "bg-amber-soft text-amber-deep border-amber",
+  RENEGOTIATE: "bg-surface text-ink border-hair-strong",
 };
 
 export function AuditDetailClient({
@@ -150,6 +153,10 @@ export function AuditDetailClient({
 
   const out = audit.output;
   const card = "bg-raised rounded-xl border border-hair p-6";
+  // The eyebrow: uppercase, letter-spaced, evergreen, sans (overrides the
+  // global serif-heading rule). The small label above a block.
+  const eyebrow =
+    "font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-evergreen";
 
   // Law 4 — the visible spine. Frame is done the moment the audit
   // row exists (we are on its detail screen). Prep completes when
@@ -189,34 +196,36 @@ export function AuditDetailClient({
           {/* The pain, first — what this is all for. */}
           {(out.business_pain || audit.intake.business_pain) && (
             <div className="bg-raised rounded-xl border border-hair p-6">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1">
-                The pain this has to solve
-              </p>
+              <p className={`${eyebrow} mb-2`}>The pain this has to solve</p>
               <p className="text-base text-ink leading-relaxed">
                 {out.business_pain || audit.intake.business_pain}
               </p>
             </div>
           )}
 
-          {/* ===== Law 5: the 15-second read ===== */}
+          {/* ===== Law 5: the 15-second read. Leads with the finding
+              in Fraunces — the line a principal reads before anything
+              else. Verdict + money are the supporting second row. ===== */}
           <div className="bg-raised rounded-xl border border-hair p-6 sm:p-8">
-            <div className="flex flex-wrap items-center gap-3 mb-4">
+            <p className={`${eyebrow} mb-3`}>The finding</p>
+            <p className="font-serif text-2xl sm:text-3xl font-semibold text-ink leading-[1.15] mb-5">
+              {VERDICT_RECO[out.overall_call] ??
+                "Read the recommendation below."}
+            </p>
+            <div className="flex flex-wrap items-center gap-3 mb-5">
               <span
-                className={`px-4 py-1.5 rounded-md text-lg font-bold ${
+                className={`px-4 py-1.5 rounded-md text-sm font-bold ${
                   VERDICT_STYLE[out.overall_call] ?? "bg-ink text-white"
                 }`}
               >
                 {AUDIT_VERDICT_LABEL[out.overall_call]}
               </span>
               {out.headline_money && (
-                <span className="text-lg font-semibold text-ink">
+                <span className="font-sans text-lg font-semibold text-ink tabular-nums">
                   {out.headline_money}
                 </span>
               )}
             </div>
-            <p className="text-base font-semibold text-ink mb-4">
-              {VERDICT_RECO[out.overall_call] ?? "Read the recommendation below."}
-            </p>
             <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
               {out.board_summary}
             </p>
@@ -226,7 +235,7 @@ export function AuditDetailClient({
               plainly. Only the few that change the outcome. */}
           {out.gaps && out.gaps.length > 0 && (
             <div className="bg-raised rounded-xl border border-hair p-6">
-              <h3 className="text-sm font-semibold text-ink mb-1">
+              <h3 className={`${eyebrow} mb-1`}>
                 What&apos;s off vs best practice
               </h3>
               <p className="text-xs text-muted mb-4">
@@ -283,11 +292,13 @@ export function AuditDetailClient({
           {/* It actually helps — the audit-ready initiative, one
               click to a structured, best-practice-shaped plan. */}
           {out.recommended_initiative && (
-            <div className="bg-raised rounded-xl border border-evergreen p-6">
+            {/* The single amber on this screen: the one thing to do
+                next. Everything else is evergreen / ink (DESIGN.md). */}
+            <div className="rounded-xl border border-amber bg-amber-soft p-6">
               <div className="flex items-start justify-between gap-3 mb-1">
-                <h3 className="text-sm font-semibold text-ink">
-                  Your audit-ready initiative
-                </h3>
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-deep">
+                  Do this next
+                </p>
                 {createdInitiativeId ? (
                   <span className="text-xs font-semibold text-evergreen print:hidden">
                     ✓ Created
@@ -296,7 +307,7 @@ export function AuditDetailClient({
                   <button
                     onClick={createInitiative}
                     disabled={creatingInitiative}
-                    className="shrink-0 px-3 py-1.5 bg-evergreen text-white text-xs font-semibold rounded-lg hover:bg-evergreen-deep disabled:opacity-50 print:hidden"
+                    className="shrink-0 px-4 py-2 bg-amber text-white text-xs font-semibold rounded-lg hover:bg-amber-deep disabled:opacity-50 print:hidden"
                   >
                     {creatingInitiative
                       ? "Creating…"
@@ -304,7 +315,7 @@ export function AuditDetailClient({
                   </button>
                 )}
               </div>
-              <p className="text-base font-semibold text-ink mt-1">
+              <p className="font-serif text-xl font-semibold text-ink mt-1">
                 {out.recommended_initiative.title}
               </p>
               {out.recommended_initiative.goal && (
@@ -315,8 +326,8 @@ export function AuditDetailClient({
               <ol className="space-y-2">
                 {out.recommended_initiative.steps.map((s, i) => (
                   <li key={i} className="flex gap-3 text-sm">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-evergreen text-white text-[11px] font-bold">
-                      {i + 1}
+                    <span className="shrink-0 font-serif text-sm font-semibold text-amber-deep tabular-nums w-5">
+                      {i + 1}.
                     </span>
                     <span>
                       <span className="font-medium text-ink">
@@ -362,7 +373,7 @@ export function AuditDetailClient({
             >
                 {/* What was on the table */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-ink mb-3">
+                  <h3 className={`${eyebrow} mb-3`}>
                     The decision on the table
                   </h3>
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -402,7 +413,7 @@ export function AuditDetailClient({
 
                 {/* Strategy fit */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-ink mb-2">
+                  <h3 className={`${eyebrow} mb-2`}>
                     Does it fit the strategy?
                   </h3>
                   <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
@@ -412,7 +423,7 @@ export function AuditDetailClient({
 
                 {/* Requirements brief */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-ink mb-2">
+                  <h3 className={`${eyebrow} mb-2`}>
                     What it actually has to do
                   </h3>
                   <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
@@ -422,7 +433,7 @@ export function AuditDetailClient({
 
                 {/* Per-lens findings */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-ink mb-1">
+                  <h3 className={`${eyebrow} mb-1`}>
                     The five-lens analysis
                   </h3>
                   <p className="text-xs text-muted mb-4">
@@ -471,7 +482,7 @@ export function AuditDetailClient({
                 {audit.method_capture &&
                   audit.method_capture.length > 0 && (
                     <div className={card}>
-                      <h3 className="text-sm font-semibold text-ink mb-1">
+                      <h3 className={`${eyebrow} mb-1`}>
                         The reusable question checklist
                       </h3>
                       <p className="text-xs text-muted mb-4">
@@ -516,7 +527,7 @@ export function AuditDetailClient({
                 {/* The companion stays available as the prep record. */}
                 {audit.companion && (
                   <div className={card}>
-                    <h3 className="text-sm font-semibold text-ink mb-1">
+                    <h3 className={`${eyebrow} mb-1`}>
                       The questions taken into the room
                     </h3>
                     <p className="text-xs text-muted italic mb-3">
@@ -635,7 +646,7 @@ export function AuditDetailClient({
               <button
                 onClick={run}
                 disabled={running || audit.status === "running"}
-                className="px-5 py-2.5 bg-evergreen text-white text-sm font-semibold rounded-lg hover:bg-evergreen-deep disabled:opacity-50"
+                className="px-5 py-2.5 bg-amber text-white text-sm font-semibold rounded-lg hover:bg-amber-deep disabled:opacity-50"
               >
                 {running || audit.status === "running"
                   ? "Running the analysis…"
@@ -656,10 +667,8 @@ export function AuditDetailClient({
           <div className={card}>
             <div className="flex items-start justify-between gap-3 mb-1">
               <div>
-                <h3 className="text-sm font-semibold text-ink">
-                  Prep the room
-                </h3>
-                <p className="text-xs text-muted mt-0.5">
+                <h3 className={eyebrow}>Prep the room</h3>
+                <p className="text-xs text-muted mt-1">
                   The exact structural questions to ask while the vendor is
                   performing. Generate before the meeting; take it in.
                 </p>

@@ -27,11 +27,10 @@ export function AuditProgress({
       {STEPS.map((s, i) => {
         const isDone = done.includes(s.n);
         const isCurrent = s.n === step;
-        const circle = isDone
-          ? "bg-evergreen text-white"
-          : isCurrent
+        const circle =
+          isDone || isCurrent
             ? "bg-evergreen text-white"
-            : "bg-hair text-muted";
+            : "bg-surface text-faint border border-hair-strong";
         const text = isCurrent
           ? "text-ink font-semibold"
           : isDone
@@ -40,7 +39,7 @@ export function AuditProgress({
         return (
           <li key={s.n} className="flex items-center gap-2">
             <span
-              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${circle}`}
+              className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-xs font-bold ${circle}`}
               aria-current={isCurrent ? "step" : undefined}
             >
               {isDone ? "✓" : s.n}

@@ -339,12 +339,14 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
   }
 
   const input =
-    "w-full rounded-lg border border-hair px-3 py-2 text-sm focus:border-hair focus:outline-none focus:ring-1 focus:ring-hair";
+    "w-full rounded-lg border border-hair-strong px-3 py-2 text-sm bg-raised text-ink focus:border-evergreen focus:outline-none focus:ring-1 focus:ring-evergreen";
   const area = input + " font-mono text-[13px] leading-relaxed";
   const label = "block text-sm font-semibold text-ink mb-1";
   const hint = "text-xs text-muted mb-2";
+  // Serif numeral, not a filled circle (DESIGN.md: no rounded-full
+  // number-circle bullets; brief hierarchy over badge clutter).
   const sectionNo =
-    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-white text-xs font-bold";
+    "shrink-0 font-serif text-base font-semibold text-evergreen tabular-nums w-6";
 
   function Provenance({ field }: { field: string }) {
     const s: AuditFieldSource | undefined =
