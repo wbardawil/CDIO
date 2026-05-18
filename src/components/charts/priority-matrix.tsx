@@ -58,16 +58,16 @@ export function PriorityMatrix({ modules }: PriorityMatrixProps) {
         {/* Grid lines */}
         <svg width={480} height={440} className="absolute top-0 left-0">
           {/* Background */}
-          <rect width={400} height={400} x={40} y={0} fill="#fafafa" stroke="#e5e7eb" />
+          <rect width={400} height={400} x={40} y={0} fill="#FAF8F2" stroke="#E7E2D5" />
           {/* Quadrant dividers */}
-          <line x1={240} y1={0} x2={240} y2={400} stroke="#d1d5db" strokeDasharray="4 4" />
-          <line x1={40} y1={200} x2={440} y2={200} stroke="#d1d5db" strokeDasharray="4 4" />
+          <line x1={240} y1={0} x2={240} y2={400} stroke="#D8D2C2" strokeDasharray="4 4" />
+          <line x1={40} y1={200} x2={440} y2={200} stroke="#D8D2C2" strokeDasharray="4 4" />
 
           {/* Axis labels */}
-          <text x={240} y={430} textAnchor="middle" fontSize={12} fill="#6b7280">
+          <text x={240} y={430} textAnchor="middle" fontSize={12} fill="#6B6960">
             Maturity Score →
           </text>
-          <text x={15} y={200} textAnchor="middle" fontSize={12} fill="#6b7280" transform="rotate(-90, 15, 200)">
+          <text x={15} y={200} textAnchor="middle" fontSize={12} fill="#6B6960" transform="rotate(-90, 15, 200)">
             Business Impact →
           </text>
 

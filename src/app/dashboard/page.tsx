@@ -6,6 +6,7 @@ import Link from "next/link";
 import { SpiderChart } from "@/components/charts/spider-chart";
 import { PriorityMatrix } from "@/components/charts/priority-matrix";
 import { DivergenceReport } from "@/components/charts/divergence-report";
+import { MaturityRamp } from "@/components/charts/maturity-ramp";
 import { WorkspaceShell } from "@/components/workspace-shell";
 import { MODULE_NAMES, ECONOMIC_OUTCOME_META } from "@/types";
 import type { AssessmentSynthesis, DivergencePoint, PriorityClass, EconomicOutcome, Initiative } from "@/types";
@@ -418,6 +419,17 @@ function DashboardContent() {
                     </div>
                   );
                 })()}
+
+                {/* The calm maturity read, first (Spine Law 3): a
+                    sand→evergreen ramp, never the radar as the opener. */}
+                {avgMaturity !== "—" && (
+                  <div className="bg-raised rounded-xl border border-hair p-6">
+                    <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-evergreen mb-4">
+                      Technology maturity
+                    </p>
+                    <MaturityRamp level={Number(avgMaturity)} />
+                  </div>
+                )}
 
                 {/* Summary cards — plain counts, still above the fold. */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">

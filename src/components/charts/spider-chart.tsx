@@ -40,23 +40,23 @@ export function SpiderChart({ scores, targetScores, title }: SpiderChartProps) {
       )}
       <ResponsiveContainer width="100%" height={500}>
         <RadarChart data={data} cx="50%" cy="50%" outerRadius="70%">
-          <PolarGrid stroke="#e5e7eb" />
+          <PolarGrid stroke="#E7E2D5" />
           <PolarAngleAxis
             dataKey="module"
-            tick={{ fontSize: 10, fill: "#6b7280" }}
+            tick={{ fontSize: 10, fill: "#6B6960" }}
           />
           <PolarRadiusAxis
             angle={90}
             domain={[0, 5]}
-            tick={{ fontSize: 10, fill: "#9ca3af" }}
+            tick={{ fontSize: 10, fill: "#9A968B" }}
             tickCount={6}
           />
           {targetScores && (
             <Radar
               name="Target"
               dataKey="target"
-              stroke="#d1d5db"
-              fill="#f3f4f6"
+              stroke="#D8D2C2"
+              fill="#FCFBF7"
               fillOpacity={0.3}
               strokeDasharray="5 5"
             />
@@ -64,8 +64,8 @@ export function SpiderChart({ scores, targetScores, title }: SpiderChartProps) {
           <Radar
             name="Current Maturity"
             dataKey="current"
-            stroke="#2563eb"
-            fill="#3b82f6"
+            stroke="#0F4C44"
+            fill="#0F4C44"
             fillOpacity={0.4}
           />
           <Tooltip
