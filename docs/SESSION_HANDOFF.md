@@ -91,6 +91,35 @@ the Audit was extended into the product the founder described:
 3. Only then consider: presigned direct-upload, `.pptx`, per-finding
    citations on the verdict, signed-URL download of archived originals.
 
+### 2026-05-18 — session close (web session)
+- **Audit unblocked.** Founder applied v16 + v17 (audits tables) and
+  hardened v10/v11 locally (`7039480`, `e656097`, `c298f87`, now on
+  `main`). "Failed to create audit" was the missing audits table —
+  resolved. **Still to verify in the app (founder-side, browser):**
+  that a new audit actually saves end-to-end. v12–v15 status
+  unconfirmed — verify before relying on "Create this initiative".
+- **Two UX fixes shipped** (`b13be5e`, on `main`): client home no
+  longer force-funnels into the assessment (Audit offered as an equal
+  first move); extraction prompt tightened so current state/team is
+  not mislabelled a prior attempt. Extraction quality still UNPROVEN
+  on a real document — unchanged as the core gate.
+- **P0-9 opened + mitigated** (`extract.ts`): prompt injection via
+  uploaded evidence. Prompt-level defense applied (untrusted-document
+  delimiters + injection-as-finding rule). NOT closed — durable fix
+  (API Citations + an injection regression test) and a local `/cso`
+  run are required before any real-client engagement. See GAPS P0-9.
+- **gstack** confirmed already installed locally (`~/.claude/skills/`).
+  It cannot run inside web sessions by design (gates run locally); a
+  web session can still execute a gstack playbook's *method* on
+  request — that is how P0-9 was found this session.
+- **Next, in order:** (1) founder verifies "new audit saves" in the
+  app + runs ONE real decision end-to-end (kill-switch evidence);
+  (2) run `/qa` then `/cso` locally on the audit flow; (3) build the
+  extraction-quality + injection regression test (still un-built — do
+  not skip; it closes P0-9 and the UNPROVEN risk together);
+  (4) Evidence Library / BYOK / Files-API stays gated behind
+  `/plan-eng-review` + `/plan-ceo-review` + `/cso`.
+
 ---
 
 ## ▶ START HERE — 2026-05-13 spine handoff (prior session)

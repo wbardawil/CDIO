@@ -23,10 +23,13 @@
 | P0-6 | Synthesis uses `delete-then-insert` without transaction | ✅ **CLOSED** | Day 5, schema-v6 stored procedure `replace_assessment_synthesis` (atomic) |
 | P0-7 | `conversations` table missing on fresh deploys | ✅ **CLOSED** | Schema-v2 already applied; documented |
 | P0-8 | Service-role client bypasses RLS in API routes | ⚠ Mitigated — Phase 4 to fully close | TS-layer enforcement via assertPractitionerOwnsOrg works today; RLS policies pre-wired for Day 30+ |
+| P0-9 | **Prompt injection via uploaded audit evidence** — an attacker-influenced document (proposal/SOW/transcript) can carry instructions that steer the extraction draft (a cost, an option, the framing) a CEO ultimately acts on. Evidence text is fully attacker-controllable and feeds the money verdict. | ⚠ **Mitigated 2026-05-18** (prompt-level: untrusted-document delimiters + explicit injection rule in `extract.ts`; an injection attempt is now recorded as a finding, not obeyed). **Residual:** prompt defenses are not absolute — human review of the draft stays load-bearing; durable fix = API-grounded Citations + an injection regression eval. | Mitigation on `claude/review-cdio-handoff-4bR8R`; durable fix pending the extraction-quality/injection test + a local `/cso` run before any real-client engagement |
 
 **Phase 1A closed 4 of 8 P0 items. Phase 1B Day 5 closes P0-3 + P0-6 (this commit). P0-4 closes when Upstash creds land. P0-8 stays mitigated until per-user JWT.**
 
 **As of this commit: 6 of 8 P0 items fully closed, 1 mitigated, 1 pending creds.**
+
+**2026-05-18 addendum:** P0-9 added — audit-evidence prompt injection, surfaced by a gstack `/cso`-method pass on the evidence pipeline shipped 2026-05-17. Prompt-level mitigation applied this session. It is **not** to be treated as closed until the extraction-quality + injection regression test runs against a real document and a local `/cso` is run before any real-client engagement.
 
 ---
 
