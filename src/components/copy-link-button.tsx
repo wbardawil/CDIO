@@ -34,7 +34,7 @@ export function CopyLinkButton({ link, label = "Copy link", className = "" }: Pr
       type="button"
       onClick={onCopy}
       className={`inline-flex items-center gap-1.5 text-xs font-medium ${
-        copied ? "text-green-600" : "text-blue-600 hover:text-blue-800"
+        copied ? "text-evergreen" : "text-evergreen hover:text-evergreen-deep"
       } ${className}`}
     >
       {copied ? "✓ Copied" : label}

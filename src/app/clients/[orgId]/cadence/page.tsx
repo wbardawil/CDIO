@@ -44,28 +44,28 @@ export default async function CadenceManagerPage({
     .order("created_at", { ascending: false });
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-paper">
+      <header className="bg-raised border-b border-hair">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/clients" className="text-gray-500 hover:text-gray-900">
+            <Link href="/clients" className="text-muted hover:text-ink">
               Portfolio
             </Link>
-            <span className="text-gray-300">/</span>
+            <span className="text-faint">/</span>
             <Link
               href={`/clients/${org.id}`}
-              className="text-gray-500 hover:text-gray-900"
+              className="text-muted hover:text-ink"
             >
               {org.name}
             </Link>
-            <span className="text-gray-300">/</span>
-            <span className="font-semibold text-gray-900">Cadence</span>
+            <span className="text-faint">/</span>
+            <span className="font-semibold text-ink">Cadence</span>
           </div>
         </div>
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
-        <div className="mb-6 px-4 py-3 bg-purple-50 border border-purple-200 rounded-lg text-sm text-purple-900">
+        <div className="mb-6 px-4 py-3 bg-evergreen-soft border border-evergreen rounded-lg text-sm text-evergreen-deep">
           <strong>Cadence-as-primitive.</strong> The Cadence link is the
           read-only client-facing view of the engagement (Architectural Law 5).
           Token-based — your client never logs in, never gets a paid seat. They

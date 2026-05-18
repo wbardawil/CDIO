@@ -12,9 +12,9 @@ import {
 import { AuditProgress } from "../audit-progress";
 
 const SEVERITY_STYLE: Record<string, string> = {
-  critical: "bg-rose-100 text-rose-800 border-rose-200",
-  high: "bg-amber-100 text-amber-800 border-amber-200",
-  moderate: "bg-slate-100 text-slate-700 border-slate-200",
+  critical: "bg-raised text-brick border-brick",
+  high: "bg-amber-soft text-amber-deep border-amber",
+  moderate: "bg-surface text-ink border-hair",
 };
 const SEVERITY_RANK: Record<string, number> = {
   critical: 0,
@@ -27,10 +27,10 @@ const LENS_ORDER: AuditLensKey[] = (
 ).sort((a, b) => AUDIT_LENS_META[a].order - AUDIT_LENS_META[b].order);
 
 const VERDICT_STYLE: Record<string, string> = {
-  buy: "bg-emerald-600 text-white",
-  dont_buy: "bg-rose-600 text-white",
-  renegotiate: "bg-amber-500 text-white",
-  hold: "bg-slate-700 text-white",
+  buy: "bg-evergreen text-white",
+  dont_buy: "bg-brick text-white",
+  renegotiate: "bg-amber text-white",
+  hold: "bg-ink text-white",
 };
 
 // Plain-English, one-line "what to do" per verdict — the spine's
@@ -44,9 +44,9 @@ const VERDICT_RECO: Record<string, string> = {
 };
 
 const FLAG_STYLE: Record<string, string> = {
-  KILL: "bg-rose-100 text-rose-800 border-rose-200",
-  GO: "bg-emerald-100 text-emerald-800 border-emerald-200",
-  RENEGOTIATE: "bg-amber-100 text-amber-800 border-amber-200",
+  KILL: "bg-raised text-brick border-brick",
+  GO: "bg-evergreen-soft text-evergreen-deep border-evergreen",
+  RENEGOTIATE: "bg-amber-soft text-amber-deep border-amber",
 };
 
 export function AuditDetailClient({
@@ -149,7 +149,7 @@ export function AuditDetailClient({
   }
 
   const out = audit.output;
-  const card = "bg-white rounded-xl border border-gray-200 p-6";
+  const card = "bg-raised rounded-xl border border-hair p-6";
 
   // Law 4 — the visible spine. Frame is done the moment the audit
   // row exists (we are on its detail screen). Prep completes when
@@ -171,14 +171,14 @@ export function AuditDetailClient({
   return (
     <div className="space-y-6">
       {/* Persistent progress strip — always visible (Law 4). */}
-      <div className="rounded-xl border border-gray-200 bg-white px-5 py-4 print:hidden">
+      <div className="rounded-xl border border-hair bg-raised px-5 py-4 print:hidden">
         <AuditProgress step={focusStep} done={doneSteps} />
       </div>
 
       {/* Slim, plain trust line — the whole differentiation in one
           sentence. Full independence + advisory text lives in the
           analysis disclosure, not as front-of-house decoration. */}
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted">
         Independent review · loyal only to the accountable principal ·
         principal-paid, zero vendor fees · advisory (the decision stays
         yours).
@@ -188,36 +188,36 @@ export function AuditDetailClient({
         <>
           {/* The pain, first — what this is all for. */}
           {(out.business_pain || audit.intake.business_pain) && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <p className="text-[11px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
+            <div className="bg-raised rounded-xl border border-hair p-6">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-muted mb-1">
                 The pain this has to solve
               </p>
-              <p className="text-base text-gray-900 leading-relaxed">
+              <p className="text-base text-ink leading-relaxed">
                 {out.business_pain || audit.intake.business_pain}
               </p>
             </div>
           )}
 
           {/* ===== Law 5: the 15-second read ===== */}
-          <div className="bg-white rounded-xl border border-gray-200 p-6 sm:p-8">
+          <div className="bg-raised rounded-xl border border-hair p-6 sm:p-8">
             <div className="flex flex-wrap items-center gap-3 mb-4">
               <span
                 className={`px-4 py-1.5 rounded-md text-lg font-bold ${
-                  VERDICT_STYLE[out.overall_call] ?? "bg-gray-700 text-white"
+                  VERDICT_STYLE[out.overall_call] ?? "bg-ink text-white"
                 }`}
               >
                 {AUDIT_VERDICT_LABEL[out.overall_call]}
               </span>
               {out.headline_money && (
-                <span className="text-lg font-semibold text-gray-900">
+                <span className="text-lg font-semibold text-ink">
                   {out.headline_money}
                 </span>
               )}
             </div>
-            <p className="text-base font-semibold text-gray-900 mb-4">
+            <p className="text-base font-semibold text-ink mb-4">
               {VERDICT_RECO[out.overall_call] ?? "Read the recommendation below."}
             </p>
-            <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+            <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
               {out.board_summary}
             </p>
           </div>
@@ -225,11 +225,11 @@ export function AuditDetailClient({
           {/* What's off vs best practice — the methodology, surfaced
               plainly. Only the few that change the outcome. */}
           {out.gaps && out.gaps.length > 0 && (
-            <div className="bg-white rounded-xl border border-gray-200 p-6">
-              <h3 className="text-sm font-semibold text-gray-900 mb-1">
+            <div className="bg-raised rounded-xl border border-hair p-6">
+              <h3 className="text-sm font-semibold text-ink mb-1">
                 What&apos;s off vs best practice
               </h3>
-              <p className="text-xs text-gray-500 mb-4">
+              <p className="text-xs text-muted mb-4">
                 The few gaps that actually change the outcome — not a checklist.
               </p>
               <ul className="space-y-4">
@@ -242,34 +242,34 @@ export function AuditDetailClient({
                   .map((g, i) => (
                     <li
                       key={i}
-                      className="border-l-2 border-gray-200 pl-4"
+                      className="border-l-2 border-hair pl-4"
                     >
                       <div className="flex items-center gap-2 mb-1">
-                        <span className="text-sm font-semibold text-gray-900">
+                        <span className="text-sm font-semibold text-ink">
                           {g.gap}
                         </span>
                         <span
                           className={`px-1.5 py-0.5 rounded text-[10px] font-bold border uppercase ${
                             SEVERITY_STYLE[g.severity] ??
-                            "bg-gray-100 text-gray-700"
+                            "bg-surface text-ink"
                           }`}
                         >
                           {g.severity}
                         </span>
                       </div>
                       {g.why_it_matters && (
-                        <p className="text-sm text-gray-800 mb-1">
+                        <p className="text-sm text-ink mb-1">
                           {g.why_it_matters}
                         </p>
                       )}
                       {g.best_practice && (
-                        <p className="text-xs text-gray-600 mb-0.5">
+                        <p className="text-xs text-muted mb-0.5">
                           <span className="font-semibold">Best practice:</span>{" "}
                           {g.best_practice}
                         </p>
                       )}
                       {g.evidence && (
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-muted">
                           <span className="font-semibold">Because:</span>{" "}
                           {g.evidence}
                         </p>
@@ -283,20 +283,20 @@ export function AuditDetailClient({
           {/* It actually helps — the audit-ready initiative, one
               click to a structured, best-practice-shaped plan. */}
           {out.recommended_initiative && (
-            <div className="bg-white rounded-xl border border-blue-200 p-6">
+            <div className="bg-raised rounded-xl border border-evergreen p-6">
               <div className="flex items-start justify-between gap-3 mb-1">
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-ink">
                   Your audit-ready initiative
                 </h3>
                 {createdInitiativeId ? (
-                  <span className="text-xs font-semibold text-emerald-700 print:hidden">
+                  <span className="text-xs font-semibold text-evergreen print:hidden">
                     ✓ Created
                   </span>
                 ) : (
                   <button
                     onClick={createInitiative}
                     disabled={creatingInitiative}
-                    className="shrink-0 px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 print:hidden"
+                    className="shrink-0 px-3 py-1.5 bg-evergreen text-white text-xs font-semibold rounded-lg hover:bg-evergreen-deep disabled:opacity-50 print:hidden"
                   >
                     {creatingInitiative
                       ? "Creating…"
@@ -304,26 +304,26 @@ export function AuditDetailClient({
                   </button>
                 )}
               </div>
-              <p className="text-base font-semibold text-gray-900 mt-1">
+              <p className="text-base font-semibold text-ink mt-1">
                 {out.recommended_initiative.title}
               </p>
               {out.recommended_initiative.goal && (
-                <p className="text-sm text-gray-700 mt-1 mb-3">
+                <p className="text-sm text-ink mt-1 mb-3">
                   {out.recommended_initiative.goal}
                 </p>
               )}
               <ol className="space-y-2">
                 {out.recommended_initiative.steps.map((s, i) => (
                   <li key={i} className="flex gap-3 text-sm">
-                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-blue-600 text-white text-[11px] font-bold">
+                    <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-evergreen text-white text-[11px] font-bold">
                       {i + 1}
                     </span>
                     <span>
-                      <span className="font-medium text-gray-900">
+                      <span className="font-medium text-ink">
                         {s.title}
                       </span>
                       {s.description && (
-                        <span className="text-gray-600">
+                        <span className="text-muted">
                           {" "}
                           — {s.description}
                         </span>
@@ -332,7 +332,7 @@ export function AuditDetailClient({
                   </li>
                 ))}
               </ol>
-              <p className="mt-3 text-[11px] text-gray-400">
+              <p className="mt-3 text-[11px] text-faint">
                 Shaped to comply with best practice by construction. Creating
                 it opens the initiative with these steps ready to assign.
               </p>
@@ -344,13 +344,13 @@ export function AuditDetailClient({
           <div className="print:block">
             <button
               onClick={() => setShowAnalysis((v) => !v)}
-              className="w-full flex items-center justify-between gap-3 px-5 py-3 bg-white rounded-xl border border-gray-200 text-sm font-semibold text-gray-800 hover:bg-gray-50 print:hidden"
+              className="w-full flex items-center justify-between gap-3 px-5 py-3 bg-raised rounded-xl border border-hair text-sm font-semibold text-ink hover:bg-paper print:hidden"
               aria-expanded={showAnalysis}
             >
               <span>
                 {showAnalysis ? "Hide the full analysis" : "Show the full analysis"}
               </span>
-              <span className="text-gray-400 font-normal">
+              <span className="text-faint font-normal">
                 strategy fit · requirements · five lenses · evidence · method
               </span>
             </button>
@@ -362,7 +362,7 @@ export function AuditDetailClient({
             >
                 {/* What was on the table */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-3">
+                  <h3 className="text-sm font-semibold text-ink mb-3">
                     The decision on the table
                   </h3>
                   <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-2 text-sm">
@@ -381,7 +381,7 @@ export function AuditDetailClient({
                     />
                   </dl>
                   {gaps.finding && (
-                    <div className="mt-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
+                    <div className="mt-4 px-3 py-2 bg-amber-soft border border-amber rounded text-xs text-amber-deep">
                       <strong>
                         Intake gap (this is itself the first finding):
                       </strong>{" "}
@@ -389,7 +389,7 @@ export function AuditDetailClient({
                     </div>
                   )}
                   {audit.intake.extraction?.files?.length ? (
-                    <p className="mt-3 text-[11px] text-gray-400">
+                    <p className="mt-3 text-[11px] text-faint">
                       Intake built from:{" "}
                       {audit.intake.extraction.files
                         .filter((f) => f.ok)
@@ -402,30 +402,30 @@ export function AuditDetailClient({
 
                 {/* Strategy fit */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                  <h3 className="text-sm font-semibold text-ink mb-2">
                     Does it fit the strategy?
                   </h3>
-                  <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
                     {out.strategy_verdict}
                   </p>
                 </div>
 
                 {/* Requirements brief */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-2">
+                  <h3 className="text-sm font-semibold text-ink mb-2">
                     What it actually has to do
                   </h3>
-                  <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap">
+                  <p className="text-sm text-ink leading-relaxed whitespace-pre-wrap">
                     {out.requirements_brief}
                   </p>
                 </div>
 
                 {/* Per-lens findings */}
                 <div className={card}>
-                  <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                  <h3 className="text-sm font-semibold text-ink mb-1">
                     The five-lens analysis
                   </h3>
-                  <p className="text-xs text-gray-500 mb-4">
+                  <p className="text-xs text-muted mb-4">
                     Each lens is one structural thing the room is usually not
                     looking at, with the evidence behind it.
                   </p>
@@ -439,25 +439,25 @@ export function AuditDetailClient({
                       return (
                         <li
                           key={lensKey}
-                          className="border-l-2 border-gray-200 pl-4"
+                          className="border-l-2 border-hair pl-4"
                         >
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-sm font-semibold text-gray-900">
+                            <span className="text-sm font-semibold text-ink">
                               {meta.label}
                             </span>
                             <span
                               className={`px-1.5 py-0.5 rounded text-[10px] font-bold border ${
                                 FLAG_STYLE[f.flag] ??
-                                "bg-gray-100 text-gray-700"
+                                "bg-surface text-ink"
                               }`}
                             >
                               {f.flag}
                             </span>
                           </div>
-                          <p className="text-sm text-gray-800 mb-1">
+                          <p className="text-sm text-ink mb-1">
                             {f.finding}
                           </p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted">
                             <span className="font-semibold">Because:</span>{" "}
                             {f.evidence}
                           </p>
@@ -471,10 +471,10 @@ export function AuditDetailClient({
                 {audit.method_capture &&
                   audit.method_capture.length > 0 && (
                     <div className={card}>
-                      <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                      <h3 className="text-sm font-semibold text-ink mb-1">
                         The reusable question checklist
                       </h3>
-                      <p className="text-xs text-gray-500 mb-4">
+                      <p className="text-xs text-muted mb-4">
                         Every question this audit actually asked, grouped by
                         lens. The ★ marks the question that did the most work
                         on this case. This list compounds — the next audit
@@ -488,16 +488,16 @@ export function AuditDetailClient({
                           if (!mc || mc.questions.length === 0) return null;
                           return (
                             <div key={lensKey}>
-                              <p className="text-xs font-semibold text-gray-700 mb-1">
+                              <p className="text-xs font-semibold text-ink mb-1">
                                 {AUDIT_LENS_META[lensKey].label}
                               </p>
                               <ul className="space-y-1">
                                 {mc.questions.map((q, i) => (
                                   <li
                                     key={i}
-                                    className="text-xs text-gray-600 flex gap-2"
+                                    className="text-xs text-muted flex gap-2"
                                   >
-                                    <span className="text-amber-500">
+                                    <span className="text-amber">
                                       {i === mc.highest_leverage_index
                                         ? "★"
                                         : "·"}
@@ -516,18 +516,18 @@ export function AuditDetailClient({
                 {/* The companion stays available as the prep record. */}
                 {audit.companion && (
                   <div className={card}>
-                    <h3 className="text-sm font-semibold text-gray-900 mb-1">
+                    <h3 className="text-sm font-semibold text-ink mb-1">
                       The questions taken into the room
                     </h3>
-                    <p className="text-xs text-gray-600 italic mb-3">
+                    <p className="text-xs text-muted italic mb-3">
                       {audit.companion.meeting_context}
                     </p>
                     {audit.companion.do_not_leave_without_asking && (
-                      <div className="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg mb-3">
-                        <p className="text-[10px] uppercase tracking-wide font-bold text-amber-700 mb-1">
+                      <div className="px-4 py-3 bg-amber-soft border border-amber rounded-lg mb-3">
+                        <p className="text-[10px] uppercase tracking-wide font-bold text-amber-deep mb-1">
                           Do not leave the room without asking
                         </p>
-                        <p className="text-sm text-amber-900 font-medium">
+                        <p className="text-sm text-amber-deep font-medium">
                           {audit.companion.do_not_leave_without_asking}
                         </p>
                       </div>
@@ -541,18 +541,18 @@ export function AuditDetailClient({
                         return (
                           <div
                             key={lensKey}
-                            className="border-l-2 border-blue-200 pl-4"
+                            className="border-l-2 border-evergreen pl-4"
                           >
-                            <p className="text-xs font-semibold text-gray-900 mb-1.5">
+                            <p className="text-xs font-semibold text-ink mb-1.5">
                               {AUDIT_LENS_META[lensKey].label}
                             </p>
                             <ul className="space-y-1">
                               {l.questions.map((q, i) => (
                                 <li
                                   key={i}
-                                  className="text-sm text-gray-800 flex gap-2"
+                                  className="text-sm text-ink flex gap-2"
                                 >
-                                  <span className="text-blue-400">›</span>
+                                  <span className="text-evergreen">›</span>
                                   <span>{q}</span>
                                 </li>
                               ))}
@@ -566,8 +566,8 @@ export function AuditDetailClient({
 
                 {/* Independence & advisory boundary — the rigor that
                     earns trust, kept off the front of house. */}
-                <div className="border-t border-gray-200 pt-4 text-[11px] leading-relaxed text-gray-500">
-                  <p className="font-semibold text-gray-600 mb-1">
+                <div className="border-t border-hair pt-4 text-[11px] leading-relaxed text-muted">
+                  <p className="font-semibold text-muted mb-1">
                     Independence &amp; advisory boundary
                   </p>
                   <p>
@@ -592,7 +592,7 @@ export function AuditDetailClient({
           <div className="print:hidden">
             <button
               onClick={printFull}
-              className="px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+              className="px-4 py-2 border border-hair text-ink text-sm font-medium rounded-lg hover:bg-paper"
             >
               Print / Save as PDF
             </button>
@@ -602,10 +602,10 @@ export function AuditDetailClient({
         <>
           {/* ===== Not yet run — the one primary action is Run ===== */}
           <div className={card}>
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+            <h2 className="text-lg font-semibold text-ink mb-1">
               {audit.title}
             </h2>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm text-muted mb-4">
               The decision is framed. Run the audit to get the plain verdict,
               the money, and the recommendation.
             </p>
@@ -623,7 +623,7 @@ export function AuditDetailClient({
             </dl>
 
             {gaps.finding && (
-              <div className="mt-4 px-3 py-2 bg-amber-50 border border-amber-200 rounded text-xs text-amber-900">
+              <div className="mt-4 px-3 py-2 bg-amber-soft border border-amber rounded text-xs text-amber-deep">
                 <strong>
                   Intake gap (this is itself the first finding):
                 </strong>{" "}
@@ -635,18 +635,18 @@ export function AuditDetailClient({
               <button
                 onClick={run}
                 disabled={running || audit.status === "running"}
-                className="px-5 py-2.5 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="px-5 py-2.5 bg-evergreen text-white text-sm font-semibold rounded-lg hover:bg-evergreen-deep disabled:opacity-50"
               >
                 {running || audit.status === "running"
                   ? "Running the analysis…"
                   : "Run the audit"}
               </button>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-muted">
                 Returns the verdict + the money + the recommendation. ~30-60s.
               </span>
             </div>
             {error && (
-              <div className="mt-3 px-3 py-2 bg-rose-50 border border-rose-200 rounded text-xs text-rose-800">
+              <div className="mt-3 px-3 py-2 bg-raised border border-brick rounded text-xs text-brick">
                 {error}
               </div>
             )}
@@ -656,10 +656,10 @@ export function AuditDetailClient({
           <div className={card}>
             <div className="flex items-start justify-between gap-3 mb-1">
               <div>
-                <h3 className="text-sm font-semibold text-gray-900">
+                <h3 className="text-sm font-semibold text-ink">
                   Prep the room
                 </h3>
-                <p className="text-xs text-gray-500 mt-0.5">
+                <p className="text-xs text-muted mt-0.5">
                   The exact structural questions to ask while the vendor is
                   performing. Generate before the meeting; take it in.
                 </p>
@@ -667,7 +667,7 @@ export function AuditDetailClient({
               <button
                 onClick={prep}
                 disabled={prepping}
-                className="shrink-0 px-3 py-1.5 border border-gray-300 text-gray-700 text-xs font-semibold rounded-lg hover:bg-gray-50 disabled:opacity-50"
+                className="shrink-0 px-3 py-1.5 border border-hair text-ink text-xs font-semibold rounded-lg hover:bg-paper disabled:opacity-50"
               >
                 {prepping
                   ? "Preparing…"
@@ -679,15 +679,15 @@ export function AuditDetailClient({
 
             {audit.companion && (
               <div className="mt-4 space-y-4">
-                <p className="text-xs text-gray-600 italic">
+                <p className="text-xs text-muted italic">
                   {audit.companion.meeting_context}
                 </p>
                 {audit.companion.do_not_leave_without_asking && (
-                  <div className="px-4 py-3 bg-amber-50 border border-amber-200 rounded-lg">
-                    <p className="text-[10px] uppercase tracking-wide font-bold text-amber-700 mb-1">
+                  <div className="px-4 py-3 bg-amber-soft border border-amber rounded-lg">
+                    <p className="text-[10px] uppercase tracking-wide font-bold text-amber-deep mb-1">
                       Do not leave the room without asking
                     </p>
-                    <p className="text-sm text-amber-900 font-medium">
+                    <p className="text-sm text-amber-deep font-medium">
                       {audit.companion.do_not_leave_without_asking}
                     </p>
                   </div>
@@ -701,24 +701,24 @@ export function AuditDetailClient({
                     return (
                       <div
                         key={lensKey}
-                        className="border-l-2 border-blue-200 pl-4"
+                        className="border-l-2 border-evergreen pl-4"
                       >
-                        <p className="text-xs font-semibold text-gray-900 mb-1.5">
+                        <p className="text-xs font-semibold text-ink mb-1.5">
                           {AUDIT_LENS_META[lensKey].label}
                         </p>
                         <ul className="space-y-1 mb-2">
                           {l.questions.map((q, i) => (
                             <li
                               key={i}
-                              className="text-sm text-gray-800 flex gap-2"
+                              className="text-sm text-ink flex gap-2"
                             >
-                              <span className="text-blue-400">›</span>
+                              <span className="text-evergreen">›</span>
                               <span>{q}</span>
                             </li>
                           ))}
                         </ul>
                         {l.watch_for && (
-                          <p className="text-xs text-gray-500">
+                          <p className="text-xs text-muted">
                             <span className="font-semibold">Watch for:</span>{" "}
                             {l.watch_for}
                           </p>
@@ -739,8 +739,8 @@ export function AuditDetailClient({
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex gap-2">
-      <dt className="text-gray-500 shrink-0">{label}:</dt>
-      <dd className="text-gray-900 font-medium">{value || "—"}</dd>
+      <dt className="text-muted shrink-0">{label}:</dt>
+      <dd className="text-ink font-medium">{value || "—"}</dd>
     </div>
   );
 }

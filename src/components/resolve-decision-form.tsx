@@ -62,27 +62,27 @@ export function ResolveDecisionForm({
         })
       : null;
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4">
+      <div className="rounded-lg border border-evergreen bg-evergreen-soft p-4">
         <div className="flex items-baseline justify-between gap-3 mb-1.5 flex-wrap">
-          <p className="text-[10px] uppercase tracking-wider text-green-800 font-semibold">
+          <p className="text-[10px] uppercase tracking-wider text-evergreen-deep font-semibold">
             ✓ Decided{when ? ` · ${when}` : ""}
           </p>
           <button
             type="button"
             onClick={() => setEditing(true)}
-            className="text-xs text-green-700 hover:text-green-900 font-medium underline-offset-2 hover:underline"
+            className="text-xs text-evergreen hover:text-evergreen-deep font-medium underline-offset-2 hover:underline"
           >
             Update
           </button>
         </div>
-        <p className="text-sm text-green-900 whitespace-pre-wrap">{initialResolution}</p>
+        <p className="text-sm text-evergreen-deep whitespace-pre-wrap">{initialResolution}</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-lg border border-blue-200 bg-blue-50 p-4">
-      <label className="block text-[10px] uppercase tracking-wider text-blue-800 font-semibold mb-1.5">
+    <div className="rounded-lg border border-evergreen bg-evergreen-soft p-4">
+      <label className="block text-[10px] uppercase tracking-wider text-evergreen-deep font-semibold mb-1.5">
         What did the team decide?
       </label>
       <textarea
@@ -90,16 +90,16 @@ export function ResolveDecisionForm({
         onChange={(e) => setText(e.target.value)}
         placeholder="e.g. We're prioritizing the encryption-at-rest project this quarter; CTO owns the rollout, $40K budget approved by CFO, target completion 2026-08-15."
         rows={3}
-        className="w-full px-3 py-2 border border-blue-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 mb-2"
+        className="w-full px-3 py-2 border border-evergreen rounded-lg text-sm bg-raised focus:outline-none focus:ring-2 focus:ring-evergreen mb-2"
         disabled={saving}
       />
-      {error && <p className="text-xs text-red-700 mb-2">{error}</p>}
+      {error && <p className="text-xs text-brick mb-2">{error}</p>}
       <div className="flex gap-2">
         <button
           type="button"
           onClick={onSave}
           disabled={saving}
-          className="px-3 py-1.5 bg-blue-600 text-white text-xs font-medium rounded hover:bg-blue-700 disabled:bg-gray-300"
+          className="px-3 py-1.5 bg-evergreen text-white text-xs font-medium rounded hover:bg-evergreen-deep disabled:bg-hair"
         >
           {saving ? "Saving…" : "Record decision"}
         </button>
@@ -112,7 +112,7 @@ export function ResolveDecisionForm({
               setError(null);
             }}
             disabled={saving}
-            className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50"
+            className="px-3 py-1.5 border border-hair text-ink text-xs font-medium rounded hover:bg-paper"
           >
             Cancel
           </button>

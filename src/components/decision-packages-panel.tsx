@@ -55,11 +55,11 @@ interface Props {
 }
 
 const LEVEL_COLOR: Record<number, string> = {
-  1: "bg-red-100 text-red-800",
-  2: "bg-orange-100 text-orange-800",
-  3: "bg-blue-100 text-blue-800",
-  4: "bg-green-100 text-green-800",
-  5: "bg-emerald-200 text-emerald-900",
+  1: "bg-raised text-brick",
+  2: "bg-amber-soft text-amber-deep",
+  3: "bg-evergreen-soft text-evergreen-deep",
+  4: "bg-evergreen-soft text-evergreen-deep",
+  5: "bg-evergreen text-evergreen-deep",
 };
 
 export function DecisionPackagesPanel({ decisionPackages }: Props) {
@@ -75,44 +75,44 @@ export function DecisionPackagesPanel({ decisionPackages }: Props) {
   const unresolvedCount = sorted.filter((d) => !d.resolved_at).length;
 
   return (
-    <div className="bg-white rounded-xl border-2 border-purple-200 mb-6 shadow-sm">
-      <div className="px-6 py-4 border-b border-purple-100 bg-purple-50 rounded-t-xl">
+    <div className="bg-raised rounded-xl border-2 border-evergreen mb-6 shadow-sm">
+      <div className="px-6 py-4 border-b border-evergreen bg-evergreen-soft rounded-t-xl">
         <div className="flex items-baseline gap-3 flex-wrap">
-          <h3 className="text-base font-semibold text-purple-900">
+          <h3 className="text-base font-semibold text-evergreen-deep">
             Decision Packages
           </h3>
-          <span className="text-xs text-purple-700">
+          <span className="text-xs text-evergreen">
             {unresolvedCount > 0
               ? `${unresolvedCount} pending · ${sorted.length - unresolvedCount} resolved`
               : `All ${sorted.length} resolved`}
           </span>
         </div>
-        <p className="text-xs text-purple-800 mt-1">
+        <p className="text-xs text-evergreen-deep mt-1">
           When stakeholders see the same area differently, the playbook proposes a path. Capture what the team decides — these become your engagement&apos;s permanent record of what changed and why.
         </p>
       </div>
 
-      <div className="divide-y divide-gray-100">
+      <div className="divide-y divide-hair">
         {sorted.map((d) => {
           const a = d.decision_package.stakeholder_a;
           const b = d.decision_package.stakeholder_b;
           const moduleName = MODULE_NAMES[d.module_number] ?? `Module ${d.module_number}`;
           const isResolved = Boolean(d.resolved_at);
-          const aColor = a ? LEVEL_COLOR[a.score] ?? "bg-gray-100 text-gray-800" : "bg-gray-100 text-gray-800";
-          const bColor = b ? LEVEL_COLOR[b.score] ?? "bg-gray-100 text-gray-800" : "bg-gray-100 text-gray-800";
+          const aColor = a ? LEVEL_COLOR[a.score] ?? "bg-surface text-ink" : "bg-surface text-ink";
+          const bColor = b ? LEVEL_COLOR[b.score] ?? "bg-surface text-ink" : "bg-surface text-ink";
 
           return (
             <div
               key={d.id}
-              className={`px-6 py-5 ${isResolved ? "bg-gray-50/50" : ""}`}
+              className={`px-6 py-5 ${isResolved ? "bg-paper/50" : ""}`}
             >
               {/* Header */}
               <div className="flex items-baseline gap-2 flex-wrap mb-3">
-                <span className="text-xs font-mono text-gray-400">M{d.module_number}</span>
-                <h4 className={`text-sm font-semibold ${isResolved ? "text-gray-600" : "text-gray-900"}`}>
+                <span className="text-xs font-mono text-faint">M{d.module_number}</span>
+                <h4 className={`text-sm font-semibold ${isResolved ? "text-muted" : "text-ink"}`}>
                   {moduleName}
                 </h4>
-                <span className="text-xs px-2 py-0.5 bg-purple-100 text-purple-700 rounded font-medium">
+                <span className="text-xs px-2 py-0.5 bg-evergreen-soft text-evergreen rounded font-medium">
                   Gap: {d.score_gap} {d.score_gap === 1 ? "level" : "levels"}
                 </span>
               </div>
@@ -123,15 +123,15 @@ export function DecisionPackagesPanel({ decisionPackages }: Props) {
                   {[a, b].map((sh, idx) => {
                     const color = idx === 0 ? aColor : bColor;
                     return (
-                      <div key={sh.id} className="rounded-lg border border-gray-200 p-3">
+                      <div key={sh.id} className="rounded-lg border border-hair p-3">
                         <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                           <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${color}`}>
                             L{sh.score}
                           </span>
-                          <span className="text-sm font-medium text-gray-900">{sh.name}</span>
-                          {sh.role && <span className="text-xs text-gray-500">— {sh.role}</span>}
+                          <span className="text-sm font-medium text-ink">{sh.name}</span>
+                          {sh.role && <span className="text-xs text-muted">— {sh.role}</span>}
                         </div>
-                        <p className="text-xs text-gray-700 leading-relaxed line-clamp-4">
+                        <p className="text-xs text-ink leading-relaxed line-clamp-4">
                           {sh.evidence}
                         </p>
                       </div>
@@ -142,10 +142,10 @@ export function DecisionPackagesPanel({ decisionPackages }: Props) {
 
               {/* Framework recommendation */}
               <div className="mb-3">
-                <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                <p className="text-[10px] uppercase tracking-wider text-muted font-semibold mb-1">
                   What the playbook recommends
                 </p>
-                <p className="text-sm text-gray-800 leading-relaxed">
+                <p className="text-sm text-ink leading-relaxed">
                   {d.framework_recommendation}
                 </p>
               </div>
@@ -153,10 +153,10 @@ export function DecisionPackagesPanel({ decisionPackages }: Props) {
               {/* Projected ROI */}
               {d.decision_package.projected_roi && d.decision_package.projected_roi !== "To be calculated" && (
                 <div className="mb-4">
-                  <p className="text-[10px] uppercase tracking-wider text-gray-500 font-semibold mb-1">
+                  <p className="text-[10px] uppercase tracking-wider text-muted font-semibold mb-1">
                     Projected impact
                   </p>
-                  <p className="text-sm text-gray-700 leading-relaxed">
+                  <p className="text-sm text-ink leading-relaxed">
                     {d.decision_package.projected_roi}
                   </p>
                 </div>

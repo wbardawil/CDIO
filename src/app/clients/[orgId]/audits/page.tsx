@@ -76,18 +76,18 @@ export default async function AuditsListPage({
       <div>
         {/* The one primary action on this screen. */}
         <div className="flex items-center justify-between gap-4 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-ink">
             Pre-purchase audits
           </h2>
           <Link
             href={`/clients/${o.id}/audits/new`}
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-semibold rounded-lg hover:bg-evergreen-deep"
           >
             + New audit
           </Link>
         </div>
 
-        <div className="mb-6 px-4 py-3 bg-slate-900 text-slate-100 rounded-lg text-sm">
+        <div className="mb-6 px-4 py-3 bg-ink text-faint rounded-lg text-sm">
           <strong>Independent. Loyal only to you.</strong> This audit sits
           between you and a major technology purchase, before the check is
           signed. Not the vendor. Not the team that already wants it. Verdict:
@@ -96,18 +96,18 @@ export default async function AuditsListPage({
         </div>
 
         {items.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+          <div className="bg-raised rounded-xl border border-hair p-10 text-center">
+            <h2 className="text-lg font-semibold text-ink mb-1">
               No audits yet
             </h2>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-muted mb-5">
               About to sign for an ERP, CRM, or any major system? Run it
               through an independent audit first. One decision, one verdict,
               board-ready.
             </p>
             <Link
               href={`/clients/${o.id}/audits/new`}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep"
             >
               + Start your first audit
             </Link>
@@ -119,17 +119,17 @@ export default async function AuditsListPage({
               const statusColor =
                 a.status === "complete"
                   ? verdict === "buy"
-                    ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                    ? "bg-evergreen-soft text-evergreen border-evergreen"
                     : verdict === "dont_buy"
-                      ? "bg-rose-50 text-rose-700 border-rose-200"
+                      ? "bg-raised text-brick border-brick"
                       : verdict === "renegotiate"
-                        ? "bg-amber-50 text-amber-700 border-amber-200"
-                        : "bg-slate-100 text-slate-700 border-slate-200"
+                        ? "bg-amber-soft text-amber-deep border-amber"
+                        : "bg-surface text-ink border-hair"
                   : a.status === "running"
-                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                    ? "bg-evergreen-soft text-evergreen border-evergreen"
                     : a.status === "cancelled"
-                      ? "bg-gray-100 text-gray-600 border-gray-200"
-                      : "bg-amber-50 text-amber-700 border-amber-200";
+                      ? "bg-surface text-muted border-hair"
+                      : "bg-amber-soft text-amber-deep border-amber";
               const statusLabel =
                 a.status === "complete" && verdict
                   ? AUDIT_VERDICT_LABEL[verdict]
@@ -144,14 +144,14 @@ export default async function AuditsListPage({
                 <li key={a.id}>
                   <Link
                     href={`/clients/${o.id}/audits/${a.id}`}
-                    className="block bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300"
+                    className="block bg-raised rounded-xl border border-hair p-5 hover:border-hair"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="min-w-0">
-                        <p className="text-base font-semibold text-gray-900">
+                        <p className="text-base font-semibold text-ink">
                           {a.title}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted mt-1">
                           {(a.intake.options?.length ?? 0)}{" "}
                           {(a.intake.options?.length ?? 0) === 1
                             ? "option"
@@ -174,7 +174,7 @@ export default async function AuditsListPage({
                       </span>
                     </div>
                     {a.output?.headline_money && (
-                      <p className="text-sm font-semibold text-gray-900">
+                      <p className="text-sm font-semibold text-ink">
                         {a.output.headline_money}
                       </p>
                     )}

@@ -21,11 +21,11 @@ const ORDER: InitiativeStepStatus[] = [
 ];
 
 const STATUS_CLASS: Record<InitiativeStepStatus, string> = {
-  todo: "bg-gray-50 text-gray-600 border-gray-300 hover:bg-gray-100",
+  todo: "bg-paper text-muted border-hair hover:bg-surface",
   in_progress:
-    "bg-amber-50 text-amber-700 border-amber-300 hover:bg-amber-100",
-  done: "bg-emerald-50 text-emerald-700 border-emerald-300 hover:bg-emerald-100",
-  blocked: "bg-red-50 text-red-700 border-red-300 hover:bg-red-100",
+    "bg-amber-soft text-amber-deep border-amber hover:bg-amber-soft",
+  done: "bg-evergreen-soft text-evergreen border-evergreen hover:bg-evergreen-soft",
+  blocked: "bg-raised text-brick border-brick hover:bg-raised",
 };
 
 export function StepStatusButtons({
@@ -75,8 +75,8 @@ export function StepStatusButtons({
               disabled={pending !== null}
               className={`px-2.5 py-1 text-[11px] font-medium rounded-lg border transition ${
                 selected
-                  ? `${STATUS_CLASS[s]} ring-2 ring-offset-1 ring-blue-500`
-                  : "bg-white border-gray-300 text-gray-600 hover:bg-gray-50"
+                  ? `${STATUS_CLASS[s]} ring-2 ring-offset-1 ring-evergreen`
+                  : "bg-raised border-hair text-muted hover:bg-paper"
               } ${pending !== null ? "opacity-60 cursor-wait" : ""}`}
             >
               {pending === s ? "..." : INITIATIVE_STEP_STATUS_LABEL[s]}
@@ -85,7 +85,7 @@ export function StepStatusButtons({
         })}
       </div>
       {error && (
-        <p className="text-[11px] text-red-600 mt-1.5">{error}</p>
+        <p className="text-[11px] text-brick mt-1.5">{error}</p>
       )}
     </div>
   );

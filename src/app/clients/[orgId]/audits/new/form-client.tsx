@@ -132,29 +132,29 @@ function OptionFiles({
           type="button"
           onClick={() => ref.current?.click()}
           disabled={busy}
-          className="text-xs font-semibold text-slate-700 hover:text-slate-950 disabled:opacity-50"
+          className="text-xs font-semibold text-ink hover:text-ink disabled:opacity-50"
         >
           {busy
             ? "Reading…"
             : "+ Attach files to this option (or drop here)"}
         </button>
-        <span className="text-[11px] text-gray-400">
+        <span className="text-[11px] text-faint">
           appended raw to the material above
         </span>
       </div>
       {err && (
-        <p className="mt-1 text-[11px] text-rose-700">{err}</p>
+        <p className="mt-1 text-[11px] text-brick">{err}</p>
       )}
       {option.fileNotes && option.fileNotes.length > 0 && (
         <ul className="mt-1.5 space-y-0.5">
           {option.fileNotes.map((f, i) => (
             <li key={i} className="text-[11px] flex items-start gap-1.5">
-              <span className={f.ok ? "text-emerald-600" : "text-rose-600"}>
+              <span className={f.ok ? "text-evergreen" : "text-brick"}>
                 {f.ok ? "✓" : "✕"}
               </span>
-              <span className="text-gray-600">
+              <span className="text-muted">
                 <span className="font-medium">{f.name}</span>
-                {f.note && <span className="text-gray-500"> — {f.note}</span>}
+                {f.note && <span className="text-muted"> — {f.note}</span>}
               </span>
             </li>
           ))}
@@ -339,12 +339,12 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
   }
 
   const input =
-    "w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-slate-800 focus:outline-none focus:ring-1 focus:ring-slate-800";
+    "w-full rounded-lg border border-hair px-3 py-2 text-sm focus:border-hair focus:outline-none focus:ring-1 focus:ring-hair";
   const area = input + " font-mono text-[13px] leading-relaxed";
-  const label = "block text-sm font-semibold text-gray-900 mb-1";
-  const hint = "text-xs text-gray-500 mb-2";
+  const label = "block text-sm font-semibold text-ink mb-1";
+  const hint = "text-xs text-muted mb-2";
   const sectionNo =
-    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-slate-900 text-white text-xs font-bold";
+    "flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-ink text-white text-xs font-bold";
 
   function Provenance({ field }: { field: string }) {
     const s: AuditFieldSource | undefined =
@@ -352,7 +352,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
     if (!s) return null;
     if (s.confidence === "not_found") {
       return (
-        <p className="mt-1 text-[11px] text-amber-700">
+        <p className="mt-1 text-[11px] text-amber-deep">
           Not found in your files — fill this in, or it becomes the audit&apos;s
           first finding.
         </p>
@@ -360,15 +360,15 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
     }
     return (
       <p
-        className="mt-1 text-[11px] text-gray-500"
+        className="mt-1 text-[11px] text-muted"
         title={s.quote ? `“${s.quote}”` : undefined}
       >
         <span
           className={`inline-block w-1.5 h-1.5 rounded-full mr-1 align-middle ${
-            s.confidence === "high" ? "bg-emerald-500" : "bg-amber-500"
+            s.confidence === "high" ? "bg-evergreen" : "bg-amber"
           }`}
         />
-        from <span className="font-medium text-gray-700">{s.file}</span>
+        from <span className="font-medium text-ink">{s.file}</span>
         {s.confidence === "low" && " · double-check this one"}
       </p>
     );
@@ -392,14 +392,14 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         }}
         className={`rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
           dragging
-            ? "border-slate-800 bg-slate-50"
-            : "border-gray-300 bg-white"
+            ? "border-hair bg-paper"
+            : "border-hair bg-raised"
         }`}
       >
-        <p className="text-sm font-semibold text-gray-900 mb-1">
+        <p className="text-sm font-semibold text-ink mb-1">
           Drop what you already have — the audit reads it for you.
         </p>
-        <p className="text-[13px] text-gray-500 mb-4 max-w-xl mx-auto">
+        <p className="text-[13px] text-muted mb-4 max-w-xl mx-auto">
           Interviews, transcripts (incl. .vtt/.srt), proposals, quotes, SOWs,
           spreadsheets, notes. PDF · Word · Excel · text. It extracts the pain,
           the project and the options and fills this in — you just check it.
@@ -419,7 +419,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           type="button"
           onClick={() => fileInput.current?.click()}
           disabled={extracting}
-          className="px-5 py-2.5 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-950 disabled:opacity-50"
+          className="px-5 py-2.5 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-ink disabled:opacity-50"
         >
           {extracting ? "Reading your files…" : "Choose files / drop here"}
         </button>
@@ -431,13 +431,13 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                 key={f.name}
                 className="text-xs flex items-start gap-2"
               >
-                <span className={f.ok ? "text-emerald-600" : "text-rose-600"}>
+                <span className={f.ok ? "text-evergreen" : "text-brick"}>
                   {f.ok ? "✓" : "✕"}
                 </span>
-                <span className="text-gray-700">
+                <span className="text-ink">
                   <span className="font-medium">{f.name}</span>
                   {f.note && (
-                    <span className="text-gray-500"> — {f.note}</span>
+                    <span className="text-muted"> — {f.note}</span>
                   )}
                 </span>
               </li>
@@ -447,7 +447,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
       </div>
 
       {error && (
-        <div className="rounded-lg bg-rose-50 border border-rose-200 px-4 py-3 text-sm text-rose-800">
+        <div className="rounded-lg bg-raised border border-brick px-4 py-3 text-sm text-brick">
           {error}
         </div>
       )}
@@ -456,7 +456,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className={sectionNo}>1</span>
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="text-lg font-bold text-ink">
             The pain &amp; the project
           </h2>
         </div>
@@ -508,10 +508,10 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
       <section className="space-y-4">
         <div className="flex items-center gap-3">
           <span className={sectionNo}>2</span>
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="text-lg font-bold text-ink">
             Options on the table
           </h2>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted">
             {options.length} {options.length === 1 ? "option" : "options"} —
             the audit compares them
           </span>
@@ -525,10 +525,10 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           {options.map((o, i) => (
             <div
               key={o.id}
-              className="rounded-xl border border-gray-200 bg-white p-4"
+              className="rounded-xl border border-hair bg-raised p-4"
             >
               <div className="flex items-center gap-3 mb-3">
-                <span className="text-xs font-bold text-gray-400">
+                <span className="text-xs font-bold text-faint">
                   OPTION {i + 1}
                 </span>
                 <input
@@ -543,7 +543,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
                   <button
                     type="button"
                     onClick={() => removeOption(o.id)}
-                    className="shrink-0 text-xs text-gray-400 hover:text-rose-600"
+                    className="shrink-0 text-xs text-faint hover:text-brick"
                   >
                     Remove
                   </button>
@@ -571,7 +571,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         <button
           type="button"
           onClick={addOption}
-          className="text-sm font-semibold text-slate-800 hover:text-slate-950"
+          className="text-sm font-semibold text-ink hover:text-ink"
         >
           + Add another option
         </button>
@@ -585,10 +585,10 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
           className="flex items-center gap-3 text-left"
         >
           <span className={sectionNo}>3</span>
-          <h2 className="text-lg font-bold text-gray-900">
+          <h2 className="text-lg font-bold text-ink">
             More context the audit also uses
           </h2>
-          <span className="text-xs text-gray-500">
+          <span className="text-xs text-muted">
             {showMore ? "hide" : "show"} — optional, gaps become findings
           </span>
         </button>
@@ -658,7 +658,7 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
             <div>
               <label className={label}>
                 Anything else relevant{" "}
-                <span className="font-normal text-gray-400">(optional)</span>
+                <span className="font-normal text-faint">(optional)</span>
               </label>
               <textarea
                 className={area}
@@ -673,15 +673,15 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         )}
       </section>
 
-      <div className="flex items-center gap-4 border-t border-gray-200 pt-6">
+      <div className="flex items-center gap-4 border-t border-hair pt-6">
         <button
           type="submit"
           disabled={submitting || extracting}
-          className="px-6 py-3 bg-slate-900 text-white text-sm font-semibold rounded-lg hover:bg-slate-950 disabled:opacity-50"
+          className="px-6 py-3 bg-ink text-white text-sm font-semibold rounded-lg hover:bg-ink disabled:opacity-50"
         >
           {submitting ? "Creating…" : "Create audit →"}
         </button>
-        <span className="text-xs text-gray-500">
+        <span className="text-xs text-muted">
           Next: the verdict, the gaps vs best practice, and an
           audit-ready initiative.
         </span>

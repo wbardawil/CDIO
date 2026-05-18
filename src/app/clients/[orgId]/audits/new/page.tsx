@@ -65,10 +65,10 @@ export default async function NewAuditPage({
       <div className="mb-6">
         <AuditProgress step={1} />
       </div>
-      <h1 className="text-2xl font-bold text-gray-900 mb-1">
+      <h1 className="text-2xl font-bold text-ink mb-1">
         New pre-purchase audit
       </h1>
-      <p className="text-sm text-gray-500 mb-6">
+      <p className="text-sm text-muted mb-6">
         Give what you have. A blank field is not a blocker — it becomes the
         first finding. &quot;About to sign a major deal and can&apos;t
         articulate the strategy it serves&quot; is itself the audit&apos;s

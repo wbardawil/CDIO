@@ -111,11 +111,11 @@ export function CadenceClient({
     <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
       {/* LEFT: Cadence tokens */}
       <section className="lg:col-span-1 space-y-3">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
-          <h2 className="text-sm font-semibold text-gray-900 mb-2">
+        <div className="bg-raised rounded-xl border border-hair p-5">
+          <h2 className="text-sm font-semibold text-ink mb-2">
             Cadence link
           </h2>
-          <p className="text-xs text-gray-500 mb-3">
+          <p className="text-xs text-muted mb-3">
             Generate a token-based magic link. Send it to your client. They see
             this engagement&apos;s read-only view without an account.
           </p>
@@ -123,7 +123,7 @@ export function CadenceClient({
             type="button"
             onClick={issueToken}
             disabled={busy}
-            className="w-full px-3 py-2 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            className="w-full px-3 py-2 text-xs font-semibold bg-evergreen text-white rounded-lg hover:bg-evergreen-deep disabled:opacity-50"
           >
             {busy ? "Issuing..." : "+ Issue new Cadence link (180-day expiry)"}
           </button>
@@ -134,25 +134,25 @@ export function CadenceClient({
             {tokens.map((t) => (
               <li
                 key={t.id}
-                className="bg-white rounded-xl border border-gray-200 p-3 text-xs"
+                className="bg-raised rounded-xl border border-hair p-3 text-xs"
               >
-                <p className="font-semibold text-gray-900 mb-1">
+                <p className="font-semibold text-ink mb-1">
                   {t.label ?? "Cadence link"}
                 </p>
-                <p className="text-gray-500 mb-2">
+                <p className="text-muted mb-2">
                   Issued {t.created_at.slice(0, 10)}
                   {t.expires_at ? ` · Expires ${t.expires_at.slice(0, 10)}` : ""}
                   {t.last_used_at
                     ? ` · Last opened ${t.last_used_at.slice(0, 10)}`
                     : " · Not yet opened"}
                 </p>
-                <code className="block w-full bg-gray-50 border border-gray-200 rounded p-1.5 text-[10px] break-all mb-2">
+                <code className="block w-full bg-paper border border-hair rounded p-1.5 text-[10px] break-all mb-2">
                   {cadenceUrl(t.token)}
                 </code>
                 <button
                   type="button"
                   onClick={() => copyLink(t.token)}
-                  className="text-blue-700 hover:underline"
+                  className="text-evergreen hover:underline"
                 >
                   Copy link
                 </button>
@@ -164,13 +164,13 @@ export function CadenceClient({
 
       {/* RIGHT: Status reports */}
       <section className="lg:col-span-2 space-y-3">
-        <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="bg-raised rounded-xl border border-hair p-5">
           <div className="flex items-center justify-between mb-2">
             <div>
-              <h2 className="text-sm font-semibold text-gray-900">
+              <h2 className="text-sm font-semibold text-ink">
                 Status reports
               </h2>
-              <p className="text-xs text-gray-500 mt-0.5">
+              <p className="text-xs text-muted mt-0.5">
                 Auto-generate from live engagement state. Edit the headline + wins +
                 blockers + next-period focus before publishing.
               </p>
@@ -179,7 +179,7 @@ export function CadenceClient({
               type="button"
               onClick={generateThisMonth}
               disabled={busy}
-              className="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-3 py-1.5 text-xs font-semibold bg-evergreen text-white rounded-lg hover:bg-evergreen-deep disabled:opacity-50"
             >
               {busy ? "Generating..." : "+ Generate this month"}
             </button>
@@ -187,14 +187,14 @@ export function CadenceClient({
         </div>
 
         {error && (
-          <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+          <div className="px-4 py-3 bg-raised border border-brick rounded-lg text-sm text-brick">
             {error}
           </div>
         )}
 
         {reports.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-8 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="bg-raised rounded-xl border border-hair p-8 text-center">
+            <p className="text-sm text-muted">
               No status reports yet. Generate one for this month.
             </p>
           </div>
@@ -292,17 +292,17 @@ function ReportCard({
 
   const statusBadge =
     report.status === "published"
-      ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-      : "bg-amber-50 text-amber-700 border-amber-200";
+      ? "bg-evergreen-soft text-evergreen border-evergreen"
+      : "bg-amber-soft text-amber-deep border-amber";
 
   return (
-    <li className="bg-white rounded-xl border border-gray-200 p-5">
+    <li className="bg-raised rounded-xl border border-hair p-5">
       <div className="flex items-start justify-between gap-3 mb-2">
         <div>
-          <p className="text-base font-semibold text-gray-900">
+          <p className="text-base font-semibold text-ink">
             {report.title}
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-muted mt-1">
             {report.period_start} → {report.period_end}
             {report.published_at
               ? ` · Published ${report.published_at.slice(0, 10)}`
@@ -319,14 +319,14 @@ function ReportCard({
       {isEditing ? (
         <div className="mt-3 space-y-3">
           <div>
-            <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
+            <label className="block text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">
               Headline
             </label>
             <textarea
               value={headline}
               onChange={(e) => setHeadline(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              className="w-full px-3 py-2 border border-hair rounded-lg text-sm"
             />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -350,14 +350,14 @@ function ReportCard({
             />
           </div>
           {err && (
-            <p className="text-xs text-red-600">{err}</p>
+            <p className="text-xs text-brick">{err}</p>
           )}
           <div className="flex flex-wrap gap-2">
             <button
               type="button"
               onClick={() => save(false)}
               disabled={saving}
-              className="px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50"
+              className="px-3 py-1.5 text-xs font-medium border border-hair rounded-lg hover:bg-paper disabled:opacity-50"
             >
               {saving ? "Saving..." : "Save draft"}
             </button>
@@ -365,7 +365,7 @@ function ReportCard({
               type="button"
               onClick={() => save(true)}
               disabled={saving}
-              className="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+              className="px-3 py-1.5 text-xs font-semibold bg-evergreen text-white rounded-lg hover:bg-evergreen-deep disabled:opacity-50"
             >
               {saving ? "Publishing..." : "Publish to Cadence"}
             </button>
@@ -373,7 +373,7 @@ function ReportCard({
               type="button"
               onClick={onCancel}
               disabled={saving}
-              className="px-3 py-1.5 text-xs text-gray-500 hover:text-gray-900"
+              className="px-3 py-1.5 text-xs text-muted hover:text-ink"
             >
               Cancel
             </button>
@@ -381,11 +381,11 @@ function ReportCard({
         </div>
       ) : (
         <div className="mt-3">
-          <p className="text-sm text-gray-700 leading-relaxed">
+          <p className="text-sm text-ink leading-relaxed">
             {report.headline}
           </p>
           {report.payload.initiative_summary && (
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-xs text-muted mt-2">
               Initiatives: {report.payload.initiative_summary.active} active ·{" "}
               {report.payload.initiative_summary.done} done ·{" "}
               {report.payload.initiative_summary.blocked} blocked ·{" "}
@@ -394,7 +394,7 @@ function ReportCard({
           )}
           {report.payload.decision_summary &&
             report.payload.decision_summary.total > 0 && (
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-xs text-muted mt-1">
                 Decisions: {report.payload.decision_summary.decided} decided ·{" "}
                 {report.payload.decision_summary.recommended} pending ·{" "}
                 {report.payload.decision_summary.open} open
@@ -403,7 +403,7 @@ function ReportCard({
           <button
             type="button"
             onClick={onEdit}
-            className="mt-3 text-xs text-blue-700 hover:underline"
+            className="mt-3 text-xs text-evergreen hover:underline"
           >
             Edit and {report.status === "published" ? "republish" : "publish"} →
           </button>
@@ -426,7 +426,7 @@ function ListField({
 }) {
   return (
     <div>
-      <label className="block text-[10px] font-semibold uppercase tracking-wide text-gray-500 mb-1">
+      <label className="block text-[10px] font-semibold uppercase tracking-wide text-muted mb-1">
         {label}
       </label>
       <textarea
@@ -434,7 +434,7 @@ function ListField({
         onChange={(e) => onChange(e.target.value)}
         rows={4}
         placeholder={placeholder}
-        className="w-full px-3 py-2 border border-gray-300 rounded-lg text-xs"
+        className="w-full px-3 py-2 border border-hair rounded-lg text-xs"
       />
     </div>
   );

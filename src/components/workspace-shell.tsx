@@ -87,12 +87,12 @@ export function WorkspaceShell({
   const main = width === "narrow" ? "max-w-4xl" : "max-w-7xl";
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       <SandboxBanner isSandbox={isSandbox} variant="workspace" />
 
       {/* Line 1 — orientation. "Your clients" and "{Client}" are the
           always-available way back. This alone kills the dead-end. */}
-      <header className="bg-white border-b border-gray-200 print:hidden">
+      <header className="bg-raised border-b border-hair print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <nav
             aria-label="Breadcrumb"
@@ -100,37 +100,37 @@ export function WorkspaceShell({
           >
             <Link
               href="/clients"
-              className="text-gray-500 hover:text-gray-900 whitespace-nowrap"
+              className="text-muted hover:text-ink whitespace-nowrap"
             >
               Your clients
             </Link>
-            <span className="text-gray-300" aria-hidden>
+            <span className="text-faint" aria-hidden>
               ‹
             </span>
             <Link
               href={`/clients/${orgId}`}
-              className="text-gray-500 hover:text-gray-900 whitespace-nowrap"
+              className="text-muted hover:text-ink whitespace-nowrap"
             >
               {orgName}
             </Link>
             {trail.map((t) => (
               <span key={t.href} className="flex items-center gap-2 min-w-0">
-                <span className="text-gray-300" aria-hidden>
+                <span className="text-faint" aria-hidden>
                   ‹
                 </span>
                 <Link
                   href={t.href}
-                  className="text-gray-500 hover:text-gray-900 whitespace-nowrap"
+                  className="text-muted hover:text-ink whitespace-nowrap"
                 >
                   {t.label}
                 </Link>
               </span>
             ))}
-            <span className="text-gray-300" aria-hidden>
+            <span className="text-faint" aria-hidden>
               ‹
             </span>
             <span
-              className="font-semibold text-gray-900 truncate"
+              className="font-semibold text-ink truncate"
               aria-current="page"
             >
               {where}
@@ -138,7 +138,7 @@ export function WorkspaceShell({
           </nav>
           <div className="flex items-center gap-4 shrink-0">
             {practitionerName && (
-              <span className="text-sm text-gray-600 hidden sm:inline">
+              <span className="text-sm text-muted hidden sm:inline">
                 {practitionerName}
               </span>
             )}
@@ -148,19 +148,19 @@ export function WorkspaceShell({
       </header>
 
       {/* Line 2 — the client + the one next thing for this client. */}
-      <div className="bg-white border-b border-gray-200 print:hidden">
+      <div className="bg-raised border-b border-hair print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h1 className="text-xl font-bold text-gray-900">{orgName}</h1>
+            <h1 className="text-xl font-bold text-ink">{orgName}</h1>
             {clientLine && (
-              <span className="text-sm text-gray-500">{clientLine}</span>
+              <span className="text-sm text-muted">{clientLine}</span>
             )}
           </div>
         </div>
       </div>
 
       {/* The single consistent section nav. Same everywhere. */}
-      <div className="bg-white border-b border-gray-200 print:hidden">
+      <div className="bg-raised border-b border-hair print:hidden">
         <div className="max-w-7xl mx-auto px-6">
           <nav className="flex gap-6 overflow-x-auto" aria-label="Sections">
             {NAV.map((item) => {
@@ -174,8 +174,8 @@ export function WorkspaceShell({
                   aria-current={isActive ? "page" : undefined}
                   className={
                     isActive
-                      ? `${base} border-blue-600 text-blue-600`
-                      : `${base} border-transparent text-gray-500 hover:text-blue-600 hover:border-blue-300`
+                      ? `${base} border-evergreen text-evergreen`
+                      : `${base} border-transparent text-muted hover:text-evergreen hover:border-evergreen`
                   }
                 >
                   {item.label}

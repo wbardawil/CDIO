@@ -41,7 +41,7 @@ export function ResetAssessmentButton({ orgId, orgName }: Props) {
 
   if (result) {
     return (
-      <div className="rounded-lg border border-green-200 bg-green-50 p-4 text-sm text-green-800">
+      <div className="rounded-lg border border-evergreen bg-evergreen-soft p-4 text-sm text-evergreen-deep">
         ✓ {result}
       </div>
     );
@@ -49,21 +49,21 @@ export function ResetAssessmentButton({ orgId, orgName }: Props) {
 
   if (confirming) {
     return (
-      <div className="rounded-lg border border-red-200 bg-red-50 p-4">
-        <p className="text-sm text-red-900 font-medium mb-1">
+      <div className="rounded-lg border border-brick bg-raised p-4">
+        <p className="text-sm text-brick font-medium mb-1">
           Wipe all assessment data for {orgName}?
         </p>
-        <p className="text-xs text-red-700 mb-3">
+        <p className="text-xs text-brick mb-3">
           This deletes module responses, synthesis, divergences, and roadmaps.
           The org, stakeholders, and assessment shell remain. Sandbox-only.
         </p>
-        {error && <p className="text-xs text-red-700 mb-2">Error: {error}</p>}
+        {error && <p className="text-xs text-brick mb-2">Error: {error}</p>}
         <div className="flex gap-2">
           <button
             type="button"
             onClick={onReset}
             disabled={loading}
-            className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 disabled:bg-gray-300"
+            className="px-3 py-1.5 bg-brick text-white text-xs font-medium rounded hover:bg-brick disabled:bg-hair"
           >
             {loading ? "Wiping…" : "Yes, wipe data"}
           </button>
@@ -71,7 +71,7 @@ export function ResetAssessmentButton({ orgId, orgName }: Props) {
             type="button"
             onClick={() => setConfirming(false)}
             disabled={loading}
-            className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50"
+            className="px-3 py-1.5 border border-hair text-ink text-xs font-medium rounded hover:bg-paper"
           >
             Cancel
           </button>
@@ -84,7 +84,7 @@ export function ResetAssessmentButton({ orgId, orgName }: Props) {
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      className="inline-flex items-center px-3 py-1.5 border border-amber-300 bg-amber-50 text-amber-800 text-xs font-medium rounded-md hover:bg-amber-100"
+      className="inline-flex items-center px-3 py-1.5 border border-amber bg-amber-soft text-amber-deep text-xs font-medium rounded-md hover:bg-amber-soft"
     >
       Reset assessment data
     </button>

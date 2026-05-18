@@ -72,7 +72,7 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <section>
-        <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 mb-2">
+        <p className="text-xs font-semibold uppercase tracking-wide text-muted mb-2">
           Domain
         </p>
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -81,8 +81,8 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
               key={d.key}
               className={`block p-4 border rounded-xl cursor-pointer ${
                 domain === d.key
-                  ? "border-blue-500 ring-2 ring-blue-200 bg-blue-50"
-                  : "border-gray-200 bg-white hover:border-gray-300"
+                  ? "border-evergreen ring-2 ring-evergreen bg-evergreen-soft"
+                  : "border-hair bg-raised hover:border-hair"
               }`}
             >
               <input
@@ -93,8 +93,8 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
                 onChange={() => setDomain(d.key)}
                 className="sr-only"
               />
-              <p className="text-sm font-semibold text-gray-900">{d.label}</p>
-              <p className="text-xs text-gray-600 mt-1.5 leading-snug">
+              <p className="text-sm font-semibold text-ink">{d.label}</p>
+              <p className="text-xs text-muted mt-1.5 leading-snug">
                 {d.blurb}
               </p>
             </label>
@@ -102,9 +102,9 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
         </div>
       </section>
 
-      <section className="bg-white rounded-xl border border-gray-200 p-5 space-y-4">
+      <section className="bg-raised rounded-xl border border-hair p-5 space-y-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
             Title
           </label>
           <input
@@ -113,11 +113,11 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
             required
             maxLength={300}
             placeholder="e.g., Customer support ticketing platform"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
           />
         </div>
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-gray-500 mb-1">
+          <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
             The decision being made
           </label>
           <textarea
@@ -127,13 +127,13 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
             maxLength={2000}
             rows={3}
             placeholder="What's the question the client is trying to answer? (e.g., Which support platform replaces our current one — Zendesk vs Intercom vs HubSpot vs build internal?)"
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
           />
         </div>
       </section>
 
       {error && (
-        <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-800">
+        <div className="px-4 py-3 bg-raised border border-brick rounded-lg text-sm text-brick">
           {error}
         </div>
       )}
@@ -144,8 +144,8 @@ export function NewSelectionForm({ orgId }: NewSelectionFormProps) {
           disabled={submitting || !title.trim() || !question.trim()}
           className={`px-5 py-2.5 text-sm font-semibold rounded-lg ${
             submitting || !title.trim() || !question.trim()
-              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-              : "bg-blue-600 text-white hover:bg-blue-700"
+              ? "bg-hair text-faint cursor-not-allowed"
+              : "bg-evergreen text-white hover:bg-evergreen-deep"
           }`}
         >
           {submitting

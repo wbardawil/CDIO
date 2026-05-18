@@ -45,15 +45,15 @@ export function DeleteSandboxOrgButton({ orgId, orgName }: Props) {
 
   if (confirming) {
     return (
-      <div className="rounded-lg border border-red-300 bg-red-50 p-4">
-        <p className="text-sm text-red-900 font-medium mb-1">
+      <div className="rounded-lg border border-brick bg-raised p-4">
+        <p className="text-sm text-brick font-medium mb-1">
           Hard-delete {orgName}?
         </p>
-        <p className="text-xs text-red-700 mb-3">
+        <p className="text-xs text-brick mb-3">
           This wipes the org, all assessments, all stakeholders, and every
           dependent row in a single transaction. Cannot be undone. Sandbox-only.
         </p>
-        <label className="block text-xs font-medium text-red-900 mb-1">
+        <label className="block text-xs font-medium text-brick mb-1">
           Type the org name to confirm
         </label>
         <input
@@ -61,16 +61,16 @@ export function DeleteSandboxOrgButton({ orgId, orgName }: Props) {
           value={typed}
           onChange={(e) => setTyped(e.target.value)}
           placeholder={orgName}
-          className="w-full px-2 py-1.5 border border-red-300 rounded text-sm bg-white mb-3 focus:outline-none focus:ring-2 focus:ring-red-400"
+          className="w-full px-2 py-1.5 border border-brick rounded text-sm bg-raised mb-3 focus:outline-none focus:ring-2 focus:ring-brick"
           disabled={loading}
         />
-        {error && <p className="text-xs text-red-700 mb-2">Error: {error}</p>}
+        {error && <p className="text-xs text-brick mb-2">Error: {error}</p>}
         <div className="flex gap-2">
           <button
             type="button"
             onClick={onDelete}
             disabled={loading || !matches}
-            className="px-3 py-1.5 bg-red-600 text-white text-xs font-medium rounded hover:bg-red-700 disabled:bg-gray-300 disabled:cursor-not-allowed"
+            className="px-3 py-1.5 bg-brick text-white text-xs font-medium rounded hover:bg-brick disabled:bg-hair disabled:cursor-not-allowed"
           >
             {loading ? "Deleting…" : "Yes, hard-delete client"}
           </button>
@@ -82,7 +82,7 @@ export function DeleteSandboxOrgButton({ orgId, orgName }: Props) {
               setError(null);
             }}
             disabled={loading}
-            className="px-3 py-1.5 border border-gray-300 text-gray-700 text-xs font-medium rounded hover:bg-gray-50"
+            className="px-3 py-1.5 border border-hair text-ink text-xs font-medium rounded hover:bg-paper"
           >
             Cancel
           </button>
@@ -95,7 +95,7 @@ export function DeleteSandboxOrgButton({ orgId, orgName }: Props) {
     <button
       type="button"
       onClick={() => setConfirming(true)}
-      className="inline-flex items-center px-3 py-1.5 border border-red-300 bg-red-50 text-red-800 text-xs font-medium rounded-md hover:bg-red-100"
+      className="inline-flex items-center px-3 py-1.5 border border-brick bg-raised text-brick text-xs font-medium rounded-md hover:bg-raised"
     >
       Hard-delete client
     </button>

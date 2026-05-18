@@ -243,30 +243,30 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
     >
       <div>
         {/* Next-step banner — state aware */}
-        <div className="mb-6 rounded-xl border border-blue-200 bg-blue-50 p-5">
+        <div className="mb-6 rounded-xl border border-evergreen bg-evergreen-soft p-5">
           {stage === "awaiting-responses" && (
             <div>
               <div className="flex items-center justify-between mb-2">
-                <h3 className="text-base font-semibold text-blue-900">Next step: collect stakeholder responses</h3>
-                <span className="text-xs text-blue-600 font-medium">{completionPct}% complete</span>
+                <h3 className="text-base font-semibold text-evergreen-deep">Next step: collect stakeholder responses</h3>
+                <span className="text-xs text-evergreen font-medium">{completionPct}% complete</span>
               </div>
-              <p className="text-sm text-blue-800 mb-3">
+              <p className="text-sm text-evergreen-deep mb-3">
                 Each stakeholder has a unique assessment link below. Send it to them and they will submit their responses on their own. When everyone&apos;s done, you&apos;ll synthesize them into a single picture.
               </p>
-              <div className="h-2 bg-blue-100 rounded-full overflow-hidden">
-                <div className="h-full bg-blue-600 rounded-full transition-all" style={{ width: `${completionPct}%` }} />
+              <div className="h-2 bg-evergreen-soft rounded-full overflow-hidden">
+                <div className="h-full bg-evergreen rounded-full transition-all" style={{ width: `${completionPct}%` }} />
               </div>
             </div>
           )}
           {stage === "ready-to-synthesize" && (
             <div>
-              <h3 className="text-base font-semibold text-green-900 mb-2">All responses in — ready to synthesize</h3>
-              <p className="text-sm text-green-800 mb-3">
+              <h3 className="text-base font-semibold text-evergreen-deep mb-2">All responses in — ready to synthesize</h3>
+              <p className="text-sm text-evergreen-deep mb-3">
                 Every stakeholder has submitted. Run synthesis to compute consensus scores, detect divergences, and unlock the roadmap.
               </p>
               <Link
                 href={`/dashboard?org=${org.id}`}
-                className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep"
               >
                 Open dashboard to synthesize →
               </Link>
@@ -274,18 +274,18 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
           )}
           {stage === "no-stakeholders" && (
             <div>
-              <h3 className="text-base font-semibold text-amber-900 mb-2">Add stakeholders to begin</h3>
-              <p className="text-sm text-amber-800">
+              <h3 className="text-base font-semibold text-amber-deep mb-2">Add stakeholders to begin</h3>
+              <p className="text-sm text-amber-deep">
                 The assessment exists but no one has been added yet. Re-run onboarding or add stakeholders directly in the database.
               </p>
             </div>
           )}
           {stage === "no-assessment" && (
             <div>
-              <h3 className="text-base font-semibold text-gray-900 mb-2">
+              <h3 className="text-base font-semibold text-ink mb-2">
                 Two ways to start with this client
               </h3>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-muted mb-4">
                 An assessment is not required first. Run an <strong>Audit</strong> to
                 pressure-test a specific decision the client is weighing right now,
                 or start an <strong>Assessment</strong> to baseline maturity across
@@ -294,13 +294,13 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
               <div className="flex flex-wrap gap-3">
                 <Link
                   href={`/clients/${org.id}/audits/new`}
-                  className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                  className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep"
                 >
                   Run an audit →
                 </Link>
                 <Link
                   href={`/dashboard?org=${org.id}`}
-                  className="inline-flex items-center px-4 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                  className="inline-flex items-center px-4 py-2 border border-hair text-ink text-sm font-medium rounded-lg hover:bg-paper"
                 >
                   Start an assessment →
                 </Link>
@@ -311,17 +311,17 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
 
         {/* Stakeholders panel — most useful action when assessment is in flight */}
         {stakeholderRows.length > 0 && (
-          <div className="bg-white rounded-xl border border-gray-200 mb-6">
-            <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-              <h3 className="text-base font-semibold text-gray-900">Stakeholders</h3>
+          <div className="bg-raised rounded-xl border border-hair mb-6">
+            <div className="px-6 py-4 border-b border-hair flex items-center justify-between">
+              <h3 className="text-base font-semibold text-ink">Stakeholders</h3>
               <Link
                 href={`/dashboard?org=${org.id}`}
-                className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                className="text-xs text-evergreen hover:text-evergreen-deep font-medium"
               >
                 Manage in full dashboard →
               </Link>
             </div>
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-hair">
               {stakeholderRows.map((s) => {
                 const total = s.relevant_modules?.length ?? 0;
                 const done = s.completed_modules.length;
@@ -333,11 +333,11 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
                 return (
                   <div key={s.id} className="px-6 py-4 flex items-start justify-between gap-4 flex-wrap">
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-medium text-gray-900 truncate">{s.name}</p>
-                      <p className="text-xs text-gray-500 truncate">
+                      <p className="text-sm font-medium text-ink truncate">{s.name}</p>
+                      <p className="text-xs text-muted truncate">
                         {s.role}
                         {s.influence_level && (
-                          <span className="ml-1 text-gray-400">· {s.influence_level.replace("_", " ")}</span>
+                          <span className="ml-1 text-faint">· {s.influence_level.replace("_", " ")}</span>
                         )}
                         <span className="ml-1">· {s.email}</span>
                       </p>
@@ -396,21 +396,21 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
             into the synthesis/roadmap engines is the shell's
             consistent "Dashboard" nav, not a duplicate link here. */}
         {activeModules.length > 0 && (
-          <p className="text-xs text-gray-400 mt-2 max-w-3xl">
+          <p className="text-xs text-faint mt-2 max-w-3xl">
             In scope: {activeModules.map((n) => MODULE_NAMES[n]).filter(Boolean).join(" · ")}
           </p>
         )}
 
         {/* Sandbox-only tools — visible only on sandbox-flagged clients */}
         {org.is_sandbox && (
-          <div className="mt-8 rounded-xl border border-amber-200 bg-amber-50 p-5">
+          <div className="mt-8 rounded-xl border border-amber bg-amber-soft p-5">
             <div className="flex items-center gap-2 mb-2">
-              <span className="px-2 py-0.5 bg-amber-200 text-amber-900 rounded text-[10px] font-semibold uppercase tracking-wider">
+              <span className="px-2 py-0.5 bg-amber text-amber-deep rounded text-[10px] font-semibold uppercase tracking-wider">
                 Sandbox
               </span>
-              <h3 className="text-sm font-semibold text-amber-900">Sandbox tools</h3>
+              <h3 className="text-sm font-semibold text-amber-deep">Sandbox tools</h3>
             </div>
-            <p className="text-xs text-amber-800 mb-4">
+            <p className="text-xs text-amber-deep mb-4">
               This client is flagged for testing. You can wipe assessment data, hard-delete the client, and
               re-run flows freely. These actions are blocked on real engagements at the API and database level.
             </p>

@@ -85,44 +85,44 @@ export function EditStakeholderModal({ stakeholder, onClose }: Props) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4" onClick={onClose}>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/40 p-4" onClick={onClose}>
       <div
-        className="bg-white rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
+        className="bg-raised rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="px-6 py-5 border-b border-gray-100 flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-gray-900">Edit stakeholder</h2>
-          <button onClick={onClose} className="text-gray-400 hover:text-gray-600 text-xl leading-none">&times;</button>
+        <div className="px-6 py-5 border-b border-hair flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-ink">Edit stakeholder</h2>
+          <button onClick={onClose} className="text-faint hover:text-muted text-xl leading-none">&times;</button>
         </div>
 
         <div className="px-6 py-5 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-ink mb-1">Name</label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-hair rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-evergreen"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-ink mb-1">Email</label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-hair rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-evergreen"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+            <label className="block text-sm font-medium text-ink mb-1">Role</label>
             <select
               value={COMMON_ROLES.includes(role) ? role : "Other"}
               onChange={(e) => {
                 const val = e.target.value;
                 if (val !== "Other") setRole(val);
               }}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-hair rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-evergreen"
             >
               {COMMON_ROLES.map((r) => (
                 <option key={r} value={r}>{r}</option>
@@ -135,28 +135,28 @@ export function EditStakeholderModal({ stakeholder, onClose }: Props) {
                 value={role}
                 onChange={(e) => setRole(e.target.value)}
                 placeholder="Custom role title"
-                className="mt-2 w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+                className="mt-2 w-full border border-hair rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-evergreen"
               />
             )}
             {role !== stakeholder.role && !overrideModules && (
-              <p className="text-xs text-blue-600 mt-1">
+              <p className="text-xs text-evergreen mt-1">
                 Role changed — relevant modules will auto-recompute on save.
               </p>
             )}
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Influence level</label>
+            <label className="block text-sm font-medium text-ink mb-1">Influence level</label>
             <select
               value={influence}
               onChange={(e) => setInfluence(e.target.value)}
-              className="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-blue-400"
+              className="w-full border border-hair rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-evergreen"
             >
               {INFLUENCE_LEVELS.map((l) => (
                 <option key={l.value} value={l.value}>{l.label}</option>
               ))}
             </select>
-            <p className="text-xs text-gray-500 mt-1">
+            <p className="text-xs text-muted mt-1">
               Decision-makers carry more weight in synthesis. Influencers next, then contributors.
             </p>
           </div>
@@ -167,12 +167,12 @@ export function EditStakeholderModal({ stakeholder, onClose }: Props) {
                 type="checkbox"
                 checked={overrideModules}
                 onChange={(e) => setOverrideModules(e.target.checked)}
-                className="h-4 w-4 rounded border-gray-300"
+                className="h-4 w-4 rounded border-hair"
               />
-              <span className="text-sm font-medium text-gray-700">Customize modules manually</span>
+              <span className="text-sm font-medium text-ink">Customize modules manually</span>
             </label>
             {overrideModules && (
-              <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto border border-gray-100 rounded p-2">
+              <div className="grid grid-cols-2 gap-1 max-h-48 overflow-y-auto border border-hair rounded p-2">
                 {Array.from({ length: 16 }, (_, i) => i + 1).map((n) => (
                   <label key={n} className="flex items-center gap-2 text-xs py-1">
                     <input
@@ -189,18 +189,18 @@ export function EditStakeholderModal({ stakeholder, onClose }: Props) {
           </div>
 
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+            <div className="rounded-lg border border-brick bg-raised px-3 py-2 text-sm text-brick">
               {error}
             </div>
           )}
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-2">
+        <div className="px-6 py-4 border-t border-hair flex items-center justify-end gap-2">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 rounded-lg"
+            className="px-4 py-2 text-sm font-medium text-ink hover:bg-paper rounded-lg"
           >
             Cancel
           </button>
@@ -208,7 +208,7 @@ export function EditStakeholderModal({ stakeholder, onClose }: Props) {
             type="button"
             onClick={onSave}
             disabled={saving}
-            className="px-4 py-2 text-sm font-medium bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300"
+            className="px-4 py-2 text-sm font-medium bg-evergreen text-white rounded-lg hover:bg-evergreen-deep disabled:bg-hair"
           >
             {saving ? "Saving…" : "Save changes"}
           </button>

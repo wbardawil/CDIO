@@ -40,7 +40,7 @@ interface DashboardData {
 
 export default function DashboardPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center"><div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-paper flex items-center justify-center"><div className="w-8 h-8 border-4 border-evergreen border-t-transparent rounded-full animate-spin" /></div>}>
       <DashboardContent />
     </Suspense>
   );
@@ -102,25 +102,25 @@ function DashboardContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-evergreen border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!orgId) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl border border-gray-200 p-8 max-w-md text-center">
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="bg-raised rounded-xl border border-hair p-8 max-w-md text-center">
           <h2 className="text-xl font-semibold mb-2">No client selected</h2>
-          <p className="text-gray-500 mb-4">
+          <p className="text-muted mb-4">
             Open this from a client to see its dashboard.
           </p>
           <div className="flex items-center justify-center gap-4 text-sm font-medium">
-            <Link href="/clients" className="text-blue-600 hover:text-blue-800">
+            <Link href="/clients" className="text-evergreen hover:text-evergreen-deep">
               ‹ Your clients
             </Link>
-            <Link href="/onboarding" className="text-gray-500 hover:text-gray-800">
+            <Link href="/onboarding" className="text-muted hover:text-ink">
               Onboard a client
             </Link>
           </div>
@@ -131,15 +131,15 @@ function DashboardContent() {
 
   if (error || !data) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="bg-white rounded-xl border border-red-200 p-8 max-w-md text-center">
-          <h2 className="text-xl font-semibold text-red-600 mb-2">
+      <div className="min-h-screen bg-paper flex items-center justify-center">
+        <div className="bg-raised rounded-xl border border-brick p-8 max-w-md text-center">
+          <h2 className="text-xl font-semibold text-brick mb-2">
             Couldn&apos;t load this dashboard
           </h2>
-          <p className="text-gray-600 mb-4">{error || "Failed to load data"}</p>
+          <p className="text-muted mb-4">{error || "Failed to load data"}</p>
           <Link
             href={orgId ? `/clients/${orgId}` : "/clients"}
-            className="text-sm font-medium text-blue-600 hover:text-blue-800"
+            className="text-sm font-medium text-evergreen hover:text-evergreen-deep"
           >
             ‹ Back to the client
           </Link>
@@ -209,7 +209,7 @@ function DashboardContent() {
     >
       {/* Dashboard sub-views + assessment status. The shell owns the
           client-level nav; this strip switches views within it. */}
-      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-gray-200">
+      <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-hair">
         <nav className="flex gap-6 overflow-x-auto">
           {([
             { key: "stakeholders" as Tab, label: "Team progress" },
@@ -222,8 +222,8 @@ function DashboardContent() {
               onClick={() => setActiveTab(tab.key)}
               className={`py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap ${
                 activeTab === tab.key
-                  ? "border-blue-600 text-blue-600"
-                  : "border-transparent text-gray-500 hover:text-gray-700"
+                  ? "border-evergreen text-evergreen"
+                  : "border-transparent text-muted hover:text-ink"
               }`}
             >
               {tab.label}
@@ -233,17 +233,17 @@ function DashboardContent() {
         <div className="flex items-center gap-3 pb-2">
           <span className={`px-3 py-1 rounded-full text-xs font-medium ${
             assessmentStatus === "completed"
-              ? "bg-green-100 text-green-700"
+              ? "bg-evergreen-soft text-evergreen"
               : assessmentStatus === "in_progress"
-                ? "bg-amber-100 text-amber-700"
-                : "bg-gray-100 text-gray-600"
+                ? "bg-amber-soft text-amber-deep"
+                : "bg-surface text-muted"
           }`}>
             {assessmentStatus === "completed" ? "Assessment complete" :
              assessmentStatus === "in_progress" ? "Assessment in progress" :
              "Assessment draft"}
           </span>
           {data.completion.total > 0 && (
-            <span className="text-xs text-gray-400">
+            <span className="text-xs text-faint">
               {data.completion.percentage}% responses collected
             </span>
           )}
@@ -262,7 +262,7 @@ function DashboardContent() {
                 <button
                   onClick={handleSynthesize}
                   disabled={synthesizing}
-                  className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:bg-gray-300 transition-colors"
+                  className="px-6 py-2 bg-evergreen text-white font-medium rounded-lg hover:bg-evergreen-deep disabled:bg-hair transition-colors"
                 >
                   {synthesizing ? "Synthesizing..." : "Run Synthesis"}
                 </button>
@@ -271,7 +271,7 @@ function DashboardContent() {
                 <button
                   onClick={handleSynthesize}
                   disabled={synthesizing}
-                  className="px-6 py-2 bg-amber-500 text-white font-medium rounded-lg hover:bg-amber-600 disabled:bg-gray-300 transition-colors text-sm"
+                  className="px-6 py-2 bg-amber text-white font-medium rounded-lg hover:bg-amber disabled:bg-hair transition-colors text-sm"
                 >
                   {synthesizing ? "Synthesizing..." : "Synthesize (partial data)"}
                 </button>
@@ -283,30 +283,30 @@ function DashboardContent() {
               const assessLink = `${typeof window !== "undefined" ? window.location.origin : ""}/assess/${s.assessment_token}`;
 
               return (
-                <div key={s.id} className="bg-white rounded-xl border border-gray-200 p-6">
+                <div key={s.id} className="bg-raised rounded-xl border border-hair p-6">
                   <div className="flex items-center justify-between mb-3">
                     <div>
-                      <p className="font-medium text-gray-900">{s.name}</p>
-                      <p className="text-sm text-gray-500">{s.role} — {s.email}</p>
+                      <p className="font-medium text-ink">{s.name}</p>
+                      <p className="text-sm text-muted">{s.role} — {s.email}</p>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       progress === 100
-                        ? "bg-green-100 text-green-700"
+                        ? "bg-evergreen-soft text-evergreen"
                         : progress > 0
-                          ? "bg-amber-100 text-amber-700"
-                          : "bg-gray-100 text-gray-500"
+                          ? "bg-amber-soft text-amber-deep"
+                          : "bg-surface text-muted"
                     }`}>
                       {progress === 100 ? "Complete" : progress > 0 ? `${Math.round(progress)}%` : "Not started"}
                     </span>
                   </div>
-                  <div className="h-2 bg-gray-100 rounded-full overflow-hidden mb-3">
+                  <div className="h-2 bg-surface rounded-full overflow-hidden mb-3">
                     <div
-                      className="h-full bg-blue-500 rounded-full transition-all"
+                      className="h-full bg-evergreen rounded-full transition-all"
                       style={{ width: `${progress}%` }}
                     />
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-xs text-gray-400">
+                    <p className="text-xs text-faint">
                       {s.completed_modules.length} of {s.total_modules} modules completed
                     </p>
                     <button
@@ -314,7 +314,7 @@ function DashboardContent() {
                         navigator.clipboard.writeText(assessLink);
                         alert("Assessment link copied!");
                       }}
-                      className="text-xs text-blue-600 hover:text-blue-800 font-medium"
+                      className="text-xs text-evergreen hover:text-evergreen-deep font-medium"
                     >
                       Copy assessment link
                     </button>
@@ -329,12 +329,12 @@ function DashboardContent() {
         {activeTab === "overview" && (
           <div className="space-y-8">
             {!hasSynthesis ? (
-              <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-                <h3 className="text-lg font-semibold text-gray-700 mb-2">Nothing to show yet</h3>
-                <p className="text-gray-500 mb-4">
+              <div className="bg-raised rounded-xl border border-hair p-12 text-center">
+                <h3 className="text-lg font-semibold text-ink mb-2">Nothing to show yet</h3>
+                <p className="text-muted mb-4">
                   Collect the team&apos;s responses, then run synthesis to see where this organization stands.
                 </p>
-                <button onClick={() => setActiveTab("stakeholders")} className="text-blue-600 hover:text-blue-800 font-medium">
+                <button onClick={() => setActiveTab("stakeholders")} className="text-evergreen hover:text-evergreen-deep font-medium">
                   See team progress
                 </button>
               </div>
@@ -364,13 +364,13 @@ function DashboardContent() {
                             ? "Managed"
                             : "Optimizing";
                   return (
-                    <div className="bg-white rounded-xl border border-gray-200 p-6">
-                      <p className="text-lg text-gray-900 leading-relaxed">
+                    <div className="bg-raised rounded-xl border border-hair p-6">
+                      <p className="text-lg text-ink leading-relaxed">
                         Across the {n} {n === 1 ? "area" : "areas"} assessed,
                         this organization is{" "}
                         <span className="font-bold">{tier}</span>
                         {!Number.isNaN(avg) && (
-                          <span className="text-gray-500">
+                          <span className="text-muted">
                             {" "}
                             ({avgMaturity} of 5)
                           </span>
@@ -378,7 +378,7 @@ function DashboardContent() {
                         .{" "}
                         {topCount > 0 ? (
                           <>
-                            <span className="font-semibold text-red-600">
+                            <span className="font-semibold text-brick">
                               {topCount}
                             </span>{" "}
                             {topCount === 1 ? "area needs" : "areas need"}{" "}
@@ -390,7 +390,7 @@ function DashboardContent() {
                         {qwCount > 0 && (
                           <>
                             , and{" "}
-                            <span className="font-semibold text-green-600">
+                            <span className="font-semibold text-evergreen">
                               {qwCount}
                             </span>{" "}
                             {qwCount === 1 ? "is a" : "are"} quick{" "}
@@ -404,7 +404,7 @@ function DashboardContent() {
                             The team disagrees on{" "}
                             <button
                               onClick={() => setActiveTab("divergences")}
-                              className="font-semibold text-amber-700 hover:text-amber-900 underline"
+                              className="font-semibold text-amber-deep hover:text-amber-deep underline"
                             >
                               {divergencePoints.length}{" "}
                               {divergencePoints.length === 1
@@ -421,27 +421,27 @@ function DashboardContent() {
 
                 {/* Summary cards — plain counts, still above the fold. */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                  <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Average maturity</p>
-                    <p className="text-3xl font-bold text-gray-900 mt-1">
-                      {avgMaturity}<span className="text-lg text-gray-400"> of 5</span>
+                  <div className="bg-raised rounded-xl border border-hair p-5">
+                    <p className="text-sm text-muted">Average maturity</p>
+                    <p className="text-3xl font-bold text-ink mt-1">
+                      {avgMaturity}<span className="text-lg text-faint"> of 5</span>
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Need attention now</p>
-                    <p className="text-3xl font-bold text-red-600 mt-1">
+                  <div className="bg-raised rounded-xl border border-hair p-5">
+                    <p className="text-sm text-muted">Need attention now</p>
+                    <p className="text-3xl font-bold text-brick mt-1">
                       {data.syntheses.filter((s: any) => s.priority_class === "top_priority").length}
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Team disagreements</p>
-                    <p className="text-3xl font-bold text-amber-600 mt-1">
+                  <div className="bg-raised rounded-xl border border-hair p-5">
+                    <p className="text-sm text-muted">Team disagreements</p>
+                    <p className="text-3xl font-bold text-amber-deep mt-1">
                       {divergencePoints.length}
                     </p>
                   </div>
-                  <div className="bg-white rounded-xl border border-gray-200 p-5">
-                    <p className="text-sm text-gray-500">Quick wins</p>
-                    <p className="text-3xl font-bold text-green-600 mt-1">
+                  <div className="bg-raised rounded-xl border border-hair p-5">
+                    <p className="text-sm text-muted">Quick wins</p>
+                    <p className="text-3xl font-bold text-evergreen mt-1">
                       {data.syntheses.filter((s: any) => s.priority_class === "quick_win").length}
                     </p>
                   </div>
@@ -449,18 +449,18 @@ function DashboardContent() {
 
                 {/* The radar + priority matrix — real rigor, behind an
                     explicit disclosure (Law 3: never the first thing). */}
-                <details className="group bg-white rounded-xl border border-gray-200">
-                  <summary className="flex items-center justify-between gap-3 px-6 py-4 cursor-pointer text-sm font-semibold text-gray-800 list-none">
+                <details className="group bg-raised rounded-xl border border-hair">
+                  <summary className="flex items-center justify-between gap-3 px-6 py-4 cursor-pointer text-sm font-semibold text-ink list-none">
                     <span>Show the full analysis</span>
-                    <span className="text-gray-400 font-normal">
+                    <span className="text-faint font-normal">
                       maturity radar · priority matrix
                     </span>
                   </summary>
                   <div className="px-6 pb-6 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div className="border border-gray-100 rounded-lg p-6">
+                    <div className="border border-hair rounded-lg p-6">
                       <SpiderChart scores={spiderScores} title="Maturity radar" />
                     </div>
-                    <div className="border border-gray-100 rounded-lg p-6">
+                    <div className="border border-hair rounded-lg p-6">
                       <PriorityMatrix modules={matrixModules} />
                     </div>
                   </div>
@@ -475,21 +475,21 @@ function DashboardContent() {
           hasSynthesis ? (
             <DivergenceReport divergences={divergencePoints} />
           ) : (
-            <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-              <p className="text-gray-500">Run synthesis first to see alignment analysis.</p>
+            <div className="bg-raised rounded-xl border border-hair p-12 text-center">
+              <p className="text-muted">Run synthesis first to see alignment analysis.</p>
             </div>
           )
         )}
 
         {/* Roadmap Tab */}
         {activeTab === "roadmap" && (
-          <div className="bg-white rounded-xl border border-gray-200 p-8">
+          <div className="bg-raised rounded-xl border border-hair p-8">
             <h2 className="text-xl font-semibold mb-4">90-Day Roadmap</h2>
             {data.roadmap ? (
               <div className="space-y-4">
                 {data.roadmap.content?.executive_summary && (
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                    <p className="text-sm text-blue-900 whitespace-pre-wrap">
+                  <div className="bg-evergreen-soft border border-evergreen rounded-lg p-4 mb-6">
+                    <p className="text-sm text-evergreen-deep whitespace-pre-wrap">
                       {data.roadmap.content.executive_summary}
                     </p>
                   </div>
@@ -501,7 +501,7 @@ function DashboardContent() {
               </div>
             ) : (
               <div className="text-center py-8">
-                <p className="text-gray-500 mb-4">
+                <p className="text-muted mb-4">
                   {hasSynthesis
                     ? "Synthesis complete. Generate a roadmap based on the assessment results."
                     : "Complete the assessment and run synthesis first."}
@@ -524,7 +524,7 @@ function DashboardContent() {
                         alert("Roadmap generation failed. Check your Anthropic API key.");
                       }
                     }}
-                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700"
+                    className="px-6 py-2 bg-evergreen text-white font-medium rounded-lg hover:bg-evergreen-deep"
                   >
                     Generate 90-Day Roadmap
                   </button>
@@ -552,11 +552,11 @@ function DashboardContent() {
 const OUTCOME_ORDER: EconomicOutcome[] = ["make_money", "save_money", "save_time", "preserve_money", "preserve_time"];
 
 const OUTCOME_PALETTE: Record<EconomicOutcome, { chip: string; ring: string }> = {
-  make_money:     { chip: "bg-emerald-100 text-emerald-800", ring: "border-emerald-200" },
-  save_money:     { chip: "bg-blue-100 text-blue-800",       ring: "border-blue-200" },
-  save_time:      { chip: "bg-violet-100 text-violet-800",   ring: "border-violet-200" },
-  preserve_money: { chip: "bg-amber-100 text-amber-800",     ring: "border-amber-200" },
-  preserve_time:  { chip: "bg-rose-100 text-rose-800",       ring: "border-rose-200" },
+  make_money:     { chip: "bg-evergreen-soft text-evergreen-deep", ring: "border-evergreen" },
+  save_money:     { chip: "bg-evergreen-soft text-evergreen-deep",       ring: "border-evergreen" },
+  save_time:      { chip: "bg-evergreen-soft text-evergreen-deep",   ring: "border-evergreen" },
+  preserve_money: { chip: "bg-amber-soft text-amber-deep",     ring: "border-amber" },
+  preserve_time:  { chip: "bg-raised text-brick",       ring: "border-brick" },
 };
 
 type InitiativeWithBucket = Initiative & { _bucket: "quick_win" | "strategic" };
@@ -607,7 +607,7 @@ function RoadmapByOutcome({
                 <span className={`px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide ${palette.chip}`}>
                   {meta.label}
                 </span>
-                <span className="text-xs text-gray-500">{items.length} {items.length === 1 ? "play" : "plays"}</span>
+                <span className="text-xs text-muted">{items.length} {items.length === 1 ? "play" : "plays"}</span>
               </div>
             </header>
             <div className="space-y-3">
@@ -621,11 +621,11 @@ function RoadmapByOutcome({
       {untagged.length > 0 && (
         <section>
           <header className="mb-3">
-            <span className="px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-gray-100 text-gray-700">Other</span>
+            <span className="px-2 py-0.5 rounded text-xs font-semibold uppercase tracking-wide bg-surface text-ink">Other</span>
           </header>
           <div className="space-y-3">
             {untagged.map((i, idx) => (
-              <InitiativeCard key={i.id ?? `untagged-${idx}`} initiative={i} palette={{ chip: "bg-gray-100 text-gray-700", ring: "border-gray-200" }} />
+              <InitiativeCard key={i.id ?? `untagged-${idx}`} initiative={i} palette={{ chip: "bg-surface text-ink", ring: "border-hair" }} />
             ))}
           </div>
         </section>
@@ -645,23 +645,23 @@ function InitiativeCard({
     <div className={`border rounded-lg p-4 ${palette.ring}`}>
       <div className="flex items-start justify-between gap-3 mb-1">
         <div className="flex items-center gap-2">
-          <span className={`px-2 py-0.5 rounded text-xs font-medium ${initiative._bucket === "quick_win" ? "bg-green-50 text-green-700" : "bg-amber-50 text-amber-700"}`}>
+          <span className={`px-2 py-0.5 rounded text-xs font-medium ${initiative._bucket === "quick_win" ? "bg-evergreen-soft text-evergreen" : "bg-amber-soft text-amber-deep"}`}>
             {initiative._bucket === "quick_win" ? "Quick Win" : "Strategic"}
           </span>
           <h3 className="font-medium text-sm">{initiative.title}</h3>
         </div>
         {initiative.dollar_anchor && (
-          <span className="shrink-0 px-2 py-0.5 rounded text-xs font-semibold bg-emerald-50 text-emerald-700">
+          <span className="shrink-0 px-2 py-0.5 rounded text-xs font-semibold bg-evergreen-soft text-evergreen">
             {initiative.dollar_anchor}
           </span>
         )}
       </div>
-      <p className="text-sm text-gray-600 mb-2">{initiative.description}</p>
+      <p className="text-sm text-muted mb-2">{initiative.description}</p>
       {initiative.expected_roi && !initiative.dollar_anchor && (
-        <p className="text-xs text-green-600">Expected ROI: {initiative.expected_roi}</p>
+        <p className="text-xs text-evergreen">Expected ROI: {initiative.expected_roi}</p>
       )}
       {initiative.proof && (
-        <div className="mt-3 pt-3 border-t border-gray-100 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+        <div className="mt-3 pt-3 border-t border-hair grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
           <ProofCell label="Better"  value={initiative.proof.better} />
           <ProofCell label="Cheaper" value={initiative.proof.cheaper} />
           <ProofCell label="Faster"  value={initiative.proof.faster} />
@@ -675,8 +675,8 @@ function ProofCell({ label, value }: { label: string; value: string }) {
   if (!value) return null;
   return (
     <div>
-      <div className="text-[10px] uppercase tracking-wide text-gray-500 font-semibold">{label}</div>
-      <div className="text-gray-700">{value}</div>
+      <div className="text-[10px] uppercase tracking-wide text-muted font-semibold">{label}</div>
+      <div className="text-ink">{value}</div>
     </div>
   );
 }
@@ -685,23 +685,23 @@ function LegacyFlatRoadmap({ quickWins, strategic }: { quickWins: Initiative[]; 
   return (
     <>
       {quickWins.map((qw, i) => (
-        <div key={`qw-${i}`} className="border border-gray-100 rounded-lg p-4">
+        <div key={`qw-${i}`} className="border border-hair rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 bg-green-100 text-green-700 rounded text-xs font-medium">Quick Win</span>
+            <span className="px-2 py-0.5 bg-evergreen-soft text-evergreen rounded text-xs font-medium">Quick Win</span>
             <h3 className="font-medium text-sm">{qw.title}</h3>
           </div>
-          <p className="text-sm text-gray-600">{qw.description}</p>
-          {qw.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {qw.expected_roi}</p>}
+          <p className="text-sm text-muted">{qw.description}</p>
+          {qw.expected_roi && <p className="text-xs text-evergreen mt-1">Expected ROI: {qw.expected_roi}</p>}
         </div>
       ))}
       {strategic.map((si, i) => (
-        <div key={`si-${i}`} className="border border-gray-100 rounded-lg p-4">
+        <div key={`si-${i}`} className="border border-hair rounded-lg p-4">
           <div className="flex items-center gap-2 mb-1">
-            <span className="px-2 py-0.5 bg-amber-100 text-amber-700 rounded text-xs font-medium">Strategic</span>
+            <span className="px-2 py-0.5 bg-amber-soft text-amber-deep rounded text-xs font-medium">Strategic</span>
             <h3 className="font-medium text-sm">{si.title}</h3>
           </div>
-          <p className="text-sm text-gray-600">{si.description}</p>
-          {si.expected_roi && <p className="text-xs text-green-600 mt-1">Expected ROI: {si.expected_roi}</p>}
+          <p className="text-sm text-muted">{si.description}</p>
+          {si.expected_roi && <p className="text-xs text-evergreen mt-1">Expected ROI: {si.expected_roi}</p>}
         </div>
       ))}
     </>

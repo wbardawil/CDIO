@@ -43,26 +43,26 @@ export default async function SelectionsListPage({
   const items = (selections ?? []) as Selection[];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-paper">
+      <header className="bg-raised border-b border-hair">
         <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3 text-sm">
-            <Link href="/clients" className="text-gray-500 hover:text-gray-900">
+            <Link href="/clients" className="text-muted hover:text-ink">
               Portfolio
             </Link>
-            <span className="text-gray-300">/</span>
+            <span className="text-faint">/</span>
             <Link
               href={`/clients/${org.id}`}
-              className="text-gray-500 hover:text-gray-900"
+              className="text-muted hover:text-ink"
             >
               {org.name}
             </Link>
-            <span className="text-gray-300">/</span>
-            <span className="font-semibold text-gray-900">Selections</span>
+            <span className="text-faint">/</span>
+            <span className="font-semibold text-ink">Selections</span>
           </div>
           <Link
             href={`/clients/${org.id}/selections/new`}
-            className="inline-flex items-center px-3 py-1.5 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700"
+            className="inline-flex items-center px-3 py-1.5 bg-evergreen text-white text-xs font-semibold rounded-lg hover:bg-evergreen-deep"
           >
             + New selection
           </Link>
@@ -70,7 +70,7 @@ export default async function SelectionsListPage({
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
-        <div className="mb-6 px-4 py-3 bg-blue-50 border border-blue-200 rounded-lg text-sm text-blue-900">
+        <div className="mb-6 px-4 py-3 bg-evergreen-soft border border-evergreen rounded-lg text-sm text-evergreen-deep">
           <strong>One engine, three domains.</strong> Tech vendor selection,
           AI build-vs-buy + vendor evaluation, and Partner / contractor
           selection all run through the same scoring engine — different
@@ -79,18 +79,18 @@ export default async function SelectionsListPage({
         </div>
 
         {items.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-10 text-center">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
+          <div className="bg-raised rounded-xl border border-hair p-10 text-center">
+            <h2 className="text-lg font-semibold text-ink mb-1">
               No selections yet
             </h2>
-            <p className="text-sm text-gray-500 mb-5">
+            <p className="text-sm text-muted mb-5">
               Capture a tech / AI / partner decision the client is weighing.
               Score named alternatives. Produce a Decision Package they can
               defend at the board.
             </p>
             <Link
               href={`/clients/${org.id}/selections/new`}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+              className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep"
             >
               + Start your first selection
             </Link>
@@ -100,24 +100,24 @@ export default async function SelectionsListPage({
             {items.map((s) => {
               const statusColor =
                 s.status === "decided"
-                  ? "bg-emerald-50 text-emerald-700 border-emerald-200"
+                  ? "bg-evergreen-soft text-evergreen border-evergreen"
                   : s.status === "recommended"
-                    ? "bg-blue-50 text-blue-700 border-blue-200"
+                    ? "bg-evergreen-soft text-evergreen border-evergreen"
                     : s.status === "cancelled"
-                      ? "bg-gray-100 text-gray-600 border-gray-200"
-                      : "bg-amber-50 text-amber-700 border-amber-200";
+                      ? "bg-surface text-muted border-hair"
+                      : "bg-amber-soft text-amber-deep border-amber";
               return (
                 <li key={s.id}>
                   <Link
                     href={`/clients/${org.id}/selections/${s.id}`}
-                    className="block bg-white rounded-xl border border-gray-200 p-5 hover:border-gray-300"
+                    className="block bg-raised rounded-xl border border-hair p-5 hover:border-hair"
                   >
                     <div className="flex items-start justify-between gap-3 mb-2">
                       <div className="min-w-0">
-                        <p className="text-base font-semibold text-gray-900">
+                        <p className="text-base font-semibold text-ink">
                           {s.title}
                         </p>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-muted mt-1">
                           {SELECTION_DOMAIN_LABEL[s.domain]} ·{" "}
                           {s.candidates.length} candidates ·{" "}
                           {s.criteria.length} criteria
@@ -129,7 +129,7 @@ export default async function SelectionsListPage({
                         {SELECTION_STATUS_LABEL[s.status]}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 leading-relaxed line-clamp-2">
+                    <p className="text-sm text-muted leading-relaxed line-clamp-2">
                       {s.question}
                     </p>
                   </Link>

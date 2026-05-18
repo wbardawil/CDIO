@@ -99,27 +99,27 @@ export function CoverageWarningPanel(props: Props) {
   if (gaps.length === 0) return null;
 
   return (
-    <div className="rounded-xl border border-yellow-300 bg-yellow-50 mb-6">
-      <div className="px-6 py-4 border-b border-yellow-200">
-        <h3 className="text-base font-semibold text-yellow-900">
+    <div className="rounded-xl border border-amber bg-amber-soft mb-6">
+      <div className="px-6 py-4 border-b border-amber">
+        <h3 className="text-base font-semibold text-amber-deep">
           ⚠ Thin coverage on {gaps.length} {gaps.length === 1 ? "module" : "modules"}
         </h3>
-        <p className="text-xs text-yellow-800 mt-0.5">
+        <p className="text-xs text-amber-deep mt-0.5">
           The synthesis below is sensitive to who actually answered. Modules with fewer than 2 respondents,
           or below 50% of eligible stakeholders, are flagged here so you can chase the gap before the consensus is final.
         </p>
       </div>
-      <div className="divide-y divide-yellow-200">
+      <div className="divide-y divide-amber">
         {gaps.map((g) => (
           <div key={g.moduleNumber} className="px-6 py-3">
             <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="text-xs font-mono text-yellow-700">M{g.moduleNumber}</span>
-              <span className="text-sm font-semibold text-yellow-900">{g.moduleName}</span>
-              <span className="text-xs text-yellow-800">
+              <span className="text-xs font-mono text-amber-deep">M{g.moduleNumber}</span>
+              <span className="text-sm font-semibold text-amber-deep">{g.moduleName}</span>
+              <span className="text-xs text-amber-deep">
                 · {g.answeredCount} of {g.eligibleCount} eligible answered
               </span>
             </div>
-            <div className="mt-1.5 space-y-0.5 text-xs text-yellow-800">
+            <div className="mt-1.5 space-y-0.5 text-xs text-amber-deep">
               {g.notRespondedNames.length > 0 && (
                 <p>
                   <span className="font-medium">Hasn&apos;t started:</span>{" "}
@@ -130,7 +130,7 @@ export function CoverageWarningPanel(props: Props) {
                 <p>
                   <span className="font-medium">Marked N/A:</span>{" "}
                   {g.abstainedNames.join(", ")}
-                  <span className="ml-1 text-yellow-600">
+                  <span className="ml-1 text-amber-deep">
                     — consider whether this module belongs in the engagement scope
                   </span>
                 </p>

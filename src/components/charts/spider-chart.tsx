@@ -73,13 +73,13 @@ export function SpiderChart({ scores, targetScores, title }: SpiderChartProps) {
               if (!payload || payload.length === 0) return null;
               const data = payload[0]?.payload;
               return (
-                <div className="bg-white border border-gray-200 rounded-lg p-3 shadow-lg">
+                <div className="bg-raised border border-hair rounded-lg p-3 shadow-lg">
                   <p className="font-medium text-sm">{data?.fullName}</p>
-                  <p className="text-blue-600 text-sm">
+                  <p className="text-evergreen text-sm">
                     Current: {data?.current}/4
                   </p>
                   {targetScores && (
-                    <p className="text-gray-400 text-sm">
+                    <p className="text-faint text-sm">
                       Target: {data?.target}/4
                     </p>
                   )}

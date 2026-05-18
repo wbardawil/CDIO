@@ -7,7 +7,7 @@ export function CharterPrintButton() {
       onClick={() => {
         if (typeof window !== "undefined") window.print();
       }}
-      className="px-3 py-1.5 text-xs font-medium border border-gray-300 rounded-lg hover:bg-gray-50"
+      className="px-3 py-1.5 text-xs font-medium border border-hair rounded-lg hover:bg-paper"
     >
       Print / Save PDF
     </button>

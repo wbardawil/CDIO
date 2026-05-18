@@ -28,15 +28,15 @@ export function AuditProgress({
         const isDone = done.includes(s.n);
         const isCurrent = s.n === step;
         const circle = isDone
-          ? "bg-emerald-600 text-white"
+          ? "bg-evergreen text-white"
           : isCurrent
-            ? "bg-blue-600 text-white"
-            : "bg-gray-200 text-gray-500";
+            ? "bg-evergreen text-white"
+            : "bg-hair text-muted";
         const text = isCurrent
-          ? "text-gray-900 font-semibold"
+          ? "text-ink font-semibold"
           : isDone
-            ? "text-gray-700"
-            : "text-gray-400";
+            ? "text-ink"
+            : "text-faint";
         return (
           <li key={s.n} className="flex items-center gap-2">
             <span
@@ -47,7 +47,7 @@ export function AuditProgress({
             </span>
             <span className={`whitespace-nowrap ${text}`}>{s.label}</span>
             {i < STEPS.length - 1 && (
-              <span className="mx-1 h-px w-6 bg-gray-200 sm:w-10" aria-hidden />
+              <span className="mx-1 h-px w-6 bg-hair sm:w-10" aria-hidden />
             )}
           </li>
         );

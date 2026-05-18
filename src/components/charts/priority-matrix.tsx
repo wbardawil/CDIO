@@ -13,11 +13,11 @@ interface PriorityMatrixProps {
 }
 
 const PRIORITY_COLORS: Record<PriorityClass, string> = {
-  top_priority: "bg-red-500 text-white",
-  strategic_bet: "bg-amber-500 text-white",
-  quick_win: "bg-green-500 text-white",
-  maintain: "bg-blue-400 text-white",
-  defer: "bg-gray-300 text-gray-700",
+  top_priority: "bg-brick text-white",
+  strategic_bet: "bg-amber text-white",
+  quick_win: "bg-evergreen text-white",
+  maintain: "bg-evergreen text-white",
+  defer: "bg-hair text-ink",
 };
 
 const PRIORITY_LABELS: Record<PriorityClass, string> = {
@@ -42,16 +42,16 @@ export function PriorityMatrix({ modules }: PriorityMatrixProps) {
       {/* Matrix visualization */}
       <div className="relative mx-auto" style={{ width: 480, height: 480 }}>
         {/* Quadrant labels */}
-        <div className="absolute top-2 left-2 text-xs font-medium text-red-600 opacity-60">
+        <div className="absolute top-2 left-2 text-xs font-medium text-brick opacity-60">
           TOP PRIORITY
         </div>
-        <div className="absolute top-2 right-2 text-xs font-medium text-blue-600 opacity-60">
+        <div className="absolute top-2 right-2 text-xs font-medium text-evergreen opacity-60">
           MAINTAIN
         </div>
-        <div className="absolute bottom-8 left-2 text-xs font-medium text-gray-400 opacity-60">
+        <div className="absolute bottom-8 left-2 text-xs font-medium text-faint opacity-60">
           DEFER
         </div>
-        <div className="absolute bottom-8 right-2 text-xs font-medium text-green-600 opacity-60">
+        <div className="absolute bottom-8 right-2 text-xs font-medium text-evergreen opacity-60">
           QUICK WIN
         </div>
 
@@ -85,14 +85,14 @@ export function PriorityMatrix({ modules }: PriorityMatrixProps) {
                   r={16}
                   className={
                     m.priority_class === "top_priority"
-                      ? "fill-red-500"
+                      ? "fill-brick"
                       : m.priority_class === "strategic_bet"
-                        ? "fill-amber-500"
+                        ? "fill-amber"
                         : m.priority_class === "quick_win"
-                          ? "fill-green-500"
+                          ? "fill-evergreen"
                           : m.priority_class === "maintain"
-                            ? "fill-blue-400"
-                            : "fill-gray-300"
+                            ? "fill-evergreen"
+                            : "fill-faint"
                   }
                   opacity={0.8}
                 />
@@ -127,7 +127,7 @@ export function PriorityMatrix({ modules }: PriorityMatrixProps) {
           .map((m) => (
             <div
               key={m.module_number}
-              className="flex items-center gap-2 p-2 rounded-lg bg-gray-50"
+              className="flex items-center gap-2 p-2 rounded-lg bg-paper"
             >
               <span
                 className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${PRIORITY_COLORS[m.priority_class]}`}
@@ -138,11 +138,11 @@ export function PriorityMatrix({ modules }: PriorityMatrixProps) {
                 <p className="text-sm font-medium truncate">
                   {MODULE_NAMES[m.module_number]}
                 </p>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-muted">
                   Maturity: {m.consensus_score}/4 | Impact: {m.business_impact}/10
                 </p>
               </div>
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-faint">
                 {PRIORITY_LABELS[m.priority_class]}
               </span>
             </div>

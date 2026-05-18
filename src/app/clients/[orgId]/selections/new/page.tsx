@@ -31,34 +31,34 @@ export default async function NewSelectionPage({
   if (!org) notFound();
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <header className="bg-white border-b border-gray-200">
+    <div className="min-h-screen bg-paper">
+      <header className="bg-raised border-b border-hair">
         <div className="max-w-3xl mx-auto px-6 py-4 flex items-center gap-3 text-sm">
-          <Link href="/clients" className="text-gray-500 hover:text-gray-900">
+          <Link href="/clients" className="text-muted hover:text-ink">
             Portfolio
           </Link>
-          <span className="text-gray-300">/</span>
+          <span className="text-faint">/</span>
           <Link
             href={`/clients/${org.id}`}
-            className="text-gray-500 hover:text-gray-900"
+            className="text-muted hover:text-ink"
           >
             {org.name}
           </Link>
-          <span className="text-gray-300">/</span>
+          <span className="text-faint">/</span>
           <Link
             href={`/clients/${org.id}/selections`}
-            className="text-gray-500 hover:text-gray-900"
+            className="text-muted hover:text-ink"
           >
             Selections
           </Link>
-          <span className="text-gray-300">/</span>
-          <span className="font-semibold text-gray-900">New</span>
+          <span className="text-faint">/</span>
+          <span className="font-semibold text-ink">New</span>
         </div>
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">New selection</h1>
-        <p className="text-sm text-gray-500 mb-6">
+        <h1 className="text-2xl font-bold text-ink mb-1">New selection</h1>
+        <p className="text-sm text-muted mb-6">
           Pick the domain — Tech, AI, or Partner. Default criteria load
           automatically (AMP 5x5 for AI, generic CMMI / TBM for Tech, and a
           partner-evaluation set for Partner). You can refine criteria and

@@ -62,34 +62,34 @@ export default async function ClientsPage() {
   const totalCommittedHours = clients.reduce((sum, c) => sum + (c.monthly_hours ?? 0), 0);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-paper">
       {/* Top nav */}
-      <header className="bg-white border-b border-gray-200">
+      <header className="bg-raised border-b border-hair">
         <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">AI-CDIO</h1>
-            <p className="text-xs text-gray-500">Fractional Executive OS</p>
+            <h1 className="text-xl font-bold text-ink">AI-CDIO</h1>
+            <p className="text-xs text-muted">Fractional Executive OS</p>
           </div>
           <div className="flex items-center gap-4">
             <Link
               href="/network"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-muted hover:text-ink"
             >
               Network Catalog
             </Link>
             <Link
               href="/preview"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-muted hover:text-ink"
             >
               Methodology Preview
             </Link>
             <Link
               href="/settings/mcp"
-              className="text-sm text-gray-600 hover:text-gray-900"
+              className="text-sm text-muted hover:text-ink"
             >
               MCP
             </Link>
-            <span className="text-sm text-gray-600 hidden sm:inline">
+            <span className="text-sm text-muted hidden sm:inline">
               {practitioner.name ?? practitioner.email ?? "Practitioner"}
             </span>
             <UserButton />
@@ -101,8 +101,8 @@ export default async function ClientsPage() {
         {/* Header */}
         <div className="flex items-end justify-between mb-8">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Portfolio</h2>
-            <p className="text-sm text-gray-500 mt-1">
+            <h2 className="text-2xl font-bold text-ink">Portfolio</h2>
+            <p className="text-sm text-muted mt-1">
               {clients.length === 0
                 ? "No active clients yet"
                 : `${clients.length} active ${clients.length === 1 ? "client" : "clients"} · ${totalCommittedHours} hrs/mo committed`}
@@ -110,7 +110,7 @@ export default async function ClientsPage() {
           </div>
           <Link
             href="/onboarding"
-            className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            className="inline-flex items-center px-4 py-2 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep transition-colors"
           >
             + New client
           </Link>
@@ -118,23 +118,23 @@ export default async function ClientsPage() {
 
         {/* Empty state */}
         {clients.length === 0 ? (
-          <div className="bg-white rounded-xl border border-gray-200 p-12 text-center">
-            <h3 className="text-lg font-semibold text-gray-700 mb-2">
+          <div className="bg-raised rounded-xl border border-hair p-12 text-center">
+            <h3 className="text-lg font-semibold text-ink mb-2">
               No clients in your portfolio yet
             </h3>
-            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            <p className="text-muted mb-6 max-w-md mx-auto">
               Onboard your first client to run an assessment, build a roadmap, and start tracking value.
             </p>
             <div className="flex gap-3 justify-center">
               <Link
                 href="/onboarding"
-                className="inline-flex items-center px-5 py-2.5 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700"
+                className="inline-flex items-center px-5 py-2.5 bg-evergreen text-white text-sm font-medium rounded-lg hover:bg-evergreen-deep"
               >
                 Onboard your first client
               </Link>
               <Link
                 href="/scan"
-                className="inline-flex items-center px-5 py-2.5 border border-gray-200 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50"
+                className="inline-flex items-center px-5 py-2.5 border border-hair text-ink text-sm font-medium rounded-lg hover:bg-paper"
               >
                 Try the Quick Scan
               </Link>
@@ -142,61 +142,61 @@ export default async function ClientsPage() {
           </div>
         ) : (
           /* Client table */
-          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+          <div className="bg-raised rounded-xl border border-hair overflow-hidden">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-paper border-b border-hair">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Client
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Industry
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Size
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Modules in scope
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Hrs / mo
                   </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <th className="px-6 py-3 text-left text-xs font-medium text-muted uppercase tracking-wider">
                     Role
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100">
+              <tbody className="divide-y divide-hair">
                 {clients.map((c) => (
-                  <tr key={c.id} className="hover:bg-gray-50 transition-colors">
+                  <tr key={c.id} className="hover:bg-paper transition-colors">
                     <td className="px-6 py-4">
                       <Link
                         href={`/clients/${c.id}`}
-                        className="text-sm font-medium text-blue-600 hover:text-blue-800"
+                        className="text-sm font-medium text-evergreen hover:text-evergreen-deep"
                       >
                         {c.name}
                       </Link>
                       {c.is_sandbox && (
-                        <span className="ml-2 px-1.5 py-0.5 bg-amber-100 text-amber-700 rounded text-[10px] font-semibold uppercase tracking-wider">
+                        <span className="ml-2 px-1.5 py-0.5 bg-amber-soft text-amber-deep rounded text-[10px] font-semibold uppercase tracking-wider">
                           Sandbox
                         </span>
                       )}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {INDUSTRY_LABELS[c.industry] ?? c.industry}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {SIZE_LABELS[c.size_category] ?? c.size_category}
-                      <span className="text-gray-400 ml-1">({c.employee_count})</span>
+                      <span className="text-faint ml-1">({c.employee_count})</span>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {c.active_modules?.length ?? 0} of 16
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    <td className="px-6 py-4 text-sm text-muted">
                       {c.monthly_hours}
                     </td>
                     <td className="px-6 py-4 text-xs">
-                      <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded font-medium uppercase tracking-wider">
+                      <span className="px-2 py-1 bg-surface text-ink rounded font-medium uppercase tracking-wider">
                         {c.role}
                       </span>
                     </td>
@@ -208,7 +208,7 @@ export default async function ClientsPage() {
         )}
 
         {/* Footer note about deferred tabs */}
-        <p className="text-xs text-gray-400 mt-6 text-center">
+        <p className="text-xs text-faint mt-6 text-center">
           Tip: drill into a client to access the existing assessment, synthesis, and roadmap engines. Status reports + QBR decks land Week 2-5.
         </p>
       </main>
