@@ -52,8 +52,18 @@ export default async function AuditDetailPage({
     medium: "Medium",
     large: "Large",
   };
-  const nextThing =
-    a.status === "complete"
+  // Premise-7 verdict gate. Extraction + grading quality is UNPROVEN on
+  // real documents; until the practitioner validates it, a non-sandbox
+  // (real client) org must never be shown an AI verdict. Server-side,
+  // default-deny: the gate is CLOSED unless AUDIT_GATE_OPEN === "true".
+  // Sandbox orgs always see the full verdict. Independent of the re-skin.
+  const gateOpen = process.env.AUDIT_GATE_OPEN === "true";
+  const hasVerdict = !!a.output;
+  const verdictWithheld = hasVerdict && !o.is_sandbox && !gateOpen;
+
+  const nextThing = verdictWithheld
+    ? "Verdict pending validation"
+    : a.status === "complete"
       ? "Verdict ready"
       : a.companion
         ? "Next: run the verdict"
@@ -77,7 +87,30 @@ export default async function AuditDetailPage({
       isSandbox={o.is_sandbox}
       width="narrow"
     >
-      <AuditDetailClient orgId={o.id} initialAudit={a} />
+      {verdictWithheld ? (
+        <div className="bg-raised rounded-xl border border-hair p-6 sm:p-8">
+          <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-evergreen mb-3">
+            Verdict pending validation
+          </p>
+          <p className="font-serif text-2xl font-semibold text-ink leading-[1.15] mb-4">
+            This audit has run, but the verdict is held until the
+            methodology is validated for this client.
+          </p>
+          <div className="rounded-lg border border-evergreen bg-evergreen-soft p-4 text-sm text-evergreen-deep">
+            Evidence extraction and grading quality have not yet been
+            confirmed on real documents. To protect the decision, an
+            AI-generated verdict is not shown for a live client until your
+            practitioner has reviewed it. This is a deliberate safeguard,
+            not an error — the audit and its inputs are saved and intact.
+          </div>
+          <p className="mt-4 text-xs text-muted">
+            Sandbox clients show the full verdict for validation. Once the
+            methodology is signed off, the verdict is released here.
+          </p>
+        </div>
+      ) : (
+        <AuditDetailClient orgId={o.id} initialAudit={a} />
+      )}
     </WorkspaceShell>
   );
 }
