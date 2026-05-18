@@ -128,12 +128,15 @@ export function SelectionEditor({ initialSelection }: SelectionEditorProps) {
     await persist({ status: "recommended" });
   };
 
+  const eyebrow =
+    "font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-evergreen";
+
   return (
     <div className="space-y-6">
       {/* Criteria weights */}
       <section className="bg-raised rounded-xl border border-hair overflow-hidden">
         <div className="px-5 py-4 border-b border-hair">
-          <h2 className="text-sm font-semibold text-ink">
+          <h2 className={eyebrow}>
             Criteria ({selection.criteria.length})
           </h2>
           <p className="text-xs text-muted mt-0.5">
@@ -178,7 +181,7 @@ export function SelectionEditor({ initialSelection }: SelectionEditorProps) {
       <section className="bg-raised rounded-xl border border-hair overflow-hidden">
         <div className="px-5 py-4 border-b border-hair flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-semibold text-ink">
+            <h2 className={eyebrow}>
               Candidates ({selection.candidates.length})
             </h2>
             <p className="text-xs text-muted mt-0.5">
@@ -229,11 +232,25 @@ export function SelectionEditor({ initialSelection }: SelectionEditorProps) {
                       />
                     </div>
                     {summary && (
-                      <div className="shrink-0 text-right">
-                        <p className="text-2xl font-bold text-evergreen">
-                          {summary.percent}%
-                        </p>
-                        <p className="text-[10px] text-muted">
+                      <div className="shrink-0 w-28">
+                        <div className="flex items-baseline justify-end gap-1">
+                          <span className="font-sans text-2xl font-semibold text-evergreen tabular-nums">
+                            {summary.percent}
+                          </span>
+                          <span className="text-xs text-muted">%</span>
+                        </div>
+                        <div
+                          className="mt-1 h-1.5 w-full rounded-sm bg-hair overflow-hidden"
+                          aria-hidden
+                        >
+                          <div
+                            className="h-full rounded-sm bg-evergreen"
+                            style={{
+                              width: `${Math.min(100, Math.max(0, summary.percent))}%`,
+                            }}
+                          />
+                        </div>
+                        <p className="mt-1 text-right text-[10px] text-muted tabular-nums">
                           {summary.weightedTotal} / {summary.maxPossible}
                         </p>
                       </div>
@@ -312,7 +329,7 @@ export function SelectionEditor({ initialSelection }: SelectionEditorProps) {
 
       {/* Recommendation narrative */}
       <section className="bg-raised rounded-xl border border-hair p-5">
-        <h2 className="text-sm font-semibold text-ink mb-2">
+        <h2 className={`${eyebrow} mb-2`}>
           Recommendation narrative
         </h2>
         <p className="text-xs text-muted mb-3">
