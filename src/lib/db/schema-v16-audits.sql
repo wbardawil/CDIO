@@ -88,3 +88,13 @@ ALTER TABLE public.audits ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS audits_service_full_access ON public.audits;
 CREATE POLICY audits_service_full_access
   ON public.audits FOR ALL USING (true) WITH CHECK (true);
+
+-- Table-privilege grant. RLS policies (and service_role's BYPASSRLS)
+-- do NOT substitute for table-level GRANTs: without this, every write
+-- as the API roles fails with SQLSTATE 42501 "permission denied for
+-- table audits". Supabase adds these grants automatically for tables
+-- created via the dashboard; a hand-applied migration must do it
+-- explicitly. Idempotent — re-granting is a harmless no-op. This
+-- mirrors the default privileges every other table in this database
+-- already has.
+GRANT ALL ON public.audits TO anon, authenticated, service_role;
