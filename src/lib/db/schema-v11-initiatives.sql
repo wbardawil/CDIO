@@ -66,6 +66,26 @@ CREATE TABLE IF NOT EXISTS public.initiatives (
   practitioner_notes text       NULL
 );
 
+-- Reconcile a pre-existing initiatives table (older/partial
+-- migration) to the target shape before the indexes/trigger below
+-- reference these columns. ADD COLUMN IF NOT EXISTS is idempotent:
+-- no-op on the freshly created table above, the fix on an older one.
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS updated_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS org_id uuid;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS practitioner_id uuid;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS title text;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS goal text;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS domain text NOT NULL DEFAULT 'tech';
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS module_number int;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS owner_name text;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS owner_email text;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'active';
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS target_completion_date date;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS completed_at timestamptz;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS steps jsonb NOT NULL DEFAULT '[]'::jsonb;
+ALTER TABLE public.initiatives ADD COLUMN IF NOT EXISTS practitioner_notes text;
+
 CREATE INDEX IF NOT EXISTS initiatives_org_id_idx
   ON public.initiatives(org_id, created_at DESC);
 
@@ -112,6 +132,17 @@ CREATE TABLE IF NOT EXISTS public.initiative_tokens (
   revoked_at      timestamptz   NULL,
   last_used_at    timestamptz   NULL
 );
+
+-- Same reconciliation for a pre-existing initiative_tokens table.
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS initiative_id uuid;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS token text;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS participant_name text;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS participant_email text;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS scope text NOT NULL DEFAULT 'view_and_update';
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS expires_at timestamptz;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS revoked_at timestamptz;
+ALTER TABLE public.initiative_tokens ADD COLUMN IF NOT EXISTS last_used_at timestamptz;
 
 CREATE INDEX IF NOT EXISTS initiative_tokens_initiative_id_idx
   ON public.initiative_tokens(initiative_id);
