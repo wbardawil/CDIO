@@ -193,6 +193,15 @@ export function AuditDetailClient({
 
       {out ? (
         <>
+          {/* Verdict-view actions (e.g. Create this initiative) failed
+              silently before this: error was set but never rendered in
+              this branch. Surface it. */}
+          {error && (
+            <div className="rounded-xl border border-brick bg-raised px-4 py-3 text-sm text-brick print:hidden">
+              {error}
+            </div>
+          )}
+
           {/* The pain, first — what this is all for. */}
           {(out.business_pain || audit.intake.business_pain) && (
             <div className="bg-raised rounded-xl border border-hair p-6">
