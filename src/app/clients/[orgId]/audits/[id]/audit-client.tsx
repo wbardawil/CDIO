@@ -289,11 +289,11 @@ export function AuditDetailClient({
             </div>
           )}
 
-          {/* It actually helps — the audit-ready initiative, one
-              click to a structured, best-practice-shaped plan. */}
+          {/* The audit-ready initiative — one click to a structured,
+              best-practice-shaped plan. This is the single amber on the
+              screen: the one thing to do next. Everything else is
+              evergreen / ink (DESIGN.md: one amber action per screen). */}
           {out.recommended_initiative && (
-            {/* The single amber on this screen: the one thing to do
-                next. Everything else is evergreen / ink (DESIGN.md). */}
             <div className="rounded-xl border border-amber bg-amber-soft p-6">
               <div className="flex items-start justify-between gap-3 mb-1">
                 <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-amber-deep">
