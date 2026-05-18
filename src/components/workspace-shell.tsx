@@ -91,8 +91,10 @@ export function WorkspaceShell({
       <SandboxBanner isSandbox={isSandbox} variant="workspace" />
 
       {/* Line 1 — orientation. "Your clients" and "{Client}" are the
-          always-available way back. This alone kills the dead-end. */}
-      <header className="bg-raised border-b border-hair print:hidden">
+          always-available way back. This alone kills the dead-end.
+          Sticky + paper-translucent per the design system: orientation
+          is never more than a glance away. */}
+      <header className="sticky top-0 z-20 bg-paper/85 backdrop-blur-md border-b border-hair print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between gap-4">
           <nav
             aria-label="Breadcrumb"
@@ -151,7 +153,9 @@ export function WorkspaceShell({
       <div className="bg-raised border-b border-hair print:hidden">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-baseline gap-3 flex-wrap">
-            <h1 className="text-xl font-bold text-ink">{orgName}</h1>
+            <h1 className="font-serif text-2xl font-semibold text-ink">
+              {orgName}
+            </h1>
             {clientLine && (
               <span className="text-sm text-muted">{clientLine}</span>
             )}
