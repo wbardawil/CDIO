@@ -63,6 +63,26 @@ CREATE TABLE IF NOT EXISTS public.agent_logs (
   metadata      jsonb             NOT NULL DEFAULT '{}'::jsonb
 );
 
+-- Reconcile a pre-existing agent_logs table (from an earlier or
+-- partial migration) to the target shape. ADD COLUMN IF NOT EXISTS
+-- is idempotent: a no-op when the table was just created above, and
+-- the fix when an older table is missing columns the indexes and
+-- rollup view below depend on. This is what makes the file safe to
+-- apply against a database in any prior state.
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS org_id uuid;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS practitioner_id uuid;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS agent_name text;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS model text;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS input_tokens int NOT NULL DEFAULT 0;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS output_tokens int NOT NULL DEFAULT 0;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS cache_create_tokens int NOT NULL DEFAULT 0;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS cache_read_tokens int NOT NULL DEFAULT 0;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS cost_cents int;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS latency_ms int;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS status text NOT NULL DEFAULT 'ok';
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS error_code text;
+ALTER TABLE public.agent_logs ADD COLUMN IF NOT EXISTS metadata jsonb NOT NULL DEFAULT '{}'::jsonb;
+
 CREATE INDEX IF NOT EXISTS agent_logs_org_id_idx
   ON public.agent_logs(org_id, created_at DESC)
   WHERE org_id IS NOT NULL;
@@ -80,7 +100,10 @@ CREATE INDEX IF NOT EXISTS agent_logs_model_idx
 -- Read-only rollup view. Per-org per-day cost. Phase 3 dashboard
 -- (P1-22) reads from this rather than running aggregates on the
 -- raw table.
-CREATE OR REPLACE VIEW public.agent_logs_daily AS
+-- DROP first: CREATE OR REPLACE VIEW fails if an older view exists
+-- with a different column set (the pre-existing-table case above).
+DROP VIEW IF EXISTS public.agent_logs_daily;
+CREATE VIEW public.agent_logs_daily AS
 SELECT
   date_trunc('day', created_at)        AS day,
   org_id,
