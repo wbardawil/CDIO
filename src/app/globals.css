@@ -1,35 +1,88 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
 /*
- * NOTE: We intentionally DO NOT honor `prefers-color-scheme: dark` yet.
- * The app's UI uses bg-white cards with no explicit text-color classes,
- * so flipping body color to near-white on dark-mode systems made every
- * form unreadable. Proper dark-mode support is a Phase 4 polish task —
- * until then we render light-mode regardless of the OS preference.
+ * AI-CDIO design tokens. Source of truth: docs/DESIGN.md.
+ * Principle: authority through subtraction — warm paper, ink, one
+ * evergreen voice, one amber action. No blue anywhere.
+ *
+ * Dark mode is intentionally NOT wired (premise 4 / GAPS P3): the app
+ * renders light regardless of OS `prefers-color-scheme`. Dark tokens are
+ * documented in docs/DESIGN.md so it is a one-block add later. Until then,
+ * forcing dark made bg-raised cards with no explicit text color unreadable.
  */
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  /* surfaces */
+  --color-paper: #faf8f2;
+  --color-surface: #fcfbf7;
+  --color-raised: #ffffff;
+
+  /* text */
+  --color-ink: #1a1a17;
+  --color-muted: #6b6960;
+  --color-faint: #9a968b;
+
+  /* lines */
+  --color-hair: #e7e2d5;
+  --color-hair-strong: #d8d2c2;
+
+  /* evergreen — the voice */
+  --color-evergreen: #0f4c44;
+  --color-evergreen-deep: #0a352f;
+  --color-evergreen-soft: #e7f0ec;
+
+  /* amber — the single action color (once per screen) */
+  --color-amber: #c2772e;
+  --color-amber-deep: #a35f1f;
+  --color-amber-soft: #fbf0e0;
+
+  /* error */
+  --color-brick: #9e4b3b;
+
+  /* maturity ramp — sequential sand → evergreen, never alarm */
+  --color-m1: #d9cbb0;
+  --color-m2: #bfbe93;
+  --color-m3: #86a276;
+  --color-m4: #3e7a63;
+  --color-m5: #0f4c44;
+
+  /* type — Fraunces (authority) / Geist (clarity) / Geist Mono (ids).
+     --font-fraunces is wired by next/font in layout.tsx. */
+  --font-sans: var(--font-geist-sans), -apple-system, BlinkMacSystemFont,
+    "Segoe UI", system-ui, sans-serif;
+  --font-serif: var(--font-fraunces), ui-serif, Georgia, "Times New Roman",
+    serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* motion */
+  --ease-brief: cubic-bezier(0.22, 0.61, 0.36, 1);
 }
 
-/* Form controls inherit the foreground color explicitly so any future
-   ancestor-level color override doesn't bleed into them. */
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  font-weight: 400;
+  line-height: 1.65;
+  font-feature-settings: "ss01", "cv01";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Fraunces carries authority — every heading reads "advisor", not "SaaS". */
+h1,
+h2,
+h3 {
+  font-family: var(--font-serif);
+  font-weight: 600;
+  line-height: 1.12;
+  letter-spacing: -0.01em;
+}
+
+/* Form controls inherit ink explicitly so no ancestor color override bleeds
+   into them, and never take a blue focus tell. */
 input,
 select,
 textarea {
-  color: var(--foreground);
+  color: var(--color-ink);
 }
