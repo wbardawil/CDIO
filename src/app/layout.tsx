@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ClerkProvider } from "@clerk/nextjs";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, Fraunces } from "next/font/google";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -11,6 +11,13 @@ const geistSans = Geist({
 
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
+  subsets: ["latin"],
+});
+
+// Fraunces carries authority — a serif headline reads "advisor", not
+// "SaaS". Wired to the --font-serif token in globals.css.
+const fraunces = Fraunces({
+  variable: "--font-fraunces",
   subsets: ["latin"],
 });
 
@@ -29,24 +36,24 @@ export default function RootLayout({
     <ClerkProvider>
       <html
         lang="en"
-        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} ${fraunces.variable} h-full antialiased`}
       >
         <body className="min-h-full flex flex-col">
           <div className="flex-1">{children}</div>
-          <footer className="border-t border-gray-200 bg-gray-50 print:hidden">
-            <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-3 text-xs text-gray-500">
+          <footer className="border-t border-hair bg-paper print:hidden">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-between gap-3 text-xs text-faint">
               <span>
                 &copy; {new Date().getFullYear()} AI-CDIO &middot; Fractional
                 Executive OS
               </span>
               <nav className="flex flex-wrap items-center gap-4">
-                <Link href="/terms" className="hover:text-gray-900">
+                <Link href="/terms" className="hover:text-ink">
                   Terms
                 </Link>
-                <Link href="/privacy" className="hover:text-gray-900">
+                <Link href="/privacy" className="hover:text-ink">
                   Privacy
                 </Link>
-                <Link href="/ai-disclaimer" className="hover:text-gray-900">
+                <Link href="/ai-disclaimer" className="hover:text-ink">
                   AI Disclaimer
                 </Link>
               </nav>
