@@ -97,4 +97,4 @@ CREATE POLICY audits_service_full_access
 -- explicitly. Idempotent — re-granting is a harmless no-op. This
 -- mirrors the default privileges every other table in this database
 -- already has.
-GRANT ALL ON public.audits TO anon, authenticated, service_role;
+GRANT ALL ON public.audits TO service_role;  -- anon/authenticated revoked: see schema-v18 (cso Finding 1)

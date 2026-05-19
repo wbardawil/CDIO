@@ -120,4 +120,4 @@ CREATE POLICY network_catalog_service_full_access
 -- Table-privilege grant (added 2026-05-18). RLS/BYPASSRLS do NOT
 -- substitute for table GRANTs: without this, API-role writes fail
 -- with SQLSTATE 42501. Idempotent; mirrors the schema-v16 precedent.
-GRANT ALL ON public.network_catalog_entries TO anon, authenticated, service_role;
+GRANT ALL ON public.network_catalog_entries TO service_role;  -- anon/authenticated revoked: see schema-v18 (cso Finding 1)
