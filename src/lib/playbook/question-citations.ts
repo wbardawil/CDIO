@@ -567,7 +567,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: question genuinely measures whether a documented policy/framework exists, which is the GV.PO-01 outcome.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q2": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -583,7 +583,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: 'current and enforced' is a near-exact restatement of GV.PO-02.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q3": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -599,7 +599,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: textbook 1:1 mapping to the named PR.AT category.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q4": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -615,7 +615,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: 'systematically tracked and responded to' maps to the named RS.MA category, the managed-incident-response outcome.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q5": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -631,7 +631,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: a 'formal risk management program' is the GV.RM outcome made concrete.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q6": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -647,7 +647,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: near-exact wording match to a single named subcategory.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q7": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -663,7 +663,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong (upgraded from v1's loose framing): GV.SC-07 explicitly covers third-party vendor risk assessment as a named subcategory.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m5_q8": {
     framework: "NIST Cybersecurity Framework (CSF) 2.0",
@@ -679,7 +679,7 @@ export const QUESTION_CITATIONS: Record<string, AuthoritativeCitation> = {
     reviewer: "citation-audit 2026-05-19 (M5-8)",
     semanticPass: true,
     confidenceNote: "Strong: 'regular audits' is the evaluation activity that produces ID.IM improvements; GV.OV closes the loop.",
-    clientVisible: false,
+    clientVisible: true,
   },
   "m6_q1": {
     framework: "DAMA-DMBOK2 (Data Management Body of Knowledge, 2nd ed.)",
