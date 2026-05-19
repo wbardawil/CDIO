@@ -397,8 +397,8 @@ export function NewAuditForm({ orgId }: { orgId: string }) {
         }}
         className={`rounded-xl border-2 border-dashed p-6 text-center transition-colors ${
           dragging
-            ? "border-hair bg-paper"
-            : "border-hair bg-raised"
+            ? "border-evergreen bg-evergreen-soft"
+            : "border-hair-strong bg-raised"
         }`}
       >
         <p className="text-sm font-semibold text-ink mb-1">

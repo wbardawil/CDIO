@@ -54,6 +54,11 @@ export default async function AuditsListPage({
     industry: string;
     is_sandbox: boolean;
   };
+  // Premise-7 verdict gate, identical to the audit detail page: a
+  // non-sandbox client must never see an unvalidated AI verdict — not
+  // even the label/money on the list. Default-deny (gate closed unless
+  // AUDIT_GATE_OPEN === "true"); sandbox orgs always see it.
+  const gateOpen = process.env.AUDIT_GATE_OPEN === "true";
   const clientLine = [
     SIZE_LABELS[o.size_category] ?? o.size_category,
     o.industry,
@@ -116,8 +121,13 @@ export default async function AuditsListPage({
           <ul className="space-y-3">
             {items.map((a) => {
               const verdict = a.output?.overall_call;
-              const statusColor =
-                a.status === "complete"
+              // Same gate as the detail page: if a verdict exists but
+              // this client is non-sandbox and the gate is closed, the
+              // verdict/label/money are withheld here too.
+              const withheld = !!a.output && !o.is_sandbox && !gateOpen;
+              const statusColor = withheld
+                ? "bg-surface text-muted border-hair"
+                : a.status === "complete"
                   ? verdict === "buy"
                     ? "bg-evergreen-soft text-evergreen border-evergreen"
                     : verdict === "dont_buy"
@@ -130,8 +140,9 @@ export default async function AuditsListPage({
                     : a.status === "cancelled"
                       ? "bg-surface text-muted border-hair"
                       : "bg-amber-soft text-amber-deep border-amber";
-              const statusLabel =
-                a.status === "complete" && verdict
+              const statusLabel = withheld
+                ? "Verdict pending validation"
+                : a.status === "complete" && verdict
                   ? AUDIT_VERDICT_LABEL[verdict]
                   : a.status === "running"
                     ? "Running…"
@@ -173,7 +184,7 @@ export default async function AuditsListPage({
                         {statusLabel}
                       </span>
                     </div>
-                    {a.output?.headline_money && (
+                    {!withheld && a.output?.headline_money && (
                       <p className="text-sm font-semibold text-ink">
                         {a.output.headline_money}
                       </p>
