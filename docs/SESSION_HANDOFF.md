@@ -249,7 +249,7 @@ Phase 1A ✅, Phase 1B ✅, Phase 1C Days 8-17 ✅ (Quick Win Stack 3/3 + Decisi
 - ✅ **Module 12 polish: m12_q14 added.** Hard-dollar underwriting question explicitly anchored to KPMG ROO + AMP's Standardized Impact Formula (Volume × Minutes × Cost × Realizable %). Module 12 now has 14 questions.
 - ✅ **AMP Playbook integration locked in STRATEGY-2026.md** — separate AMP Playbook Integration section above Architectural Lineage. Phase 2.5 reduced 12 → 8 days by reusing AMP's 5 governance components (AI Maturity Model dims), 4 opportunity categories (AI Use-Case Library taxonomy), 100→17→7 funnel (AI Roadmap Generator), and 5×5 scoring (Selection Engine `domain: "ai"`). AI Operator Bootcamp logged as Year 2+ commercial product candidate.
 - ✅ **Day 13: Practitioner /preview surface + try-it interactive mode** shipped earlier in this session — read-only methodology preview at `/preview` with depth-status badges, plus `/preview/module/[n]/try` for role-filtered + scoring-math testing without DB writes.
-- ⏳ Day 13 (next session): Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma)
+- ❌ ~~Day 13 (next session): Module 15 deep~~ **SUPERSEDED 2026-05-19** — do NOT build bespoke Module 15 questions; that reverses the `96dd36a` verbatim-playbook directive. Live workstream: bank-wide methodology validation (`docs/STANDARDS-VALIDATION.md` v2.0 + `TODOS.md`).
 
 ---
 
@@ -379,7 +379,7 @@ The Day 11 evening rough draft proposed re-sequencing Phase 1C around AI + Data 
 
 **Final Phase 1C Days 12-17 sequence (locked):**
 - ✅ Day 12: Module 12 deep — Tech Finance & Value Realization (TBM Council + KPMG ROO) — shipped commit `f595bfc`
-- Day 13: Module 15 deep — Process Automation & Transformation (APQC PCF + Lean Six Sigma)
+- ~~Day 13: Module 15 deep~~ **SUPERSEDED 2026-05-19** — reverted to verbatim-playbook (`96dd36a`); replaced by bank-wide methodology validation (`docs/STANDARDS-VALIDATION.md` v2.0)
 - Days 14-15: Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5)
 - Day 16: Module 2 deep — Tech Strategy & Business Alignment (KPMG 4-practice + MIT) + adaptive questioning
 - Day 17: Framework citations layer + jargon → CEO-language translation
@@ -437,11 +437,19 @@ Differentiator: **5x faster + 1/5th the cost of full-time + better proof than an
 - `docs/OUTCOMES.md` — Day 90 evidence base re-emphasized; format example updated to require CEO outcome + 90-Day Commitment Matrix milestone tracking + better/cheaper/faster comparison
 - `CLAUDE.md` — Strategic Decisions + Current Sprint updated (Day 12 = Module 12, ✅ shipped; Day 13 = Module 15)
 
-### What's next — Day 13 (next code session)
+### What's next — SUPERSEDED 2026-05-19
 
-1. Run `/plan-eng-review` on Module 15 deep scope (mandatory gate per Process Discipline)
-2. Build Module 15 deep — anchored to APQC PCF + Lean Six Sigma, 12-15 questions, role-tagged, level-5, framework-cited (replicate Module 5 / Module 12 pattern)
-3. Days 14-15 — Quick Scan output upgrade (board-memo quality)
+The Day-13 "build Module 15 deep" plan below is **obsolete** — Module 15 deep
+was built (`b6cf3a0`) then ALL modules reverted to verbatim-from-source-playbook
+(`96dd36a`). The live workstream is the **bank-wide methodology validation**
+(`/plan-eng-review` ran 2026-05-19): `src/lib/playbook/question-citations.ts`
+built (clientVisible:false), `docs/STANDARDS-VALIDATION.md` v2.0 written
+(v1 → `docs/STANDARDS-VALIDATION-v1-ARCHIVED.md`). Next action = **founder
+triage gate** then the founder-adjudicated second pass (`TODOS.md`).
+Original (do NOT action):
+> ~~1. /plan-eng-review on Module 15 deep~~
+> ~~2. Build Module 15 deep — 12-15 bespoke APQC/Lean questions~~
+> ~~3. Days 14-15 — Quick Scan output upgrade (board-memo quality)~~
 
 ---
 

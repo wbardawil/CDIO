@@ -127,9 +127,17 @@ C:/Users/Dell/projects/CDIO/
 
 Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-12 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 doc-lock + Day 12 Module 12 deep shipped at `f595bfc`).
 
-**Day 13 (next code session):**
-1. Run `/plan-eng-review` on Module 15 deep scope (mandatory gate per Process Discipline)
-2. **Module 15 deep — Process Automation & Transformation** (APQC PCF + Lean Six Sigma anchor). 12-15 questions, role-tagged, level-5, framework-cited. Replicate Module 5 / Module 12 pattern.
+**Day 13 — SUPERSEDED (2026-05-19).** The "Module 15 deep — bespoke framework
+questions" task below is **obsolete**. Module 15 deep was built (`b6cf3a0`)
+then ALL 16 modules were deliberately reverted to verbatim-from-source-playbook
+(`1127291`→`aa8e42a`→`96dd36a`: "no hallucination, only signal questions").
+Re-introducing bespoke/AI-synthesised framework questions reverses that
+directive — do NOT do it. The live methodology-integrity workstream is the
+bank-wide validation: `docs/STANDARDS-VALIDATION.md` (v2.0) +
+`docs/STANDARDS-VALIDATION-v1-ARCHIVED.md` + `TODOS.md` (founder-adjudicated
+second pass). Original instruction, retained for history, do NOT action:
+> ~~1. Run /plan-eng-review on Module 15 deep scope~~
+> ~~2. Module 15 deep — 12-15 bespoke APQC/Lean questions, replicate M5/M12~~
 
 **Days 14-15:** Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5).
 
