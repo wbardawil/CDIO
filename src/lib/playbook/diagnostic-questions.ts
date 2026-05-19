@@ -144,7 +144,7 @@ const LEVEL_RUBRIC: Record<number, { l1: string; l2: string; l3: string; l4: str
     l2: "Transactional leadership; inconsistent communication.",
     l3: "Strong leadership; regular stakeholder engagement; clear communication.",
     l4: "Transformational leadership; storytelling mastery; trusted advisor to C-suite.",
-    l5: "AI-CDIO Optimizing tier (extension beyond playbook): tech leadership is a recognized brand; trusted-advisor relationships span the C-suite; storytelling shapes investment.",
+    l5: "AI-CDIO Optimizing tier (extension beyond playbook): technology leadership consistently demonstrates the full range of transformational leadership (idealized influence, inspirational motivation, intellectual stimulation, individualized consideration) across the organization; leadership development and succession are institutionalized so the leadership bench renews itself; stakeholder relationships are managed as a sustained capability rather than individual rapport.",
   },
   11: {
     l1: "Ad hoc structure; unclear roles; reactive operations.",

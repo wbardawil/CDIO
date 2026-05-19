@@ -2,16 +2,22 @@
 // (same pattern as scripts/check-grants.js). Run: node scripts/validate-citations.js
 //
 // What it asserts (and BLOCKS commit on, via exit code 1):
-//   STEP A  [REGRESSION / IRON RULE] verbatim fidelity:
-//           every DIAGNOSTIC_QUESTIONS question + its subcategory + the module's
-//           LEVEL_RUBRIC level_1..4 are byte-faithful (normalized) to
-//           source-playbook/01_ASSESSMENT_FRAMEWORK.md. Provenance claims
-//           "verbatim"; if false, every citation built on it is invalid.
-//   STEP C  citation-wiring / locator / grade integrity — ONLY when
+//   STEP A  [REGRESSION] citation-aware provenance fidelity. Questions are no
+//           longer verbatim-from-playbook by design (defensibility-bar rebuild,
+//           locked 2026-05-19). So verbatim fidelity is enforced ONLY for
+//           modules NOT yet founder-ratified (scripts/ratified-modules.json):
+//           for those, every question + subcategory + level_1..4 must stay
+//           byte-faithful (normalized) to the source playbook — the regression
+//           guard still applies exactly where the rebuild has not reached.
+//           Ratified modules are exempt (their questions are intentionally
+//           rewritten); their drift is reported informationally, not blocked,
+//           and STEP C instead requires every question to carry a
+//           non-indefensible named-construct citation.
+//   STEP C  defensibility-bar citation integrity — ONLY when
 //           src/lib/playbook/question-citations.ts exists. Until then those
 //           checks are reported as SKIPPED (Step A can run standalone).
 //
-// Exit: 0 = clean, 1 = drift or invariant violation.
+// Exit: 0 = clean, 1 = un-ratified drift or invariant violation.
 
 const fs = require("fs");
 const path = require("path");
@@ -20,6 +26,16 @@ const ROOT = path.join(__dirname, "..");
 const PLAYBOOK = path.join(ROOT, "source-playbook", "01_ASSESSMENT_FRAMEWORK.md");
 const QUESTIONS = path.join(ROOT, "src", "lib", "playbook", "diagnostic-questions.ts");
 const CITATIONS = path.join(ROOT, "src", "lib", "playbook", "question-citations.ts");
+const RATIFIED = path.join(ROOT, "scripts", "ratified-modules.json");
+
+// founder-ratification ledger — a module is exempt from verbatim only after
+// the founder ratifies it at the per-module gate. Empty / missing ⇒ none.
+let ratifiedModules = [];
+try {
+  const led = JSON.parse(fs.readFileSync(RATIFIED, "utf-8"));
+  ratifiedModules = Array.isArray(led.ratifiedModules) ? led.ratifiedModules : [];
+} catch { /* no ledger yet — every module must stay verbatim */ }
+const isRatified = (n) => ratifiedModules.includes(n);
 
 // ---- normalization: compare meaning, not punctuation/case/quote-style -------
 // The playbook is canonical; the code legitimately (a) appends a trailing period
@@ -114,16 +130,21 @@ function parseQuestions() {
 // ---- run --------------------------------------------------------------------
 const pb = parsePlaybook();
 const { questions, rubric } = parseQuestions();
-const drift = [];
+const drift = [];       // BLOCKING — un-ratified modules must stay verbatim
+const rewritten = [];   // informational — ratified modules intentionally diverge
 let qCount = 0;
 
 for (const q of questions) {
   qCount++;
   const m = pb[q.module_number];
   if (!m) { drift.push(`[Q] ${q.id}: module ${q.module_number} not in playbook`); continue; }
-  if (!m.questions.has(norm(q.question)))
-    drift.push(`[Q] ${q.id} (M${q.module_number}): question text not verbatim in playbook\n      code: ${q.question}`);
-  if (!m.subcats[norm(q.subcategory)])
+  const ratified = isRatified(q.module_number);
+  if (!m.questions.has(norm(q.question))) {
+    const msg = `[Q] ${q.id} (M${q.module_number}): question text not verbatim in playbook\n      code: ${q.question}`;
+    (ratified ? rewritten : drift).push(msg);
+  }
+  // subcategory may legitimately be re-anchored in a ratified module
+  if (!m.subcats[norm(q.subcategory)] && !ratified)
     drift.push(`[SUB] ${q.id} (M${q.module_number}): subcategory "${q.subcategory}" not a playbook section`);
 }
 
@@ -131,18 +152,24 @@ for (let n = 1; n <= 16; n++) {
   const rb = rubric[n];
   const m = pb[n];
   if (!rb || !m) { drift.push(`[RUBRIC] module ${n}: rubric or playbook section missing`); continue; }
+  const sink = isRatified(n) ? rewritten : drift;
   for (const lv of ["1", "2", "3", "4"]) {
     if (norm(rb["l" + lv]) !== norm(m.levels[lv]))
-      drift.push(
+      sink.push(
         `[RUBRIC] M${n} level_${lv} drift\n      code: ${rb["l" + lv]}\n      book: ${m.levels[lv]}`
       );
   }
-  if (!rb.l5) drift.push(`[RUBRIC] M${n}: level_5 (AI-CDIO extension) missing`);
+  if (!rb.l5) drift.push(`[RUBRIC] M${n}: level_5 (AI-CDIO extension) missing`); // always required
 }
 
-console.log(`STEP A — verbatim fidelity: ${qCount} questions, 16 rubrics checked`);
-if (drift.length === 0) console.log("  ✓ all questions + subcategories + level_1..4 are verbatim-faithful");
-else { console.log(`  ✗ ${drift.length} drift(s):`); for (const d of drift) console.log("   - " + d); }
+console.log(
+  `STEP A — provenance fidelity: ${qCount} questions, 16 rubrics; ` +
+  `ratified (verbatim-exempt): ${ratifiedModules.length ? ratifiedModules.join(",") : "none"}`
+);
+if (drift.length === 0) console.log("  ✓ all un-ratified modules verbatim-faithful to the playbook");
+else { console.log(`  ✗ ${drift.length} blocking drift(s):`); for (const d of drift) console.log("   - " + d); }
+if (rewritten.length)
+  console.log(`  · ${rewritten.length} intentional rewrite(s) in ratified modules (informational, not blocked)`);
 
 // ---- STEP C invariants (only if the citation map exists) -------------------
 let stepC = "SKIPPED (question-citations.ts not yet created — run after Step C-1)";
@@ -153,6 +180,13 @@ if (fs.existsSync(CITATIONS)) {
   const entryRe = new RegExp('"(m\\d+_q\\d+)"\\s*:\\s*\\{([\\s\\S]*?)\\n\\s{2}\\}', "g");
   const mapIds = new Set();
   let e;
+  const SENTINEL = /^\(no .*identified\)$/i;
+  const isNamed = (v) => typeof v === "string" && v.trim() !== "" && !SENTINEL.test(v.trim());
+  const str = (re) => (body) => (body.match(re) || [])[1];
+  const getFramework = str(new RegExp('framework:\\s*"' + STR + '"'));
+  const getReference = str(new RegExp('reference:\\s*"' + STR + '"'));
+  const getLocator = str(new RegExp('locator:\\s*"' + STR + '"'));
+  const moduleOf = (id) => parseInt(id.match(/^m(\d+)_/)[1], 10);
   while ((e = entryRe.exec(cs))) {
     const id = e[1];
     const body = e[2];
@@ -160,24 +194,49 @@ if (fs.existsSync(CITATIONS)) {
     const grade = (body.match(/grade:\s*"(\w+)"/) || [])[1];
     const verified = /verifiedViaFetch:\s*true/.test(body);
     const semantic = /semanticPass:\s*true/.test(body);
-    const locator = (body.match(new RegExp('locator:\\s*"' + STR + '"')) || [])[1];
+    const locator = getLocator(body);
+    const framework = getFramework(body);
+    const reference = getReference(body);
     const clientVisible = /clientVisible:\s*true/.test(body);
+    const paywalled = /accessStatus:\s*"paywalled"/.test(body) || /sourceType:\s*"paywalled"/.test(body);
+    const urlLocator = !!locator && /^https?:\/\//.test(locator);
+    const mod = moduleOf(id);
+
+    // DEFENSIBILITY BAR — strong needs a named construct + semanticPass + a
+    // precise locator (URL+fetch when public; a non-empty named-clause string
+    // when the canonical source is paywalled). Paywalled no longer auto-fails.
     if (grade === "strong") {
-      if (!verified) { cFail++; console.log(`  ✗ ${id}: strong but verifiedViaFetch!=true`); }
+      if (!isNamed(framework) || !isNamed(reference)) { cFail++; console.log(`  ✗ ${id}: strong without a named construct`); }
       if (!semantic) { cFail++; console.log(`  ✗ ${id}: strong but semanticPass!=true`); }
-      if (!locator || !/^https?:\/\//.test(locator)) { cFail++; console.log(`  ✗ ${id}: strong without resolvable locator`); }
+      if (paywalled) {
+        if (!locator || locator.trim() === "") { cFail++; console.log(`  ✗ ${id}: strong+paywalled without a precise named-clause locator`); }
+      } else {
+        if (!verified) { cFail++; console.log(`  ✗ ${id}: strong public source but verifiedViaFetch!=true`); }
+        if (!urlLocator) { cFail++; console.log(`  ✗ ${id}: strong public source without resolvable locator`); }
+      }
     }
-    if (/paywalled/i.test(body) && grade === "strong") { cFail++; console.log(`  ✗ ${id}: paywalled source graded strong`); }
-    if (clientVisible) console.log(`  ! ${id}: clientVisible=true — must be founder-approved survivor`);
+
+    // An undefendable question must NEVER be client-visible, and clientVisible
+    // is legitimate ONLY for a founder-ratified module (the ledger gate).
+    if (clientVisible && grade === "indefensible") { cFail++; console.log(`  ✗ ${id}: clientVisible=true but grade=indefensible (must be re-derived before ratification)`); }
+    if (clientVisible && !isRatified(mod)) { cFail++; console.log(`  ✗ ${id}: clientVisible=true but M${mod} is not in the founder-ratification ledger`); }
   }
   const qIds = new Set(questions.map((q) => q.id));
   for (const id of qIds) if (!mapIds.has(id)) { cFail++; console.log(`  ✗ question ${id} has no citation entry`); }
   for (const id of mapIds) if (!qIds.has(id)) { cFail++; console.log(`  ✗ orphan citation key ${id} (no such question)`); }
+  // Provenance guarantee for ratified modules: every question carries a
+  // non-indefensible named-construct citation (this replaces verbatim).
+  for (const q of questions) {
+    if (!isRatified(q.module_number)) continue;
+    const m2 = cs.match(new RegExp('"' + q.id + '"\\s*:\\s*\\{([\\s\\S]*?)\\n\\s{2}\\}'));
+    const g = m2 && (m2[1].match(/grade:\s*"(\w+)"/) || [])[1];
+    if (g === "indefensible") { cFail++; console.log(`  ✗ ${q.id}: M${q.module_number} ratified but question still indefensible`); }
+  }
   stepC = cFail === 0
     ? `✓ ${mapIds.size} citation entries, invariants hold`
     : `✗ ${cFail} invariant violation(s)`;
 }
-console.log(`STEP C — citation integrity: ${stepC}`);
+console.log(`STEP C — defensibility-bar citation integrity: ${stepC}`);
 
 const failed = drift.length > 0 || cFail > 0;
 console.log(failed ? "\nRESULT: FAIL (blocks commit)" : "\nRESULT: PASS");

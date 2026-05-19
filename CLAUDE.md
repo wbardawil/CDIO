@@ -122,22 +122,52 @@ C:/Users/Dell/projects/CDIO/
 - **Multi-tenancy via practitioner → clients hierarchy:** N:N schema (already in place); UI defaults to single-owner display.
 - **Auth via Clerk:** wired Day 1.
 - **Rate limiting via Upstash Redis:** Day 5 (env vars pending).
+- **Methodology = defensibility bar, NOT verbatim (locked 2026-05-19):** the 128 diagnostic questions are being rebuilt so each maps to a specific named construct in a recognized authoritative source. This supersedes the `96dd36a`/`1127291` verbatim-from-playbook directive (sanctioned, reason: verbatim is only 30% defensible). Founder ratifies per module — never self-certify. Full decision in Current Sprint § "LOCKED DECISION (2026-05-19)".
 
 ## Current Sprint (end of Day 12 — Phase 1C Quick Win Stack 2/3 done)
 
 Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-12 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 doc-lock + Day 12 Module 12 deep shipped at `f595bfc`).
 
-**Day 13 — SUPERSEDED (2026-05-19).** The "Module 15 deep — bespoke framework
-questions" task below is **obsolete**. Module 15 deep was built (`b6cf3a0`)
-then ALL 16 modules were deliberately reverted to verbatim-from-source-playbook
+**Day 13 note — RESOLVED (2026-05-19).** The old "Module 15 deep — bespoke
+framework questions" task is closed. History: Module 15 deep was built
+(`b6cf3a0`), then ALL 16 modules were reverted to verbatim-from-source-playbook
 (`1127291`→`aa8e42a`→`96dd36a`: "no hallucination, only signal questions").
-Re-introducing bespoke/AI-synthesised framework questions reverses that
-directive — do NOT do it. The live methodology-integrity workstream is the
-bank-wide validation: `docs/STANDARDS-VALIDATION.md` (v2.0) +
-`docs/STANDARDS-VALIDATION-v1-ARCHIVED.md` + `TODOS.md` (founder-adjudicated
-second pass). Original instruction, retained for history, do NOT action:
+That verbatim revert is **now itself superseded** — see the locked decision
+below. Stale instruction, retained for history only, do NOT action:
 > ~~1. Run /plan-eng-review on Module 15 deep scope~~
 > ~~2. Module 15 deep — 12-15 bespoke APQC/Lean questions, replicate M5/M12~~
+
+### 🔒 LOCKED DECISION (2026-05-19) — Rebuild 128 questions to the DEFENSIBILITY BAR
+
+This **deliberately supersedes the `96dd36a`/`1127291` "verbatim-from-source-
+playbook" directive.** It is a sanctioned founder decision, **not** a
+reversal-mistake. The reason changed, not the discipline: strict external-
+source validation (`docs/STANDARDS-VALIDATION.md` v2.0) proved the verbatim
+playbook is only **30% defensible** (38 strong / 81 weak / 9 indefensible).
+Technical solidity now beats verbatim fidelity.
+
+**The bar:** every one of the 128 questions must map to a SPECIFIC NAMED
+construct in a recognized authoritative source. Public + fetch-verified where
+the source is public; a PRECISE standard-clause citation where the canonical
+source is paywalled (ITIL/CMMI/ISO/SAFe allowed **only** if cited to the named
+clause, not just a framework name). Only "no named construct" fails the gate.
+
+**Method (fix-mode, not from zero — the diagnosis already exists):** 38 strong
+→ keep + formalize citation; ~81 weak → re-anchor to the named construct in
+`src/lib/playbook/question-citations.ts` (or better), tighten wording only
+where needed; 9 indefensible → re-derive from the authoritative source. Keep
+16 modules, ≥8 questions/module.
+
+**Founder-gated, per module — NEVER self-certify.** Self-certification is the
+exact failure this effort exists to kill. The founder ratifies each module's
+mapping before the next; automation enforces metadata integrity only
+(`scripts/build-question-citations.js` + `scripts/validate-citations.js`, now
+on the defensibility bar — verbatim-fidelity is citation-aware, no longer a
+hard verbatim block, because questions are intentionally no longer verbatim).
+Sequence: (1) M12, M13, M2 — the live vendor-selection engagement runs through
+these; (2) M8, M10, M7, M11, M14, M15 — worst-first; (3) the rest. Reference:
+this directive + the gstack learning
+`questions-rebuild-to-defensibility-bar-SUPERSEDES-verbatim` (confidence 10).
 
 **Days 14-15:** Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5).
 
