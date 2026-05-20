@@ -64,7 +64,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       role,
       organizations:org_id (
         id, name, size_category, industry, employee_count,
-        engagement_model, monthly_hours, active_modules, is_sandbox
+        engagement_model, monthly_hours, active_modules, is_sandbox, status
       )
     `)
     .eq("practitioner_id", practitioner.id)
@@ -82,6 +82,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
     monthly_hours: number;
     active_modules: number[];
     is_sandbox: boolean;
+    status: string;
   };
 
   // Stakeholders + assessment + scores in parallel
@@ -237,6 +238,7 @@ export default async function ClientWorkspacePage({ params }: PageProps) {
       clientLine={clientLine}
       activeSection="overview"
       isSandbox={org.is_sandbox}
+      isArchived={org.status === "archived"}
       practitionerName={
         practitioner.name ?? practitioner.email ?? undefined
       }

@@ -26,7 +26,7 @@ export default async function AuditDetailPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name, size_category, industry, is_sandbox")
+    .select("id, name, size_category, industry, is_sandbox, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
@@ -45,6 +45,7 @@ export default async function AuditDetailPage({
     size_category: string;
     industry: string;
     is_sandbox: boolean;
+    status: string;
   };
   const a = audit as Audit;
   const SIZE_LABELS: Record<string, string> = {
@@ -85,6 +86,7 @@ export default async function AuditDetailPage({
       trail={[{ label: "Audits", href: `/clients/${o.id}/audits` }]}
       activeSection="audits"
       isSandbox={o.is_sandbox}
+      isArchived={o.status === "archived"}
       width="narrow"
     >
       {verdictWithheld ? (

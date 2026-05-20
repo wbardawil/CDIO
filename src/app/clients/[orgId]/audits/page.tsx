@@ -29,7 +29,7 @@ export default async function AuditsListPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name, size_category, industry, is_sandbox")
+    .select("id, name, size_category, industry, is_sandbox, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
@@ -53,6 +53,7 @@ export default async function AuditsListPage({
     size_category: string;
     industry: string;
     is_sandbox: boolean;
+    status: string;
   };
   // Premise-7 verdict gate, identical to the audit detail page: a
   // non-sandbox client must never see an unvalidated AI verdict — not
@@ -77,6 +78,7 @@ export default async function AuditsListPage({
       clientLine={clientLine}
       activeSection="audits"
       isSandbox={o.is_sandbox}
+      isArchived={o.status === "archived"}
     >
       <div>
         {/* The one primary action on this screen. */}

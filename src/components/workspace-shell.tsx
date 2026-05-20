@@ -17,6 +17,7 @@
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { SandboxBanner } from "./sandbox-banner";
+import { ArchivedBanner } from "./archived-banner";
 
 export type WorkspaceSection =
   | "overview"
@@ -66,6 +67,14 @@ export interface WorkspaceShellProps {
   /** Which section nav item is current. */
   activeSection?: WorkspaceSection;
   isSandbox?: boolean;
+  /**
+   * When true, an amber-soft ArchivedBanner renders above the main
+   * content area. Per the customer-mgmt sprint decision (option c):
+   * banner is informational only — does NOT gate mutations.
+   * Pages that don't pass this prop won't show the banner; adopt
+   * incrementally as each page's data fetch picks up org.status.
+   */
+  isArchived?: boolean;
   practitionerName?: string;
   /** Reading-column width. Long-form deliverables read better narrow. */
   width?: "wide" | "narrow";
@@ -80,6 +89,7 @@ export function WorkspaceShell({
   trail = [],
   activeSection,
   isSandbox = false,
+  isArchived = false,
   practitionerName,
   width = "wide",
   children,
@@ -190,7 +200,10 @@ export function WorkspaceShell({
         </div>
       </div>
 
-      <main className={`${main} mx-auto px-6 py-8`}>{children}</main>
+      <main className={`${main} mx-auto px-6 py-8`}>
+        {isArchived && <ArchivedBanner orgId={orgId} orgName={orgName} />}
+        {children}
+      </main>
     </div>
   );
 }
