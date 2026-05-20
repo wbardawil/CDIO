@@ -55,9 +55,18 @@ See `docs/STRATEGY-2026.md` Architectural Lineage section for the strategic fram
 
 ## What This Project Is
 
-AI-CDIO — the **Fractional Executive Operating System**. Built first as a tool the founder uses on his own fractional CDIO practice, validated in parallel with other practitioners and IT directors. The 30-file CDIO playbook (in sibling directory `../CSIO - Playbook/`) becomes interactive engines that produce real deliverables.
+AI-CDIO — the **Executive Operating System for technology leadership**. The 30-file CDIO playbook (in sibling directory `../CSIO - Playbook/`) becomes interactive engines that produce board-defensible deliverables.
 
-**Customer #0 = the founder.** Every feature is validated against his real fractional engagements before being shown to anyone else.
+**Who it is for (locked 2026-05-19 — expanded from "fractional only"):** the same methodology + platform serves anyone running the technology-leadership function for a mid-market organisation:
+
+- **Fractional CDIOs / CIOs / CTOs** — scale their practice to 4–6 clients without methodology collapse
+- **Full-time CIOs** at mid-market companies — systematize the function, run a defensible board cadence, prove tech ROI to CEO/CFO/board
+- **IT Directors** at mid-market companies (with or without a CIO above them) — operate to executive-level methodology, punch above weight in board conversations
+- **Operational CTOs** (mid-market CTO ≈ head-of-IT, not head-of-engineering at a product company) — same use case as the CIO above
+
+The product produces the same artifacts (maturity baseline, Decision Packages, AI roadmap, status reports) regardless of which persona is the seat holder. What differs is the **buyer motion** (see Strategic Decisions below): services-led for fractionals selling engagements to CEOs; product-led for in-house executives buying the platform as their own toolkit.
+
+**Customer #0 = the founder** (fractional CDIO practice). Every feature is validated against his real fractional engagements first. In-house-executive personas are validated in parallel as the platform matures.
 
 ## Project Structure
 
@@ -99,7 +108,7 @@ C:/Users/Dell/projects/CDIO/
 - Add tests, lint configs, or CI without being asked
 
 ### Strategic Decisions Already Made (refreshed 2026-05-07 evening)
-- **Path B confirmed:** Fractional Executive OS for practitioners + internal IT directors. Customer #0 = founder.
+- **Path B confirmed (expanded 2026-05-19):** Executive OS for technology leadership — used by fractional CDIOs/CIOs/CTOs (founder's primary persona), full-time CIOs at mid-market companies, IT Directors, and operational CTOs. Customer #0 = founder (fractional). Same methodology + artifacts across all personas; the **buyer motion differs**: services-led (fractional sells a 90-day engagement to a CEO) vs product-led (in-house exec buys the platform as their own toolkit). Both motions launch in parallel from Phase 3 commercial release.
 - **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on <anchor client> + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
 - **The Differentiated Promise is CEO-facing:** "Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice. Bad tech bets die before they cost you money. AI moves from board talk to real rollout in 90 days." See `docs/STRATEGY-2026.md`.
 - **The 90-Day Commitment Matrix locks the contract backbone:** Day 14 maturity baseline → Day 21 Decision Packages resolved → Day 30 AI roadmap → Day 45 first initiative launched (outcome-driven, not category-limited) → Day 60 second initiative + Status Report + Cadence → Day 90 maturity lift + ROI + AI initiative shipped.
