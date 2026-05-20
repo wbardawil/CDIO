@@ -55,9 +55,19 @@ See `docs/STRATEGY-2026.md` Architectural Lineage section for the strategic fram
 
 ## What This Project Is
 
-AI-CDIO — the **Fractional Executive Operating System**. Built first as a tool the founder uses on his own fractional CDIO practice, validated in parallel with other practitioners and IT directors. The 30-file CDIO playbook (in sibling directory `../CSIO - Playbook/`) becomes interactive engines that produce real deliverables.
+AI-CDIO — the **Executive Operating System for technology leadership**. The 30-file CDIO playbook (in sibling directory `../CSIO - Playbook/`) becomes interactive engines that produce board-defensible deliverables.
 
-**Customer #0 = the founder.** Every feature is validated against his real fractional engagements before being shown to anyone else.
+**Who it is for (locked 2026-05-19 — expanded from "fractional only"):** the same methodology + platform serves anyone running the technology-leadership function for a mid-market organisation:
+
+- **Fractional CDIOs / CIOs / CTOs** — scale their practice to 4–6 clients without methodology collapse
+- **Full-time CIOs** at mid-market companies — systematize the function, run a defensible board cadence, prove tech ROI to CEO/CFO/board
+- **IT Directors** at mid-market companies (with or without a CIO above them) — operate to executive-level methodology, punch above weight in board conversations
+- **Operational CTOs** (mid-market CTO ≈ head-of-IT, not head-of-engineering at a product company) — same use case as the CIO above
+- **IT Managers** (added 2026-05-19) — technical operators of IT, often locked out of the strategic conversation by vocabulary, not capability. The platform serves them as BOTH a tool (run their department, manage IT initiatives, produce defensible artifacts under their boss's sign-off) AND a coachee (Coach Mode translates between technical reality and executive language, surfaces level-up prompts per question, and grows them into the IT Director / CIO seat they're aiming at). Buyer motion: individual / bottom-up — they buy a low-cost individual seat themselves or get sponsored by their boss or fractional. They are the **seat-expansion vector** across all other personas (an IT Manager using the product personally becomes the wedge that converts the team / department / executive tier).
+
+The product produces the same artifacts (maturity baseline, Decision Packages, AI roadmap, status reports) regardless of which persona is the seat holder. What differs is the **buyer motion** (see Strategic Decisions below): (1) services-led for fractionals selling 90-day engagements to CEOs; (2) product-led for in-house executives buying the platform as their own toolkit; (3) individual / bottom-up for IT Managers and IT professionals (added with the IT Manager persona — paid individual seat, watermarked outputs until the org subscribes, Coach Mode emphasized as the retention hook).
+
+**Customer #0 = the founder** (fractional CDIO practice). Every feature is validated against his real fractional engagements first. In-house-executive personas are validated in parallel as the platform matures. The IT Manager persona unlocks the **coaching / professional-growth** dimension of the product, which is why the cross-mapping engine + Coach Mode are the next planned build.
 
 ## Project Structure
 
@@ -99,8 +109,8 @@ C:/Users/Dell/projects/CDIO/
 - Add tests, lint configs, or CI without being asked
 
 ### Strategic Decisions Already Made (refreshed 2026-05-07 evening)
-- **Path B confirmed:** Fractional Executive OS for practitioners + internal IT directors. Customer #0 = founder.
-- **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on Ambar + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
+- **Path B confirmed (expanded 2026-05-19, IT Manager added):** Executive OS for technology leadership — used by fractional CDIOs/CIOs/CTOs (founder's primary persona), full-time CIOs at mid-market companies, IT Directors, operational CTOs, AND IT Managers (technical operators who use the platform as a tool AND a coachee that grows their executive vocabulary). Customer #0 = founder (fractional). Same methodology + artifacts across all personas; **THREE buyer motions** differ: (1) services-led (fractional sells a 90-day engagement to a CEO), (2) product-led (in-house exec buys the platform as their toolkit), (3) individual / bottom-up (IT Manager buys a personal seat). All three motions converge on the same product surface (Executive tier is where (1) and (2) renew; Team tier is where (3) expands to). Launches phased: motion (1) live in Year 1 with founder selling; motion (3) launches with the freemium Quick Scan + Professional tier (next product gate after the cross-mapping engine ships); motions (2) full and (4 — fractional practice) launch in Phase 3 commercial release.
+- **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on <anchor client> + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
 - **The Differentiated Promise is CEO-facing:** "Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice. Bad tech bets die before they cost you money. AI moves from board talk to real rollout in 90 days." See `docs/STRATEGY-2026.md`.
 - **The 90-Day Commitment Matrix locks the contract backbone:** Day 14 maturity baseline → Day 21 Decision Packages resolved → Day 30 AI roadmap → Day 45 first initiative launched (outcome-driven, not category-limited) → Day 60 second initiative + Status Report + Cadence → Day 90 maturity lift + ROI + AI initiative shipped.
 - **Better / cheaper / faster:** 5x faster + 1/5th the cost of full-time CDIO + better proof than any consultant slide deck.
@@ -111,7 +121,7 @@ C:/Users/Dell/projects/CDIO/
 - **Methodology FULL on every tier:** no feature-gating of AI Accelerator. Tiers differentiate by scale (clients, practitioners) and compute mechanism only. Mechanism 1 (allowance + metered overage) for Starter; Mechanism 2 (BYOK) for Growth + Scale. Final pricing locked at Phase 2 Day 37-38 based on Day 19 cost telemetry.
 - **Day 90 kill switch criterion revised (locked 2026-05-07 evening):** Year 1 metric is CEO outcomes delivered (`docs/OUTCOMES.md`), not paying-customer count from fractionals. Paying-customer count is a Year 2 metric.
 - **Phase 1D scope (Days 21-28):** Charter → Initiative Pilot → Selection Engine (Tech + Partner) + Network Catalog → Cadence → Status Reports → MCP + integrations.
-- **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on Ambar + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
+- **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on <anchor client> + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
 - **Phase 2.5 stays full 12 days (Days 39-50, per `9f3a2a6` final lock):** AI Maturity Model + Use-Case Library + Roadmap Generator + AI-flavored Selection Engine pass (extends Phase 1D Day 24 generic Selection Engine via `domain: "tech" | "ai"` parameter — no standalone Build-vs-Buy Advisor) + Governance Scaffolding + AI deliverable surfacing + Public `/ai-readiness` Quick Scan + Quarterly re-assessment cadence wiring.
 - **Phase 3 reframed (locked 2026-05-07 evening):** opens to other fractionals (commercial release). Stripe + first paying fractional customers + design partner pilots.
 - **Architectural laws (8) locked:** see `docs/STRATEGY-2026.md` Architectural Laws section.
@@ -182,7 +192,7 @@ this directive + the gstack learning
 - **Founder-judgment fast-follows** from the rebuild — see `TODOS.md` §3 (4 one-line weak rewordings + M5 RECOVER decision + async review of the 11 autonomous module ratifications).
 - **Merge the branch to main** when the founder gives the go-ahead.
 
-**Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on Ambar end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
+**Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on <anchor client> end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
 
 ## Process Discipline — gstack as MANDATORY GATES (locked 2026-05-07)
 

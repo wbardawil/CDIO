@@ -173,7 +173,7 @@ Cost telemetry from Day 19 (`agent_logs` per-engagement instrumentation) is the 
 
 Today: every LLM call is stateless, context fed per-request. Works for single-shot operations.
 
-Phase 4: per-client conversational memory across sessions. The agent knows Ambar's history without re-retrieving. Adopts Anthropic's native memory primitives when generally available — does not roll its own custom memory system.
+Phase 4: per-client conversational memory across sessions. The agent knows <anchor client>'s history without re-retrieving. Adopts Anthropic's native memory primitives when generally available — does not roll its own custom memory system.
 
 This is what makes the Practitioner Feeling Map's *"My methodology travels with me"* feeling work for real. The eighth client benefits from clients 1-7 because the agent remembers patterns, decisions, and outcomes across the engagement timeline.
 
