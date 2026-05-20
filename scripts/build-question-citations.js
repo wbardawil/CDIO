@@ -1,15 +1,25 @@
 // Single-writer Step C-1 builder. Reads the 16 read-only validation artifacts
 // + the question ids from diagnostic-questions.ts, emits the typed citation map
-// src/lib/playbook/question-citations.ts (EVERY entry clientVisible:false), and
-// prints aggregate stats for the v2.0 report. No deps. FAILS LOUDLY if any of
-// the 128 question ids is missing an artifact entry (no partial emit).
+// src/lib/playbook/question-citations.ts, and prints aggregate stats. No deps.
+// FAILS LOUDLY if any of the 128 question ids is missing an artifact entry.
 // Run: node scripts/build-question-citations.js
+//
+// ENFORCEMENT = the DEFENSIBILITY BAR (locked 2026-05-19, supersedes the old
+// fetch-only cap). A "strong" entry survives iff it carries a SPECIFIC NAMED
+// construct + a PRECISE locator (a resolvable URL when the source is public,
+// OR — when the canonical source is paywalled — a non-empty named-clause
+// locator string) + semanticPass. Paywalled no longer auto-caps: a precise
+// named clause is solid. Only "no named construct" fails. Automation enforces
+// METADATA presence only (Codex #15); semantic truth is the per-module founder
+// ratification gate. clientVisible is driven by scripts/ratified-modules.json
+// (the recorded, portable founder-ratification ledger) — empty ⇒ all false.
 const fs = require("fs");
 const path = require("path");
 
 const ROOT = path.join(__dirname, "..");
 const QUESTIONS = path.join(ROOT, "src", "lib", "playbook", "diagnostic-questions.ts");
 const OUT_TS = path.join(ROOT, "src", "lib", "playbook", "question-citations.ts");
+const RATIFIED = path.join(ROOT, "scripts", "ratified-modules.json");
 const ART = path.join(process.env.USERPROFILE || process.env.HOME, ".gstack",
   "projects", "wbardawil-CDIO", "citation-audit", "out");
 
@@ -42,26 +52,103 @@ if (missing.length) {
   process.exit(1);
 }
 
-// STRICT-BAR ENFORCEMENT (deterministic — do NOT trust the agent's grade).
-// Codex #15: automation can only enforce metadata, so enforce it hard here.
-// strong REQUIRES: verifiedViaFetch && http(s) locator && semanticPass &&
-// sourceType!=="paywalled" && accessStatus==="public-full".
-// Any violation auto-downgrades to "weak" with a transparent note.
+// ---- founder-ratification ledger (recorded, portable, per module) ----------
+// scripts/ratified-modules.json: { "ratifiedModules": [12, 13, 2], ... }.
+// A module appears here ONLY after the founder explicitly ratifies its mapping
+// at the per-module gate. Empty / missing ⇒ nothing ratified ⇒ every entry
+// clientVisible:false (identical to pre-rebuild behavior — certifies nothing).
+let ratifiedModules = [];
+try {
+  const led = JSON.parse(fs.readFileSync(RATIFIED, "utf-8"));
+  ratifiedModules = Array.isArray(led.ratifiedModules) ? led.ratifiedModules : [];
+} catch { /* no ledger yet — all clientVisible:false */ }
+const isRatified = (n) => ratifiedModules.includes(n);
+
+// ---- preserve founder-curated entries for RATIFIED modules -----------------
+// For a ratified module the committed question-citations.ts is the portable,
+// reproducible source of record (the ~/.gstack artifacts are frozen v2 audit
+// detail and may not exist on another machine). The builder PRESERVES the
+// existing committed entry for every question in a ratified module instead of
+// regenerating it from the artifact; un-ratified modules still come from the
+// artifacts. This is why ratified entries may be hand-authored at the founder
+// gate without violating "do not hand-edit" — the builder locks them in.
+function parseCommitted(file) {
+  if (!fs.existsSync(file)) return {};
+  const cs = fs.readFileSync(file, "utf-8");
+  const out = {};
+  const entryRe = /"(m\d+_q\d+)"\s*:\s*\{([\s\S]*?)\n\s{2}\},/g;
+  const S = '((?:[^"\\\\]|\\\\.)*)';
+  const sv = (b, k) => { const m2 = b.match(new RegExp(k + ':\\s*"' + S + '"')); return m2 ? JSON.parse('"' + m2[1] + '"') : undefined; };
+  const bv = (b, k) => new RegExp(k + ':\\s*true').test(b);
+  let e;
+  while ((e = entryRe.exec(cs))) {
+    const b = e[2];
+    out[e[1]] = {
+      id: e[1],
+      framework: sv(b, "framework"), reference: sv(b, "reference"),
+      rationale: sv(b, "rationale"), grade: (b.match(/grade:\s*"(\w+)"/) || [])[1],
+      locator: sv(b, "locator"), quoted: sv(b, "quoted"),
+      verifiedViaFetch: bv(b, "verifiedViaFetch"), sourceType: sv(b, "sourceType"),
+      accessStatus: sv(b, "accessStatus"), fetchDate: sv(b, "fetchDate"),
+      reviewer: sv(b, "reviewer"), semanticPass: bv(b, "semanticPass"),
+      confidenceNote: sv(b, "confidenceNote"),
+    };
+  }
+  return out;
+}
+const committed = parseCommitted(OUT_TS);
+const preserved = [];
+for (const { id, module } of ids) {
+  if (isRatified(module) && committed[id]) {
+    byId[id] = { ...committed[id], module, reviewer: committed[id].reviewer || `founder-ratified M${module}` };
+    preserved.push(id);
+  }
+}
+
+// DEFENSIBILITY-BAR ENFORCEMENT (deterministic — do NOT trust the agent's
+// grade). Codex #15: automation enforces METADATA presence only; the founder
+// gate owns semantic truth. A "strong" entry survives iff:
+//   1. it names a SPECIFIC construct  (framework + reference non-empty,
+//      non-sentinel — "no named construct" is the only thing that fails),
+//   2. semanticPass === true,
+//   3. it carries a PRECISE locator:
+//        • public source  → verifiedViaFetch && resolvable http(s) URL
+//          (anti-hallucination defense retained for publicly checkable claims),
+//        • paywalled source → a non-empty named-clause locator string
+//          (precision of the clause is the founder gate's call, not automation).
+// Any violation auto-downgrades strong→weak with a transparent note. The
+// builder NEVER promotes — lifting weak→strong is founder-ratified re-anchoring.
+const SENTINEL = /^\(no .*identified\)$/i;
+const named = (v) => typeof v === "string" && v.trim() !== "" && !SENTINEL.test(v.trim());
 let autoCapped = 0;
 const capLog = [];
 for (const id of Object.keys(byId)) {
   const c = byId[id];
   if (c.grade !== "strong") continue;
   const reasons = [];
-  if (c.verifiedViaFetch !== true) reasons.push("not WebFetch-verified");
-  if (!c.locator || !/^https?:\/\//.test(c.locator)) reasons.push("no resolvable locator");
+  if (!named(c.framework) || !named(c.reference)) reasons.push("no named construct");
   if (c.semanticPass !== true) reasons.push("semanticPass=false");
-  if (c.sourceType === "paywalled") reasons.push("paywalled source");
-  if (c.accessStatus !== "public-full") reasons.push(`accessStatus=${c.accessStatus} (not public-full)`);
+  const url = c.locator && /^https?:\/\//.test(c.locator);
+  if (c.accessStatus === "paywalled" || c.sourceType === "paywalled") {
+    if (!c.locator || String(c.locator).trim() === "")
+      reasons.push("paywalled without a precise named-clause locator");
+  } else {
+    if (c.verifiedViaFetch !== true) reasons.push("public source not WebFetch-verified");
+    if (!url) reasons.push("public source without resolvable locator");
+  }
   if (reasons.length) {
+    // A founder-ratified entry that fails the bar is a curation error — surface
+    // it loudly, never silently downgrade a ratified strong.
+    if (preserved.includes(id)) {
+      console.error(
+        `FATAL: ratified entry ${id} does not meet the defensibility bar: ` +
+        reasons.join("; ") + " — fix the committed citation, do not regenerate."
+      );
+      process.exit(1);
+    }
     c.grade = "weak";
     c.confidenceNote =
-      `[auto-capped to weak per strict bar: ${reasons.join("; ")}] ` +
+      `[auto-capped to weak per defensibility bar: ${reasons.join("; ")}] ` +
       (c.confidenceNote || "");
     autoCapped++;
     capLog.push(`  ${id}: ${reasons.join("; ")}`);
@@ -75,7 +162,7 @@ const req = (v, fallback) =>
   JSON.stringify(v === null || v === undefined || v === "" ? fallback : String(v));
 
 let body = "";
-for (const { id } of ids) {
+for (const { id, module } of ids) {
   const c = byId[id];
   body +=
 `  "${id}": {
@@ -92,7 +179,7 @@ for (const { id } of ids) {
     reviewer: ${req(c.reviewer, "citation-audit 2026-05-19")},
     semanticPass: ${c.semanticPass === true},
     confidenceNote: ${opt(c.confidenceNote || undefined)},
-    clientVisible: false,
+    clientVisible: ${isRatified(module) === true},
   },
 `;
 }
@@ -101,10 +188,17 @@ const file = `// AUTO-GENERATED by scripts/build-question-citations.js — do no
 // Source of truth: the read-only methodology-validation artifacts produced by
 // /plan-eng-review (2026-05-19). Regenerate when the audit re-runs.
 //
-// Every entry is clientVisible:false. Step C-2 (founder-gated) flips only
-// founder-approved survivors to true and wires diagnostic-questions.ts to cite().
-// Until then NOTHING here is shown to a client — the assessment UI keeps the
-// generic playbook citation.
+// Grades are enforced to the DEFENSIBILITY BAR (named construct + precise
+// locator/clause + semanticPass). clientVisible is true ONLY for modules in
+// scripts/ratified-modules.json — the recorded, portable per-module founder-
+// ratification ledger. A module is added there ONLY after the founder ratifies
+// its mapping at the per-module gate; until then its questions keep the generic
+// playbook citation and nothing here is shown to a client.
+//
+// Entries for RATIFIED modules are founder-curated and PRESERVED across regen
+// (they are the portable source of record). Entries for un-ratified modules
+// are auto-generated from the read-only audit artifacts — do not hand-edit
+// those; they will be overwritten.
 
 export type CitationGrade = "strong" | "weak" | "indefensible";
 
@@ -128,7 +222,7 @@ export interface AuthoritativeCitation {
   reviewer: string;
   semanticPass: boolean;
   confidenceNote?: string;
-  /** DEFAULT false. Stays false until the founder triage gate approves it. */
+  /** true ONLY for modules the founder ratified (scripts/ratified-modules.json). */
   clientVisible: boolean;
 }
 
@@ -154,14 +248,15 @@ fs.writeFileSync(OUT_TS, file);
 function enforceRubric(r) {
   if (!r) return "?";
   if (r.grade !== "strong") return r.grade;
+  const url = r.locator && /^https?:\/\//.test(r.locator);
+  const paywalled = r.accessStatus === "paywalled" || r.sourceType === "paywalled";
   const bad =
-    r.verifiedViaFetch !== true ||
-    !r.locator ||
-    !/^https?:\/\//.test(r.locator) ||
+    !named(r.framework) || !named(r.reference) ||
     r.semanticPass !== true ||
-    r.sourceType === "paywalled" ||
-    r.accessStatus !== "public-full";
-  return bad ? "weak*" : "strong"; // weak* = auto-capped
+    (paywalled
+      ? !r.locator || String(r.locator).trim() === ""
+      : r.verifiedViaFetch !== true || !url);
+  return bad ? "weak*" : "strong"; // weak* = auto-capped (defensibility bar)
 }
 
 let tS = 0, tW = 0, tI = 0;
@@ -186,8 +281,11 @@ const riskRank = (r) =>
   (r.triage === "cut" ? 0 : r.triage === "rewrite" ? 1 : 2) * 100 - (r.i * 10 + r.w);
 rows.sort((a, b) => riskRank(a) - riskRank(b));
 
-console.log(`\nWrote ${OUT_TS} — ${ids.length} entries, all clientVisible:false\n`);
-console.log(`STRICT-BAR ENFORCEMENT: ${autoCapped} entries auto-capped strong→weak`);
+const visibleCount = ids.filter((x) => isRatified(x.module)).length;
+console.log(`\nWrote ${OUT_TS} — ${ids.length} entries, ${visibleCount} clientVisible:true\n`);
+console.log(`DEFENSIBILITY-BAR ENFORCEMENT: ${autoCapped} entries auto-capped strong→weak`);
+console.log(`RATIFIED MODULES (clientVisible:true): ${ratifiedModules.length ? ratifiedModules.join(", ") : "none yet"}`);
+console.log(`PRESERVED founder-curated entries: ${preserved.length}${preserved.length ? " (" + preserved.join(", ") + ")" : ""}`);
 if (autoCapped) for (const l of capLog) console.log(l);
 console.log(`TOTALS: strong ${tS} / weak ${tW} / indefensible ${tI}  (of ${ids.length})`);
 console.log("\nRANKED TRIAGE (highest risk first):");

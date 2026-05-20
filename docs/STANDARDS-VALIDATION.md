@@ -1,8 +1,24 @@
 # Standards Validation v2.0 — 128 Questions vs. Authoritative Sources (strict bar)
 
+> ### 📣 v2.1 ADDENDUM (2026-05-19, after the rebuild)
+>
+> The "30% strong / 81 weak / 9 indefensible" headline below is the **pre-rebuild snapshot.** The defensibility-bar rebuild has since shipped on branch `claude/loving-tesla-b61c25`:
+>
+> - **Current bank state: 124 strong / 4 weak / 0 indefensible** (was 38 / 81 / 9).
+> - All 16 modules founder-ratified at the per-module gate (5 human, 11 autonomous under explicit "allow all for this job" authorization — recorded as async-review-pending in `scripts/ratified-modules.json`).
+> - Product UI wired through `cite(id)` (Step C-2 — commit `c4334a8`) so the authoritative named-construct citation now displays in `assessment-form.tsx` in place of the generic "AI-CDIO Source Playbook" label.
+> - The 4 remaining weak (`m14_q3`, `m15_q5`, `m15_q7`, `m16_q8`) are **deliberate honest exceptions** — anti-hallucination over-rode the all-strong preference (each carries a one-line founder reword that lifts it to strong; see `TODOS.md` §3a).
+> - **Human-scannable scorecard:** [`docs/QUESTION-REVIEW.md`](QUESTION-REVIEW.md) — one page, 16 modules.
+> - **"CEO-facing what you can say" claims in Section 3 below are pre-rebuild.** Post-rebuild the honest claim is *"every question maps to a specific named construct in a recognized authoritative source — public + fetch-verified where the source is public, precise standard-clause citation where paywalled (ITIL/COBIT/ISO/SAFe/TOGAF). 124 of 128 questions clear this defensibility bar; the 4 that don't are honestly flagged."*
+>
+> The v2.0 body below is preserved unchanged as the **historical "before" snapshot** that motivated and grounded the rebuild.
+
+---
+
 **Version:** 2.0
 **Date:** 2026-05-19
 **Supersedes:** v1.0 (now `docs/STANDARDS-VALIDATION-v1-ARCHIVED.md`, immutable)
+**Superseded by:** v2.1 ADDENDUM above (rebuild shipped)
 **Produced by:** `/plan-eng-review` bank-wide methodology-validation workstream
 **Scope:** All 128 verbatim playbook questions + 16 maturity rubrics + 16 level_5 extensions in `src/lib/playbook/diagnostic-questions.ts`
 

@@ -5,6 +5,29 @@ the `/plan-eng-review` bank-wide methodology-validation workstream.
 
 ---
 
+## ✅ 1. Founder-adjudicated second pass — DONE (2026-05-19, branch `claude/loving-tesla-b61c25`)
+
+**Shipped** as the defensibility-bar rebuild. All 16 modules ratified at the
+per-module founder gate (M12, M13, M2, M8, M10 human-ratified at AskUserQuestion
+gates; M7, M11, M14, M15, M1, M3, M4, M5, M6, M9, M16 ratified autonomously
+under explicit founder "allow all for this job" authorization, recorded as
+async-review-pending in `scripts/ratified-modules.json`).
+
+**Result:** bank moved from 38 strong / 81 weak / 9 indefensible → **124 strong
+/ 4 weak / 0 indefensible**. The 4 remaining weak (`m14_q3`, `m15_q5`,
+`m15_q7`, `m16_q8`) are deliberate honest exceptions — anti-hallucination
+over-rode all-strong; each is flagged with a one-line founder reword that
+lifts it to strong. The M5 RECOVER-function gap (no RC.* probe) was flagged
+NOT auto-fabricated; founder decides whether to add a 9th M5 question.
+M10's `level_5` overreach was rewritten within the FRL anchor.
+
+**See:** `docs/QUESTION-REVIEW.md` (one-page digest), `scripts/ratified-modules.json`
+(per-module ledger with reasoning + alternatives considered).
+
+**Original content for history:**
+
+<details><summary>(archived) original deferred-work description</summary>
+
 ## 1. Founder-adjudicated second pass — content fixes to weak/indefensible questions
 
 **What:** Run the adjudication + content-fix pass over the items the strict
@@ -40,7 +63,28 @@ of the approved plan: after the founder triage gate, the single writer rewires
 `diagnostic-questions.ts` via `cite(id)` and flips `clientVisible=true` only
 for founder-approved survivors. Re-run `scripts/validate-citations.js` after.
 
+</details>
+
 ---
+
+## ✅ 2. Dead-helper cleanup + Step C-2 product-wiring — DONE (2026-05-19)
+
+**Shipped** in commit `c4334a8`. `diagnostic-questions.ts` is now wired through
+`cite(id)` (added) which resolves to the authoritative named-construct citation
+from `question-citations.ts` when the question's module is founder-ratified
+(`clientVisible:true`) and `grade !== "indefensible"`; falls back to a generic
+playbook citation otherwise. The old generic `citation()` helper is removed
+(zero remaining callers). All 128 callsites rewired by the one-shot
+`scripts/wire-cite.js`. Result: the product UI now surfaces e.g. "COBIT 2019
+(ISACA) — EDM01 'Ensured Governance Framework Setting and Maintenance'" in
+place of the prior generic "AI-CDIO Source Playbook" label.
+
+`validate-citations.js` PASS, no new tsc errors. Next build must be verified
+locally on a workspace with `node_modules` installed (this worktree has none).
+
+**Original for history:**
+
+<details><summary>(archived) original deferred-work description</summary>
 
 ## 2. Dead-helper cleanup (fast-follow)
 
@@ -66,9 +110,42 @@ once Step C-2 lands.
 **Depends on / blocked by:** Step C-2 (founder-gated) must complete and
 `scripts/validate-citations.js` must report 128/128 with zero orphans.
 
+</details>
+
 ---
 
-## 3. EXPERIENCE-SPINE step-1 — deferred items (from /plan-eng-review v2, 2026-05-19)
+## 3. Founder-judgment fast-follows from the autonomous rebuild (NEW, 2026-05-19)
+
+Flagged in the autonomous batch-2/3 pass, deliberately NOT done because they
+need founder judgment (anti-hallucination > all-strong).
+
+- **(3a) 4 honest WEAK rewordings** — each lifts to strong on a single
+  one-line edit, suggested in `docs/QUESTION-REVIEW.md` top section:
+  - `m14_q3` "Are Agile metrics tracked (velocity, burndown, etc.)?" →
+    reword to reference DORA Four Keys → DORA strong.
+  - `m15_q5` "Is RPA or automation technology in use?" → reword toward
+    automation-as-solution-within-process-improvement → DMAIC Improve strong.
+  - `m15_q7` "Is AI used for process automation?" → reword toward
+    GOVERNANCE of AI in automation → NIST AI RMF strong.
+  - `m16_q8` "Are emerging skills (AI, cloud, etc.) being developed?" →
+    reword toward concrete ongoing tech-skill development → COBIT APO07
+    strong.
+- **(3b) M5 RECOVER-function gap.** No RC.* probe (RTO/RPO/recovery
+  exercised); `level_5` lightly overclaims security maturity. Per the
+  standing rule against auto-inventing question content, the autonomous
+  pass did NOT add a 9th M5 question. Founder action: decide whether to
+  add e.g. "Are recovery-time/recovery-point objectives defined, exercised
+  and met?" anchored to NIST CSF 2.0 RC.RP-* / RC.CO-* subcategories.
+- **(3c) Async founder review of the autonomous module ratifications.**
+  Modules 7, 11, 14, 15, 1, 3, 4, 5, 6, 9, 16 were ratified under
+  founder "allow all" authorization (founder asleep) and recorded as
+  `async review pending` in `scripts/ratified-modules.json`. Reverting any
+  single module = remove it from `ratifiedModules`; the builder un-locks
+  and falls back to the audit grade. Non-destructive.
+
+---
+
+## 4. EXPERIENCE-SPINE step-1 — deferred items (from /plan-eng-review v2, 2026-05-19)
 
 Step 1 = ship-to-learn on the live vendor-selection engagement. These were
 deferred OUT of step 1 deliberately; capture so they are not lost.
