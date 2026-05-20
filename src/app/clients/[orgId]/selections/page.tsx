@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import {
   type Selection,
   SELECTION_DOMAIN_LABEL,
@@ -29,10 +30,11 @@ export default async function SelectionsListPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   const { data: selections } = await db
     .from("selections")
@@ -70,6 +72,7 @@ export default async function SelectionsListPage({
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
+        {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
         <div className="mb-6 px-4 py-3 bg-evergreen-soft border border-evergreen rounded-lg text-sm text-evergreen-deep">
           <strong>One engine, three domains.</strong> Tech vendor selection,
           AI build-vs-buy + vendor evaluation, and Partner / contractor

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import {
   generateCharter,
   type CharterStakeholder,
@@ -56,11 +57,12 @@ export default async function CharterPage({
   const { data: org } = await db
     .from("organizations")
     .select(
-      "id, name, industry, size_category, employee_count, engagement_model, monthly_hours, active_modules"
+      "id, name, industry, size_category, employee_count, engagement_model, monthly_hours, active_modules, status"
     )
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   const { data: stakeholders } = await db
     .from("stakeholders")
@@ -83,6 +85,13 @@ export default async function CharterPage({
   return (
     <div className="min-h-screen bg-raised print:bg-raised">
       <main className="max-w-4xl mx-auto px-6 sm:px-10 py-10 print:py-6">
+        {/* Screen-only archived banner; deliberately print:hidden so the
+            printed charter PDF stays clean. */}
+        {isArchived && (
+          <div className="print:hidden">
+            <ArchivedBanner orgId={(org as { id: string }).id} orgName={(org as { name: string }).name} />
+          </div>
+        )}
         {/* Top nav (hidden in print) */}
         <nav className="mb-6 print:hidden flex items-center justify-between">
           <Link

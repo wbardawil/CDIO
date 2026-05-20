@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import { NewSelectionForm } from "./form-client";
 
 export default async function NewSelectionPage({
@@ -25,10 +26,11 @@ export default async function NewSelectionPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   return (
     <div className="min-h-screen bg-paper">
@@ -57,6 +59,7 @@ export default async function NewSelectionPage({
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
+        {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
         <h1 className="text-2xl font-bold text-ink mb-1">New selection</h1>
         <p className="text-sm text-muted mb-6">
           Pick the domain — Tech, AI, or Partner. Default criteria load

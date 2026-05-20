@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import { MODULE_NAMES } from "@/types";
 import {
   computeInitiativeProgress,
@@ -32,10 +33,11 @@ export default async function InitiativeDetailPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   const { data: initiative } = await db
     .from("initiatives")
@@ -88,6 +90,7 @@ export default async function InitiativeDetailPage({
       </header>
 
       <main className="max-w-4xl mx-auto px-6 py-8">
+        {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
         <div className="bg-raised rounded-xl border border-hair p-6 mb-6">
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="min-w-0">

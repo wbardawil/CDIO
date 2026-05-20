@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import type { StatusReport, CadenceToken } from "@/types/cadence";
 import { CadenceClient } from "./cadence-client";
 
@@ -26,10 +27,11 @@ export default async function CadenceManagerPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   const { data: reports } = await db
     .from("status_reports")
@@ -65,6 +67,7 @@ export default async function CadenceManagerPage({
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
+        {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
         <div className="mb-6 px-4 py-3 bg-evergreen-soft border border-evergreen rounded-lg text-sm text-evergreen-deep">
           <strong>Cadence-as-primitive.</strong> The Cadence link is the
           read-only client-facing view of the engagement (Architectural Law 5).

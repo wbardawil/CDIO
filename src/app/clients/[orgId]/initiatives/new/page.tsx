@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import { NewInitiativeForm } from "./form-client";
 
 export default async function NewInitiativePage({
@@ -25,7 +26,7 @@ export default async function NewInitiativePage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name, active_modules")
+    .select("id, name, active_modules, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
@@ -57,6 +58,9 @@ export default async function NewInitiativePage({
       </header>
 
       <main className="max-w-3xl mx-auto px-6 py-8">
+        {(org as { status?: string }).status === "archived" && (
+          <ArchivedBanner orgId={org.id} orgName={org.name} />
+        )}
         <h1 className="text-2xl font-bold text-ink mb-1">
           New initiative
         </h1>

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
+import { ArchivedBanner } from "@/components/archived-banner";
 import {
   type Selection,
   SELECTION_DOMAIN_LABEL,
@@ -31,10 +32,11 @@ export default async function SelectionDetailPage({
 
   const { data: org } = await db
     .from("organizations")
-    .select("id, name")
+    .select("id, name, status")
     .eq("id", orgId)
     .single();
   if (!org) notFound();
+  const isArchived = (org as { status?: string }).status === "archived";
 
   const { data: selection } = await db
     .from("selections")
@@ -77,6 +79,7 @@ export default async function SelectionDetailPage({
       </header>
 
       <main className="max-w-5xl mx-auto px-6 py-8">
+        {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
         <div className="bg-raised rounded-xl border border-hair p-5 mb-6">
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="min-w-0">
