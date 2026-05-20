@@ -108,7 +108,23 @@ export function NewInitiativeForm({
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        throw new Error(body?.error ?? `HTTP ${res.status}`);
+        // Surface the API's `details` field (Supabase / validation message) in
+        // addition to the generic `error` so the user sees the real cause
+        // rather than a friendly-but-useless one-liner. Also log to console
+        // for browser-devtools inspection.
+        // eslint-disable-next-line no-console
+        console.error("[initiative create] failed", { status: res.status, body });
+        const detail = body?.details
+          ? typeof body.details === "string"
+            ? body.details
+            : JSON.stringify(body.details)
+          : null;
+        const errMsg = body?.error
+          ? detail
+            ? `${body.error}: ${detail}`
+            : body.error
+          : `HTTP ${res.status}`;
+        throw new Error(errMsg);
       }
 
       const body = await res.json();
