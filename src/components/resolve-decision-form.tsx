@@ -43,7 +43,23 @@ export function ResolveDecisionForm({
         body: JSON.stringify({ resolution: text.trim() }),
       });
       const body = await res.json().catch(() => ({}));
-      if (!res.ok) throw new Error(body?.error ?? `HTTP ${res.status}`);
+      if (!res.ok) // Surface the API's `details` field so the user sees the real cause
+        // (Supabase / validation message) instead of a friendly-but-useless
+        // one-liner. Pattern shared with initiative form (commit 63e81c1).
+        // eslint-disable-next-line no-console
+        console.error("[api error]", { status: res.status, body });
+        const detail = body?.details
+          ? typeof body.details === "string"
+            ? body.details
+            : JSON.stringify(body.details)
+          : null;
+        throw new Error(
+          body?.error
+            ? detail
+              ? `${body.error}: ${detail}`
+              : body.error
+            : `HTTP ${res.status}`
+        );
       setEditing(false);
       router.refresh();
     } catch (e) {

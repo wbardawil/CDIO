@@ -43,7 +43,23 @@ export function StakeholderRowActions({ stakeholder, status, pct, done, total, l
         body: JSON.stringify({ is_reminder: isReminder }),
       });
       const body = await res.json();
-      if (!res.ok) throw new Error(body?.error ?? `HTTP ${res.status}`);
+      if (!res.ok) // Surface the API's `details` field so the user sees the real cause
+        // (Supabase / validation message) instead of a friendly-but-useless
+        // one-liner. Pattern shared with initiative form (commit 63e81c1).
+        // eslint-disable-next-line no-console
+        console.error("[api error]", { status: res.status, body });
+        const detail = body?.details
+          ? typeof body.details === "string"
+            ? body.details
+            : JSON.stringify(body.details)
+          : null;
+        throw new Error(
+          body?.error
+            ? detail
+              ? `${body.error}: ${detail}`
+              : body.error
+            : `HTTP ${res.status}`
+        );
       // Sandbox: server reroutes to practitioner. Surface that fact instead
       // of pretending it went to the stakeholder.
       if (body.sandbox && body.routed_to) {
