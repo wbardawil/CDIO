@@ -37,6 +37,7 @@ import type {
   QuestionFunctionTag,
   QuestionAreaTag,
 } from "@/types";
+import { getAuthoritativeCitation } from "./question-citations";
 
 export interface QuestionTags {
   function: QuestionFunctionTag[];
@@ -207,11 +208,26 @@ function prov(moduleNumber: number, subsection: string, qIndex: number): string 
   return `Source playbook source-playbook/01_ASSESSMENT_FRAMEWORK.md, Module ${moduleNumber}, section ${subsection}, question ${qIndex} — verbatim diagnostic question. Level 1-4 indicators verbatim from the same module's "Maturity Scoring" section. Level 5 indicator is AI-CDIO extension beyond the playbook's Advanced tier. Role/area tags inferred by AI-CDIO from question content; not in playbook.`;
 }
 
-function citation(moduleNumber: number, subcategory: string): FrameworkCitation {
+// cite(id) is the Step C-2 wiring for the defensibility-bar rebuild
+// (locked 2026-05-19). It resolves a question's framework_citation from
+// the authoritative citation map (question-citations.ts) when the question's
+// module has been founder-ratified (clientVisible:true) and the grade is not
+// indefensible; otherwise it falls back to a generic playbook citation.
+// Result: the product UI now surfaces the authoritative named-construct
+// citation (e.g. "COBIT 2019 (ISACA) — EDM01 'Ensured Governance Framework
+// Setting and Maintenance'") in place of the prior generic "AI-CDIO Source
+// Playbook" label, without changing the FrameworkCitation type shape.
+function cite(questionId: string): FrameworkCitation {
+  const a = getAuthoritativeCitation(questionId);
+  if (a && a.clientVisible && a.grade !== "indefensible") {
+    return { framework: a.framework, reference: a.reference, rationale: a.rationale };
+  }
+  const m = questionId.match(/^m(\d+)_/);
+  const moduleNumber = m ? parseInt(m[1], 10) : 0;
   return {
     framework: "AI-CDIO Source Playbook (01_ASSESSMENT_FRAMEWORK.md)",
-    reference: `Module ${moduleNumber} — ${subcategory}`,
-    rationale: "Verbatim diagnostic question from the AI-CDIO source playbook's published assessment framework. The playbook is the canonical methodology source for the platform.",
+    reference: `Module ${moduleNumber} — (authoritative citation pending)`,
+    rationale: "Verbatim diagnostic question from the AI-CDIO source playbook. The module's authoritative named-construct citation has not yet been founder-ratified.",
   };
 }
 
@@ -224,7 +240,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a clearly defined technology leadership role at the executive level?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.1 Leadership & Governance"),
+    framework_citation: cite("m1_q1"),
     provenance: prov(1, "1.1 Leadership & Governance", 1),
   },
   {
@@ -232,7 +248,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Does the technology leader report directly to CEO or Board?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.1 Leadership & Governance"),
+    framework_citation: cite("m1_q2"),
     provenance: prov(1, "1.1 Leadership & Governance", 2),
   },
   {
@@ -240,7 +256,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are technology initiatives aligned with business strategy?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.1 Leadership & Governance"),
+    framework_citation: cite("m1_q3"),
     provenance: prov(1, "1.1 Leadership & Governance", 3),
   },
   {
@@ -248,7 +264,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a formal IT governance structure?",
     level_indicators: rubric(1),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.1 Leadership & Governance"),
+    framework_citation: cite("m1_q4"),
     provenance: prov(1, "1.1 Leadership & Governance", 4),
   },
   {
@@ -256,7 +272,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Does technology leadership participate in strategic business planning?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.2 Strategic Influence"),
+    framework_citation: cite("m1_q5"),
     provenance: prov(1, "1.2 Strategic Influence", 1),
   },
   {
@@ -264,7 +280,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is IT viewed as a strategic enabler vs. cost center?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.2 Strategic Influence"),
+    framework_citation: cite("m1_q6"),
     provenance: prov(1, "1.2 Strategic Influence", 2),
   },
   {
@@ -272,7 +288,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are there regular executive briefings on technology initiatives?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.2 Strategic Influence"),
+    framework_citation: cite("m1_q7"),
     provenance: prov(1, "1.2 Strategic Influence", 3),
   },
   {
@@ -280,7 +296,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Does technology leadership influence product/service strategy?",
     level_indicators: rubric(1),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(1, "1.2 Strategic Influence"),
+    framework_citation: cite("m1_q8"),
     provenance: prov(1, "1.2 Strategic Influence", 4),
   },
 
@@ -292,7 +308,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a documented digital transformation strategy?",
     level_indicators: rubric(2),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(2, "2.1 Strategy Development"),
+    framework_citation: cite("m2_q1"),
     provenance: prov(2, "2.1 Strategy Development", 1),
   },
   {
@@ -300,7 +316,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Does the strategy align with business objectives?",
     level_indicators: rubric(2),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(2, "2.1 Strategy Development"),
+    framework_citation: cite("m2_q2"),
     provenance: prov(2, "2.1 Strategy Development", 2),
   },
   {
@@ -308,7 +324,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are transformation goals measurable and time-bound?",
     level_indicators: rubric(2),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(2, "2.1 Strategy Development"),
+    framework_citation: cite("m2_q3"),
     provenance: prov(2, "2.1 Strategy Development", 3),
   },
   {
@@ -316,7 +332,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there executive sponsorship for transformation initiatives?",
     level_indicators: rubric(2),
     tags: { function: ["strategic"], area: ["cross_functional"] },
-    framework_citation: citation(2, "2.1 Strategy Development"),
+    framework_citation: cite("m2_q4"),
     provenance: prov(2, "2.1 Strategy Development", 4),
   },
   {
@@ -324,7 +340,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a roadmap for digital transformation implementation?",
     level_indicators: rubric(2),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(2, "2.2 Strategy Execution"),
+    framework_citation: cite("m2_q5"),
     provenance: prov(2, "2.2 Strategy Execution", 1),
   },
   {
@@ -332,7 +348,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are resources allocated to support transformation goals?",
     level_indicators: rubric(2),
     tags: { function: ["strategic", "financial"], area: ["IT", "finance"] },
-    framework_citation: citation(2, "2.2 Strategy Execution"),
+    framework_citation: cite("m2_q6"),
     provenance: prov(2, "2.2 Strategy Execution", 2),
   },
   {
@@ -340,7 +356,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are transformation initiatives tracked and measured?",
     level_indicators: rubric(2),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(2, "2.2 Strategy Execution"),
+    framework_citation: cite("m2_q7"),
     provenance: prov(2, "2.2 Strategy Execution", 3),
   },
   {
@@ -348,7 +364,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is the strategy communicated across the organization?",
     level_indicators: rubric(2),
     tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
-    framework_citation: citation(2, "2.2 Strategy Execution"),
+    framework_citation: cite("m2_q8"),
     provenance: prov(2, "2.2 Strategy Execution", 4),
   },
 
@@ -360,7 +376,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a documented enterprise architecture framework?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(3, "3.1 Architecture Planning"),
+    framework_citation: cite("m3_q1"),
     provenance: prov(3, "3.1 Architecture Planning", 1),
   },
   {
@@ -368,7 +384,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are current and future state architectures defined?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(3, "3.1 Architecture Planning"),
+    framework_citation: cite("m3_q2"),
     provenance: prov(3, "3.1 Architecture Planning", 2),
   },
   {
@@ -376,7 +392,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a technology standards governance process?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(3, "3.1 Architecture Planning"),
+    framework_citation: cite("m3_q3"),
     provenance: prov(3, "3.1 Architecture Planning", 3),
   },
   {
@@ -384,7 +400,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are architecture decisions aligned with business capabilities?",
     level_indicators: rubric(3),
     tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(3, "3.1 Architecture Planning"),
+    framework_citation: cite("m3_q4"),
     provenance: prov(3, "3.1 Architecture Planning", 4),
   },
   {
@@ -392,7 +408,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a plan to address technical debt?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "operational", "financial"], area: ["IT"] },
-    framework_citation: citation(3, "3.2 Modernization Approach"),
+    framework_citation: cite("m3_q5"),
     provenance: prov(3, "3.2 Modernization Approach", 1),
   },
   {
@@ -400,7 +416,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are legacy systems being systematically modernized?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(3, "3.2 Modernization Approach"),
+    framework_citation: cite("m3_q6"),
     provenance: prov(3, "3.2 Modernization Approach", 2),
   },
   {
@@ -408,7 +424,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is cloud adoption part of the modernization strategy?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(3, "3.2 Modernization Approach"),
+    framework_citation: cite("m3_q7"),
     provenance: prov(3, "3.2 Modernization Approach", 3),
   },
   {
@@ -416,7 +432,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are new technologies evaluated against architecture standards?",
     level_indicators: rubric(3),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(3, "3.2 Modernization Approach"),
+    framework_citation: cite("m3_q8"),
     provenance: prov(3, "3.2 Modernization Approach", 4),
   },
 
@@ -428,7 +444,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a documented cloud strategy (public, private, hybrid)?",
     level_indicators: rubric(4),
     tags: { function: ["strategic", "technical"], area: ["IT"] },
-    framework_citation: citation(4, "4.1 Cloud Strategy"),
+    framework_citation: cite("m4_q1"),
     provenance: prov(4, "4.1 Cloud Strategy", 1),
   },
   {
@@ -436,7 +452,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Has a cloud assessment been conducted?",
     level_indicators: rubric(4),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(4, "4.1 Cloud Strategy"),
+    framework_citation: cite("m4_q2"),
     provenance: prov(4, "4.1 Cloud Strategy", 2),
   },
   {
@@ -444,7 +460,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are workloads categorized for cloud suitability?",
     level_indicators: rubric(4),
     tags: { function: ["technical"], area: ["IT"] },
-    framework_citation: citation(4, "4.1 Cloud Strategy"),
+    framework_citation: cite("m4_q3"),
     provenance: prov(4, "4.1 Cloud Strategy", 3),
   },
   {
@@ -452,7 +468,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a cloud migration roadmap?",
     level_indicators: rubric(4),
     tags: { function: ["strategic", "technical", "operational"], area: ["IT"] },
-    framework_citation: citation(4, "4.1 Cloud Strategy"),
+    framework_citation: cite("m4_q4"),
     provenance: prov(4, "4.1 Cloud Strategy", 4),
   },
   {
@@ -460,7 +476,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are infrastructure costs tracked and optimized?",
     level_indicators: rubric(4),
     tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(4, "4.2 Infrastructure Management"),
+    framework_citation: cite("m4_q5"),
     provenance: prov(4, "4.2 Infrastructure Management", 1),
   },
   {
@@ -468,7 +484,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there automated infrastructure provisioning?",
     level_indicators: rubric(4),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(4, "4.2 Infrastructure Management"),
+    framework_citation: cite("m4_q6"),
     provenance: prov(4, "4.2 Infrastructure Management", 2),
   },
   {
@@ -476,7 +492,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are disaster recovery and backup strategies cloud-ready?",
     level_indicators: rubric(4),
     tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
-    framework_citation: citation(4, "4.2 Infrastructure Management"),
+    framework_citation: cite("m4_q7"),
     provenance: prov(4, "4.2 Infrastructure Management", 3),
   },
   {
@@ -484,7 +500,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is infrastructure performance monitored and optimized?",
     level_indicators: rubric(4),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(4, "4.2 Infrastructure Management"),
+    framework_citation: cite("m4_q8"),
     provenance: prov(4, "4.2 Infrastructure Management", 4),
   },
 
@@ -496,7 +512,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a documented cybersecurity framework (NIST, ISO, etc.)?",
     level_indicators: rubric(5),
     tags: { function: ["strategic", "technical", "risk"], area: ["IT"] },
-    framework_citation: citation(5, "5.1 Security Posture"),
+    framework_citation: cite("m5_q1"),
     provenance: prov(5, "5.1 Security Posture", 1),
   },
   {
@@ -504,7 +520,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are security policies and procedures current and enforced?",
     level_indicators: rubric(5),
     tags: { function: ["operational", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(5, "5.1 Security Posture"),
+    framework_citation: cite("m5_q2"),
     provenance: prov(5, "5.1 Security Posture", 2),
   },
   {
@@ -512,7 +528,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is security training provided to all employees?",
     level_indicators: rubric(5),
     tags: { function: ["operational", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(5, "5.1 Security Posture"),
+    framework_citation: cite("m5_q3"),
     provenance: prov(5, "5.1 Security Posture", 3),
   },
   {
@@ -520,7 +536,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are security incidents tracked and responded to systematically?",
     level_indicators: rubric(5),
     tags: { function: ["technical", "operational", "risk"], area: ["IT"] },
-    framework_citation: citation(5, "5.1 Security Posture"),
+    framework_citation: cite("m5_q4"),
     provenance: prov(5, "5.1 Security Posture", 4),
   },
   {
@@ -528,7 +544,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a formal risk management program?",
     level_indicators: rubric(5),
     tags: { function: ["strategic", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(5, "5.2 Risk & Compliance"),
+    framework_citation: cite("m5_q5"),
     provenance: prov(5, "5.2 Risk & Compliance", 1),
   },
   {
@@ -536,7 +552,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are regulatory compliance requirements identified and tracked?",
     level_indicators: rubric(5),
     tags: { function: ["risk", "operational"], area: ["IT", "finance", "cross_functional"] },
-    framework_citation: citation(5, "5.2 Risk & Compliance"),
+    framework_citation: cite("m5_q6"),
     provenance: prov(5, "5.2 Risk & Compliance", 2),
   },
   {
@@ -544,7 +560,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there third-party risk assessment for vendors?",
     level_indicators: rubric(5),
     tags: { function: ["risk", "financial"], area: ["IT", "finance"] },
-    framework_citation: citation(5, "5.2 Risk & Compliance"),
+    framework_citation: cite("m5_q7"),
     provenance: prov(5, "5.2 Risk & Compliance", 3),
   },
   {
@@ -552,7 +568,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are security audits conducted regularly?",
     level_indicators: rubric(5),
     tags: { function: ["risk", "operational"], area: ["IT"] },
-    framework_citation: citation(5, "5.2 Risk & Compliance"),
+    framework_citation: cite("m5_q8"),
     provenance: prov(5, "5.2 Risk & Compliance", 4),
   },
 
@@ -564,7 +580,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a data architecture strategy?",
     level_indicators: rubric(6),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(6, "6.1 Data Infrastructure"),
+    framework_citation: cite("m6_q1"),
     provenance: prov(6, "6.1 Data Infrastructure", 1),
   },
   {
@@ -572,7 +588,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are data sources integrated and accessible?",
     level_indicators: rubric(6),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(6, "6.1 Data Infrastructure"),
+    framework_citation: cite("m6_q2"),
     provenance: prov(6, "6.1 Data Infrastructure", 2),
   },
   {
@@ -580,7 +596,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a data governance program?",
     level_indicators: rubric(6),
     tags: { function: ["strategic", "operational", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(6, "6.1 Data Infrastructure"),
+    framework_citation: cite("m6_q3"),
     provenance: prov(6, "6.1 Data Infrastructure", 3),
   },
   {
@@ -588,7 +604,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are data quality and metadata managed?",
     level_indicators: rubric(6),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(6, "6.1 Data Infrastructure"),
+    framework_citation: cite("m6_q4"),
     provenance: prov(6, "6.1 Data Infrastructure", 4),
   },
   {
@@ -596,7 +612,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is AI strategy aligned with business objectives?",
     level_indicators: rubric(6),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(6, "6.2 AI/ML Capabilities"),
+    framework_citation: cite("m6_q5"),
     provenance: prov(6, "6.2 AI/ML Capabilities", 1),
   },
   {
@@ -604,7 +620,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are AI/ML models in production use?",
     level_indicators: rubric(6),
     tags: { function: ["technical", "strategic"], area: ["IT"] },
-    framework_citation: citation(6, "6.2 AI/ML Capabilities"),
+    framework_citation: cite("m6_q6"),
     provenance: prov(6, "6.2 AI/ML Capabilities", 2),
   },
   {
@@ -612,7 +628,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there MLOps or model management capability?",
     level_indicators: rubric(6),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(6, "6.2 AI/ML Capabilities"),
+    framework_citation: cite("m6_q7"),
     provenance: prov(6, "6.2 AI/ML Capabilities", 3),
   },
   {
@@ -620,7 +636,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are ethical AI principles defined and followed?",
     level_indicators: rubric(6),
     tags: { function: ["strategic", "risk"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(6, "6.2 AI/ML Capabilities"),
+    framework_citation: cite("m6_q8"),
     provenance: prov(6, "6.2 AI/ML Capabilities", 4),
   },
 
@@ -632,7 +648,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a platform or ecosystem strategy?",
     level_indicators: rubric(7),
     tags: { function: ["strategic", "technical"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(7, "7.1 Platform Strategy"),
+    framework_citation: cite("m7_q1"),
     provenance: prov(7, "7.1 Platform Strategy", 1),
   },
   {
@@ -640,7 +656,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are APIs documented and managed?",
     level_indicators: rubric(7),
     tags: { function: ["technical"], area: ["IT"] },
-    framework_citation: citation(7, "7.1 Platform Strategy"),
+    framework_citation: cite("m7_q2"),
     provenance: prov(7, "7.1 Platform Strategy", 2),
   },
   {
@@ -648,7 +664,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there an API gateway or management platform?",
     level_indicators: rubric(7),
     tags: { function: ["technical"], area: ["IT"] },
-    framework_citation: citation(7, "7.1 Platform Strategy"),
+    framework_citation: cite("m7_q3"),
     provenance: prov(7, "7.1 Platform Strategy", 3),
   },
   {
@@ -656,7 +672,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are partner integrations enabled through APIs?",
     level_indicators: rubric(7),
     tags: { function: ["technical", "strategic"], area: ["IT", "sales"] },
-    framework_citation: citation(7, "7.1 Platform Strategy"),
+    framework_citation: cite("m7_q4"),
     provenance: prov(7, "7.1 Platform Strategy", 4),
   },
   {
@@ -664,7 +680,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are technology solutions designed as products?",
     level_indicators: rubric(7),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(7, "7.2 Product Thinking"),
+    framework_citation: cite("m7_q5"),
     provenance: prov(7, "7.2 Product Thinking", 1),
   },
   {
@@ -672,7 +688,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a product management function for technology?",
     level_indicators: rubric(7),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(7, "7.2 Product Thinking"),
+    framework_citation: cite("m7_q6"),
     provenance: prov(7, "7.2 Product Thinking", 2),
   },
   {
@@ -680,7 +696,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are customer/user needs central to technology decisions?",
     level_indicators: rubric(7),
     tags: { function: ["strategic", "operational"], area: ["IT", "sales", "marketing"] },
-    framework_citation: citation(7, "7.2 Product Thinking"),
+    framework_citation: cite("m7_q7"),
     provenance: prov(7, "7.2 Product Thinking", 3),
   },
   {
@@ -688,7 +704,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there continuous improvement of technology products?",
     level_indicators: rubric(7),
     tags: { function: ["operational", "strategic"], area: ["IT"] },
-    framework_citation: citation(7, "7.2 Product Thinking"),
+    framework_citation: cite("m7_q8"),
     provenance: prov(7, "7.2 Product Thinking", 4),
   },
 
@@ -700,7 +716,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are business intelligence tools in use?",
     level_indicators: rubric(8),
     tags: { function: ["operational", "technical"], area: ["IT", "finance", "operations"] },
-    framework_citation: citation(8, "8.1 Analytics Capabilities"),
+    framework_citation: cite("m8_q1"),
     provenance: prov(8, "8.1 Analytics Capabilities", 1),
   },
   {
@@ -708,7 +724,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is data accessible for analysis by business users?",
     level_indicators: rubric(8),
     tags: { function: ["operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(8, "8.1 Analytics Capabilities"),
+    framework_citation: cite("m8_q2"),
     provenance: prov(8, "8.1 Analytics Capabilities", 2),
   },
   {
@@ -716,7 +732,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are dashboards and reports regularly used for decisions?",
     level_indicators: rubric(8),
     tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
-    framework_citation: citation(8, "8.1 Analytics Capabilities"),
+    framework_citation: cite("m8_q3"),
     provenance: prov(8, "8.1 Analytics Capabilities", 3),
   },
   {
@@ -724,7 +740,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a data analytics team or function?",
     level_indicators: rubric(8),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(8, "8.1 Analytics Capabilities"),
+    framework_citation: cite("m8_q4"),
     provenance: prov(8, "8.1 Analytics Capabilities", 4),
   },
   {
@@ -732,7 +748,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is predictive or prescriptive analytics in use?",
     level_indicators: rubric(8),
     tags: { function: ["technical", "strategic"], area: ["IT", "finance", "operations"] },
-    framework_citation: citation(8, "8.2 Advanced Analytics"),
+    framework_citation: cite("m8_q5"),
     provenance: prov(8, "8.2 Advanced Analytics", 1),
   },
   {
@@ -740,7 +756,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are analytics models integrated into business processes?",
     level_indicators: rubric(8),
     tags: { function: ["technical", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(8, "8.2 Advanced Analytics"),
+    framework_citation: cite("m8_q6"),
     provenance: prov(8, "8.2 Advanced Analytics", 2),
   },
   {
@@ -748,7 +764,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a center of excellence for analytics?",
     level_indicators: rubric(8),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(8, "8.2 Advanced Analytics"),
+    framework_citation: cite("m8_q7"),
     provenance: prov(8, "8.2 Advanced Analytics", 3),
   },
   {
@@ -756,7 +772,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are analytics outcomes measured and improved?",
     level_indicators: rubric(8),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(8, "8.2 Advanced Analytics"),
+    framework_citation: cite("m8_q8"),
     provenance: prov(8, "8.2 Advanced Analytics", 4),
   },
 
@@ -768,7 +784,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are user research and testing conducted?",
     level_indicators: rubric(9),
     tags: { function: ["operational", "strategic"], area: ["sales", "marketing", "IT"] },
-    framework_citation: citation(9, "9.1 Design Approach"),
+    framework_citation: cite("m9_q1"),
     provenance: prov(9, "9.1 Design Approach", 1),
   },
   {
@@ -776,7 +792,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a design thinking process?",
     level_indicators: rubric(9),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(9, "9.1 Design Approach"),
+    framework_citation: cite("m9_q2"),
     provenance: prov(9, "9.1 Design Approach", 2),
   },
   {
@@ -784,7 +800,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are customer personas defined and used?",
     level_indicators: rubric(9),
     tags: { function: ["operational"], area: ["sales", "marketing"] },
-    framework_citation: citation(9, "9.1 Design Approach"),
+    framework_citation: cite("m9_q3"),
     provenance: prov(9, "9.1 Design Approach", 3),
   },
   {
@@ -792,7 +808,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is UX/UI design integrated in development?",
     level_indicators: rubric(9),
     tags: { function: ["operational", "technical"], area: ["IT"] },
-    framework_citation: citation(9, "9.1 Design Approach"),
+    framework_citation: cite("m9_q4"),
     provenance: prov(9, "9.1 Design Approach", 4),
   },
   {
@@ -800,7 +816,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are customer journeys mapped and optimized?",
     level_indicators: rubric(9),
     tags: { function: ["strategic", "operational"], area: ["sales", "operations"] },
-    framework_citation: citation(9, "9.2 Customer Experience"),
+    framework_citation: cite("m9_q5"),
     provenance: prov(9, "9.2 Customer Experience", 1),
   },
   {
@@ -808,7 +824,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is customer feedback systematically collected?",
     level_indicators: rubric(9),
     tags: { function: ["operational", "strategic"], area: ["sales", "operations"] },
-    framework_citation: citation(9, "9.2 Customer Experience"),
+    framework_citation: cite("m9_q6"),
     provenance: prov(9, "9.2 Customer Experience", 2),
   },
   {
@@ -816,7 +832,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are CX metrics tracked and acted upon?",
     level_indicators: rubric(9),
     tags: { function: ["strategic", "operational"], area: ["sales", "operations"] },
-    framework_citation: citation(9, "9.2 Customer Experience"),
+    framework_citation: cite("m9_q7"),
     provenance: prov(9, "9.2 Customer Experience", 3),
   },
   {
@@ -824,7 +840,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there cross-functional ownership of customer experience?",
     level_indicators: rubric(9),
     tags: { function: ["strategic", "operational"], area: ["cross_functional", "sales"] },
-    framework_citation: citation(9, "9.2 Customer Experience"),
+    framework_citation: cite("m9_q8"),
     provenance: prov(9, "9.2 Customer Experience", 4),
   },
 
@@ -836,7 +852,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Does technology leadership inspire and motivate teams?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.1 Leadership Effectiveness"),
+    framework_citation: cite("m10_q1"),
     provenance: prov(10, "10.1 Leadership Effectiveness", 1),
   },
   {
@@ -844,7 +860,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are leadership principles defined and modeled?",
     level_indicators: rubric(10),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.1 Leadership Effectiveness"),
+    framework_citation: cite("m10_q2"),
     provenance: prov(10, "10.1 Leadership Effectiveness", 2),
   },
   {
@@ -852,7 +868,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there succession planning for technology roles?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.1 Leadership Effectiveness"),
+    framework_citation: cite("m10_q3"),
     provenance: prov(10, "10.1 Leadership Effectiveness", 3),
   },
   {
@@ -860,7 +876,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are cross-functional relationships strong?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.1 Leadership Effectiveness"),
+    framework_citation: cite("m10_q4"),
     provenance: prov(10, "10.1 Leadership Effectiveness", 4),
   },
   {
@@ -868,7 +884,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there regular communication of technology strategy?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.2 Strategic Communication"),
+    framework_citation: cite("m10_q5"),
     provenance: prov(10, "10.2 Strategic Communication", 1),
   },
   {
@@ -876,7 +892,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are stakeholders engaged in technology decisions?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.2 Strategic Communication"),
+    framework_citation: cite("m10_q6"),
     provenance: prov(10, "10.2 Strategic Communication", 2),
   },
   {
@@ -884,7 +900,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is business value clearly articulated?",
     level_indicators: rubric(10),
     tags: { function: ["strategic", "financial"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.2 Strategic Communication"),
+    framework_citation: cite("m10_q7"),
     provenance: prov(10, "10.2 Strategic Communication", 3),
   },
   {
@@ -892,7 +908,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are technology stories used to influence and inspire?",
     level_indicators: rubric(10),
     tags: { function: ["strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(10, "10.2 Strategic Communication"),
+    framework_citation: cite("m10_q8"),
     provenance: prov(10, "10.2 Strategic Communication", 4),
   },
 
@@ -904,7 +920,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is the technology organization well-structured?",
     level_indicators: rubric(11),
     tags: { function: ["operational", "strategic"], area: ["IT"] },
-    framework_citation: citation(11, "11.1 Team Structure"),
+    framework_citation: cite("m11_q1"),
     provenance: prov(11, "11.1 Team Structure", 1),
   },
   {
@@ -912,7 +928,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are roles and responsibilities clearly defined?",
     level_indicators: rubric(11),
     tags: { function: ["operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(11, "11.1 Team Structure"),
+    framework_citation: cite("m11_q2"),
     provenance: prov(11, "11.1 Team Structure", 2),
   },
   {
@@ -920,7 +936,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there appropriate staffing for strategic goals?",
     level_indicators: rubric(11),
     tags: { function: ["strategic", "operational"], area: ["IT"] },
-    framework_citation: citation(11, "11.1 Team Structure"),
+    framework_citation: cite("m11_q3"),
     provenance: prov(11, "11.1 Team Structure", 3),
   },
   {
@@ -928,7 +944,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are team capabilities regularly assessed?",
     level_indicators: rubric(11),
     tags: { function: ["operational", "strategic"], area: ["IT"] },
-    framework_citation: citation(11, "11.1 Team Structure"),
+    framework_citation: cite("m11_q4"),
     provenance: prov(11, "11.1 Team Structure", 4),
   },
   {
@@ -936,7 +952,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a defined operating model for technology?",
     level_indicators: rubric(11),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(11, "11.2 Operating Model"),
+    framework_citation: cite("m11_q5"),
     provenance: prov(11, "11.2 Operating Model", 1),
   },
   {
@@ -944,7 +960,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are processes documented and optimized?",
     level_indicators: rubric(11),
     tags: { function: ["operational"], area: ["IT"] },
-    framework_citation: citation(11, "11.2 Operating Model"),
+    framework_citation: cite("m11_q6"),
     provenance: prov(11, "11.2 Operating Model", 2),
   },
   {
@@ -952,7 +968,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there effective governance?",
     level_indicators: rubric(11),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(11, "11.2 Operating Model"),
+    framework_citation: cite("m11_q7"),
     provenance: prov(11, "11.2 Operating Model", 3),
   },
   {
@@ -960,7 +976,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are metrics tracked for team performance?",
     level_indicators: rubric(11),
     tags: { function: ["operational"], area: ["IT"] },
-    framework_citation: citation(11, "11.2 Operating Model"),
+    framework_citation: cite("m11_q8"),
     provenance: prov(11, "11.2 Operating Model", 4),
   },
 
@@ -972,7 +988,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a comprehensive IT budget aligned with strategy?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "strategic"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.1 Budgeting & Planning"),
+    framework_citation: cite("m12_q1"),
     provenance: prov(12, "12.1 Budgeting & Planning", 1),
   },
   {
@@ -980,7 +996,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are IT costs tracked by category and business unit?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.1 Budgeting & Planning"),
+    framework_citation: cite("m12_q2"),
     provenance: prov(12, "12.1 Budgeting & Planning", 2),
   },
   {
@@ -988,7 +1004,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there multi-year financial planning for technology?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "strategic"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.1 Budgeting & Planning"),
+    framework_citation: cite("m12_q3"),
     provenance: prov(12, "12.1 Budgeting & Planning", 3),
   },
   {
@@ -996,7 +1012,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are budget variances analyzed and explained?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.1 Budgeting & Planning"),
+    framework_citation: cite("m12_q4"),
     provenance: prov(12, "12.1 Budgeting & Planning", 4),
   },
   {
@@ -1004,7 +1020,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is ROI calculated for major technology investments?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "strategic"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.2 Value Demonstration"),
+    framework_citation: cite("m12_q5"),
     provenance: prov(12, "12.2 Value Demonstration", 1),
   },
   {
@@ -1012,7 +1028,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are business cases required for new initiatives?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "strategic"], area: ["IT", "finance", "cross_functional"] },
-    framework_citation: citation(12, "12.2 Value Demonstration"),
+    framework_citation: cite("m12_q6"),
     provenance: prov(12, "12.2 Value Demonstration", 2),
   },
   {
@@ -1020,7 +1036,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is value realization tracked post-implementation?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "strategic"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.2 Value Demonstration"),
+    framework_citation: cite("m12_q7"),
     provenance: prov(12, "12.2 Value Demonstration", 3),
   },
   {
@@ -1028,7 +1044,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is technology spend optimized (FinOps practices)?",
     level_indicators: rubric(12),
     tags: { function: ["financial", "technical", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(12, "12.2 Value Demonstration"),
+    framework_citation: cite("m12_q8"),
     provenance: prov(12, "12.2 Value Demonstration", 4),
   },
 
@@ -1040,7 +1056,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a PMO or portfolio management function?",
     level_indicators: rubric(13),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(13, "13.1 Portfolio Management"),
+    framework_citation: cite("m13_q1"),
     provenance: prov(13, "13.1 Portfolio Management", 1),
   },
   {
@@ -1048,7 +1064,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are all projects tracked in a portfolio system?",
     level_indicators: rubric(13),
     tags: { function: ["operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(13, "13.1 Portfolio Management"),
+    framework_citation: cite("m13_q2"),
     provenance: prov(13, "13.1 Portfolio Management", 2),
   },
   {
@@ -1056,7 +1072,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is portfolio prioritization based on business value?",
     level_indicators: rubric(13),
     tags: { function: ["strategic", "financial"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(13, "13.1 Portfolio Management"),
+    framework_citation: cite("m13_q3"),
     provenance: prov(13, "13.1 Portfolio Management", 3),
   },
   {
@@ -1064,7 +1080,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are project metrics and health monitored?",
     level_indicators: rubric(13),
     tags: { function: ["operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(13, "13.1 Portfolio Management"),
+    framework_citation: cite("m13_q4"),
     provenance: prov(13, "13.1 Portfolio Management", 4),
   },
   {
@@ -1072,7 +1088,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a vendor management strategy?",
     level_indicators: rubric(13),
     tags: { function: ["financial", "operational", "strategic"], area: ["IT", "finance"] },
-    framework_citation: citation(13, "13.2 Vendor Management"),
+    framework_citation: cite("m13_q5"),
     provenance: prov(13, "13.2 Vendor Management", 1),
   },
   {
@@ -1080,7 +1096,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are vendor relationships formally managed?",
     level_indicators: rubric(13),
     tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(13, "13.2 Vendor Management"),
+    framework_citation: cite("m13_q6"),
     provenance: prov(13, "13.2 Vendor Management", 2),
   },
   {
@@ -1088,7 +1104,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are contracts negotiated effectively?",
     level_indicators: rubric(13),
     tags: { function: ["financial", "risk"], area: ["IT", "finance"] },
-    framework_citation: citation(13, "13.2 Vendor Management"),
+    framework_citation: cite("m13_q7"),
     provenance: prov(13, "13.2 Vendor Management", 3),
   },
   {
@@ -1096,7 +1112,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is vendor performance measured and managed?",
     level_indicators: rubric(13),
     tags: { function: ["financial", "operational"], area: ["IT", "finance"] },
-    framework_citation: citation(13, "13.2 Vendor Management"),
+    framework_citation: cite("m13_q8"),
     provenance: prov(13, "13.2 Vendor Management", 4),
   },
 
@@ -1108,7 +1124,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are Agile methodologies used for development?",
     level_indicators: rubric(14),
     tags: { function: ["operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(14, "14.1 Agile Practices"),
+    framework_citation: cite("m14_q1"),
     provenance: prov(14, "14.1 Agile Practices", 1),
   },
   {
@@ -1116,7 +1132,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there training and coaching for Agile practices?",
     level_indicators: rubric(14),
     tags: { function: ["operational"], area: ["IT"] },
-    framework_citation: citation(14, "14.1 Agile Practices"),
+    framework_citation: cite("m14_q2"),
     provenance: prov(14, "14.1 Agile Practices", 2),
   },
   {
@@ -1124,7 +1140,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are Agile metrics tracked (velocity, burndown, etc.)?",
     level_indicators: rubric(14),
     tags: { function: ["operational"], area: ["IT"] },
-    framework_citation: citation(14, "14.1 Agile Practices"),
+    framework_citation: cite("m14_q3"),
     provenance: prov(14, "14.1 Agile Practices", 3),
   },
   {
@@ -1132,7 +1148,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is Agile scaled across the organization?",
     level_indicators: rubric(14),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(14, "14.1 Agile Practices"),
+    framework_citation: cite("m14_q4"),
     provenance: prov(14, "14.1 Agile Practices", 4),
   },
   {
@@ -1140,7 +1156,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there CI/CD pipeline automation?",
     level_indicators: rubric(14),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(14, "14.2 DevOps & Innovation"),
+    framework_citation: cite("m14_q5"),
     provenance: prov(14, "14.2 DevOps & Innovation", 1),
   },
   {
@@ -1148,7 +1164,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are development and operations integrated?",
     level_indicators: rubric(14),
     tags: { function: ["technical", "operational"], area: ["IT"] },
-    framework_citation: citation(14, "14.2 DevOps & Innovation"),
+    framework_citation: cite("m14_q6"),
     provenance: prov(14, "14.2 DevOps & Innovation", 2),
   },
   {
@@ -1156,7 +1172,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a culture of experimentation?",
     level_indicators: rubric(14),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(14, "14.2 DevOps & Innovation"),
+    framework_citation: cite("m14_q7"),
     provenance: prov(14, "14.2 DevOps & Innovation", 3),
   },
   {
@@ -1164,7 +1180,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are innovation initiatives funded and supported?",
     level_indicators: rubric(14),
     tags: { function: ["strategic", "financial"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(14, "14.2 DevOps & Innovation"),
+    framework_citation: cite("m14_q8"),
     provenance: prov(14, "14.2 DevOps & Innovation", 4),
   },
 
@@ -1176,7 +1192,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are key business processes documented?",
     level_indicators: rubric(15),
     tags: { function: ["operational"], area: ["operations", "cross_functional"] },
-    framework_citation: citation(15, "15.1 Process Management"),
+    framework_citation: cite("m15_q1"),
     provenance: prov(15, "15.1 Process Management", 1),
   },
   {
@@ -1184,7 +1200,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there continuous process improvement?",
     level_indicators: rubric(15),
     tags: { function: ["operational"], area: ["operations", "cross_functional"] },
-    framework_citation: citation(15, "15.1 Process Management"),
+    framework_citation: cite("m15_q2"),
     provenance: prov(15, "15.1 Process Management", 2),
   },
   {
@@ -1192,7 +1208,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are process metrics tracked?",
     level_indicators: rubric(15),
     tags: { function: ["operational"], area: ["operations"] },
-    framework_citation: citation(15, "15.1 Process Management"),
+    framework_citation: cite("m15_q3"),
     provenance: prov(15, "15.1 Process Management", 3),
   },
   {
@@ -1200,7 +1216,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is process redesign aligned with technology?",
     level_indicators: rubric(15),
     tags: { function: ["operational", "strategic", "technical"], area: ["operations", "IT"] },
-    framework_citation: citation(15, "15.1 Process Management"),
+    framework_citation: cite("m15_q4"),
     provenance: prov(15, "15.1 Process Management", 4),
   },
   {
@@ -1208,7 +1224,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is RPA or automation technology in use?",
     level_indicators: rubric(15),
     tags: { function: ["technical", "operational"], area: ["operations", "IT"] },
-    framework_citation: citation(15, "15.2 Automation"),
+    framework_citation: cite("m15_q5"),
     provenance: prov(15, "15.2 Automation", 1),
   },
   {
@@ -1216,7 +1232,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are automation opportunities identified systematically?",
     level_indicators: rubric(15),
     tags: { function: ["operational", "strategic"], area: ["operations", "IT"] },
-    framework_citation: citation(15, "15.2 Automation"),
+    framework_citation: cite("m15_q6"),
     provenance: prov(15, "15.2 Automation", 2),
   },
   {
@@ -1224,7 +1240,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is AI used for process automation?",
     level_indicators: rubric(15),
     tags: { function: ["technical", "strategic"], area: ["IT", "operations"] },
-    framework_citation: citation(15, "15.2 Automation"),
+    framework_citation: cite("m15_q7"),
     provenance: prov(15, "15.2 Automation", 3),
   },
   {
@@ -1232,7 +1248,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is automation ROI measured?",
     level_indicators: rubric(15),
     tags: { function: ["financial", "operational"], area: ["operations", "finance"] },
-    framework_citation: citation(15, "15.2 Automation"),
+    framework_citation: cite("m15_q8"),
     provenance: prov(15, "15.2 Automation", 4),
   },
 
@@ -1244,7 +1260,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a change management methodology?",
     level_indicators: rubric(16),
     tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.1 Change Management"),
+    framework_citation: cite("m16_q1"),
     provenance: prov(16, "16.1 Change Management", 1),
   },
   {
@@ -1252,7 +1268,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are employees prepared for technology changes?",
     level_indicators: rubric(16),
     tags: { function: ["operational"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.1 Change Management"),
+    framework_citation: cite("m16_q2"),
     provenance: prov(16, "16.1 Change Management", 2),
   },
   {
@@ -1260,7 +1276,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is change adoption measured?",
     level_indicators: rubric(16),
     tags: { function: ["operational"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.1 Change Management"),
+    framework_citation: cite("m16_q3"),
     provenance: prov(16, "16.1 Change Management", 3),
   },
   {
@@ -1268,7 +1284,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there leadership support for change?",
     level_indicators: rubric(16),
     tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.1 Change Management"),
+    framework_citation: cite("m16_q4"),
     provenance: prov(16, "16.1 Change Management", 4),
   },
   {
@@ -1276,7 +1292,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are skills gaps identified and addressed?",
     level_indicators: rubric(16),
     tags: { function: ["operational", "strategic"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(16, "16.2 Talent Development"),
+    framework_citation: cite("m16_q5"),
     provenance: prov(16, "16.2 Talent Development", 1),
   },
   {
@@ -1284,7 +1300,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there training and development for technology skills?",
     level_indicators: rubric(16),
     tags: { function: ["operational", "strategic"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.2 Talent Development"),
+    framework_citation: cite("m16_q6"),
     provenance: prov(16, "16.2 Talent Development", 2),
   },
   {
@@ -1292,7 +1308,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Is there a culture of continuous learning?",
     level_indicators: rubric(16),
     tags: { function: ["strategic", "operational"], area: ["cross_functional"] },
-    framework_citation: citation(16, "16.2 Talent Development"),
+    framework_citation: cite("m16_q7"),
     provenance: prov(16, "16.2 Talent Development", 3),
   },
   {
@@ -1300,7 +1316,7 @@ export const DIAGNOSTIC_QUESTIONS: DiagnosticQuestion[] = [
     question: "Are emerging skills (AI, cloud, etc.) being developed?",
     level_indicators: rubric(16),
     tags: { function: ["strategic", "operational"], area: ["IT", "cross_functional"] },
-    framework_citation: citation(16, "16.2 Talent Development"),
+    framework_citation: cite("m16_q8"),
     provenance: prov(16, "16.2 Talent Development", 4),
   },
 ];
