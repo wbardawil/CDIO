@@ -4,6 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { MODULE_NAMES } from "@/types";
 import type { InitiativeDomain } from "@/types/initiative";
+import {
+  SUPPORTED_CURRENCIES,
+  currencyMeta,
+  type CurrencyCode,
+} from "@/lib/money/fx";
 
 interface DraftStep {
   id: string;
@@ -51,8 +56,20 @@ export function NewInitiativeForm({
   const [moduleNumber, setModuleNumber] = useState<string>("");
   const [ownerName, setOwnerName] = useState("");
   const [ownerEmail, setOwnerEmail] = useState("");
+  const [startDate, setStartDate] = useState("");
   const [targetDate, setTargetDate] = useState("");
+  // Schema-v22: money fields. Stored in the form as plain "major unit" decimal
+  // strings (e.g. "150000" or "150000.50"); converted to minor units on submit.
+  const [currency, setCurrency] = useState<CurrencyCode>("USD");
+  const [expectedValueMajor, setExpectedValueMajor] = useState<string>("");
+  const [expectedCostMajor, setExpectedCostMajor] = useState<string>("");
   const [steps, setSteps] = useState<DraftStep[]>([emptyStep()]);
+  // Quick-add UX: when the user clicks "Save and add another" we set this so
+  // the submit handler stays on /new and resets the form instead of pushing
+  // into the detail page. Needed for the live-meeting flow of entering many
+  // initiatives in a row.
+  const [savedToast, setSavedToast] = useState<string | null>(null);
+  const [advancedOpen, setAdvancedOpen] = useState(false);
 
   const moduleOptions = (activeModules.length > 0
     ? activeModules
@@ -73,8 +90,39 @@ export function NewInitiativeForm({
     setSteps((prev) => [...prev, emptyStep()]);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  // Parse a "major unit" decimal string ("150000" or "150000.50") into
+  // an integer count of MINOR units. Returns null on empty / invalid input.
+  const parseToMinorUnits = (raw: string, code: CurrencyCode): number | null => {
+    const cleaned = raw.trim().replace(/[,\s]/g, "");
+    if (!cleaned) return null;
+    const n = Number(cleaned);
+    if (!Number.isFinite(n) || n < 0) return null;
+    const meta = currencyMeta(code);
+    return Math.round(n * meta.minorUnitsPerMajor);
+  };
+
+  const resetForm = () => {
+    setTitle("");
+    setGoal("");
+    setDomain("tech");
+    setModuleNumber("");
+    setOwnerName("");
+    setOwnerEmail("");
+    setStartDate("");
+    setTargetDate("");
+    // Keep `currency` sticky — most users will enter several initiatives
+    // in the same currency before switching.
+    setExpectedValueMajor("");
+    setExpectedCostMajor("");
+    setSteps([emptyStep()]);
+    setAdvancedOpen(false);
+    setError(null);
+  };
+
+  // Shared submit core. `mode` controls what happens after a successful save:
+  //   "detail"       -> router.push to the new initiative's detail page (default)
+  //   "add-another"  -> stay on /new, reset the form, show a saved toast
+  const submitForm = async (mode: "detail" | "add-another") => {
     if (submitting) return;
     setError(null);
     setSubmitting(true);
@@ -89,6 +137,9 @@ export function NewInitiativeForm({
         status: "todo" as const,
       }));
 
+    const valueMinor = parseToMinorUnits(expectedValueMajor, currency);
+    const costMinor = parseToMinorUnits(expectedCostMajor, currency);
+
     try {
       const res = await fetch("/api/initiatives", {
         method: "POST",
@@ -101,17 +152,17 @@ export function NewInitiativeForm({
           module_number: moduleNumber ? Number(moduleNumber) : null,
           owner_name: ownerName.trim() || null,
           owner_email: ownerEmail.trim() || null,
+          start_date: startDate || null,
           target_completion_date: targetDate || null,
+          currency,
+          expected_value_minor_units: valueMinor,
+          expected_cost_minor_units: costMinor,
           steps: cleanedSteps,
         }),
       });
 
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
-        // Surface the API's `details` field (Supabase / validation message) in
-        // addition to the generic `error` so the user sees the real cause
-        // rather than a friendly-but-useless one-liner. Also log to console
-        // for browser-devtools inspection.
         // eslint-disable-next-line no-console
         console.error("[initiative create] failed", { status: res.status, body });
         const detail = body?.details
@@ -128,25 +179,51 @@ export function NewInitiativeForm({
       }
 
       const body = await res.json();
-      router.push(`/clients/${orgId}/initiatives/${body.initiative.id}`);
+      if (mode === "detail") {
+        router.push(`/clients/${orgId}/initiatives/${body.initiative.id}`);
+      } else {
+        const savedTitle = title.trim();
+        resetForm();
+        setSavedToast(`Saved "${savedTitle}" — add the next one`);
+        setSubmitting(false);
+        // Auto-focus the title field for fast next-entry.
+        requestAnimationFrame(() => {
+          const el = document.getElementById("initiative-title-input");
+          if (el instanceof HTMLInputElement) el.focus();
+        });
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to create");
       setSubmitting(false);
     }
   };
 
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    void submitForm("detail");
+  };
+
+  const handleSaveAndAddAnother = () => {
+    void submitForm("add-another");
+  };
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <section className="bg-raised rounded-xl border border-hair p-5 space-y-4">
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
+          <label
+            htmlFor="initiative-title-input"
+            className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1"
+          >
             Title
           </label>
           <input
+            id="initiative-title-input"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
             maxLength={300}
+            autoFocus
             placeholder="e.g., Roll out phishing-resistant MFA across admin accounts"
             className="w-full px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
           />
@@ -230,28 +307,129 @@ export function NewInitiativeForm({
           </div>
         </div>
 
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
+              Start date (optional)
+            </label>
+            <input
+              type="date"
+              value={startDate}
+              onChange={(e) => setStartDate(e.target.value)}
+              className="w-full px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
+              Target completion date (optional)
+            </label>
+            <input
+              type="date"
+              value={targetDate}
+              onChange={(e) => setTargetDate(e.target.value)}
+              className="w-full px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
+            />
+          </div>
+        </div>
+
+        {/* Money — Schema-v22 fields. Inflow / outflow per initiative for the
+            portfolio cash-flow rollup. Both optional so quick-add still works. */}
         <div>
-          <label className="block text-xs font-semibold uppercase tracking-wide text-muted mb-1">
-            Target completion date (optional)
-          </label>
-          <input
-            type="date"
-            value={targetDate}
-            onChange={(e) => setTargetDate(e.target.value)}
-            className="w-full sm:w-1/2 px-3 py-2 border border-hair rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
-          />
+          <p className="text-xs font-semibold uppercase tracking-wide text-evergreen mb-2">
+            Expected money — inflow & outflow (optional)
+          </p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1">
+                Currency
+              </label>
+              <select
+                value={currency}
+                onChange={(e) => setCurrency(e.target.value as CurrencyCode)}
+                className="w-full px-3 py-2 border border-hair rounded-lg text-sm bg-raised focus:outline-none focus:ring-2 focus:ring-evergreen"
+              >
+                {SUPPORTED_CURRENCIES.map((c) => {
+                  const meta = currencyMeta(c);
+                  return (
+                    <option key={c} value={c}>
+                      {meta.code} · {meta.label}
+                    </option>
+                  );
+                })}
+              </select>
+              <p className="text-[11px] text-faint mt-1">
+                Portfolio rollup converts to USD.
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1">
+                Expected value / inflow
+              </label>
+              <div className="flex items-stretch">
+                <span className="inline-flex items-center px-2 border border-r-0 border-hair rounded-l-lg text-xs text-muted bg-paper">
+                  {currencyMeta(currency).symbol}
+                </span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={expectedValueMajor}
+                  onChange={(e) => setExpectedValueMajor(e.target.value)}
+                  placeholder="e.g., 150000"
+                  className="flex-1 px-3 py-2 border border-hair rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
+                />
+              </div>
+              <p className="text-[11px] text-faint mt-1">
+                Benefit / revenue / savings thesis.
+              </p>
+            </div>
+            <div>
+              <label className="block text-xs font-medium text-muted mb-1">
+                Expected cost / outflow
+              </label>
+              <div className="flex items-stretch">
+                <span className="inline-flex items-center px-2 border border-r-0 border-hair rounded-l-lg text-xs text-muted bg-paper">
+                  {currencyMeta(currency).symbol}
+                </span>
+                <input
+                  type="text"
+                  inputMode="decimal"
+                  value={expectedCostMajor}
+                  onChange={(e) => setExpectedCostMajor(e.target.value)}
+                  placeholder="e.g., 60000"
+                  className="flex-1 px-3 py-2 border border-hair rounded-r-lg text-sm focus:outline-none focus:ring-2 focus:ring-evergreen"
+                />
+              </div>
+              <p className="text-[11px] text-faint mt-1">
+                Spend / investment / license.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
       <section className="bg-raised rounded-xl border border-hair p-5">
-        <div className="flex items-center justify-between mb-3">
+        <button
+          type="button"
+          onClick={() => setAdvancedOpen((v) => !v)}
+          className="w-full flex items-center justify-between text-left"
+          aria-expanded={advancedOpen}
+        >
           <div>
-            <h2 className="text-sm font-semibold text-ink">Milestones</h2>
+            <h2 className="text-sm font-semibold text-ink">
+              Milestones <span className="text-muted font-normal">(optional)</span>
+            </h2>
             <p className="text-xs text-muted mt-0.5">
-              Sequence the work. Up to 20 steps. Each step gets a status
-              (to do / in progress / done / blocked) you can update later.
+              Sequence the work. Up to 20 steps. Skip for quick entry — you
+              can add milestones later from the initiative detail page.
             </p>
           </div>
+          <span className="text-xs text-evergreen ml-3 shrink-0">
+            {advancedOpen ? "Hide" : "Show"}
+          </span>
+        </button>
+        {advancedOpen && (
+        <div className="mt-4">
+        <div className="flex items-center justify-end mb-3">
           <button
             type="button"
             onClick={addStep}
@@ -318,6 +496,8 @@ export function NewInitiativeForm({
             </li>
           ))}
         </ul>
+        </div>
+        )}
       </section>
 
       {error && (
@@ -326,7 +506,13 @@ export function NewInitiativeForm({
         </div>
       )}
 
-      <div className="flex items-center gap-3">
+      {savedToast && !error && (
+        <div className="px-4 py-3 bg-evergreen-soft border border-evergreen rounded-lg text-sm text-evergreen">
+          {savedToast}
+        </div>
+      )}
+
+      <div className="flex items-center gap-3 flex-wrap">
         <button
           type="submit"
           disabled={submitting || !title.trim() || !goal.trim()}
@@ -336,8 +522,24 @@ export function NewInitiativeForm({
               : "bg-evergreen text-white hover:bg-evergreen-deep"
           }`}
         >
-          {submitting ? "Creating..." : "Create initiative"}
+          {submitting ? "Saving…" : "Save and open"}
         </button>
+        <button
+          type="button"
+          onClick={handleSaveAndAddAnother}
+          disabled={submitting || !title.trim() || !goal.trim()}
+          className={`px-5 py-2.5 text-sm font-semibold rounded-lg border ${
+            submitting || !title.trim() || !goal.trim()
+              ? "border-hair text-faint cursor-not-allowed"
+              : "border-evergreen text-evergreen hover:bg-evergreen-soft"
+          }`}
+        >
+          {submitting ? "Saving…" : "Save and add another"}
+        </button>
+        <p className="text-xs text-faint">
+          Tip: use “Save and add another” to rip through a portfolio quickly.
+          Title + goal are required; everything else is optional and editable later.
+        </p>
       </div>
     </form>
   );
