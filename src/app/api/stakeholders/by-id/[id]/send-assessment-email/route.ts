@@ -79,22 +79,35 @@ export async function POST(
       isSandbox: org?.is_sandbox ?? false,
     });
 
-    // Best-effort audit log — table exists from schema v1.
-    // Surface the sandbox-rerouting decision in the audit trail.
-    const action = org?.is_sandbox
-      ? (input.is_reminder ? "send_assessment_reminder_sandbox" : "send_assessment_invite_sandbox")
-      : (input.is_reminder ? "send_assessment_reminder" : "send_assessment_invite");
-    await db.from("agent_logs").insert({
-      org_id: stakeholder.org_id,
-      agent_type: "email",
-      model_used: "resend",
-      action,
-      input_summary: `intended=${stakeholder.email} stakeholder=${stakeholder.id} sandbox=${org?.is_sandbox ?? false}`,
-      output_summary: `resend_id=${sent.id} routed_to=${sent.routedTo}`,
-      token_count: 0,
-      cost_usd: 0,
-      duration_ms: 0,
-    });
+    // Best-effort audit row in the unified agent_logs telemetry shape
+    // (schema-v20). Sandbox-rerouting decision lives in metadata.
+    // Wrapped in its own try/catch so an audit-row failure can never
+    // turn a successful email send into a user-visible "Email send
+    // failed" response. Mirrors the fire-and-forget pattern in
+    // src/lib/observability/agent-logs.ts.
+    try {
+      const action = input.is_reminder
+        ? "send_assessment_reminder"
+        : "send_assessment_invite";
+      await db.from("agent_logs").insert({
+        org_id: stakeholder.org_id,
+        practitioner_id: practitioner.id,
+        agent_name: "email.sendAssessment",
+        model: "resend",
+        status: "ok",
+        metadata: {
+          action,
+          is_reminder: input.is_reminder,
+          is_sandbox: org?.is_sandbox ?? false,
+          stakeholder_id: stakeholder.id,
+          intended_email: stakeholder.email,
+          resend_id: sent.id,
+          routed_to: sent.routedTo,
+        },
+      });
+    } catch {
+      // Telemetry must never affect the user-facing response.
+    }
 
     return NextResponse.json({
       ok: true,
