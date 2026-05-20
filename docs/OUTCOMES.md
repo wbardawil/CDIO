@@ -7,7 +7,7 @@
 **This log is THE Year 1 evidence base.** Day 90 kill switch reads this log. Paying-customer count from other fractionals is a Year 2 metric. Year 1 metric is **CEO outcomes delivered** — measured here in specific dollar amounts saved, specific decisions caught, specific board moments won, alignment created, real AI rollouts shipped.
 
 **Day 90 review criteria (revised 2026-05-07 evening):**
-- Has the founder delivered all six 90-Day Commitment Matrix milestones (`docs/STRATEGY-2026.md`) to at least Ambar?
+- Has the founder delivered all six 90-Day Commitment Matrix milestones (`docs/STRATEGY-2026.md`) to at least <anchor client>?
 - Are there 5+ specific CEO outcomes logged below?
 - Is the founder capacity-constrained on his fractional practice (the trigger for Year 2 commercial release)?
 
@@ -18,7 +18,7 @@ If yes to all three → Phase 3 commercial release (open to other fractionals). 
 ```
 ## YYYY-MM-DD (Week N — Phase X Day Y)
 
-**Client:** <CEO's company name — e.g., "Ambar Capital">
+**Client:** <CEO's company name — e.g., "<anchor client>">
 **CEO outcome delivered:** <one-sentence describing what the CEO experienced or now has>
 **90-Day Commitment Matrix milestone:** <which Day 14 / 21 / 30 / 45 / 60 / 90 milestone this hits, or "between milestones">
 **Pillar served:** <Project Success | Tech ROI | Strategy Alignment | Moat-Building | Other>
@@ -44,7 +44,7 @@ If yes to all three → Phase 3 commercial release (open to other fractionals). 
 **CEO outcome delivered:** Outcome log discipline locked + format updated for CEO-led tracking.
 **90-Day Commitment Matrix milestone:** N/A — pre-engagement system update
 **Pillar served:** Other
-**Detail:** Phase 1C Day 11 evening locked the audience shift (Year 1 customer is the CEO via the founder, not other fractionals). The outcome log format updated to require CEO outcome + 90-Day Commitment Matrix milestone tracking + better/cheaper/faster comparison. Founder commits to one entry per week starting Day 18 (Phase 1.5 production deploy + Ambar dogfood) — earlier entries possible if specific platform usage on Ambar produces a documentable outcome.
+**Detail:** Phase 1C Day 11 evening locked the audience shift (Year 1 customer is the CEO via the founder, not other fractionals). The outcome log format updated to require CEO outcome + 90-Day Commitment Matrix milestone tracking + better/cheaper/faster comparison. Founder commits to one entry per week starting Day 18 (Phase 1.5 production deploy + <anchor client> dogfood) — earlier entries possible if specific platform usage on <anchor client> produces a documentable outcome.
 **Counterfactual:** Without the log, the Day 90 kill switch falls back to paying-customer count from fractionals — but the audience shift means that's a Year 2 metric. Year 1 metric is CEO outcomes delivered; without this log, we have no evidence base for the Year 1 promise.
 **Better / cheaper / faster:** N/A — system update, not engagement outcome.
 

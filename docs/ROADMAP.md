@@ -138,7 +138,7 @@ After weighing four directions (Vendor Lifecycle / pain-entry / verbal-scale / b
 
 ## Phase 1: PRACTITIONER TOOL (Days 1-25)
 
-The single goal: by Day 25 the founder runs the **full Quick Win Stack engagement** end-to-end on Ambar Capital + 1-2 more real clients, and the platform is demo-quality for design-partner pilots.
+The single goal: by Day 25 the founder runs the **full Quick Win Stack engagement** end-to-end on <anchor client> + 1-2 more real clients, and the platform is demo-quality for design-partner pilots.
 
 ### Phase 1A — Foundation ✅ Days 1-3 (done)
 
@@ -157,12 +157,12 @@ Closed P0-1 (auth), P0-2 (IDOR), P0-5 (practitioner workspace), P0-7 (conversati
 | 5 | Wrap synthesis delete-then-insert in atomic stored proc | Closes P0-6 | ✅ commit `46339e5` |
 | 5 | Upstash Redis rate limiting on `/api/chat` + `/api/assessments` | Closes P0-4 — needs `UPSTASH_*` env vars | ⏸ pending creds |
 | 6 | Sentry error monitoring + Langfuse LLM observability | Visibility before depth work | ⏸ pending creds (`SENTRY_DSN`, `LANGFUSE_*`) |
-| 7 | **Test/Real architectural primitive — `is_sandbox` becomes load-bearing across all surfaces** (workspace banner, assessment-page banner, email-routing safety, delete-org one-click, AI output tone). Orphan orgs (no `practitioner_clients` mapping) auto-defaulted to Test. Ambar confirmed real (`is_sandbox=false`, properly mapped). | Closes the Test-vs-Real triage problem permanently. No more per-org cleanup. | ⏳ design locked, ready to build |
+| 7 | **Test/Real architectural primitive — `is_sandbox` becomes load-bearing across all surfaces** (workspace banner, assessment-page banner, email-routing safety, delete-org one-click, AI output tone). Orphan orgs (no `practitioner_clients` mapping) auto-defaulted to Test. <anchor client> confirmed real (`is_sandbox=false`, properly mapped). | Closes the Test-vs-Real triage problem permanently. No more per-org cleanup. | ⏳ design locked, ready to build |
 
 **Day 7 architectural call (locked 2026-04-29):**
-- TestCo (legacy, no mapping) → auto-flipped to Test + assigned to founder
-- Ambar Capital → confirmed real-engagement; `active_modules = [5, 15, 4]` left as-is (founder's call as fractional CIO)
-- Founder's role at Ambar: **fractional CIO** (drives the role-default mapping)
+- <sandbox org> (legacy, no mapping) → auto-flipped to Test + assigned to founder
+- <anchor client> → confirmed real-engagement; `active_modules = [5, 15, 4]` left as-is (founder's call as fractional CIO)
+- Founder's role at <anchor client>: **fractional CIO** (drives the role-default mapping)
 
 **Done = Founder onboards / edits / emails / monitors clients without manual workarounds. Test and Real clients are visually + behaviorally distinct everywhere.**
 
@@ -214,15 +214,15 @@ Every diagnostic question gets tagged on two axes:
 
 | Day | Task | Outcome |
 |-----|------|---------|
-| 8-10 | **Module 5 deep + role/area tagging + N/A** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area). **Tag every question with executive function + business area.** **Wire N/A button (text-link) on each question + module-gate.** **Wire thin-coverage warning to practitioner.** | Proof of pattern. Dogfood on Ambar (Wadi as fractional CIO) before scaling. **Stop and review.** |
+| 8-10 | **Module 5 deep + role/area tagging + N/A** — rewrite question bank against NIST CSF + CMMI; add level-5 indicators per question; AI-generated scoring narrative; "path to next level" recommendations from playbook RAG; cited authority (NIST CSF tier, CMMI process area). **Tag every question with executive function + business area.** **Wire N/A button (text-link) on each question + module-gate.** **Wire thin-coverage warning to practitioner.** | Proof of pattern. Dogfood on <anchor client> (Wadi as fractional CIO) before scaling. **Stop and review.** |
 | 11 | **Decision Package surface** — standalone artifact, not buried in synthesis. Hero-level UI in workspace. | The "what should I do" output that wins prospects |
 | **12** ✅ | **Module 12 deep — Tech Finance & Value Realization** (TBM Council + KPMG Return on Objectives). 13 questions across 4 subcategories (Cost Transparency, Cloud & SaaS Discipline, Vendor Economics, Value Realization). 8 TBM-anchored + 5 KPMG ROO-anchored. All role/area-tagged, level-5-indicators, framework-cited. | Quick Win Stack 2/3 done. CEO sees the cost-discipline + value-realization conversation framework-cited. |
 | **13** | ~~Module 15 deep — bespoke APQC/Lean questions~~ **SUPERSEDED 2026-05-19**: built (`b6cf3a0`) then reverted to verbatim-playbook for all 16 modules (`96dd36a`); re-introducing bespoke framework questions reverses the "no hallucination" directive. Replaced by bank-wide methodology validation — see `docs/STANDARDS-VALIDATION.md` v2.0. | Quick Win Stack questions are verbatim-from-playbook; defensibility now tracked by the validation report, not bespoke depth. |
 | **14-15** | **Quick Scan output upgrade** — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). **No AI lens here** — that lands in Phase 2.5 alongside its destination `/ai-readiness`. | Sales-conversion engine for the existing CDIO methodology. |
-| **16** | **Tier 1 AI leverage — adaptive questioning** wired in (every stakeholder gets up to 8 contextually-selected questions instead of 15 via subcategory-breadth-first selection). Module 2 deep DEFERRED to Phase 2 dogfood (Days 29-38) where founder's Ambar engagement will surface what alignment depth actually moves the needle — designing it cold today is lower-leverage than designing it from real engagement signal. | Complexity tax of 15-question modules removed by adaptive selection. Day 16 simplified to a single visible AI leverage shipping. |
+| **16** | **Tier 1 AI leverage — adaptive questioning** wired in (every stakeholder gets up to 8 contextually-selected questions instead of 15 via subcategory-breadth-first selection). Module 2 deep DEFERRED to Phase 2 dogfood (Days 29-38) where founder's <anchor client> engagement will surface what alignment depth actually moves the needle — designing it cold today is lower-leverage than designing it from real engagement signal. | Complexity tax of 15-question modules removed by adaptive selection. Day 16 simplified to a single visible AI leverage shipping. |
 | **17** | **Framework citations layer + jargon → CEO-language translation** — every score, every recommendation links to the named framework + playbook excerpt. **Tier 1 AI leverage — runtime translation:** practitioner sees "PR.AA-05"; CEO sees "*Does your team enforce password rules everyone follows?*" Architecture deliberately generic — extends to NIST AI RMF + EU AI Act in Phase 2.5 without rebuild. | Methodology authority visible everywhere; AI-frameworks-ready by design; CEO never sees framework jargon. |
 
-**Phase 1C also includes — explicit data migration plan (added 2026-04-29 MECE):** when Module 5/12/15 question banks are rewritten Days 8-13, existing assessment responses (Ambar's in-progress assessment, TestCo's completed assessment) need a migration plan. Options to evaluate Day 8: (a) preserve old responses by ID, present old questions in a read-only "legacy" tab; (b) discard old responses and re-prompt stakeholders; (c) machine-map old → new questions where possible, flag mismatches. **Decision required Day 8 before rewriting.**
+**Phase 1C also includes — explicit data migration plan (added 2026-04-29 MECE):** when Module 5/12/15 question banks are rewritten Days 8-13, existing assessment responses (<anchor client>'s in-progress assessment, <sandbox org>'s completed assessment) need a migration plan. Options to evaluate Day 8: (a) preserve old responses by ID, present old questions in a read-only "legacy" tab; (b) discard old responses and re-prompt stakeholders; (c) machine-map old → new questions where possible, flag mismatches. **Decision required Day 8 before rewriting.**
 
 **Done = Founder runs an assessment on a fresh client and the output makes the playbook's depth visible. CEOs answer 5x fewer questions than CTOs inside the same modules. N/A is a first-class option. Thin-coverage gaps surface automatically. Demo-quality.**
 
@@ -230,14 +230,14 @@ Every diagnostic question gets tagged on two axes:
 
 ### Phase 1.5 — Production Deploy + Legal Foundation + Cost Telemetry (Days 18-20)
 
-**Goal:** the platform goes online with a real domain, verified email, **and the legal/observability scaffolding required to operate publicly**. Methodology depth (just shipped in Phase 1C) ships INTO production. Real Ambar exec emails work. Demo URL exists for design-partner conversations.
+**Goal:** the platform goes online with a real domain, verified email, **and the legal/observability scaffolding required to operate publicly**. Methodology depth (just shipped in Phase 1C) ships INTO production. Real <anchor client> exec emails work. Demo URL exists for design-partner conversations.
 
 **Locked level: L3 — Vercel + custom domain + verified email + legal + cost telemetry.**
 
 | Day | Task | Outcome |
 |-----|------|---------|
 | 18 | **Vercel production deploy** — environment vars, build pipeline, smoke-test all critical flows in production. **Custom domain** (e.g., `ai-cdio.com` — domain decision pending founder) + DNS + SSL. **Tier 1 AI leverage — industry overlay generator:** AI rewrites base questions to feel native to the client's industry at runtime (manufacturing gets supply-chain phrasing; healthcare gets HIPAA phrasing). Massive content multiplier — 16 modules × 6 industries handled by one runtime function instead of 96 hand-written variants. | Public URL anyone can visit. Every assessment feels native to the client's industry. |
-| 19 | **Verified email domain in Resend** — DNS records (SPF/DKIM/DMARC) for the custom domain. Update `send-assessment-email.ts` sender from `onboarding@resend.dev` to `you@<custom-domain>`. End-to-end test: send a real assessment email from prod, deliverability passes spam-folder check. **Cost telemetry instrumentation** — wire per-engagement LLM-cost tracking to `agent_logs` table (token counts × model × org_id). Required for Phase 3 pricing decisions to be evidence-based, not guessed. | Real Ambar exec emails work. Professional sender. Phase 1C dogfood unblocked at production-grade. Cost-per-client visibility exists from Day 1 of public exposure. |
+| 19 | **Verified email domain in Resend** — DNS records (SPF/DKIM/DMARC) for the custom domain. Update `send-assessment-email.ts` sender from `onboarding@resend.dev` to `you@<custom-domain>`. End-to-end test: send a real assessment email from prod, deliverability passes spam-folder check. **Cost telemetry instrumentation** — wire per-engagement LLM-cost tracking to `agent_logs` table (token counts × model × org_id). Required for Phase 3 pricing decisions to be evidence-based, not guessed. | Real <anchor client> exec emails work. Professional sender. Phase 1C dogfood unblocked at production-grade. Cost-per-client visibility exists from Day 1 of public exposure. |
 | 20 | **Legal foundation** — Terms of Service + Privacy Policy + AI Disclaimer pages live at `/terms`, `/privacy`, `/ai-disclaimer`. Use Termly or Iubenda templates as starting point + light tailoring (no $5K legal review yet — that lands in Phase 2 Day 30 once we have real customer use). Cookie consent banner if EU traffic anticipated. Sign-up flow gated on accepting ToS + Privacy. **No public traffic before this lands.** | App is legally operable for public use. Closes a 12-day exposure window the previous plan had. |
 
 **Done = `https://<custom-domain>` serves the platform with legal docs in place; assessment emails arrive in inboxes (not spam) from a verified custom domain; cost-per-engagement is tracked from the first production query.**
@@ -278,18 +278,18 @@ Every diagnostic question gets tagged on two axes:
 
 **Auto-pulse / vendor-chasing automation = stretch goal**, not Day-21 commitment. Founder ranked vendor-chasing 4th in simplicity priority. Auto-pulse may land Phase 1D as a stretch if the team has time after Day 28; otherwise Phase 4.
 
-**Done = Founder runs a full Quick Win engagement on Ambar end-to-end (charter → assessment → decisions → tech selection → partner selection from Network Catalog → initiative pilot with vendors and contractors → cadence visible to CEO → status reports auto-aggregated → all callable via MCP from Claude.ai). Every engine is built once and extended in Phase 2.5 — no rebuild work scheduled.**
+**Done = Founder runs a full Quick Win engagement on <anchor client> end-to-end (charter → assessment → decisions → tech selection → partner selection from Network Catalog → initiative pilot with vendors and contractors → cadence visible to CEO → status reports auto-aggregated → all callable via MCP from Claude.ai). Every engine is built once and extended in Phase 2.5 — no rebuild work scheduled.**
 
 ---
 
 ## Phase 2: VALIDATION via Founder's Own CEO Clients (Days 29-38, REFRAMED 2026-05-07 evening)
 
-**Goal (revised):** prove the platform delivers the 90-Day Commitment Matrix outcomes to the founder's REAL CEO clients (Ambar + 1-2 more). The Year 1 customer is the CEO, via the founder. Other fractionals are NOT the audience yet.
+**Goal (revised):** prove the platform delivers the 90-Day Commitment Matrix outcomes to the founder's REAL CEO clients (<anchor client> + 1-2 more). The Year 1 customer is the CEO, via the founder. Other fractionals are NOT the audience yet.
 
 **No design partner pilots in Year 1.** Design partner / commercial release activity moves to Phase 3.
 
 **What this phase actually does:**
-1. Founder uses AI-CDIO daily on Ambar (his fractional CIO engagement)
+1. Founder uses AI-CDIO daily on <anchor client> (his fractional CIO engagement)
 2. Founder onboards 1-2 more REAL clients of his fractional practice
 3. Each client engagement runs against the 90-Day Commitment Matrix locked in `docs/STRATEGY-2026.md`
 4. Outcomes logged weekly in `docs/OUTCOMES.md` — specific dollar amounts saved, specific decisions caught, specific board moments won
@@ -300,15 +300,15 @@ Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 beca
 
 | Day | Task |
 |-----|------|
-| 29-30 | **Founder onboards Ambar + 1-2 more REAL clients onto the platform.** Run the 90-Day Commitment Matrix on each (Day 14 baseline → Day 21 first decisions → Day 30 AI roadmap → etc.). Outcomes logged weekly in `docs/OUTCOMES.md`. |
+| 29-30 | **Founder onboards <anchor client> + 1-2 more REAL clients onto the platform.** Run the 90-Day Commitment Matrix on each (Day 14 baseline → Day 21 first decisions → Day 30 AI roadmap → etc.). Outcomes logged weekly in `docs/OUTCOMES.md`. |
 | 30 | **Full legal review by attorney** (P1-12 — closes the templates-only state from Phase 1.5 Day 20). Targeted at AI disclaimer wording + EU AI Act / GDPR exposure + the 90-Day Commitment language in `docs/CONTRACT-TEMPLATES.md`. |
-| 31-33 | **Modules 12, 15, 2 depth passes (deferred from Phase 1C)** — Module 12 (Tech Finance & Value Realization, TBM Council + KPMG ROO), Module 15 (Process Automation & Transformation, APQC + Lean Six Sigma), Module 2 (Tech Strategy & Business Alignment, KPMG 4-practice + MIT). Driven by what the real Ambar engagement actually needs. |
+| 31-33 | **Modules 12, 15, 2 depth passes (deferred from Phase 1C)** — Module 12 (Tech Finance & Value Realization, TBM Council + KPMG ROO), Module 15 (Process Automation & Transformation, APQC + Lean Six Sigma), Module 2 (Tech Strategy & Business Alignment, KPMG 4-practice + MIT). Driven by what the real <anchor client> engagement actually needs. |
 | 31-32 | **Quick Scan output upgrade** (deferred from Phase 1C Days 14-15) — public `/scan` becomes board-memo-quality artifact (cited, narrative, 3 named quick wins, projected ROI). Top-of-funnel asset for CEO conversations. |
-| 33-34 | **CEO-facing asset library built — outcome-led, not feature-led.** One-pager + 3-5 min demo video + anonymized Ambar case study (real outcomes from the platform's first 30 days) + LinkedIn post templates. **All artifacts lead with what the CEO experiences**, not what fractionals can buy. |
-| 35-36 | **LinkedIn cadence ramps — to other fractional CDIOs' CEO clients (the founder's prospects), not to other fractionals.** 3 posts/week sharing real Ambar wins (anonymized). Founder is positioning himself as THE fractional CDIO who delivers the 90-Day Commitment Matrix. |
+| 33-34 | **CEO-facing asset library built — outcome-led, not feature-led.** One-pager + 3-5 min demo video + anonymized <anchor client> case study (real outcomes from the platform's first 30 days) + LinkedIn post templates. **All artifacts lead with what the CEO experiences**, not what fractionals can buy. |
+| 35-36 | **LinkedIn cadence ramps — to other fractional CDIOs' CEO clients (the founder's prospects), not to other fractionals.** 3 posts/week sharing real <anchor client> wins (anonymized). Founder is positioning himself as THE fractional CDIO who delivers the 90-Day Commitment Matrix. |
 | 37-38 | **Pricing & Packaging design (DEFERRED from Phase 1 — pricing for Phase 3 commercial release)** — three tiers sketched on paper before Phase 3 Stripe build, anchored to `docs/STRATEGY-2026.md` Architectural Law 2: methodology is FULL on every tier; compute is the variable-cost lever. Provisional sketch (final numbers from Day 19 cost telemetry): <br>• **Starter $199/mo** — 1-3 clients, Mechanism 1 (allowance + metered overage). AI Accelerator included IF margin math works. <br>• **Growth $399/mo** — 4-15 clients, Mechanism 2 (BYOK). Full AI Accelerator unconditionally. <br>• **Scale $599/mo** — unlimited clients, Mechanism 2 (BYOK). Full AI Accelerator + Knowledge Reuse + Custom playbook + priority support. <br>**Pricing is for Year 2+ when other fractionals come in. Year 1 the only "customer" is the founder using the tool on his own engagements.** Stripe products + prices configured in test mode at end of this phase, NOT yet exposed to public. |
 
-**Done = Founder has delivered the 90-Day Commitment Matrix to at least one real CEO client (Ambar) end-to-end. Outcome log has 5+ specific entries. Modules 12, 15, 2 are deep. Asset library leads with CEO outcomes. Pricing sketched for Year 2+ release. Legal reviewed. Quick Scan public artifact is board-memo-quality.**
+**Done = Founder has delivered the 90-Day Commitment Matrix to at least one real CEO client (<anchor client>) end-to-end. Outcome log has 5+ specific entries. Modules 12, 15, 2 are deep. Asset library leads with CEO outcomes. Pricing sketched for Year 2+ release. Legal reviewed. Quick Scan public artifact is board-memo-quality.**
 
 ---
 
@@ -355,7 +355,7 @@ Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 beca
 
 **Goal:** open the platform to other fractional CDIOs as a new income stream. **This is when the audience shifts from CEO (Year 1) to other fractionals (Year 2+).**
 
-**Trigger to enter Phase 3 (locked 2026-05-07 evening):** the founder must have delivered the 90-Day Commitment Matrix end-to-end on at least Ambar (and ideally 1-2 more clients), with `docs/OUTCOMES.md` showing 5+ specific CEO outcomes. Without that, Phase 3 launches into a positioning vacuum.
+**Trigger to enter Phase 3 (locked 2026-05-07 evening):** the founder must have delivered the 90-Day Commitment Matrix end-to-end on at least <anchor client> (and ideally 1-2 more clients), with `docs/OUTCOMES.md` showing 5+ specific CEO outcomes. Without that, Phase 3 launches into a positioning vacuum.
 
 **Account & billing settings UI is the Day-1 deliverable** — fractionals need a place to view their current plan, change plans, update payment, see usage, manage notifications. Cannot ship Stripe without this surface.
 
@@ -364,9 +364,9 @@ Note: production deploy (Phase 1.5, Days 18-20) was promoted out of Phase 2 beca
 | 51-53 | **Account & Billing Settings UI** — `/settings` with tabs: Profile (name, email, password reset via Clerk), Plan (current tier, usage vs limits, upgrade/downgrade), Billing (payment method, invoices), Notifications (email preferences for status reports, reminders, system alerts). Built BEFORE Stripe so the destination exists when subscriptions go live. |
 | 54-58 | **Stripe billing integration**. Tiers configured per Phase 2 Day 37-38 design + Day 19+ cost telemetry. Mechanism 1 (allowance + metered overage) for Starter; Mechanism 2 (BYOK) for Growth + Scale per `docs/STRATEGY-2026.md` Architectural Law 2. **No methodology gating** — AI Accelerator availability driven by margin math from cost telemetry, not by tier. Webhook handlers for subscription events. Test mode → live mode cutover. |
 | 59-63 | **First fractional design partners onboarded.** Each gets free pilot using the founder's case studies + outcome log + 90-Day Commitment Matrix as the productized methodology. The founder personally onboards the first 3-5 — they're peers, not strangers. **Day 90 metrics dashboard built** — internal-only `/admin/metrics` showing: paying customers count + MRR + founder daily-use streak + outcome log entry count + 90-Day Commitment Matrix completion rate per CEO client. |
-| 64-68 | **First case studies published with permission** — written from the Year 1 CEO outcomes (anonymized Ambar wins), positioned for OTHER FRACTIONALS now reading them. LinkedIn cadence ramps to other fractionals (Year 2+ audience). |
+| 64-68 | **First case studies published with permission** — written from the Year 1 CEO outcomes (anonymized <anchor client> wins), positioned for OTHER FRACTIONALS now reading them. LinkedIn cadence ramps to other fractionals (Year 2+ audience). |
 | 69-72 | **Value/ROI Tracker (Engine #3)** — commit→deliver→prove cycle. Same engine that lets the founder prove ROI to his CEO clients now lets fractional customers prove ROI to theirs. |
-| 73-75 | First original research draft: *"State of the Fractional CDIO 2026: What I Learned Productizing My Methodology"* — first-person, founder voice, real Ambar data anonymized. Quarterly publication target. |
+| 73-75 | First original research draft: *"State of the Fractional CDIO 2026: What I Learned Productizing My Methodology"* — first-person, founder voice, real <anchor client> data anonymized. Quarterly publication target. |
 
 **Done = 3-5 fractional design partners running engagements on the platform, founder positioned in fractional-CDIO community, Stripe in test mode with first paying customers, Day 90 metrics dashboard live.**
 

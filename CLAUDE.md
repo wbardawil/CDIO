@@ -100,7 +100,7 @@ C:/Users/Dell/projects/CDIO/
 
 ### Strategic Decisions Already Made (refreshed 2026-05-07 evening)
 - **Path B confirmed:** Fractional Executive OS for practitioners + internal IT directors. Customer #0 = founder.
-- **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on Ambar + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
+- **Year 1 audience = the founder's CEO clients via him; Year 2+ audience = other fractionals (locked 2026-05-07 evening).** Founder uses platform on <anchor client> + 1-2 more REAL clients of his own fractional practice. Other fractionals come Phase 3 commercial release once his practice maxes out.
 - **The Differentiated Promise is CEO-facing:** "Three things change when I'm your fractional CDIO. Your board stops asking the same tech questions twice. Bad tech bets die before they cost you money. AI moves from board talk to real rollout in 90 days." See `docs/STRATEGY-2026.md`.
 - **The 90-Day Commitment Matrix locks the contract backbone:** Day 14 maturity baseline → Day 21 Decision Packages resolved → Day 30 AI roadmap → Day 45 first initiative launched (outcome-driven, not category-limited) → Day 60 second initiative + Status Report + Cadence → Day 90 maturity lift + ROI + AI initiative shipped.
 - **Better / cheaper / faster:** 5x faster + 1/5th the cost of full-time CDIO + better proof than any consultant slide deck.
@@ -111,7 +111,7 @@ C:/Users/Dell/projects/CDIO/
 - **Methodology FULL on every tier:** no feature-gating of AI Accelerator. Tiers differentiate by scale (clients, practitioners) and compute mechanism only. Mechanism 1 (allowance + metered overage) for Starter; Mechanism 2 (BYOK) for Growth + Scale. Final pricing locked at Phase 2 Day 37-38 based on Day 19 cost telemetry.
 - **Day 90 kill switch criterion revised (locked 2026-05-07 evening):** Year 1 metric is CEO outcomes delivered (`docs/OUTCOMES.md`), not paying-customer count from fractionals. Paying-customer count is a Year 2 metric.
 - **Phase 1D scope (Days 21-28):** Charter → Initiative Pilot → Selection Engine (Tech + Partner) + Network Catalog → Cadence → Status Reports → MCP + integrations.
-- **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on Ambar + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
+- **Phase 2 reframed (locked 2026-05-07 evening):** founder dogfoods on <anchor client> + 1-2 more real clients; Modules 12, 15, 2 deep passes happen here; Quick Scan upgrade lands here; CEO-facing asset library built. **No design partner pilots in Year 1.**
 - **Phase 2.5 stays full 12 days (Days 39-50, per `9f3a2a6` final lock):** AI Maturity Model + Use-Case Library + Roadmap Generator + AI-flavored Selection Engine pass (extends Phase 1D Day 24 generic Selection Engine via `domain: "tech" | "ai"` parameter — no standalone Build-vs-Buy Advisor) + Governance Scaffolding + AI deliverable surfacing + Public `/ai-readiness` Quick Scan + Quarterly re-assessment cadence wiring.
 - **Phase 3 reframed (locked 2026-05-07 evening):** opens to other fractionals (commercial release). Stripe + first paying fractional customers + design partner pilots.
 - **Architectural laws (8) locked:** see `docs/STRATEGY-2026.md` Architectural Laws section.
@@ -182,7 +182,7 @@ this directive + the gstack learning
 - **Founder-judgment fast-follows** from the rebuild — see `TODOS.md` §3 (4 one-line weak rewordings + M5 RECOVER decision + async review of the 11 autonomous module ratifications).
 - **Merge the branch to main** when the founder gives the go-ahead.
 
-**Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on Ambar end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
+**Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on <anchor client> end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
 
 ## Process Discipline — gstack as MANDATORY GATES (locked 2026-05-07)
 

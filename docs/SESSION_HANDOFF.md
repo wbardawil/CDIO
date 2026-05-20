@@ -244,7 +244,7 @@ Phase 1A ✅, Phase 1B ✅, Phase 1C Days 8-17 ✅ (Quick Win Stack 3/3 + Decisi
 - ✅ **Day 13: Lean SMB defenses shipped.** `MODULE_TARGET_LEVEL_BY_SIZE` size-band ceiling in `src/lib/scoring/maturity.ts` (defaults: small=L3, medium=L4, large=L5; Modules 5+16 get +1 ceiling at small/medium). `getTargetLevelCeiling(moduleNumber, orgSize)` helper consumed by the narrative agent — recommendations no longer push past the band's ceiling.
 - ✅ **Day 13: Lean-form-first rule + PE-underwriting discipline** wired into the assessment agent system prompt. Recommendations propose manual/spreadsheet/shared-doc forms before tool-buy escalation. Conservative estimates, hard-dollar savings, defensible 18 months later — language pulled from the AMP AI Diagnostic Playbook.
 - ✅ **Day 14-15: Quick Scan board-memo upgrade.** Public `/scan` post-completion view replaced with full board-memo artifact: tier headline (Initial/Developing/Defined/Managed/Optimizing) at Level X.X, executive summary paragraph, maturity radar + by-dimension list, three named quick wins (lean-form-first actions with framework citation + projected impact + hard-savings-candidate badge for AMP "counts toward margin" modules 4/12/13/15), strategic risks (low scores on high-stakes modules with module-specific board language), areas of strength, print/save-PDF button (window.print with print-friendly Tailwind variants), CTA. Deterministic — no LLM call, no API key required. Replaces "we'll send you a report later" pattern with a same-screen artifact a CEO can read or print.
-- ✅ **Day 16: Adaptive questioning (Tier 1 AI leverage).** `selectAdaptiveSubset(questions, 8)` helper added to `role-tag-mapping.ts`; subcategory-breadth-first selection caps stakeholder load at 8 questions per module. AssessmentForm wired in. Disclosure: "X questions for your role · narrowed from N for focus." Saves ~50 minutes of stakeholder time across a 16-module assessment. Module 2 deep deferred to Phase 2 dogfood (Days 29-38) where Ambar engagement signal will direct depth design.
+- ✅ **Day 16: Adaptive questioning (Tier 1 AI leverage).** `selectAdaptiveSubset(questions, 8)` helper added to `role-tag-mapping.ts`; subcategory-breadth-first selection caps stakeholder load at 8 questions per module. AssessmentForm wired in. Disclosure: "X questions for your role · narrowed from N for focus." Saves ~50 minutes of stakeholder time across a 16-module assessment. Module 2 deep deferred to Phase 2 dogfood (Days 29-38) where <anchor client> engagement signal will direct depth design.
 - ✅ **Day 17: Framework citations layer surfaced in module-insights-panel.** Every module group on the practitioner dashboard now displays the framework anchor (TBM Council, NIST CSF, APQC PCF, etc.) and the plain-English one-liner under the module title. AssessmentForm and `/preview` already had inline citations — this completes the layer across the practitioner workspace.
 - ✅ **Module 12 polish: m12_q14 added.** Hard-dollar underwriting question explicitly anchored to KPMG ROO + AMP's Standardized Impact Formula (Volume × Minutes × Cost × Realizable %). Module 12 now has 14 questions.
 - ✅ **AMP Playbook integration locked in STRATEGY-2026.md** — separate AMP Playbook Integration section above Architectural Lineage. Phase 2.5 reduced 12 → 8 days by reusing AMP's 5 governance components (AI Maturity Model dims), 4 opportunity categories (AI Use-Case Library taxonomy), 100→17→7 funnel (AI Roadmap Generator), and 5×5 scoring (Selection Engine `domain: "ai"`). AI Operator Bootcamp logged as Year 2+ commercial product candidate.
@@ -390,7 +390,7 @@ The Day 11 evening rough draft proposed re-sequencing Phase 1C around AI + Data 
 
 The strategy doc was implicitly written to sell to other fractional CDIOs. **It's wrong for Year 1.** Founder isn't selling AI-CDIO to peers yet. He's using AI-CDIO with his current CEO clients. Year 2+ commercialization happens when the founder's fractional practice maxes out (capacity-constrained → release platform as new income stream).
 
-**Year 1 audience:** the founder's CEO clients (Ambar + 1-2 more). They never log in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it.
+**Year 1 audience:** the founder's CEO clients (<anchor client> + 1-2 more). They never log in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it.
 **Year 2+ audience:** other fractional CDIOs. Phase 3 commercial release.
 
 **Phase 2 reframed:** NO design partner pilots in Year 1. Founder uses platform on REAL clients of his own fractional practice. Modules 12, 15, 2 depth passes happen here. CEO-facing asset library built (one-pager, demo video, case study, LinkedIn templates) — all leading with what CEOs experience, not what fractionals can buy.
@@ -682,7 +682,7 @@ Phase 1C now includes **role/area question-level segmentation + universal N/A es
 | 1B | Upstash rate limit on /api/chat + /api/assessments | Cost protection — needs `UPSTASH_*` env vars |
 | 1B | Sentry + Langfuse | Observability — needs `SENTRY_DSN` + `LANGFUSE_*` |
 | 1B | Add/remove stakeholder UI + bulk reminder | Day 4 spillover; user only had pencil-edit must-have |
-| 1C | **Data migration plan for existing assessment responses** (Day 8 decision before Module 5 rewrite) | Don't silently invalidate Ambar/TestCo data |
+| 1C | **Data migration plan for existing assessment responses** (Day 8 decision before Module 5 rewrite) | Don't silently invalidate <anchor client>/<sandbox org> data |
 | 1C | Module 5 deep (questions, framework citations, narrative scoring, level-5 indicators) | Quick Win Stack starts here |
 | 1C | **Role/area question-level segmentation + N/A escape + thin-coverage warning** | Built Days 8-13 alongside Module 5/12/15 depth rewrite |
 | 1C | Decision Package surfacing as standalone artifact | Hero output (designed generic w/ `domain` parameter for Phase 2.5 reuse) |
@@ -762,11 +762,11 @@ This session under-used these. Next session uses them as gates, not optional pol
 ### Key data state
 
 - Practitioners: 1 (Wadi Bardawil, `wadi.bardawil@arkiva.mx`, plan: `starter`)
-- Real orgs: **Ambar Capital** — `is_sandbox=false`, mapped to founder as `owner`, `active_modules = [5, 15, 4]`
-- Sandbox orgs: **TestCo Industries** — auto-flipped Day 7 migration
-- Founder's role at Ambar: fractional CIO
+- Real orgs: **<anchor client>** — `is_sandbox=false`, mapped to founder as `owner`, `active_modules = [5, 15, 4]`
+- Sandbox orgs: **<sandbox org>** — auto-flipped Day 7 migration
+- Founder's role at <anchor client>: fractional CIO
 - Module 5 = first deep-pass module (NIST CSF v2.0, 15 questions, role-tagged, level-5, narrative + path)
-- Existing Module 5 scores on Ambar/TestCo are **legacy schema** — re-running an assessment populates the new narrative + path fields per stakeholder
+- Existing Module 5 scores on <anchor client>/<sandbox org> are **legacy schema** — re-running an assessment populates the new narrative + path fields per stakeholder
 
 Open the next session by reading in order:
 1. `docs/STRATEGY-2026.md` (the outcomes-led rewrite)
@@ -884,4 +884,4 @@ By the end of the next session, the founder should be able to:
 3. See rate-limit headers on /api/chat and /api/assessments responses
 4. Look at Sentry and Langfuse and see real telemetry from the platform
 
-If those four are true, Phase 1B Days 4-6 are done. Day 7 confirms Ambar reality + backfills.
+If those four are true, Phase 1B Days 4-6 are done. Day 7 confirms <anchor client> reality + backfills.

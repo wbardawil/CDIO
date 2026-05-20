@@ -264,10 +264,10 @@ This is what goes into the founder's engagement contract with each CEO client. I
 
 | Year | Customer | What you sell them | How |
 |---|---|---|---|
-| **Year 1 (now → Day ~180)** | **The founder's CEO clients** (Ambar, plus 1-2 more) | Outcomes + feelings: tech bets stop bleeding budget, AI moves from talk to rollout, board moments land cleanly, alignment month-over-month | The founder uses AI-CDIO as HIS tool. The CEO never logs in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it. |
+| **Year 1 (now → Day ~180)** | **The founder's CEO clients** (<anchor client>, plus 1-2 more) | Outcomes + feelings: tech bets stop bleeding budget, AI moves from talk to rollout, board moments land cleanly, alignment month-over-month | The founder uses AI-CDIO as HIS tool. The CEO never logs in. They see Decision Packages, Status Reports, Cadence links, framework-cited maturity charts — that's it. |
 | **Year 2+ (Phase 3 onward)** | **Other fractional CDIOs** (the founder's peers) | Capacity unlock + new income stream once the founder's own fractional practice maxes out | Open the platform commercially. Ship the same Differentiated Promise + 90-Day Commitment Matrix as a productized methodology other fractionals can adopt. |
 
-**This means Phase 2 is reframed:** it's NOT 5 design partner pilots. It's the founder running the platform on Ambar + 1-2 more REAL clients of his own fractional practice, building the outcome log that Year 2+ commercialization rests on. Design partners (other fractionals testing it) move to Phase 3.
+**This means Phase 2 is reframed:** it's NOT 5 design partner pilots. It's the founder running the platform on <anchor client> + 1-2 more REAL clients of his own fractional practice, building the outcome log that Year 2+ commercialization rests on. Design partners (other fractionals testing it) move to Phase 3.
 
 ---
 
@@ -414,14 +414,14 @@ The original "1M SMBs by Year 3" is replaced by realistic targets that compound.
 
 | Track | What founder does | What platform does |
 |---|---|---|
-| Asset library (one-time) | Approve demo video, case study, one-pager | Generates from real Ambar workflow data |
+| Asset library (one-time) | Approve demo video, case study, one-pager | Generates from real <anchor client> workflow data |
 | LinkedIn rhythm (3-5/week) | Voice + opinion on real client situations | Provides build-progress data, anonymized screenshots, framework deep-dives |
 | Targeted DMs (30/week ramp) | Personal note referencing shared connection | Segments search lists, drafts personalized openers |
 | Discovery → Demo → Pilot | 30-min call, 30-min demo, free 14-day pilot | Quick Scan produces board-quality output during demo |
 | Pilot → Paid (Day 14, 30, 60) | Personal check-in calls | Auto-tracks usage, sends pilot summary |
 | Quarterly research | Approve scope, write voice | Aggregates anonymized data, drafts findings |
 
-**Marketing principle (refined 2026-05-07 evening):** Year 1 marketing audience is the founder's **current and prospective CEO clients** — not other fractionals. Every public artifact (LinkedIn posts, case studies, demo video, one-pager) leads with what the CEO experiences when their fractional CDIO uses AI-CDIO. *"Caught Mike's encryption gap before the May 14 board meeting — reframed L2 to L3 path with $40K NIST-aligned roadmap. Ambar's CEO walked into the board confident."* — not *"I built a 5-level maturity assessment."* Year 2+ marketing pivots to other fractionals once the founder's CEO outcome log validates the platform.
+**Marketing principle (refined 2026-05-07 evening):** Year 1 marketing audience is the founder's **current and prospective CEO clients** — not other fractionals. Every public artifact (LinkedIn posts, case studies, demo video, one-pager) leads with what the CEO experiences when their fractional CDIO uses AI-CDIO. *"Caught Mike's encryption gap before the May 14 board meeting — reframed L2 to L3 path with $40K NIST-aligned roadmap. <anchor client>'s CEO walked into the board confident."* — not *"I built a 5-level maturity assessment."* Year 2+ marketing pivots to other fractionals once the founder's CEO outcome log validates the platform.
 
 ---
 
@@ -492,7 +492,7 @@ Today: one corpus (`playbook_chunks`, 1,154 entries from the 30-file source play
 
 Today: every LLM call is stateless, context fed per-request. Works for single-shot operations.
 
-Phase 4: per-client conversational memory across sessions. The agent knows Ambar's history without re-retrieving. Adopts Anthropic's native memory primitives when generally available — does not roll its own. This is what makes the Practitioner Feeling Map's *"My methodology travels with me"* work for real.
+Phase 4: per-client conversational memory across sessions. The agent knows <anchor client>'s history without re-retrieving. Adopts Anthropic's native memory primitives when generally available — does not roll its own. This is what makes the Practitioner Feeling Map's *"My methodology travels with me"* work for real.
 
 ### Law 5 — Cadence-as-primitive
 
@@ -651,7 +651,7 @@ Per Process Discipline above, `/cso` (OWASP + STRIDE audit) runs before any Netw
 | **Service-role with TS-layer ownership checks today; per-user JWT + RLS later** | Ship speed now, security depth Day 30+. RLS policies pre-wired. |
 | **No background-jobs framework yet** | Synchronous engines until 5+ paying customers reveal scale needs. |
 | **Single Supabase project, single Clerk app** | One environment until Phase 3. |
-| **Production deploy at Day 18** | Methodology depth ships INTO production. Real Ambar exec emails route through verified domain when Phase 1C dogfood begins. Demo URL exists for design-partner conversations starting Phase 2. |
+| **Production deploy at Day 18** | Methodology depth ships INTO production. Real <anchor client> exec emails route through verified domain when Phase 1C dogfood begins. Demo URL exists for design-partner conversations starting Phase 2. |
 | **AI Accelerator as a flagship engine, NOT a separate product** | Practitioner-first preserved. Public `/ai-readiness` Quick Scan routes leads to practitioners, not direct CEO subscriptions. |
 
 ---
@@ -687,7 +687,7 @@ Future: 7 corpora — Playbook + Frameworks + Vendor data + Use case catalog + *
 
 ### Law 3 — Memory primitives are Phase 4, not Phase 1
 
-Per-client conversational memory across sessions ("remember what we decided last quarter for Ambar") is real value but not Phase 1 value. We adopt Anthropic's native memory primitives when they ship, rather than building a homegrown layer that we then have to migrate. Phase 4 commitment.
+Per-client conversational memory across sessions ("remember what we decided last quarter for <anchor client>") is real value but not Phase 1 value. We adopt Anthropic's native memory primitives when they ship, rather than building a homegrown layer that we then have to migrate. Phase 4 commitment.
 
 ### Law 4 — Tier-based multi-agent matrix (drives pricing defensibility)
 
@@ -751,10 +751,10 @@ The current 16 modules over-index on infrastructure and governance and under-ind
 
 The Year 1 customer is the founder's CEO clients via him, not other fractionals. The Day 90 kill switch must measure **outcomes delivered to those CEO clients**, not paying-customer count from other fractionals. Paying-customer-from-fractionals is a Year 2 signal.
 
-- **The founder has delivered all six 90-Day Commitment Matrix milestones to at least one real CEO client (Ambar)** → continue, accelerate. The platform's promise is keeping promises to CEO clients. If that's working, the rest follows.
+- **The founder has delivered all six 90-Day Commitment Matrix milestones to at least one real CEO client (<anchor client>)** → continue, accelerate. The platform's promise is keeping promises to CEO clients. If that's working, the rest follows.
 - **The founder has delivered 4-5 of the six milestones + has 5+ qualitative outcomes logged in `docs/OUTCOMES.md`** → continue, slow burn. **Most likely actual outcome.** Real CEO outcomes are the Year 1 evidence base.
 - **The founder has delivered <3 milestones to any CEO client AND has fewer than 3 qualitative outcomes logged** → STOP. Reframe or shelve. The platform isn't making the founder's practice better.
-- **The founder has delivered all six milestones to multiple CEO clients (Ambar + 1-2 more) and is capacity-constrained** → trigger Year 2 commercialization. This is the cue to release to other fractionals.
+- **The founder has delivered all six milestones to multiple CEO clients (<anchor client> + 1-2 more) and is capacity-constrained** → trigger Year 2 commercialization. This is the cue to release to other fractionals.
 
 **Paying-customer count at Day 90 is no longer the headline metric.** It moves to a Year 2 metric. The Year 1 metric is **CEO outcomes delivered**, measured in `docs/OUTCOMES.md` weekly entries with specific dollar amounts saved, specific decisions caught, specific board moments won.
 
@@ -781,7 +781,7 @@ A new lightweight discipline: **every Friday, the founder writes one entry in th
 
 Examples (hypothetical, illustrative):
 - *"Caught Mike's encryption gap on Module 5 before the May 14 board meeting — reframed it from L2 to L3 path with $40K NIST-aligned roadmap. CEO walked into the board confident."*
-- *"Killed the SAP migration scope creep at Ambar — Decision Package showed CFO and COO disagreed on phase 2 timing. Saved estimated $80K and 3-month delay."*
-- *"Re-engaged TestCo on the Cybersecurity quarterly re-assessment cadence — surfaced new vendor risks since last review. Locked in Q3 retainer."*
+- *"Killed the SAP migration scope creep at <anchor client> — Decision Package showed CFO and COO disagreed on phase 2 timing. Saved estimated $80K and 3-month delay."*
+- *"Re-engaged <sandbox org> on the Cybersecurity quarterly re-assessment cadence — surfaced new vendor risks since last review. Locked in Q3 retainer."*
 
 The outcome log lives at `docs/OUTCOMES.md` (created Day 11). It is the qualitative evidence the platform delivers what this strategy doc promises. Day 90 kill switch reads it.

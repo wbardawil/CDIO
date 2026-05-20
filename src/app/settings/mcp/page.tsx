@@ -60,7 +60,7 @@ export default async function McpSettingsPage() {
           Architectural Law 7, the platform meets you where you already work
           with AI. Issue a token, paste it into your Claude.ai / Cursor /
           Codex / ChatGPT MCP config, and you can ask &ldquo;what&apos;s the
-          status on Ambar?&rdquo; without leaving the chat.
+          status on <anchor client>?&rdquo; without leaving the chat.
         </div>
 
         <section className="bg-white rounded-xl border border-gray-200 p-5">
