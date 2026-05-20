@@ -268,3 +268,12 @@ gstack is installed at `~/.claude/skills/gstack/`. **Going forward, gstack skill
 - The product needs to make HIS practice better before serving anyone else
 - Speed matters — competitors (ScalePad LMX) are in adjacent space
 - The 90-day kill switch is real: if no paid customers + no daily founder use by Day 90, stop building
+
+## Design System
+
+Always read `DESIGN.md` (repo root) before making any visual or UI decision.
+All aesthetic direction, typography, color, spacing, layout, and motion are
+defined there. Do not deviate without explicit user approval. In QA / review,
+flag any code that doesn't match `DESIGN.md` (especially: any blue, Arial/
+system-ui type, centered icon-circle grids, or dashboard density on a CEO trust
+screen — these are tracked deviations from the old default-Next.js slop).
