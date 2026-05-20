@@ -124,9 +124,11 @@ C:/Users/Dell/projects/CDIO/
 - **Rate limiting via Upstash Redis:** Day 5 (env vars pending).
 - **Methodology = defensibility bar, NOT verbatim (locked 2026-05-19):** the 128 diagnostic questions are being rebuilt so each maps to a specific named construct in a recognized authoritative source. This supersedes the `96dd36a`/`1127291` verbatim-from-playbook directive (sanctioned, reason: verbatim is only 30% defensible). Founder ratifies per module — never self-certify. Full decision in Current Sprint § "LOCKED DECISION (2026-05-19)".
 
-## Current Sprint (end of Day 12 — Phase 1C Quick Win Stack 2/3 done)
+## Current Sprint (2026-05-19 — methodology bank REBUILT and SHIPPED on branch `claude/loving-tesla-b61c25`)
 
 Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-12 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 doc-lock + Day 12 Module 12 deep shipped at `f595bfc`).
+
+**Defensibility-bar rebuild SHIPPED (2026-05-19, branch above; PR/merge pending founder go-ahead).** All 16 modules ratified to the defensibility bar (locked decision below). Bank: **124 strong / 4 weak / 0 indefensible** (was 38/81/9). Step C-2 product-wiring done (`diagnostic-questions.ts` now surfaces authoritative named-construct citations through `cite(id)` instead of the generic "AI-CDIO Source Playbook" label). 5 modules (M2, M5, M8, M10, M12, M13 — the live-engagement triad + the worst two) human-ratified at AskUserQuestion gates; the remaining 11 ratified autonomously under explicit founder "allow all for this job" authorization, recorded as async-review-pending in `scripts/ratified-modules.json`. Honest scorecard: `docs/QUESTION-REVIEW.md` (one-page, GitHub-readable). Remaining founder-judgment items captured in `TODOS.md` §3 (4 one-line rewordings + M5 RECOVER decision + async review of autonomous ratifications).
 
 **Day 13 note — RESOLVED (2026-05-19).** The old "Module 15 deep — bespoke
 framework questions" task is closed. History: Module 15 deep was built
@@ -169,11 +171,16 @@ these; (2) M8, M10, M7, M11, M14, M15 — worst-first; (3) the rest. Reference:
 this directive + the gstack learning
 `questions-rebuild-to-defensibility-bar-SUPERSEDES-verbatim` (confidence 10).
 
-**Days 14-15:** Quick Scan output upgrade (board-memo quality, no AI lens — that lands Phase 2.5).
+**SHIPPED (2026-05-19, on branch `claude/loving-tesla-b61c25`) — what the rebuild already covers from the old Day-14-17 plan:**
+- ✅ **Module 2 deep** — fully ratified at all-strong on COBIT 2019 APO02/APO05.01/APO02.06 + Henderson&Venkatraman SAM + Balanced Scorecard + COBIT EDM01 + MEA01. Replaces the old "KPMG 4-Practice + MIT" plan (KPMG 4-Practice was marketing, not tier-1 research; demoted).
+- ✅ **Framework citations layer** — all 16 modules cited to specific named constructs (`docs/QUESTION-REVIEW.md`), and the product UI now displays them through `cite(id)` (Step C-2 shipped). Bank: 124 strong / 4 weak / 0 indefensible.
 
-**Day 16:** Module 2 deep — Tech Strategy & Business Alignment (KPMG 4-practice + MIT) + adaptive questioning wired in.
-
-**Day 17:** Framework citations layer + jargon → CEO-language translation.
+**Still to do (separate workstreams, NOT done in this rebuild):**
+- **Quick Scan output upgrade** — board-memo-quality output (no AI lens — that lands Phase 2.5). Not part of the rebuild.
+- **Adaptive questioning** for the assessment flow (skip-pattern logic, role-aware filtering refinements). Not part of the rebuild.
+- **Jargon → CEO-language translation** layer — render the technical named-construct text into CEO-friendly phrasing in the UI. Not part of the rebuild; could be a thin presentation-layer pass.
+- **Founder-judgment fast-follows** from the rebuild — see `TODOS.md` §3 (4 one-line weak rewordings + M5 RECOVER decision + async review of the 11 autonomous module ratifications).
+- **Merge the branch to main** when the founder gives the go-ahead.
 
 **Done with Phase 1C = Quick Win Stack (Modules 5 + 12 + 15) is fully demo-quality, role-aware, N/A-safe, framework-cited. Module 2 deep ships Pillar 3 (alignment). Founder can run a full 5+12+15 Quick Win engagement on Ambar end-to-end. AI Accelerator + buy-trigger remain in Phase 2.5 (Days 39-50, full 12-day plan).**
 
