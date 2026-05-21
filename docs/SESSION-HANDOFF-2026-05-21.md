@@ -24,6 +24,10 @@ End of a long session that closed three real exploits, captured 14 codex audit f
 | #15 | 75143de | Security hotfix (codex findings #9, #10, #11) |
 | #16 | fa0d8e1 | Strategic frame + session handoff (docs) |
 | #19 | 712d91e | Lock all 6 open items from CEO review (docs) |
+| #21 | 5205289 | Fix session handoff staleness — rewrite for TRUE final state (docs) |
+| #22 | 8590e8c | Scrub external-tool name from session handoff (docs) |
+
+Note: `git log` will also show `7aac496` as a duplicate of PR #19's content. That's an artifact of a 504 retry during the merge; same content, harmless. Also note: PRs #18 and #20 net-zero each other (added then removed a docs file); they ship to `main` for traceability but are not in this ledger to keep the operating reference clean.
 
 ### Strategic frame is fully locked
 
