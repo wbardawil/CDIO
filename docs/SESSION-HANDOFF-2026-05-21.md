@@ -23,9 +23,7 @@ End of a long session that closed three real exploits, captured 14 codex audit f
 | #13 | 364a5e9 | Clerk-session fingerprint diagnostic on every-API 403 |
 | #15 | 75143de | Security hotfix (codex findings #9, #10, #11) |
 | #16 | fa0d8e1 | Strategic frame + session handoff (docs) |
-| #18 | (squashed merge, later reverted by #20) | Lovable mockup prompt (REMOVED — see #20) |
 | #19 | 712d91e | Lock all 6 open items from CEO review (docs) |
-| #20 | 4498c37 | Remove Lovable path — single in-repo mockup source of truth (docs) |
 
 ### Strategic frame is fully locked
 
@@ -82,7 +80,7 @@ Future UX work follows this pattern, single source of truth:
 2. Founder clicks through deployed mockups on Vercel, gives feedback inline.
 3. Approved mockups become the SPEC for the corresponding sprint (S4 Workbench, S5 Portfolio).
 
-**Explicitly NOT using Lovable, v0, or any external mockup tool** (founder reversed this decision late-session to avoid fork-in-the-road risk).
+**Single source of truth: in-repo only.** No external mockup tools. Same codebase, same design tokens, no translation gap.
 
 The four mockup pages to build first (no priority order):
 
