@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createServiceClient } from "@/lib/db/supabase";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanApprove } from "@/lib/auth/role-gates";
 
 /**
  * POST /api/decisions/[id]/resolve
@@ -54,7 +54,10 @@ export async function POST(
     return NextResponse.json({ error: "Decision package missing org context" }, { status: 500 });
   }
 
-  const ownership = await assertPractitionerOwnsOrg(orgId);
+  // codex-audit-2026-05-21 finding #9 (review followup) — recording the
+  // resolution of a divergence point is the CDIO's call; only
+  // strategic_approver can do it.
+  const ownership = await assertCanApprove(orgId);
   if (ownership.response) return ownership.response;
 
   const { error: updateErr } = await db

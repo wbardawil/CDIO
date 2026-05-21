@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanApprove } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 
 // ============================================================
@@ -54,7 +54,11 @@ export async function PATCH(
 ) {
   const { orgId } = await params;
 
-  const ownership = await assertPractitionerOwnsOrg(orgId);
+  // codex-audit-2026-05-21 finding #9 (review followup) — client edit
+  // (rename, archive, change engagement model) is a strategic-approver-
+  // only action; viewers / operators / reviewers cannot mutate the
+  // engagement itself.
+  const ownership = await assertCanApprove(orgId);
   if (ownership.response) return ownership.response;
 
   let input: z.infer<typeof PatchSchema>;
@@ -123,7 +127,9 @@ export async function DELETE(
 ) {
   const { orgId } = await params;
 
-  const ownership = await assertPractitionerOwnsOrg(orgId);
+  // codex-audit-2026-05-21 finding #9 (review followup) — sandbox delete
+  // is destructive and strategic; only the strategic_approver can do it.
+  const ownership = await assertCanApprove(orgId);
   if (ownership.response) return ownership.response;
 
   const db = createServiceClient();

@@ -19,11 +19,18 @@ import type { OrgSize, Industry } from "@/types";
 // endpoint previously trusted org_id / assessment_id / stakeholder_id from the
 // request body. A legitimate token-holder could tamper with IDs to attribute
 // scores to a different stakeholder or even a different org. Token is now the
-// SOLE source of truth: server derives the IDs server-side and ignores any
-// body values that disagree.
+// SOLE source of truth for stakeholder_id + org_id.
+//
+// Codex review followup: also accept the client's assessment_id and validate
+// it belongs to the token-resolved org + is in an active state. This closes
+// the rebind window where a new draft assessment could be created between
+// page-load and submit, silently moving scores into the wrong assessment.
 const SubmitSchema = z.object({
   // token now required — was previously not in the body at all.
   token: z.string().min(8).max(128),
+  // assessment_id required — server validates it against the token's org
+  // before accepting any writes. Client gets it from /api/stakeholders/by-token.
+  assessment_id: z.string().uuid(),
   module_number: z.number().int().min(1).max(16),
   business_impact_rating: z.number().int().min(1).max(10).optional(),
   module_skipped: z.boolean().optional().default(false),
@@ -43,9 +50,8 @@ export async function POST(request: NextRequest) {
     const input = SubmitSchema.parse(body);
     const db = createServiceClient();
 
-    // Derive (stakeholder_id, org_id, assessment_id) from the token. Reject
-    // any body-supplied IDs by simply not reading them. If the token doesn't
-    // resolve to a stakeholder + active assessment, 404.
+    // Derive (stakeholder_id, org_id) from the token. Validate the
+    // client-supplied assessment_id against that org + active state.
     const { data: stakeholderRow } = await db
       .from("stakeholders")
       .select("id, org_id")
@@ -57,24 +63,28 @@ export async function POST(request: NextRequest) {
         { status: 404 },
       );
     }
-    const { data: activeAssessment } = await db
+    // Validate assessment_id belongs to the same org AND is in an active
+    // (draft / in_progress) state. Avoids the "newest active" rebind window
+    // codex flagged in review of the prior hotfix iteration.
+    const { data: assessmentRow } = await db
       .from("assessments")
-      .select("id")
-      .eq("org_id", stakeholderRow.org_id)
-      .in("status", ["draft", "in_progress"])
-      .order("created_at", { ascending: false })
-      .limit(1)
+      .select("id, org_id, status")
+      .eq("id", input.assessment_id)
       .maybeSingle();
-    if (!activeAssessment) {
+    if (
+      !assessmentRow ||
+      assessmentRow.org_id !== stakeholderRow.org_id ||
+      !["draft", "in_progress"].includes(assessmentRow.status)
+    ) {
       return NextResponse.json(
-        { error: "No active assessment for this token" },
+        { error: "Assessment not available for this token" },
         { status: 404 },
       );
     }
     // Bind the IDs server-side. Everything below uses derivedIds, never body.
     const derivedIds = {
       org_id: stakeholderRow.org_id as string,
-      assessment_id: activeAssessment.id as string,
+      assessment_id: assessmentRow.id as string,
       stakeholder_id: stakeholderRow.id as string,
     };
 

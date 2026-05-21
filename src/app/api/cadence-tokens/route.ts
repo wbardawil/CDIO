@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanApprove } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 import { randomBytes } from "node:crypto";
 
@@ -36,7 +36,10 @@ export async function POST(request: NextRequest) {
   }
   const input = parsed.data;
 
-  const ownership = await assertPractitionerOwnsOrg(input.org_id);
+  // codex-audit-2026-05-21 finding #9 (review followup) — minting
+  // a cadence token grants external (CEO/board) read access to the
+  // engagement; strategic_approver only.
+  const ownership = await assertCanApprove(input.org_id);
   if (!ownership.ok) return ownership.response;
 
   const expiresAt = new Date();

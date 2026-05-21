@@ -82,15 +82,17 @@ export default function AssessPage({ params }: { params: Promise<{ token: string
       setSubmitting(true);
 
       try {
-        // codex-audit-2026-05-21 finding #11 — the API now derives org_id /
-        // assessment_id / stakeholder_id from the token on the server. The
-        // client only passes the token (the URL-bearer) and the response
-        // data. Body-supplied IDs are ignored even if sent.
+        // codex-audit-2026-05-21 finding #11 — server derives stakeholder_id
+        // and org_id from the token; we additionally pass the assessment_id
+        // loaded with the form so the server can validate (codex review
+        // followup) and avoid rebinding to a newer draft assessment created
+        // mid-session. Body-supplied stakeholder_id / org_id are ignored.
         const res = await fetch("/api/assessments", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             token,
+            assessment_id: stakeholder.assessment_id,
             module_number: currentModule,
             responses,
             business_impact_rating: businessImpact,
