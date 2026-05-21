@@ -76,24 +76,22 @@ When you sit down to S2.5, the migration writes itself from the locks:
 
 `/codex` mandatory review before merging this migration per the new hard-gate discipline.
 
-### Mockup-first workflow (locked)
+### Build workflow: tight-loop direct build (locked end-of-session)
 
-Future UX work follows this pattern, single source of truth:
+Future UX work follows this pattern. **No mockup layer.** The session's earlier mockup-first idea was challenged and dropped — see "Why no mockup layer" below.
 
-1. **In-repo `/mockup/*` pages** — static React under `src/app/mockup/`, real DESIGN.md tokens, stub data, no DB.
-2. Founder clicks through deployed mockups on Vercel, gives feedback inline.
-3. Approved mockups become the SPEC for the corresponding sprint (S4 Workbench, S5 Portfolio).
+```
+1. Build a narrow real surface in src/app/ (NOT under /mockup)
+2. Use real DESIGN.md tokens, stub data initially, no DB writes until wiring step
+3. Ship to Vercel via PR (squash-merge, /codex on schema + auth changes)
+4. Founder reviews the live deployed page
+5. Feedback → iterate REAL code (compounds) OR rip out (small loss, real learning)
+6. Once visual approved, wire to real data + add real writes in a follow-up PR
+```
 
-**Single source of truth: in-repo only.** No external mockup tools. Same codebase, same design tokens, no translation gap.
+PRs are 1-2 days each maximum. Founder reviews on Vercel between every PR. Same feedback loop a mockup would provide, but the artifact compounds instead of becoming throwaway.
 
-The four mockup pages to build first (no priority order):
-
-- `/mockup/architecture-map` — 3 visual toggles (layered / matrix / force-directed)
-- `/mockup/portfolio` — 5-stage kanban
-- `/mockup/initiative-detail` — Decision Package wizard sample (step 3 of 8)
-- `/mockup/graduation-scorecard` — 5-dimension success rubric
-
-Each is ~3-4 hours.
+**Why no mockup layer.** The pain this session was auth (PGRST201), schema integrity (Coach Mode prior_version), cross-org IDOR, race-prone state transitions, viewer-can-mutate. Fourteen codex findings, zero of them visual. Mockups don't catch any of those. The actual safety nets — `/codex` mandatory on schema+auth, `/qa` on deploys — are already locked in CLAUDE.md Process Discipline. A mockup layer is insurance against a risk that already has better insurance, and it produces throwaway artifacts the real build then duplicates.
 
 ---
 
@@ -101,16 +99,18 @@ Each is ~3-4 hours.
 
 The strategic groundwork is done. The next session has three legitimate entry points; pick the one that matches your energy:
 
-**Path A — Build the mockups (recommended).**
-Start by building one or more `/mockup/*` surfaces. They're the cheapest way to validate the strategic frame before any schema change. Founder reviews, gives feedback, then you iterate. The mockups become the spec for S4 + S5 when those sprints arrive. Lowest risk, highest learning per hour.
+**Recommended order: S2 → S2.5 → S3 → S4 → S5 → S6 → S7.** Build real surfaces in 1-2 day PR increments with founder Vercel review between each. No mockup layer.
 
-**Path B — Start S2 substrate fix.**
-The 4 codex P1 substrate bugs in `src/app/api/_lib/approval-actions.ts` (prior_version captured POST-edit not PRE-edit, race-prone state transitions, no transaction integrity, `rejected` end-to-end). ~3-4 hours. `/plan-eng-review` then `/codex` before code. Productive but doesn't move the visible-product needle.
+**Path A — Start S2 substrate fix (recommended next).**
+The 4 codex P1 substrate bugs in `src/app/api/_lib/approval-actions.ts` (prior_version captured POST-edit not PRE-edit, race-prone state transitions, no transaction integrity, `rejected` end-to-end). ~3-4 hours. `/plan-eng-review` then `/codex` before code. Unblocks every downstream sprint.
 
-**Path C — Start S2.5 schema-v25.**
-The schema is fully scoped (see above). Write the SQL, apply via `scripts/migrate.js`, write `scripts/verify-v25.js`, run `/codex` on the migration before commit. ~2 days. Unblocks every downstream sprint but visibility is zero until S3/S4/S5 wire to it.
+**Path B — Start S2.5 schema-v25.**
+The schema is fully scoped (see above). Write the SQL, apply via `scripts/migrate.js`, write `scripts/verify-v25.js`, run `/codex` on the migration before commit. ~2 days. Required before S3 / S4 / S5.
 
-**Founder's stated preference:** Path A (mockups first) per the locked Mockup-first workflow. Path B is needed regardless; Path C is needed regardless. Path A is the bridge to seeing the vision rendered.
+**Path C — Skip ahead to S3 Decision Package wizard step 1.**
+Build the wizard shell (8-step stepper, plain-language operator prompts, stub data, no schema yet) as the FIRST visible-product surface for founder review. ~1 day. Caveat: S2 + S2.5 must still happen before wiring to real data.
+
+**Founder's stated preference:** A → B → C in order. Land S2 first (substrate sound), S2.5 second (data layer correct), then ship S3 as the first visible surface for live feedback.
 
 ---
 
@@ -151,7 +151,7 @@ S7     (~5 days)         Phase D Coach Mode
 TOTAL                    Roughly 6-8 weeks of focused build
 ```
 
-Mockup pages (`/mockup/*`) inserted before / alongside S4 and S5 per the Mockup-first workflow.
+Every sprint ships in 1-2 day PR increments to Vercel; founder reviews live between increments. No mockup layer.
 
 ---
 
