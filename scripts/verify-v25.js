@@ -106,11 +106,23 @@ const structuralChecks = [
   },
   {
     label: "PUBLIC has no EXECUTE on any apply_artifact_* (codex X2)",
-    sql: `select p.proname, has_function_privilege('PUBLIC', p.oid, 'EXECUTE') as pub_can
+    // pg_proc.proacl is an aclitem[] of explicit grants. grantee=0 means
+    // PUBLIC. We REVOKEd EXECUTE FROM PUBLIC + GRANTed TO service_role in
+    // schema-v25, so proacl is non-null and excludes any PUBLIC EXECUTE.
+    // (has_function_privilege('PUBLIC', ...) doesn't work — 'PUBLIC' there
+    // is parsed as a literal role name, not the PUBLIC keyword.)
+    sql: `select p.proname,
+                 p.proacl is null as proacl_is_default,
+                 exists (
+                   select 1 from aclexplode(p.proacl) acl
+                    where acl.grantee = 0 and acl.privilege_type = 'EXECUTE'
+                 ) as public_has_execute
             from pg_proc p
-           where pronamespace='public'::regnamespace
+           where pronamespace = 'public'::regnamespace
              and proname like 'apply_artifact_%'`,
-    expect: (rows) => rows.length >= 5 && rows.every((r) => r.pub_can === false),
+    expect: (rows) =>
+      rows.length >= 5 &&
+      rows.every((r) => r.proacl_is_default === false && r.public_has_execute === false),
   },
   {
     label: "service_role HAS EXECUTE on all apply_artifact_* (codex X2)",
@@ -127,15 +139,16 @@ const structuralChecks = [
 // ============================================================
 async function setupTestFixtures(client) {
   // 1. Create test org tagged with SCRIPT_ID.
-  //    organizations columns per schema.sql: name, size_category (CHECK),
-  //    employee_count, industry (CHECK), engagement_model (default),
-  //    monthly_hours (default), clerk_org_id (nullable).
+  //    organizations required columns per schema.sql: name, size_category
+  //    (CHECK), employee_count, industry (CHECK). clerk_org_id is defined
+  //    in source but may not be migrated on live DBs that pre-date Clerk
+  //    Orgs adoption — don't depend on it for test fixtures.
   const orgRes = await client.query(
     `INSERT INTO public.organizations
-       (name, size_category, employee_count, industry, clerk_org_id)
-     VALUES ($1, 'small', 10, 'technology', $2)
+       (name, size_category, employee_count, industry)
+     VALUES ($1, 'small', 10, 'technology')
      RETURNING id`,
-    [`${SCRIPT_ID}-org`, `${SCRIPT_ID}-clerk-org`],
+    [`${SCRIPT_ID}-org`],
   );
   const orgId = orgRes.rows[0].id;
 
@@ -360,26 +373,48 @@ async function scenario5_eventRollback(client, fixtures) {
     [initId, fixtures.practitionerId],
   );
 
-  // Temporarily replace the event_type CHECK so 'approved' is no longer allowed.
-  // The next approve call's INSERT into approval_events will violate the CHECK
-  // → the subtransaction rolls back → the artifact's approval_status stays 'pending'.
-  await client.query(`ALTER TABLE public.approval_events DROP CONSTRAINT approval_events_event_type_check`);
-  await client.query(
-    `ALTER TABLE public.approval_events
-       ADD CONSTRAINT approval_events_event_type_check
-       CHECK (event_type IN ('submitted', 'returned', 'withdrawn', 'rejected'))`,
-  );
-
+  // Temporarily replace the event_type CHECK so 'approved' is no longer
+  // allowed. The next approve call's INSERT into approval_events will
+  // violate the CHECK → the subtransaction rolls back → the artifact's
+  // approval_status stays 'pending'.
+  //
+  // NOT VALID is essential: the live approval_events table already has
+  // real 'approved' rows from prior runs. A non-NOT-VALID narrowed CHECK
+  // would fail at ADD-time because it validates existing rows. NOT VALID
+  // applies the new constraint to inserts going forward (which is exactly
+  // what we want for this test) and skips the existing-rows scan.
+  //
+  // The entire constraint-swap lives inside try/finally so any failure
+  // (the narrow ADD, the test query, anything) still restores the full
+  // constraint and leaves the DB in a healthy state.
   let resultRow;
+  let swappedIn = false;
   try {
+    await client.query(`ALTER TABLE public.approval_events DROP CONSTRAINT approval_events_event_type_check`);
+    await client.query(
+      `ALTER TABLE public.approval_events
+         ADD CONSTRAINT approval_events_event_type_check
+         CHECK (event_type IN ('submitted', 'returned', 'withdrawn', 'rejected'))
+         NOT VALID`,
+    );
+    swappedIn = true;
+
     const r = await client.query(
       `SELECT public.apply_artifact_approve('initiative', $1::uuid, 'pending', $2::uuid, 'strategic_approver', '{}'::jsonb, NULL) AS result`,
       [initId, fixtures.practitionerId],
     );
     resultRow = r.rows[0].result;
   } finally {
-    // Restore the original constraint regardless of pass/fail.
-    await client.query(`ALTER TABLE public.approval_events DROP CONSTRAINT approval_events_event_type_check`);
+    // Restore the original constraint regardless of pass/fail. If we
+    // already swapped in the narrowed one, drop it first; otherwise
+    // we hit the failure before the swap and only need to ensure the
+    // full constraint exists.
+    if (swappedIn) {
+      await client.query(`ALTER TABLE public.approval_events DROP CONSTRAINT IF EXISTS approval_events_event_type_check`);
+    } else {
+      // The DROP succeeded but the narrow ADD failed — no constraint exists right now.
+      await client.query(`ALTER TABLE public.approval_events DROP CONSTRAINT IF EXISTS approval_events_event_type_check`);
+    }
     await client.query(
       `ALTER TABLE public.approval_events
          ADD CONSTRAINT approval_events_event_type_check
