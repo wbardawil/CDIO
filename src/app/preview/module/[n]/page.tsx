@@ -127,6 +127,15 @@ function QuestionCard({ q }: { q: DiagnosticQuestion }) {
     { label: "5", key: "level_5" },
   ];
 
+  // Whether the question has any metadata worth surfacing. If not, we
+  // hide the "Show details" disclosure entirely so empty toggles don't
+  // pollute the card.
+  const hasMetadata =
+    Boolean(q.framework_citation) ||
+    Boolean(q.tags?.function?.length) ||
+    Boolean(q.tags?.area?.length) ||
+    q.na_eligible !== false;
+
   return (
     <li className="bg-white border border-gray-200 rounded-xl overflow-hidden">
       <div className="px-5 py-4 border-b border-gray-100">
@@ -139,45 +148,61 @@ function QuestionCard({ q }: { q: DiagnosticQuestion }) {
           </span>
         </div>
 
-        {q.tags && (
-          <div className="mt-3 flex flex-wrap gap-1.5">
-            {q.tags.function.map((t) => (
-              <span
-                key={`fn-${t}`}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
-              >
-                fn:{t}
+        {/* Metadata (tags + framework citation) collapsed behind a
+            native <details>. Default view = just the question + the
+            5 answers. Open the disclosure to see fn / area / N/A flag
+            + the named-construct citation backing the question. */}
+        {hasMetadata && (
+          <details className="mt-3 group">
+            <summary className="cursor-pointer text-xs text-gray-500 hover:text-gray-700 select-none list-none flex items-center gap-1">
+              <span className="inline-block transition-transform group-open:rotate-90" aria-hidden>
+                ›
               </span>
-            ))}
-            {q.tags.area.map((t) => (
-              <span
-                key={`area-${t}`}
-                className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200"
-              >
-                area:{t}
-              </span>
-            ))}
-            {q.na_eligible !== false && (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
-                N/A eligible
-              </span>
-            )}
-          </div>
-        )}
+              <span className="group-open:hidden">Show methodology details</span>
+              <span className="hidden group-open:inline">Hide methodology details</span>
+            </summary>
 
-        {q.framework_citation && (
-          <div className="mt-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs">
-            <p className="font-semibold text-gray-700">
-              {q.framework_citation.framework}
-              <span className="font-normal text-gray-500">
-                {" "}
-                &middot; {q.framework_citation.reference}
-              </span>
-            </p>
-            <p className="text-gray-600 mt-1 italic">
-              {q.framework_citation.rationale}
-            </p>
-          </div>
+            {q.tags && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {q.tags.function.map((t) => (
+                  <span
+                    key={`fn-${t}`}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-200"
+                  >
+                    fn:{t}
+                  </span>
+                ))}
+                {q.tags.area.map((t) => (
+                  <span
+                    key={`area-${t}`}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-purple-50 text-purple-700 border border-purple-200"
+                  >
+                    area:{t}
+                  </span>
+                ))}
+                {q.na_eligible !== false && (
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600 border border-gray-200">
+                    N/A eligible
+                  </span>
+                )}
+              </div>
+            )}
+
+            {q.framework_citation && (
+              <div className="mt-3 px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-xs">
+                <p className="font-semibold text-gray-700">
+                  {q.framework_citation.framework}
+                  <span className="font-normal text-gray-500">
+                    {" "}
+                    &middot; {q.framework_citation.reference}
+                  </span>
+                </p>
+                <p className="text-gray-600 mt-1 italic">
+                  {q.framework_citation.rationale}
+                </p>
+              </div>
+            )}
+          </details>
         )}
       </div>
 
