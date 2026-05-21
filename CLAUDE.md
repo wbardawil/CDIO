@@ -203,7 +203,8 @@ gstack is installed at `~/.claude/skills/gstack/`. **Going forward, gstack skill
 - **Before any architecture commit:** `/plan-eng-review` — surface hidden assumptions, lock data flow + state machines + edge cases
 - **Before any scope change:** `/plan-ceo-review` — outcome-led / scope-expansion challenge in one command
 - **Before any privacy-sensitive feature:** `/cso` — OWASP + STRIDE security audit (Network Catalog Day 25 is non-negotiable)
-- **For independent second opinions on architectural calls:** `/codex` — OpenAI Codex CLI reviews same code/plan
+- **Before any schema change OR any auth change (HARD GATE locked 2026-05-21):** `/codex` — second-voice review by OpenAI Codex. This is no longer optional. The 2026-05-21 audit caught 4 substrate bugs + 3 real auth/IDOR holes that the single-voice `/plan-eng-review` + `/cso` passes missed across S1, S1.5, and 4 hotfix PRs. See `docs/CODEX-AUDIT-2026-05-21.md`. Cost: ~$1-3 per audit, ~5 min runtime. Skipping costs hours of debug + shipping exploitable code.
+- **For independent second opinions on architectural calls (other than schema/auth — those are mandatory above):** `/codex` consult / challenge mode
 - **At start of any new phase:** `/autoplan` — runs CEO + Design + Eng reviews chained automatically
 - **Before any merge to main:** `/review` — catches production bugs that pass CI
 - **Before any deploy:** `/qa` — real browser, real clicks, regression tests auto-generated

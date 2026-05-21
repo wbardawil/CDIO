@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { initialApprovalStateForRole } from "@/lib/auth/initial-approval-state";
 import { createServiceClient } from "@/lib/db/supabase";
 import {
@@ -35,7 +35,8 @@ export async function POST(request: NextRequest) {
   }
   const input = parsed.data;
 
-  const ownership = await assertPractitionerOwnsOrg(input.org_id);
+  // codex-audit-2026-05-21 finding #9 — viewers cannot create selections.
+  const ownership = await assertCanWrite(input.org_id);
   if (!ownership.ok) return ownership.response;
 
   const db = createServiceClient();

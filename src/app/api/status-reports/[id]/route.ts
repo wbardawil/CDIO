@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 import type { StatusReport } from "@/types/cadence";
 
@@ -76,7 +76,8 @@ export async function PATCH(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  const ownership = await assertPractitionerOwnsOrg(existing.org_id);
+  // codex-audit-2026-05-21 finding #9 — viewers cannot mutate status reports.
+  const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
 
   const update: Record<string, unknown> = { ...parsed.data };

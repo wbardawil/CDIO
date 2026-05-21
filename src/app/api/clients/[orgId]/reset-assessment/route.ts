@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanApprove } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 
 /**
@@ -19,7 +19,9 @@ export async function POST(
   { params }: { params: Promise<{ orgId: string }> }
 ) {
   const { orgId } = await params;
-  const ownership = await assertPractitionerOwnsOrg(orgId);
+  // codex-audit-2026-05-21 finding #9 (review followup) — wiping
+  // assessment data is destructive; only the strategic_approver can do it.
+  const ownership = await assertCanApprove(orgId);
   if (ownership.response) return ownership.response;
 
   const db = createServiceClient();

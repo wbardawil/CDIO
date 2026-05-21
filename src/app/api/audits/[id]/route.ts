@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 import { isRunnable, type Audit, type AuditIntake } from "@/types/audit";
 
@@ -76,7 +77,8 @@ export async function PATCH(
   if (!existing) {
     return NextResponse.json({ error: "Audit not found" }, { status: 404 });
   }
-  const ownership = await assertPractitionerOwnsOrg(existing.org_id);
+  // codex-audit-2026-05-21 finding #9 — viewers cannot mutate audits.
+  const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
 
   const update: Record<string, unknown> = {};

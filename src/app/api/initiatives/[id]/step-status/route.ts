@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 import type { Initiative, InitiativeStep } from "@/types/initiative";
 
@@ -44,7 +44,10 @@ export async function PATCH(
     return NextResponse.json({ error: "Initiative not found" }, { status: 404 });
   }
 
-  const ownership = await assertPractitionerOwnsOrg(existing.org_id);
+  // codex-audit-2026-05-21 finding #9 — viewers cannot mutate initiative
+  // step status. Other roles can update steps on initiatives they have
+  // org-membership for.
+  const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
 
   const steps = (existing.steps as InitiativeStep[]) ?? [];
