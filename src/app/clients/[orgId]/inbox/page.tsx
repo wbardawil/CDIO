@@ -78,8 +78,11 @@ export default async function InboxPage({ params }: PageProps) {
     is_sandbox: boolean;
     status: string;
   };
-  const role = (mapping.role as "owner" | "collaborator" | "viewer" | "operator") ?? "viewer";
-  const isOwner = role === "owner";
+  const rawRole = (mapping.role as string) ?? "viewer";
+  // Forward-map any legacy 'owner' that might survive a stale row.
+  const role: "strategic_approver" | "technical_reviewer" | "financial_approver" | "operator" | "collaborator" | "viewer" =
+    rawRole === "owner" ? "strategic_approver" : (rawRole as typeof role);
+  const isApprover = role === "strategic_approver";
 
   // Fetch the 4 artifact tables in parallel. Title column differs across
   // tables (status_reports.title, selections.title, audits.title,
@@ -112,7 +115,7 @@ export default async function InboxPage({ params }: PageProps) {
   );
   const awaitingApproval = mine.filter((a) => a.approval_status === "pending");
 
-  const othersPending = isOwner
+  const othersPending = isApprover
     ? all.filter(
         (a) =>
           a.approval_status === "pending" &&
@@ -120,21 +123,21 @@ export default async function InboxPage({ params }: PageProps) {
       )
     : [];
 
-  const roleLabel =
-    role === "owner"
-      ? "CDIO / owner"
-      : role === "operator"
-        ? "operator"
-        : role === "collaborator"
-          ? "collaborator"
-          : "viewer";
+  const roleLabel: Record<typeof role, string> = {
+    strategic_approver: "Strategic approver (CDIO)",
+    technical_reviewer: "Technical reviewer",
+    financial_approver: "Financial approver",
+    operator: "Operator (PM / assistant)",
+    collaborator: "Collaborator",
+    viewer: "Viewer (read-only)",
+  };
 
   return (
     <WorkspaceShell
       orgId={orgId}
       orgName={org.name}
       where="Inbox"
-      clientLine={`Your role: ${roleLabel}`}
+      clientLine={`Your role: ${roleLabel[role]}`}
       activeSection="inbox"
       isSandbox={org.is_sandbox}
       isArchived={org.status === "archived"}
@@ -160,7 +163,7 @@ export default async function InboxPage({ params }: PageProps) {
           variant="waiting"
         />
 
-        {isOwner && (
+        {isApprover && (
           <Section
             title="Awaiting your approval"
             empty="No submissions waiting on you."
@@ -183,11 +186,12 @@ export default async function InboxPage({ params }: PageProps) {
                 appear here grouped by whether the next action belongs to you or
                 to the CDIO.
               </p>
-              {!isOwner && (
+              {!isApprover && (
                 <p className="mt-2">
-                  When you submit a draft, the CDIO reviews it, approves or
-                  returns it with comments, and you continue from where they
-                  left off. Their edits become your training material.
+                  When you submit a draft, the strategic approver (CDIO) reviews
+                  it, approves or returns it with comments, and you continue
+                  from where they left off. Their edits become your training
+                  material.
                 </p>
               )}
             </div>

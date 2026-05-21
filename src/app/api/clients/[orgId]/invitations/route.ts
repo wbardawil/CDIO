@@ -4,10 +4,19 @@ import { clerkClient } from "@clerk/nextjs/server";
 import { assertCanApprove } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 
-// cso C3 — invitable roles exclude 'owner'. DB CHECK enforces this too.
+// cso C3 — invitable roles exclude the strategic_approver (the org's
+// primary CDIO is established via createOrg bootstrap, not invitation).
+// DB CHECK enforces this. The 5-role model (handoff §4) opens up
+// technical_reviewer + financial_approver as invitable in v24+.
 const inviteSchema = z.object({
   email: z.string().email().max(254),
-  role: z.enum(["collaborator", "viewer", "operator"]),
+  role: z.enum([
+    "technical_reviewer",
+    "financial_approver",
+    "operator",
+    "collaborator",
+    "viewer",
+  ]),
 });
 
 export async function POST(

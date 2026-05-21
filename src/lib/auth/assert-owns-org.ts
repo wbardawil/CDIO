@@ -2,7 +2,13 @@ import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/db/supabase";
 import { NextResponse } from "next/server";
 
-export type PractitionerClientRole = "owner" | "collaborator" | "viewer" | "operator";
+export type PractitionerClientRole =
+  | "strategic_approver"
+  | "technical_reviewer"
+  | "financial_approver"
+  | "operator"
+  | "collaborator"
+  | "viewer";
 
 export type OwnershipResult =
   | { ok: true; practitionerId: string; role: PractitionerClientRole; response: null }
@@ -44,8 +50,12 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
     };
   }
 
-  const membership = (data.practitioner_clients as unknown) as Array<{ role: PractitionerClientRole; org_id: string }>;
-  const role = membership[0]?.role ?? "viewer";
+  const membership = (data.practitioner_clients as unknown) as Array<{ role: string; org_id: string }>;
+  // Defensive: if a legacy 'owner' value somehow survives (shouldn't after v24
+  // migration), map it forward to the new name. Belt + suspenders.
+  const rawRole = membership[0]?.role ?? "viewer";
+  const role: PractitionerClientRole =
+    rawRole === "owner" ? "strategic_approver" : (rawRole as PractitionerClientRole);
 
   return { ok: true, practitionerId: data.id, role, response: null };
 }

@@ -14,8 +14,22 @@ import {
 // the role-specific rules for write actions.
 // ============================================================
 
-const WRITE_ROLES: PractitionerClientRole[] = ["owner", "collaborator", "operator"];
-const APPROVE_ROLES: PractitionerClientRole[] = ["owner"];
+// Roles that can create + edit + submit artifacts. Year-1 includes the
+// three approval-side roles since one user often holds multiple roles
+// (founder is strategic_approver + operator). Viewers are read-only.
+const WRITE_ROLES: PractitionerClientRole[] = [
+  "strategic_approver",
+  "technical_reviewer",
+  "financial_approver",
+  "collaborator",
+  "operator",
+];
+
+// Year-1 simplification (handoff §4): all approval flows collapse to
+// strategic_approver. technical_reviewer + financial_approver are advisory
+// until the org explicitly assigns them. They graduate to required
+// approvers in S2 / Phase B when per-artifact routing lands.
+const APPROVE_ROLES: PractitionerClientRole[] = ["strategic_approver"];
 
 /**
  * The 4 artifact tables that participate in the S1 approval workflow.
@@ -131,7 +145,9 @@ export async function assertCanActOnArtifact(
     return { ok: false, practitionerId: null, role: null, artifact: null, response: r.response };
   }
 
-  if (r.role !== "owner") {
+  // strategic_approver bypasses the author check (they're the final
+  // decision authority and may act on any artifact in their org).
+  if (r.role !== "strategic_approver") {
     const isAuthor = artifact.submitted_by_practitioner_id === r.practitionerId;
     const isUnclaimedDraft =
       artifact.submitted_by_practitioner_id === null && artifact.approval_status === "draft";

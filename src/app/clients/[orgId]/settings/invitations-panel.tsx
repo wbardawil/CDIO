@@ -3,10 +3,17 @@
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 
+type InvitableRole =
+  | "technical_reviewer"
+  | "financial_approver"
+  | "operator"
+  | "collaborator"
+  | "viewer";
+
 interface PendingInvitation {
   id: string;
   email: string;
-  role: "collaborator" | "viewer" | "operator";
+  role: InvitableRole;
   created_at: string;
   expires_at: string;
   accepted_at: string | null;
@@ -19,16 +26,18 @@ interface Props {
   invitations: PendingInvitation[];
 }
 
-const ROLE_LABEL: Record<string, string> = {
+const ROLE_LABEL: Record<InvitableRole, string> = {
   operator: "Operator (PM / assistant)",
-  collaborator: "Collaborator (co-CDIO)",
+  technical_reviewer: "Technical reviewer (Tech Lead / architect)",
+  financial_approver: "Financial approver (CFO / controller)",
+  collaborator: "Collaborator (co-CDIO, advisory)",
   viewer: "Viewer (read-only)",
 };
 
 export function InvitationsPanel({ orgId, invitations }: Props) {
   const router = useRouter();
   const [email, setEmail] = useState("");
-  const [role, setRole] = useState<"operator" | "collaborator" | "viewer">("operator");
+  const [role, setRole] = useState<InvitableRole>("operator");
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -84,10 +93,14 @@ export function InvitationsPanel({ orgId, invitations }: Props) {
       <div className="rounded-lg border border-hair bg-raised p-5">
         <h2 className="text-base font-semibold text-ink">Invite a person</h2>
         <p className="mt-1 text-sm text-muted">
-          Add an operator (PM / assistant) who will draft artifacts for your
-          review, a collaborator (co-CDIO with full access), or a viewer
-          (read-only). The invitee receives an email and joins this client at
-          sign-up.
+          Add an operator (PM / assistant) who drafts artifacts for your
+          review, a technical reviewer (Tech Lead) for technical RAG +
+          dependency validation, a financial approver (CFO) for spend +
+          variance, a collaborator (co-CDIO, advisory), or a viewer
+          (read-only). The invitee receives an email and joins this client
+          at sign-up. The other approver roles are advisory in Year 1 —
+          strategic_approver (you) remains the single sign-off until
+          per-artifact routing lands.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-4 flex flex-wrap items-end gap-3">
@@ -113,11 +126,13 @@ export function InvitationsPanel({ orgId, invitations }: Props) {
             <select
               id="invite-role"
               value={role}
-              onChange={(e) => setRole(e.target.value as typeof role)}
+              onChange={(e) => setRole(e.target.value as InvitableRole)}
               className="rounded border border-hair bg-paper px-3 py-2 text-sm text-ink focus:border-evergreen focus:outline-none"
               disabled={pending}
             >
               <option value="operator">Operator</option>
+              <option value="technical_reviewer">Technical reviewer</option>
+              <option value="financial_approver">Financial approver</option>
               <option value="collaborator">Collaborator</option>
               <option value="viewer">Viewer</option>
             </select>

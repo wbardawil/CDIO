@@ -5,21 +5,31 @@ import {
   assertCanApprove,
   type ApprovableArtifactType,
 } from "@/lib/auth/role-gates";
+import type { PractitionerClientRole } from "@/lib/auth/assert-owns-org";
 import { createServiceClient } from "@/lib/db/supabase";
 
 // ============================================================
-// Shared approval-action handlers (S1).
+// Shared approval-action handlers (S1.5 — Coach Mode substrate).
 //
 // cso C7 — artifactType is bound at the route level via the closure;
 // callers from the request body cannot influence which table is touched.
 //
-// State machine:
-//   draft     → pending           via submit (operator)
-//   pending   → approved          via approve (owner)
-//   pending   → approved          via approveWithEdits (owner)
-//   pending   → returned          via returnWithComment (owner)
-//   pending   → draft             via withdraw (operator who submitted)
-//   returned  → pending           via submit (operator who authored)
+// State machine (S1.5 vocabulary):
+//   draft     → pending           via submit (any non-viewer)
+//   pending   → approved          via approve (strategic_approver)
+//   pending   → approved          via approveWithEdits (strategic_approver)
+//   pending   → returned          via returnWithComment (strategic_approver)
+//   pending   → draft             via withdraw (artifact author)
+//   returned  → pending           via submit (artifact author)
+//
+// v24 substrate (handoff §5 columns added in schema-v24):
+//   - Every approval_events row records actor_role (which of the 6 roles
+//     the actor was acting under) — Phase D Coach Mode uses this to
+//     differentiate "CDIO approved" from "operator self-edited".
+//   - Every approval_events row records prior_version (the full JSON
+//     snapshot of the artifact at the moment of the decision) — Phase D
+//     Coach Mode diffs current state against this to surface "what the
+//     CDIO changed". NULL would mean Coach Mode has nothing to learn from.
 // ============================================================
 
 const TABLE: Record<ApprovableArtifactType, string> = {
@@ -33,7 +43,7 @@ function nowIso() {
   return new Date().toISOString();
 }
 
-// -------- SUBMIT (operator or owner; sets pending) --------
+// -------- SUBMIT (any non-viewer; sets pending) --------
 
 export async function handleSubmit(
   artifactType: ApprovableArtifactType,
@@ -54,6 +64,7 @@ export async function handleSubmit(
   }
 
   const db = createServiceClient();
+  const snapshot = await fetchArtifactSnapshot(db, artifactType, artifactId);
   const now = nowIso();
   const { error: updateErr } = await db
     .from(TABLE[artifactType])
@@ -78,13 +89,15 @@ export async function handleSubmit(
     artifactId,
     eventType: "submitted",
     actorPractitionerId: auth.practitionerId,
+    actorRole: auth.role,
+    priorVersion: snapshot,
     payload: {},
   });
 
   return NextResponse.json({ ok: true, approval_status: "pending", submitted_at: now });
 }
 
-// -------- WITHDRAW (operator-only path; pending → draft) --------
+// -------- WITHDRAW (artifact author; pending → draft) --------
 
 export async function handleWithdraw(
   artifactType: ApprovableArtifactType,
@@ -104,6 +117,7 @@ export async function handleWithdraw(
   }
 
   const db = createServiceClient();
+  const snapshot = await fetchArtifactSnapshot(db, artifactType, artifactId);
   const { error: updateErr } = await db
     .from(TABLE[artifactType])
     .update({ approval_status: "draft", submitted_at: null })
@@ -122,13 +136,15 @@ export async function handleWithdraw(
     artifactId,
     eventType: "withdrawn",
     actorPractitionerId: auth.practitionerId,
+    actorRole: auth.role,
+    priorVersion: snapshot,
     payload: {},
   });
 
   return NextResponse.json({ ok: true, approval_status: "draft" });
 }
 
-// -------- APPROVE (owner-only; pending → approved) --------
+// -------- APPROVE (strategic_approver; pending → approved) --------
 
 const approveSchema = z.object({
   edits_made: z.boolean().optional().default(false),
@@ -150,7 +166,7 @@ export async function handleApprove(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  // Owner-only on this artifact's org. 403 if caller has no role on the org.
+  // strategic_approver-only on this artifact's org. 403 otherwise.
   const auth = await assertCanApprove(artifact.org_id);
   if (!auth.ok) return auth.response;
 
@@ -164,15 +180,17 @@ export async function handleApprove(
     );
   }
 
-  // Optional body: { edits_made: true } indicates the owner already saved
+  // Optional body: { edits_made: true } indicates the approver already saved
   // edits via the artifact PATCH endpoint before clicking approve. We log
-  // a different event_type so Coach Mode (S3) can diff what changed.
+  // a different event_type so Coach Mode can fast-path "the CDIO edited"
+  // without having to diff prior_version against current.
   let editsMade = false;
   if (req.headers.get("content-length") && parseInt(req.headers.get("content-length")!, 10) > 0) {
     const parsed = approveSchema.safeParse(await req.json().catch(() => ({})));
     if (parsed.success) editsMade = parsed.data.edits_made;
   }
 
+  const snapshot = await fetchArtifactSnapshot(db, artifactType, artifactId);
   const now = nowIso();
   const { error: updateErr } = await db
     .from(TABLE[artifactType])
@@ -196,13 +214,15 @@ export async function handleApprove(
     artifactId,
     eventType: editsMade ? "approved_with_edits" : "approved",
     actorPractitionerId: auth.practitionerId,
+    actorRole: auth.role,
+    priorVersion: snapshot,
     payload: {},
   });
 
   return NextResponse.json({ ok: true, approval_status: "approved", approved_at: now });
 }
 
-// -------- RETURN (owner-only; pending → returned) --------
+// -------- RETURN (strategic_approver; pending → returned) --------
 
 const returnSchema = z.object({
   comment: z.string().min(1).max(4000),
@@ -244,6 +264,7 @@ export async function handleReturn(
     );
   }
 
+  const snapshot = await fetchArtifactSnapshot(db, artifactType, artifactId);
   const { error: updateErr } = await db
     .from(TABLE[artifactType])
     .update({ approval_status: "returned" })
@@ -262,6 +283,8 @@ export async function handleReturn(
     artifactId,
     eventType: "returned",
     actorPractitionerId: auth.practitionerId,
+    actorRole: auth.role,
+    priorVersion: snapshot,
     payload: { comment: parsed.data.comment },
   });
 
@@ -276,6 +299,8 @@ interface ApprovalEventInput {
   artifactId: string;
   eventType: "submitted" | "approved" | "approved_with_edits" | "returned" | "withdrawn";
   actorPractitionerId: string;
+  actorRole: PractitionerClientRole;
+  priorVersion: Record<string, unknown> | null;
   payload: Record<string, unknown>;
 }
 
@@ -289,6 +314,8 @@ async function appendEvent(
     artifact_id: input.artifactId,
     event_type: input.eventType,
     actor_practitioner_id: input.actorPractitionerId,
+    actor_role: input.actorRole,
+    prior_version: input.priorVersion,
     payload: input.payload,
   });
   if (error) {
@@ -299,4 +326,33 @@ async function appendEvent(
       `[approval_events] failed to insert event ${input.eventType} for ${input.artifactType}/${input.artifactId}: ${error.message}`,
     );
   }
+}
+
+/**
+ * Fetches the full artifact row as JSON for the prior_version snapshot.
+ * Phase D Coach Mode diffs this against the post-transition state to
+ * surface "what the CDIO changed."
+ *
+ * Best-effort: if the read fails (rare), we return null and the event
+ * gets stamped with prior_version=null. The state machine doesn't block
+ * on snapshot failure — losing one snapshot is recoverable; blocking the
+ * approval is not.
+ */
+async function fetchArtifactSnapshot(
+  db: ReturnType<typeof createServiceClient>,
+  artifactType: ApprovableArtifactType,
+  artifactId: string,
+): Promise<Record<string, unknown> | null> {
+  const { data, error } = await db
+    .from(TABLE[artifactType])
+    .select("*")
+    .eq("id", artifactId)
+    .maybeSingle();
+  if (error || !data) {
+    console.warn(
+      `[approval_events] could not snapshot ${artifactType}/${artifactId}: ${error?.message ?? "no data"}`,
+    );
+    return null;
+  }
+  return data as Record<string, unknown>;
 }

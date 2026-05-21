@@ -34,21 +34,37 @@ export default async function ClientSettingsPage({ params }: PageProps) {
 
   if (!mapping || !mapping.organizations) notFound();
   const org = mapping.organizations as unknown as OrgForSettings;
-  const role = (mapping.role as "owner" | "collaborator" | "viewer" | "operator") ?? "viewer";
-  const isOwner = role === "owner";
+  const rawRole = (mapping.role as string) ?? "viewer";
+  const role =
+    rawRole === "owner"
+      ? "strategic_approver"
+      : (rawRole as
+          | "strategic_approver"
+          | "technical_reviewer"
+          | "financial_approver"
+          | "operator"
+          | "collaborator"
+          | "viewer");
+  const isApprover = role === "strategic_approver";
 
-  // Load invitations only for owners. Non-owners shouldn't even see the list.
+  // Load invitations only for strategic approvers. Other roles don't even
+  // see the list. Invitable roles widen with v24 (handoff §4 5-role model).
   let invitations: Array<{
     id: string;
     email: string;
-    role: "collaborator" | "viewer" | "operator";
+    role:
+      | "technical_reviewer"
+      | "financial_approver"
+      | "operator"
+      | "collaborator"
+      | "viewer";
     created_at: string;
     expires_at: string;
     accepted_at: string | null;
     revoked_at: string | null;
     clerk_invitation_id: string | null;
   }> = [];
-  if (isOwner) {
+  if (isApprover) {
     const { data } = await db
       .from("pending_invitations")
       .select("id, email, role, created_at, expires_at, accepted_at, revoked_at, clerk_invitation_id")
@@ -78,7 +94,7 @@ export default async function ClientSettingsPage({ params }: PageProps) {
         <SettingsForm org={org} />
 
         {/* TEAM ACCESS — invite operators / collaborators / viewers (owner-only) */}
-        {isOwner && <InvitationsPanel orgId={orgId} invitations={invitations} />}
+        {isApprover && <InvitationsPanel orgId={orgId} invitations={invitations} />}
 
         {/* DANGER ZONE — destructive, brick-toned */}
         <section className="mt-8">
