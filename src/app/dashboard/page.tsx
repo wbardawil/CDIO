@@ -63,11 +63,21 @@ function DashboardContent() {
     }
     try {
       const res = await fetch(`/api/dashboard/${orgId}`);
-      if (!res.ok) throw new Error("Failed to load dashboard");
+      if (!res.ok) {
+        // Surface specifics — the API now returns { error, step, details }
+        // on failure so the user (and we) can see what's actually wrong.
+        const body = await res.json().catch(() => ({}));
+        const parts = [
+          body?.error ?? `HTTP ${res.status}`,
+          body?.step ? `step=${body.step}` : null,
+          body?.details ? `details=${body.details}` : null,
+        ].filter(Boolean);
+        throw new Error(parts.join(" · "));
+      }
       const json = await res.json();
       setData(json);
     } catch (err) {
-      setError("Failed to load dashboard data");
+      setError(err instanceof Error ? err.message : "Failed to load dashboard data");
     } finally {
       setLoading(false);
     }

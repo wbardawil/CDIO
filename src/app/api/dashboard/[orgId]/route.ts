@@ -10,10 +10,16 @@ export async function GET(
   const ownership = await assertPractitionerOwnsOrg(orgId);
   if (ownership.response) return ownership.response;
 
+  // Track the current step so any thrown error reports WHERE it failed.
+  // The user-facing dashboard otherwise collapses any 4xx/5xx to a
+  // generic "Failed to load dashboard data" card; without context we
+  // can't tell whether the org is missing, the join broke, or a join
+  // table is malformed.
+  let step = "init";
   try {
     const db = createServiceClient();
 
-    // Get organization
+    step = "fetch_organization";
     const { data: org, error: orgError } = await db
       .from("organizations")
       .select("*")
@@ -21,17 +27,22 @@ export async function GET(
       .single();
 
     if (orgError || !org) {
-      return NextResponse.json({ error: "Organization not found" }, { status: 404 });
+      return NextResponse.json(
+        { error: "Organization not found", step, details: orgError?.message ?? null },
+        { status: 404 },
+      );
     }
 
-    // Get latest assessment
+    step = "fetch_latest_assessment";
+    // Use maybeSingle so a missing assessment doesn't return a Supabase
+    // error object (PGRST116) — the "no assessment yet" path is normal.
     const { data: assessment } = await db
       .from("assessments")
       .select("*")
       .eq("org_id", orgId)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
     if (!assessment) {
       return NextResponse.json({
@@ -44,44 +55,48 @@ export async function GET(
       });
     }
 
-    // Get stakeholders. NOTE: assessment_token is intentionally NOT selected
-    // here — it's a permanent unrevocable backdoor and must not be exposed
-    // via this dashboard endpoint (P0-3). Practitioners use the workspace's
-    // explicit "Email link" / "Copy link" actions which fetch tokens
-    // server-side via /clients/[orgId] (server component) or via the
-    // /api/stakeholders/by-id/[id]/send-assessment-email route.
-    const { data: stakeholders } = await db
+    step = "fetch_stakeholders";
+    // NOTE: assessment_token is intentionally NOT selected — it's a permanent
+    // unrevocable backdoor (P0-3). Practitioners use explicit "Email link" /
+    // "Copy link" actions instead.
+    const { data: stakeholders, error: stakeholdersErr } = await db
       .from("stakeholders")
       .select("id, name, role, email, relevant_modules")
       .eq("org_id", orgId);
+    if (stakeholdersErr) throw new Error(`stakeholders: ${stakeholdersErr.message}`);
 
-    // Get module scores
-    const { data: scores } = await db
+    step = "fetch_module_scores";
+    const { data: scores, error: scoresErr } = await db
       .from("module_scores")
       .select("*")
       .eq("assessment_id", assessment.id);
+    if (scoresErr) throw new Error(`module_scores: ${scoresErr.message}`);
 
-    // Get synthesis (if it exists)
-    const { data: syntheses } = await db
+    step = "fetch_synthesis";
+    const { data: syntheses, error: synthesesErr } = await db
       .from("assessment_synthesis")
       .select("*")
       .eq("assessment_id", assessment.id)
       .order("priority_rank");
+    if (synthesesErr) throw new Error(`assessment_synthesis: ${synthesesErr.message}`);
 
-    // Get divergences
-    const { data: divergences } = await db
+    step = "fetch_divergences";
+    const { data: divergences, error: divergencesErr } = await db
       .from("divergence_points")
       .select("*")
       .eq("assessment_id", assessment.id);
+    if (divergencesErr) throw new Error(`divergence_points: ${divergencesErr.message}`);
 
-    // Get roadmap (if it exists)
-    const { data: roadmap } = await db
+    step = "fetch_roadmap";
+    // maybeSingle so 0-roadmap rows isn't reported as an error.
+    const { data: roadmap, error: roadmapErr } = await db
       .from("roadmaps")
       .select("*")
       .eq("assessment_id", assessment.id)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
+    if (roadmapErr) throw new Error(`roadmaps: ${roadmapErr.message}`);
 
     // Calculate completion stats
     const totalExpectedScores = (stakeholders ?? []).reduce(
@@ -116,10 +131,11 @@ export async function GET(
       },
     });
   } catch (error) {
-    console.error("Dashboard data error:", error);
+    const message = error instanceof Error ? error.message : String(error);
+    console.error(`Dashboard data error at step '${step}':`, message, error);
     return NextResponse.json(
-      { error: "Failed to load dashboard data" },
-      { status: 500 }
+      { error: "Failed to load dashboard data", step, details: message },
+      { status: 500 },
     );
   }
 }
