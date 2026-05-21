@@ -15,10 +15,15 @@ import type { OrgSize, Industry } from "@/types";
  *     We persist a row anyway so the practitioner can see who abstained
  *     vs who hasn't started.
  */
+// cso codex-audit-2026-05-21 finding #11 — the public stakeholder submission
+// endpoint previously trusted org_id / assessment_id / stakeholder_id from the
+// request body. A legitimate token-holder could tamper with IDs to attribute
+// scores to a different stakeholder or even a different org. Token is now the
+// SOLE source of truth: server derives the IDs server-side and ignores any
+// body values that disagree.
 const SubmitSchema = z.object({
-  org_id: z.string().uuid(),
-  assessment_id: z.string().uuid(),
-  stakeholder_id: z.string().uuid(),
+  // token now required — was previously not in the body at all.
+  token: z.string().min(8).max(128),
   module_number: z.number().int().min(1).max(16),
   business_impact_rating: z.number().int().min(1).max(10).optional(),
   module_skipped: z.boolean().optional().default(false),
@@ -38,6 +43,41 @@ export async function POST(request: NextRequest) {
     const input = SubmitSchema.parse(body);
     const db = createServiceClient();
 
+    // Derive (stakeholder_id, org_id, assessment_id) from the token. Reject
+    // any body-supplied IDs by simply not reading them. If the token doesn't
+    // resolve to a stakeholder + active assessment, 404.
+    const { data: stakeholderRow } = await db
+      .from("stakeholders")
+      .select("id, org_id")
+      .eq("assessment_token", input.token)
+      .maybeSingle();
+    if (!stakeholderRow) {
+      return NextResponse.json(
+        { error: "Invalid or expired assessment link" },
+        { status: 404 },
+      );
+    }
+    const { data: activeAssessment } = await db
+      .from("assessments")
+      .select("id")
+      .eq("org_id", stakeholderRow.org_id)
+      .in("status", ["draft", "in_progress"])
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (!activeAssessment) {
+      return NextResponse.json(
+        { error: "No active assessment for this token" },
+        { status: 404 },
+      );
+    }
+    // Bind the IDs server-side. Everything below uses derivedIds, never body.
+    const derivedIds = {
+      org_id: stakeholderRow.org_id as string,
+      assessment_id: activeAssessment.id as string,
+      stakeholder_id: stakeholderRow.id as string,
+    };
+
     // If the stakeholder hit the module-gate "I can't speak to this", we
     // skip scoring entirely. Rule-based handles this branch deterministically
     // — no need to call the LLM.
@@ -49,7 +89,7 @@ export async function POST(request: NextRequest) {
         const { data: org } = await db
           .from("organizations")
           .select("size_category, industry, employee_count")
-          .eq("id", input.org_id)
+          .eq("id", derivedIds.org_id)
           .single();
 
         result = await scoreModule(
@@ -88,7 +128,7 @@ export async function POST(request: NextRequest) {
         const { data: org } = await db
           .from("organizations")
           .select("size_category, industry, employee_count")
-          .eq("id", input.org_id)
+          .eq("id", derivedIds.org_id)
           .single();
 
         const enriched = await generateNarrativeAndPath(
@@ -122,8 +162,8 @@ export async function POST(request: NextRequest) {
       .from("module_scores")
       .upsert(
         {
-          assessment_id: input.assessment_id,
-          stakeholder_id: input.stakeholder_id,
+          assessment_id: derivedIds.assessment_id,
+          stakeholder_id: derivedIds.stakeholder_id,
           module_number: input.module_number,
           maturity_score: result.maturity_score,
           evidence: result.evidence,
@@ -144,7 +184,7 @@ export async function POST(request: NextRequest) {
     await db
       .from("assessments")
       .update({ status: "in_progress" })
-      .eq("id", input.assessment_id)
+      .eq("id", derivedIds.assessment_id)
       .eq("status", "draft");
 
     return NextResponse.json(

@@ -9,7 +9,7 @@ import {
 import { generateDecisionPackage } from "@/lib/agents/assessment";
 import { MODULE_NAMES } from "@/types";
 import type { AssessmentSynthesis, PriorityClass, OrgSize, Industry } from "@/types";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { z } from "zod";
 
 const SynthesizeSchema = z.object({
@@ -22,10 +22,26 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const input = SynthesizeSchema.parse(body);
 
-    const ownership = await assertPractitionerOwnsOrg(input.org_id);
+    // codex-audit-2026-05-21 finding #9 — synthesis is a mutation; viewers
+    // cannot trigger it.
+    const ownership = await assertCanWrite(input.org_id);
     if (ownership.response) return ownership.response;
 
     const db = createServiceClient();
+
+    // cso codex-audit-2026-05-21 finding #10 — verify the assessment_id
+    // actually belongs to org_id BEFORE doing anything with it. Without this,
+    // a practitioner authorized on Org A could synthesize/overwrite data
+    // belonging to Org B by passing Org A's id + Org B's assessment_id.
+    // 404 (not 403) to avoid existence-leak.
+    const { data: assessmentRow } = await db
+      .from("assessments")
+      .select("id, org_id")
+      .eq("id", input.assessment_id)
+      .maybeSingle();
+    if (!assessmentRow || assessmentRow.org_id !== input.org_id) {
+      return NextResponse.json({ error: "Assessment not found" }, { status: 404 });
+    }
 
     // Get all scores for this assessment
     const { data: scores, error: scoresError } = await db
