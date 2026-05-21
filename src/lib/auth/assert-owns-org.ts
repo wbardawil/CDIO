@@ -50,11 +50,24 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
     .maybeSingle();
 
   if (error || !data) {
+    // Surface enough context for triage without leaking. Server-side log
+    // carries the full userId; the response body shows a short fingerprint
+    // (last 6 chars) so the founder can confirm WHICH Clerk session they
+    // signed in as — the most common cause of an unexpected 403 here is
+    // "logged in as the wrong account."
+    const userFp = userId.slice(-6);
+    const detail = error
+      ? `query: ${error.message}`
+      : `no membership for clerk session …${userFp} on org ${orgId}`;
+    console.warn(`[assertPractitionerOwnsOrg] 403 — userId=${userId} orgId=${orgId} error=${error?.message ?? null}`);
     return {
       ok: false,
       practitionerId: null,
       role: null,
-      response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+      response: NextResponse.json(
+        { error: "Forbidden", details: detail, clerk_session_fingerprint: userFp },
+        { status: 403 },
+      ),
     };
   }
 
