@@ -54,8 +54,10 @@ export default async function InitiativeDetailPage({
   };
   const progress = computeInitiativeProgress(it.steps);
 
-  const role = mapping.role as "owner" | "collaborator" | "viewer" | "operator";
-  const isOwner = role === "owner";
+  const rawRole = (mapping.role as string) ?? "viewer";
+  const role: "strategic_approver" | "technical_reviewer" | "financial_approver" | "operator" | "collaborator" | "viewer" =
+    rawRole === "owner" ? "strategic_approver" : (rawRole as typeof role);
+  const isApprover = role === "strategic_approver";
   const isAuthor = it.submitted_by_practitioner_id === practitioner.id;
 
   // Pull the latest 'returned' event so the operator sees the CDIO comment
@@ -121,7 +123,7 @@ export default async function InitiativeDetailPage({
             artifactType="initiatives"
             artifactId={it.id}
             approvalStatus={it.approval_status}
-            isOwner={isOwner}
+            isOwner={isApprover}
             isAuthor={isAuthor}
             latestReturnComment={latestReturnComment}
           />

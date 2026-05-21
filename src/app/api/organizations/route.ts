@@ -44,12 +44,14 @@ export async function POST(request: NextRequest) {
       await dbForFlag.from("organizations").update({ is_sandbox: true }).eq("id", orgId);
     }
 
-    // Map this client to the practitioner that created it.
+    // Map this client to the practitioner that created it. They become
+    // the strategic_approver — the org's primary CDIO + sign-off authority
+    // (handoff §4). schema-v24 renamed 'owner' to 'strategic_approver'.
     const db = createServiceClient();
     const { error: mapError } = await db.from("practitioner_clients").insert({
       practitioner_id: practitioner.id,
       org_id: orgId,
-      role: "owner",
+      role: "strategic_approver",
     });
     if (mapError) {
       // Roll back the org so we don't leave an orphan owned by no one.
