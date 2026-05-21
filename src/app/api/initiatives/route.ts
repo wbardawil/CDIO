@@ -29,9 +29,31 @@ const createInitiativeSchema = z.object({
   module_number: z.number().int().min(1).max(16).nullable().optional(),
   owner_name: z.string().max(200).nullable().optional(),
   owner_email: z.string().email().nullable().optional().or(z.literal("")),
+  // Schema-v22 additions — start_date, currency, expected value / cost.
+  // All nullable so quick-add (title + goal only) still works.
+  start_date: z
+    .string()
+    .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
   target_completion_date: z
     .string()
     .regex(/^\d{4}-\d{2}-\d{2}$/)
+    .nullable()
+    .optional(),
+  currency: z
+    .enum(["USD", "MXN", "EUR", "GBP", "CAD", "BRL"])
+    .default("USD"),
+  expected_value_minor_units: z
+    .number()
+    .int()
+    .min(0)
+    .nullable()
+    .optional(),
+  expected_cost_minor_units: z
+    .number()
+    .int()
+    .min(0)
     .nullable()
     .optional(),
   steps: z.array(stepInputSchema).max(20).default([]),
@@ -84,7 +106,11 @@ export async function POST(request: NextRequest) {
       module_number: input.module_number ?? null,
       owner_name: input.owner_name ?? null,
       owner_email: input.owner_email ? input.owner_email : null,
+      start_date: input.start_date ?? null,
       target_completion_date: input.target_completion_date ?? null,
+      currency: input.currency,
+      expected_value_minor_units: input.expected_value_minor_units ?? null,
+      expected_cost_minor_units: input.expected_cost_minor_units ?? null,
       steps,
       practitioner_notes: input.practitioner_notes ?? null,
     })

@@ -40,8 +40,16 @@ export interface Initiative {
   owner_name: string | null;
   owner_email: string | null;
   status: InitiativeStatus;
+  /** Schema-v22: planned start date for the Gantt bar's left edge. */
+  start_date: string | null;
   target_completion_date: string | null;
   completed_at: string | null;
+  /** Schema-v22: ISO 4217 currency for value/cost. Defaults to USD. */
+  currency: "USD" | "MXN" | "EUR" | "GBP" | "CAD" | "BRL";
+  /** Schema-v22: expected value / inflow / benefit, in minor units of `currency`. */
+  expected_value_minor_units: number | null;
+  /** Schema-v22: expected cost / outflow / spend, in minor units of `currency`. */
+  expected_cost_minor_units: number | null;
   steps: InitiativeStep[];
   practitioner_notes: string | null;
 }

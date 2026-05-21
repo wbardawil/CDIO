@@ -9,16 +9,23 @@ import {
   INITIATIVE_DOMAIN_LABEL,
   INITIATIVE_STATUS_LABEL,
 } from "@/types/initiative";
+import { PortfolioView } from "./portfolio-view";
+
+type ViewMode = "list" | "portfolio";
 
 export default async function InitiativesListPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orgId: string }>;
+  searchParams: Promise<{ view?: string }>;
 }) {
   const practitioner = await ensurePractitioner();
   if (!practitioner) redirect("/sign-in");
 
   const { orgId } = await params;
+  const sp = await searchParams;
+  const view: ViewMode = sp.view === "portfolio" ? "portfolio" : "list";
   const db = createServiceClient();
 
   const { data: mapping } = await db
@@ -72,8 +79,31 @@ export default async function InitiativesListPage({
         </div>
       </header>
 
-      <main className="max-w-5xl mx-auto px-6 py-8">
+      <main className={`${view === "portfolio" ? "max-w-7xl" : "max-w-5xl"} mx-auto px-6 py-8`}>
         {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
+
+        {/* View toggle — List (default) | Portfolio (Gantt + cash flow) */}
+        {items.length > 0 && (
+          <nav
+            aria-label="Initiative view mode"
+            className="flex items-center gap-1 mb-6 border-b border-hair"
+          >
+            <ViewTab
+              href={`/clients/${org.id}/initiatives`}
+              label="List"
+              count={items.length}
+              isActive={view === "list"}
+            />
+            <ViewTab
+              href={`/clients/${org.id}/initiatives?view=portfolio`}
+              label="Portfolio"
+              count={items.length}
+              isActive={view === "portfolio"}
+              sub="Gantt + cash flow"
+            />
+          </nav>
+        )}
+
         {items.length === 0 ? (
           <div className="bg-raised rounded-xl border border-hair p-10 text-center">
             <h2 className="text-lg font-semibold text-ink mb-1">
@@ -91,6 +121,8 @@ export default async function InitiativesListPage({
               + Capture your first initiative
             </Link>
           </div>
+        ) : view === "portfolio" ? (
+          <PortfolioView orgId={org.id} initiatives={items} />
         ) : (
           <ul className="space-y-3">
             {items.map((it) => {
@@ -160,5 +192,41 @@ export default async function InitiativesListPage({
         )}
       </main>
     </div>
+  );
+}
+
+function ViewTab({
+  href,
+  label,
+  count,
+  isActive,
+  sub,
+}: {
+  href: string;
+  label: string;
+  count: number;
+  isActive: boolean;
+  sub?: string;
+}) {
+  return (
+    <Link
+      href={href}
+      className={
+        "px-3 py-2 -mb-px border-b-2 text-sm transition-colors " +
+        (isActive
+          ? "border-evergreen text-evergreen font-medium"
+          : "border-transparent text-muted hover:text-ink")
+      }
+    >
+      {label}
+      <span
+        className={
+          "ml-1.5 text-xs " + (isActive ? "text-evergreen" : "text-faint")
+        }
+      >
+        ({count})
+      </span>
+      {sub && <span className="ml-2 text-[11px] text-faint">{sub}</span>}
+    </Link>
   );
 }
