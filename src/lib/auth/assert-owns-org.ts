@@ -34,9 +34,17 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
   }
 
   const db = createServiceClient();
+  // Disambiguate the FK: schema-v23 added invited_by_practitioner_id, so
+  // there are now TWO foreign keys from practitioner_clients back to
+  // practitioners. Without the explicit !practitioner_clients_practitioner_id_fkey
+  // hint, PostgREST errors with PGRST201 "Could not embed because more than
+  // one relationship was found" and the helper returns 403 — breaking every
+  // endpoint that auth-gates with it.
   const { data, error } = await db
     .from("practitioners")
-    .select("id, practitioner_clients!inner(org_id, role)")
+    .select(
+      "id, practitioner_clients!practitioner_clients_practitioner_id_fkey!inner(org_id, role)",
+    )
     .eq("clerk_user_id", userId)
     .eq("practitioner_clients.org_id", orgId)
     .maybeSingle();
