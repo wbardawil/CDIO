@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { initialApprovalStateForRole } from "@/lib/auth/initial-approval-state";
 import { createServiceClient } from "@/lib/db/supabase";
 import type {
   Initiative,
@@ -95,6 +96,7 @@ export async function POST(request: NextRequest) {
     notes: null,
   }));
 
+  const approval = initialApprovalStateForRole(ownership.role, ownership.practitionerId);
   const { data, error } = await db
     .from("initiatives")
     .insert({
@@ -113,6 +115,7 @@ export async function POST(request: NextRequest) {
       expected_cost_minor_units: input.expected_cost_minor_units ?? null,
       steps,
       practitioner_notes: input.practitioner_notes ?? null,
+      ...approval,
     })
     .select("*")
     .single();

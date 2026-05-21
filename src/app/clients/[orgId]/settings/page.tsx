@@ -4,6 +4,7 @@ import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { DeleteSandboxOrgButton } from "@/components/delete-sandbox-org-button";
 import { SettingsForm, type OrgForSettings } from "./settings-form";
+import { InvitationsPanel } from "./invitations-panel";
 
 interface PageProps {
   params: Promise<{ orgId: string }>;
@@ -33,6 +34,28 @@ export default async function ClientSettingsPage({ params }: PageProps) {
 
   if (!mapping || !mapping.organizations) notFound();
   const org = mapping.organizations as unknown as OrgForSettings;
+  const role = (mapping.role as "owner" | "collaborator" | "viewer" | "operator") ?? "viewer";
+  const isOwner = role === "owner";
+
+  // Load invitations only for owners. Non-owners shouldn't even see the list.
+  let invitations: Array<{
+    id: string;
+    email: string;
+    role: "collaborator" | "viewer" | "operator";
+    created_at: string;
+    expires_at: string;
+    accepted_at: string | null;
+    revoked_at: string | null;
+    clerk_invitation_id: string | null;
+  }> = [];
+  if (isOwner) {
+    const { data } = await db
+      .from("pending_invitations")
+      .select("id, email, role, created_at, expires_at, accepted_at, revoked_at, clerk_invitation_id")
+      .eq("org_id", orgId)
+      .order("created_at", { ascending: false });
+    invitations = (data ?? []) as typeof invitations;
+  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -47,12 +70,15 @@ export default async function ClientSettingsPage({ params }: PageProps) {
           </Link>
           <h1 className="text-2xl font-bold text-ink mt-2">Settings</h1>
           <p className="text-sm text-muted mt-1">
-            Edit profile, archive, or hard-delete this client.
+            Edit profile, manage team access, archive, or hard-delete this client.
           </p>
         </div>
 
         {/* PROFILE + STATUS — interactive form in a client component */}
         <SettingsForm org={org} />
+
+        {/* TEAM ACCESS — invite operators / collaborators / viewers (owner-only) */}
+        {isOwner && <InvitationsPanel orgId={orgId} invitations={invitations} />}
 
         {/* DANGER ZONE — destructive, brick-toned */}
         <section className="mt-8">
