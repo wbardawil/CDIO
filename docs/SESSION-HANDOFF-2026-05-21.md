@@ -120,6 +120,16 @@ S5 IT Project Portfolio is the highest-risk sprint for accidental task-tracking 
 3. **Lock the 6 open items.** ~20-min decision session. Defaults documented; founder confirms or adjusts.
 4. **Start S2 substrate fix.** Run `/plan-eng-review` then `/codex` on the scoping doc before any code. Expected ~3-4 hours total including gates.
 
+## Mockup-first workflow (locked end-of-session)
+
+To break the "build → find out the UX is wrong" loop this session ran into, future UX work follows this pattern:
+
+1. **In-repo `/mockup/*` pages** — static React under `src/app/mockup/`, real DESIGN.md tokens, stub data, no DB. Each surface (architecture map, portfolio, decision package wizard, graduation scorecard) gets its own `/mockup/<surface>` route.
+2. Founder clicks through deployed mockups, gives feedback inline.
+3. Approved mockups become the SPEC for the corresponding sprint (S4 Workbench, S5 Portfolio). Real build = wiring the mockup to live data.
+
+**Explicitly NOT using Lovable, v0, or any external mockup tool.** Single source of truth. No fork-in-the-road risk between mockup and real codebase. The cost is my time (a few hours per surface) but the clarity is worth it.
+
 ## Reference docs (read in this order)
 
 1. `docs/STRATEGIC-FRAME-2026-05-21.md` — the strategic locks + build sequence. Operating reference.
