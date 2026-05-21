@@ -20,6 +20,7 @@ import { SandboxBanner } from "./sandbox-banner";
 import { ArchivedBanner } from "./archived-banner";
 
 export type WorkspaceSection =
+  | "inbox"
   | "overview"
   | "dashboard"
   | "charter"
@@ -38,6 +39,7 @@ interface NavItem {
 // Moving between Overview / Dashboard / Audits / … feels like one
 // place because it literally is the same nav, not per-page chrome.
 const NAV: NavItem[] = [
+  { key: "inbox", label: "Inbox", href: (o) => `/clients/${o}/inbox` },
   { key: "overview", label: "Overview", href: (o) => `/clients/${o}` },
   { key: "dashboard", label: "Dashboard", href: (o) => `/dashboard?org=${o}` },
   { key: "charter", label: "Charter", href: (o) => `/clients/${o}/charter` },

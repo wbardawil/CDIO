@@ -11,6 +11,7 @@ import {
   INITIATIVE_STATUS_LABEL,
 } from "@/types/initiative";
 import { StepStatusButtons } from "./step-buttons";
+import { ApprovalActions } from "@/components/approval-actions";
 
 export default async function InitiativeDetailPage({
   params,
@@ -47,8 +48,32 @@ export default async function InitiativeDetailPage({
     .single();
   if (!initiative) notFound();
 
-  const it = initiative as Initiative;
+  const it = initiative as Initiative & {
+    approval_status: "draft" | "pending" | "approved" | "returned";
+    submitted_by_practitioner_id: string | null;
+  };
   const progress = computeInitiativeProgress(it.steps);
+
+  const role = mapping.role as "owner" | "collaborator" | "viewer" | "operator";
+  const isOwner = role === "owner";
+  const isAuthor = it.submitted_by_practitioner_id === practitioner.id;
+
+  // Pull the latest 'returned' event so the operator sees the CDIO comment
+  // inline. Only needed when the artifact is currently in 'returned' state.
+  let latestReturnComment: string | null = null;
+  if (it.approval_status === "returned") {
+    const { data: lastReturn } = await db
+      .from("approval_events")
+      .select("payload")
+      .eq("artifact_type", "initiative")
+      .eq("artifact_id", it.id)
+      .eq("event_type", "returned")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const payload = (lastReturn?.payload as { comment?: string } | null) ?? null;
+    latestReturnComment = payload?.comment ?? null;
+  }
 
   const statusColor =
     it.status === "done"
@@ -91,6 +116,16 @@ export default async function InitiativeDetailPage({
 
       <main className="max-w-4xl mx-auto px-6 py-8">
         {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
+        <div className="mb-6">
+          <ApprovalActions
+            artifactType="initiatives"
+            artifactId={it.id}
+            approvalStatus={it.approval_status}
+            isOwner={isOwner}
+            isAuthor={isAuthor}
+            latestReturnComment={latestReturnComment}
+          />
+        </div>
         <div className="bg-raised rounded-xl border border-hair p-6 mb-6">
           <div className="flex items-start justify-between gap-3 mb-3">
             <div className="min-w-0">

@@ -2,16 +2,19 @@ import { auth } from "@clerk/nextjs/server";
 import { createServiceClient } from "@/lib/db/supabase";
 import { NextResponse } from "next/server";
 
+export type PractitionerClientRole = "owner" | "collaborator" | "viewer" | "operator";
+
 export type OwnershipResult =
-  | { ok: true; practitionerId: string; response: null }
-  | { ok: false; practitionerId: null; response: NextResponse };
+  | { ok: true; practitionerId: string; role: PractitionerClientRole; response: null }
+  | { ok: false; practitionerId: null; role: null; response: NextResponse };
 
 /**
- * Verifies the currently signed-in practitioner owns (or has access to) the given org.
- * Returns { ok: true } on success.
- * Returns { ok: false, response: 401|403 } on failure — caller returns it directly.
+ * Verifies the currently signed-in user has access to the given client org.
+ * Returns the user's role on success so callers can apply role-specific rules
+ * (owner approves, operator submits, viewer reads only, etc.).
  *
- * Until Day 8 (RLS + per-user JWTs) this is the ONLY enforcement of ownership at the API layer.
+ * Existing callers that ignored `role` are still type-compatible — `role` was
+ * added to the success branch in v23.
  */
 export async function assertPractitionerOwnsOrg(orgId: string): Promise<OwnershipResult> {
   const { userId } = await auth();
@@ -19,6 +22,7 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
     return {
       ok: false,
       practitionerId: null,
+      role: null,
       response: NextResponse.json({ error: "Unauthorized" }, { status: 401 }),
     };
   }
@@ -26,7 +30,7 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
   const db = createServiceClient();
   const { data, error } = await db
     .from("practitioners")
-    .select("id, practitioner_clients!inner(org_id)")
+    .select("id, practitioner_clients!inner(org_id, role)")
     .eq("clerk_user_id", userId)
     .eq("practitioner_clients.org_id", orgId)
     .maybeSingle();
@@ -35,9 +39,13 @@ export async function assertPractitionerOwnsOrg(orgId: string): Promise<Ownershi
     return {
       ok: false,
       practitionerId: null,
+      role: null,
       response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
     };
   }
 
-  return { ok: true, practitionerId: data.id, response: null };
+  const membership = (data.practitioner_clients as unknown) as Array<{ role: PractitionerClientRole; org_id: string }>;
+  const role = membership[0]?.role ?? "viewer";
+
+  return { ok: true, practitionerId: data.id, role, response: null };
 }

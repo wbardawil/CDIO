@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { initialApprovalStateForRole } from "@/lib/auth/initial-approval-state";
 import { createServiceClient } from "@/lib/db/supabase";
 import { generateStatusReportPayload } from "@/lib/status-reports/generate";
 import type { StatusReport } from "@/types/cadence";
@@ -46,6 +47,7 @@ export async function POST(request: NextRequest) {
   const title = input.title ?? `${monthLabel} Status Report`;
 
   const db = createServiceClient();
+  const approval = initialApprovalStateForRole(ownership.role, ownership.practitionerId);
   const { data, error } = await db
     .from("status_reports")
     .insert({
@@ -56,6 +58,7 @@ export async function POST(request: NextRequest) {
       title,
       headline: defaultHeadline,
       payload,
+      ...approval,
     })
     .select("*")
     .single();
