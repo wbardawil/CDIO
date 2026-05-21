@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { assertPractitionerOwnsOrg } from "@/lib/auth/assert-owns-org";
+import { assertCanWrite } from "@/lib/auth/role-gates";
 import { createServiceClient } from "@/lib/db/supabase";
 import { generateCompanion } from "@/lib/agents/audit";
 import { isRunnable, type Audit, type AuditIntake } from "@/types/audit";
@@ -13,15 +13,29 @@ export async function POST(
   const db = createServiceClient();
   const { data: existing } = await db
     .from("audits")
-    .select("id, org_id, title, intake")
+    .select("id, org_id, title, intake, approval_status")
     .eq("id", id)
-    .single();
+    .maybeSingle();
   if (!existing) {
     return NextResponse.json({ error: "Audit not found" }, { status: 404 });
   }
 
-  const ownership = await assertPractitionerOwnsOrg(existing.org_id);
+  // codex-audit-2026-05-21 + S2-impl codex review: must be assertCanWrite,
+  // not assertPractitionerOwnsOrg — viewers cannot trigger AI mutations.
+  const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
+
+  // S2 mutation guard (codex X8): companion generation mutates the audit row.
+  if (existing.approval_status !== "draft" && existing.approval_status !== "returned") {
+    return NextResponse.json(
+      {
+        error: "Cannot generate companion in this state",
+        details: `Audit is '${existing.approval_status}'; companion allowed only on draft or returned.`,
+        approval_status: existing.approval_status,
+      },
+      { status: 409 },
+    );
+  }
 
   const intake = existing.intake as AuditIntake;
   if (!isRunnable(intake)) {
@@ -42,17 +56,28 @@ export async function POST(
       intake,
     });
 
+    // CAS-guarded UPDATE (S2-impl codex review #1).
     const { data, error } = await db
       .from("audits")
       .update({ companion })
       .eq("id", id)
+      .in("approval_status", ["draft", "returned"])
       .select("*")
-      .single();
+      .maybeSingle();
 
-    if (error || !data) {
+    if (error) {
       return NextResponse.json(
-        { error: "Failed to persist companion", details: error?.message },
+        { error: "Failed to persist companion", details: error.message },
         { status: 500 }
+      );
+    }
+    if (!data) {
+      return NextResponse.json(
+        {
+          error: "Concurrent state change",
+          details: "Audit state changed during companion generation. Output discarded.",
+        },
+        { status: 409 },
       );
     }
     return NextResponse.json({ audit: data as Audit });

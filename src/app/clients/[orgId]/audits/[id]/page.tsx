@@ -3,6 +3,7 @@ import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import type { Audit } from "@/types/audit";
 import { WorkspaceShell } from "@/components/workspace-shell";
+import { ApprovalActions } from "@/components/approval-actions";
 import { AuditDetailClient } from "./audit-client";
 
 export default async function AuditDetailPage({
@@ -47,7 +48,30 @@ export default async function AuditDetailPage({
     is_sandbox: boolean;
     status: string;
   };
-  const a = audit as Audit;
+  const a = audit as Audit & {
+    approval_status: "draft" | "pending" | "approved" | "returned" | "rejected";
+    submitted_by_practitioner_id: string | null;
+  };
+
+  const rawRole = (mapping.role as string) ?? "viewer";
+  const role = rawRole === "owner" ? "strategic_approver" : rawRole;
+  const isApprover = role === "strategic_approver";
+  const isAuthor = a.submitted_by_practitioner_id === practitioner.id;
+
+  let latestReturnComment: string | null = null;
+  if (a.approval_status === "returned") {
+    const { data: lastReturn } = await db
+      .from("approval_events")
+      .select("payload")
+      .eq("artifact_type", "audit")
+      .eq("artifact_id", a.id)
+      .eq("event_type", "returned")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const payload = (lastReturn?.payload as { comment?: string } | null) ?? null;
+    latestReturnComment = payload?.comment ?? null;
+  }
   const SIZE_LABELS: Record<string, string> = {
     small: "Small",
     medium: "Medium",
@@ -89,6 +113,16 @@ export default async function AuditDetailPage({
       isArchived={o.status === "archived"}
       width="narrow"
     >
+      <div className="mb-6">
+        <ApprovalActions
+          artifactType="audits"
+          artifactId={a.id}
+          approvalStatus={a.approval_status}
+          isOwner={isApprover}
+          isAuthor={isAuthor}
+          latestReturnComment={latestReturnComment}
+        />
+      </div>
       {verdictWithheld ? (
         <div className="bg-raised rounded-xl border border-hair p-6 sm:p-8">
           <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.14em] text-evergreen mb-3">

@@ -8,7 +8,7 @@ export type ApprovableType = "initiatives" | "status-reports" | "selections" | "
 interface Props {
   artifactType: ApprovableType;
   artifactId: string;
-  approvalStatus: "draft" | "pending" | "approved" | "returned";
+  approvalStatus: "draft" | "pending" | "approved" | "returned" | "rejected";
   isOwner: boolean;
   isAuthor: boolean;
   // For S1, we surface the last return comment inline so the operator
@@ -22,6 +22,7 @@ const STATUS_BADGE: Record<Props["approvalStatus"], string> = {
   pending: "bg-amber-50 text-amber-900 border-amber-200",
   approved: "bg-evergreen-soft text-evergreen border-evergreen",
   returned: "bg-blue-50 text-blue-900 border-blue-200",
+  rejected: "bg-brick/10 text-brick border-brick/30",
 };
 
 const STATUS_LABEL: Record<Props["approvalStatus"], string> = {
@@ -29,6 +30,7 @@ const STATUS_LABEL: Record<Props["approvalStatus"], string> = {
   pending: "Pending CDIO approval",
   approved: "Approved",
   returned: "Returned with edits",
+  rejected: "Rejected",
 };
 
 export function ApprovalActions({
@@ -43,9 +45,12 @@ export function ApprovalActions({
   const [error, setError] = useState<string | null>(null);
   const [returnComment, setReturnComment] = useState("");
   const [showReturnForm, setShowReturnForm] = useState(false);
+  const [rejectComment, setRejectComment] = useState("");
+  const [showRejectForm, setShowRejectForm] = useState(false);
+  const [rejectConfirmed, setRejectConfirmed] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const doAction = (action: "submit" | "withdraw" | "approve" | "return", body?: object) => {
+  const doAction = (action: "submit" | "withdraw" | "approve" | "return" | "reject", body?: object) => {
     setError(null);
     startTransition(async () => {
       const res = await fetch(`/api/${artifactType}/${artifactId}/${action}`, {
@@ -60,6 +65,9 @@ export function ApprovalActions({
       }
       setReturnComment("");
       setShowReturnForm(false);
+      setRejectComment("");
+      setShowRejectForm(false);
+      setRejectConfirmed(false);
       router.refresh();
     });
   };
@@ -69,6 +77,7 @@ export function ApprovalActions({
   const canWithdraw = isAuthor && approvalStatus === "pending";
   const canApprove = isOwner && approvalStatus === "pending";
   const canReturn = isOwner && approvalStatus === "pending";
+  const canReject = isOwner && approvalStatus === "pending";
 
   return (
     <div className="rounded-lg border border-hair bg-raised p-4">
@@ -104,23 +113,20 @@ export function ApprovalActions({
             </button>
           )}
           {canApprove && (
-            <>
-              <button
-                onClick={() => doAction("approve")}
-                disabled={pending}
-                className="rounded bg-evergreen px-3 py-1.5 text-sm font-medium text-white hover:bg-evergreen-deep disabled:opacity-50"
-              >
-                Approve
-              </button>
-              <button
-                onClick={() => doAction("approve", { edits_made: true })}
-                disabled={pending}
-                className="rounded border border-evergreen bg-evergreen-soft px-3 py-1.5 text-sm font-medium text-evergreen-deep hover:bg-evergreen hover:text-white disabled:opacity-50"
-              >
-                Approve with edits
-              </button>
-            </>
+            <button
+              onClick={() => doAction("approve")}
+              disabled={pending}
+              className="rounded bg-evergreen px-3 py-1.5 text-sm font-medium text-white hover:bg-evergreen-deep disabled:opacity-50"
+            >
+              Approve
+            </button>
           )}
+          {/* "Approve with edits" was removed in S2 (codex X14). The prior
+             button POSTed { edits_made: true } with no actual edits payload,
+             so the prior_version snapshot in approval_events was misleading.
+             A real approve-with-edits UX ships with the S3 Decision Package
+             wizard; the RPC's p_edits parameter is already wired in
+             schema-v25 to support that. */}
           {canReturn && (
             <button
               onClick={() => setShowReturnForm((s) => !s)}
@@ -128,6 +134,22 @@ export function ApprovalActions({
               className="rounded border border-hair bg-paper px-3 py-1.5 text-sm text-muted hover:text-ink disabled:opacity-50"
             >
               {showReturnForm ? "Cancel" : "Return with comment"}
+            </button>
+          )}
+          {canReject && (
+            <button
+              onClick={() => {
+                setShowRejectForm((s) => !s);
+                if (showRejectForm) {
+                  setRejectComment("");
+                  setRejectConfirmed(false);
+                }
+              }}
+              disabled={pending}
+              className="rounded border border-brick/30 bg-brick/5 px-3 py-1.5 text-sm text-brick hover:bg-brick/10 disabled:opacity-50"
+              aria-expanded={showRejectForm}
+            >
+              {showRejectForm ? "Cancel reject" : "Reject"}
             </button>
           )}
         </div>
@@ -163,6 +185,50 @@ export function ApprovalActions({
               className="rounded bg-evergreen px-3 py-1.5 text-sm font-medium text-white hover:bg-evergreen-deep disabled:opacity-50"
             >
               {pending ? "Returning…" : "Send back"}
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showRejectForm && (
+        <div className="mt-3 rounded border border-brick/30 bg-brick/5 p-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-brick mb-2">
+            Reject is terminal
+          </p>
+          <p className="text-xs text-brick/80 mb-3">
+            A rejected artifact cannot be reopened. The author must create a new
+            one to rework the idea. If the artifact just needs revisions,
+            <strong> Return with comment</strong> instead.
+          </p>
+          <label htmlFor="reject-comment" className="block text-xs font-medium text-muted mb-1">
+            Reason for rejection
+          </label>
+          <textarea
+            id="reject-comment"
+            value={rejectComment}
+            onChange={(e) => setRejectComment(e.target.value)}
+            rows={3}
+            className="w-full rounded border border-hair bg-paper px-3 py-2 text-sm text-ink focus:border-brick focus:outline-none"
+            placeholder="Why is this being rejected outright?"
+            disabled={pending}
+          />
+          <label className="mt-2 flex items-center gap-2 text-xs text-ink">
+            <input
+              type="checkbox"
+              checked={rejectConfirmed}
+              onChange={(e) => setRejectConfirmed(e.target.checked)}
+              disabled={pending}
+              className="rounded border-hair"
+            />
+            <span>I understand this is permanent.</span>
+          </label>
+          <div className="mt-2 flex justify-end gap-2">
+            <button
+              onClick={() => doAction("reject", { comment: rejectComment.trim() })}
+              disabled={pending || !rejectComment.trim() || !rejectConfirmed}
+              className="rounded bg-brick px-3 py-1.5 text-sm font-medium text-white hover:bg-brick/90 disabled:opacity-50"
+            >
+              {pending ? "Rejecting…" : "Reject permanently"}
             </button>
           </div>
         </div>

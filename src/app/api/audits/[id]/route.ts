@@ -71,15 +71,27 @@ export async function PATCH(
   const db = createServiceClient();
   const { data: existing } = await db
     .from("audits")
-    .select("id, org_id, intake, status")
+    .select("id, org_id, intake, status, approval_status")
     .eq("id", id)
-    .single();
+    .maybeSingle();
   if (!existing) {
     return NextResponse.json({ error: "Audit not found" }, { status: 404 });
   }
   // codex-audit-2026-05-21 finding #9 — viewers cannot mutate audits.
   const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
+
+  // S2 mutation guard (codex X8).
+  if (existing.approval_status !== "draft" && existing.approval_status !== "returned") {
+    return NextResponse.json(
+      {
+        error: "Cannot mutate artifact in this state",
+        details: `Audit is '${existing.approval_status}'; PATCH allowed only on draft or returned.`,
+        approval_status: existing.approval_status,
+      },
+      { status: 409 },
+    );
+  }
 
   const update: Record<string, unknown> = {};
   if (parsed.data.title) update.title = parsed.data.title;
@@ -110,13 +122,23 @@ export async function PATCH(
     .from("audits")
     .update(update)
     .eq("id", id)
+    .in("approval_status", ["draft", "returned"])
     .select("*")
-    .single();
+    .maybeSingle();
 
-  if (error || !data) {
+  if (error) {
     return NextResponse.json(
-      { error: "Failed to update audit", details: error?.message },
+      { error: "Failed to update audit", details: error.message },
       { status: 500 }
+    );
+  }
+  if (!data) {
+    return NextResponse.json(
+      {
+        error: "Concurrent state change",
+        details: "Audit state changed since you read it. Refresh and retry.",
+      },
+      { status: 409 },
     );
   }
   return NextResponse.json({ audit: data as Audit });
