@@ -27,7 +27,8 @@ export type WorkspaceSection =
   | "initiatives"
   | "selections"
   | "audits"
-  | "cadence";
+  | "cadence"
+  | "settings";
 
 interface NavItem {
   key: WorkspaceSection;
@@ -55,6 +56,7 @@ const NAV: NavItem[] = [
   },
   { key: "audits", label: "Audits", href: (o) => `/clients/${o}/audits` },
   { key: "cadence", label: "Cadence", href: (o) => `/clients/${o}/cadence` },
+  { key: "settings", label: "Settings", href: (o) => `/clients/${o}/settings` },
 ];
 
 export interface WorkspaceShellProps {
