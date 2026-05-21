@@ -214,15 +214,214 @@ TOTAL                    Roughly 5–7 weeks of focused build.
 | 4 | 128 Q as maturity ≠ 128 Q as guardrails — they need a derivation layer | Phase B's Decision Package wizard IS the derivation layer. The wizard's plain-language operator prompts ARE the guardrails surfaced. Maturity questions stay as-is; guardrails are derived from them at decision time. |
 | 5 | ROI is bigger than casual mention — requires realized tracking, not just projected | Sprint S2.5 adds realized_value + realized_cost columns + quarterly post-launch review cadence (lives in PM cross-cutter #5 Value Tracking). Graduation triggers final ROI computation. |
 
-## Open items (not yet locked, parked for next session)
+## 6 open items — LOCKED 2026-05-21
 
-| Item | Why it matters | Default if not locked |
-|---|---|---|
-| **Scale** — how many initiatives per CDIO/client? | Determines portfolio surface UX (filter/sort/group strategy) | Default: filter by stage + owner + module-touched. Default view = "needs my attention this week" |
-| **Roles** — is `operator` enough or do we need `project_owner` / `business_sponsor`? | Determines whether PMs map cleanly to existing roles or need new ones | Default: existing 6 roles. PM = operator. Business sponsor = strategic_approver (at initiative scope, distinct from engagement scope). Tech lead = technical_reviewer. |
-| **Success rubric weights** — equal weight or weighted? | Affects how the aggregate score is computed at graduation | Default: equal weight, 1 point per dimension passed. Aggregate is N/5. Can move to weighted later. |
-| **Security incident definition** — what counts? | Determines what triggers dimension 4 failure | Default: CDIO yes/no at 90-day check-in. Year 2 → proper security_incidents table |
-| **Retro rubric** — what 5 questions? | Determines dimension 5 measurement | Default: needs CDIO definition. Candidates: (1) Did we hit the value thesis? (2) Did the team learn? (3) Was the methodology helpful? (4) Did stakeholders feel heard? (5) Would we do it the same way? |
+All six previously parked items are now decided.
+
+### Lock 5.1 · Scale — no architectural cap
+
+No cap on initiatives per CDIO/client. Build the portfolio surface for scale. Cost vectors tracked but none are blockers at current team size:
+
+- Supabase rows: unbounded at this shape; Pro tier ($25/mo) at ~500MB
+- Vercel function invocations: Hobby = 100K/mo (current usage ≈ 3-5K/mo per active client)
+- LLM tokens: ~$2-5 per initiative lifecycle; logged to `agent_logs`; surface as informational "MTD LLM cost" in CDIO Workbench
+- Vercel build minutes: Hobby = 6000/mo (current usage trivial)
+
+Implication for S5 portfolio surface: server-side pagination, indexed columns (`org_id`, `status`, `owner_id`, `target_completion_date`, `touched_modules` via GIN index), default view = "needs my attention this week", bulk select for tagging.
+
+### Lock 5.2 · Roles — 8 roles total
+
+Adding `project_owner` and `business_sponsor` to the role enum:
+
+```
+practitioner_clients.role IN (
+  'strategic_approver',     -- CDIO at engagement scope (bootstrap-only)
+  'business_sponsor',       -- exec sponsor; approves graduation value-realized
+  'project_owner',          -- accountable for delivery; approves scope baseline changes
+  'technical_reviewer',     -- Tech Lead; reviews technical RAG
+  'financial_approver',     -- CFO; reviews spend
+  'operator',               -- PM / assistant; drafts artifacts
+  'collaborator',           -- advisory; legacy
+  'viewer'                  -- read-only
+)
+```
+
+Invitable subset (excludes bootstrap-only `strategic_approver`): 7 roles.
+
+Per-initiative attribution via two new FK columns on initiatives:
+
+```sql
+ALTER TABLE initiatives
+  ADD COLUMN project_owner_practitioner_id uuid REFERENCES practitioners(id),
+  ADD COLUMN business_sponsor_practitioner_id uuid REFERENCES practitioners(id);
+```
+
+Permission rule: `assertCanApprove(orgId, optional initiativeId)` returns ok if caller is `strategic_approver` OR `business_sponsor_practitioner_id = self` on that specific initiative. At graduation, the `business_sponsor` must co-sign dimension 3 (value-realized).
+
+Year 2 can refactor to a dedicated `initiative_assignments` junction if multi-person sponsors become common.
+
+### Lock 5.3 · Success rubric weights — equal weights with hard-fail flags
+
+```
+Aggregate score: N/5 (equal weights, 1 point per dimension passed)
+
+HARD-FAIL FLAGS (overlay the score):
+  Dimension 3 fail (value-realized below ±25% threshold)  → RED flag
+  Dimension 4 fail (any critical/high security incident
+                    in first 90 days post-launch)         → RED flag
+
+Even a 4/5 score is marked RED if either hard-fail trips.
+```
+
+Display: two badges per initiative — "4/5" plus (when applicable) "RED — value-realized" or "RED — security incident".
+
+Visual status mapping: 5/5 = green; 3-4/5 = amber; 0-2/5 OR any RED flag = red.
+
+Rationale: weighted scores are harder to explain to a CEO. Equal weights with hard-fail flags captures the "but these two matter more" reality without arithmetic gymnastics. Dimensions 3 and 4 are hard-fails because (3) value-realized is the renewal-justification metric and (4) a security incident is binary catastrophic risk.
+
+### Lock 5.4 · Security incidents — proper table in schema-v25
+
+```sql
+CREATE TABLE security_incidents (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  initiative_id uuid REFERENCES initiatives(id),  -- nullable; not all incidents tie to an initiative
+
+  title text NOT NULL,
+  description text,
+  category text NOT NULL CHECK (category IN (
+    'data_breach', 'unauthorized_access', 'malware', 'phishing',
+    'service_outage', 'vendor_compromise', 'misconfiguration',
+    'insider_threat', 'other'
+  )),
+  severity text NOT NULL CHECK (severity IN ('critical', 'high', 'medium', 'low')),
+
+  detected_at timestamptz NOT NULL,
+  contained_at timestamptz,
+  resolved_at timestamptz,
+
+  affected_systems text[],                          -- app IDs from architecture map
+  data_classification_touched text[] CHECK (data_classification_touched <@ ARRAY[
+    'public', 'internal', 'confidential', 'pii', 'phi', 'financial'
+  ]::text[]),
+  estimated_records_affected int,
+
+  reported_by_practitioner_id uuid REFERENCES practitioners(id),
+  assigned_to_practitioner_id uuid REFERENCES practitioners(id),
+  resolution_notes text,
+  lessons_learned text,
+
+  regulatory_notification_required boolean DEFAULT false,
+  regulatory_notification_sent_at timestamptz,
+
+  created_at timestamptz NOT NULL DEFAULT now(),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+```
+
+Wired to scorecard dimension 4: zero `critical|high` incidents in the 90-day window post-launch where `initiative_id` matches = dimension passes.
+
+Linkable to M7 lens in the Architecture Map. Becomes a sub-surface in S4c (CDIO Workbench lenses).
+
+### Lock 5.5 · Retro rubric — 5 questions, 1-5 scale
+
+Dimension 5 passes if average score across all raters >= 4.
+
+| Q | Theme | Question | 1 | 3 | 5 |
+|---|---|---|---|---|---|
+| 1 | Outcome | Did we deliver the value we projected? | Far less | Roughly what we promised | More than projected |
+| 2 | Process | Did the project follow a defensible decision path? | Chaotic / untraceable | Tracked but rationale sometimes unclear | Every major decision had clear rationale + alternatives considered |
+| 3 | People | Did the team grow from this engagement? | More burned out than before | Learned but didn't grow capability | Gained specific new capability we can deploy elsewhere |
+| 4 | Methodology | Were the methodology guardrails helpful? | Got in the way | Neutral | Saved us from at least one major mistake |
+| 5 | Future | Would we recommend this approach to another client? | No, we'd do it very differently | Yes, with caveats | Yes, this is now our reference pattern |
+
+Raters (mandatory): project_owner, business_sponsor, strategic_approver. Optional: technical_reviewer, financial_approver.
+
+Aggregate retro score = unweighted average across all who scored.
+
+### Lock 5.6 · Standard library — 25 business capabilities + 20 IT capabilities
+
+The Architecture Map has 3 taxonomies. Strategic pillars stay engagement-specific (3-7 items seeded from the Charter). The other two ship as standard libraries that the engagement can adopt, rename, or replace.
+
+**Why we need this:** blank-page paralysis. If the CDIO has to type 30 business capability names from scratch on day 1 of every engagement, they won't. They'll skip it. The map collapses.
+
+**Standard business capabilities (25 items, sourced from BIZBOK v9 + TBM 5.0.1):**
+
+| Customer-facing (5) | Operations (6) | Finance & Risk (5) | People & Org (4) | Enabling (5) |
+|---|---|---|---|---|
+| Sales | Service Delivery | Financial Management | Human Resources | Information Technology |
+| Marketing | Manufacturing / Production (toggle) | Accounting | Talent Acquisition | Legal |
+| Customer Service | Supply Chain | Budgeting & Planning | Learning & Development | Real Estate & Facilities |
+| Account Management | Procurement | Compliance & Audit | Performance Management | Communications & PR |
+| Product Development | Quality Management | Risk Management | | Strategy & Innovation |
+| | Logistics & Distribution | | | |
+
+(5 + 6 + 5 + 4 + 5 = 25. "Manufacturing / Production" is toggleable off for services-only orgs.)
+
+**Standard IT capabilities (20 items, sourced from TBM 5.0.1 + Gartner IT Capability Reference Model):**
+
+| Application (8) | Data (3) | Infrastructure (4) | Security (2) | Cross-cutting (3) |
+|---|---|---|---|---|
+| CRM | Data Platform & Analytics | Cloud Infrastructure | Cybersecurity & Risk | Integration & APIs |
+| ERP | Business Intelligence | Network & Connectivity | Identity & Access Mgmt | Collaboration & Productivity |
+| HRIS | Document & Content Mgmt | Endpoint Management | | AI & Machine Learning |
+| E-commerce / Digital Customer | | Application Development | | |
+| Marketing Technology | | | | |
+| Field Service Mgmt | | | | |
+| Service Desk / ITSM | | | | |
+| Communication (Voice/Video/Chat) | | | | |
+
+(8 + 3 + 4 + 2 + 3 = 20.)
+
+**Seeding mechanism:** on `organizations` row creation, an `init_engagement_taxonomy()` post-create RPC copies the standard 25 + 20 items into the engagement's own `business_capabilities` and `it_capabilities` tables. Each engagement owns its copy; customizations stay local.
+
+**Schema impact (S2.5):**
+
+```sql
+-- Per-engagement taxonomies (each engagement owns its copy)
+CREATE TABLE business_capabilities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  category text,                  -- e.g., 'customer_facing', 'operations', etc.
+  description text,
+  source text DEFAULT 'standard_library',  -- 'standard_library' | 'custom'
+  active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE it_capabilities (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  category text,                  -- e.g., 'application', 'data', 'infrastructure'
+  description text,
+  source text DEFAULT 'standard_library',
+  active boolean DEFAULT true,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE strategic_pillars (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  org_id uuid NOT NULL REFERENCES organizations(id) ON DELETE CASCADE,
+  name text NOT NULL,
+  description text,
+  -- No standard library; seeded from Charter on engagement bootstrap
+  created_at timestamptz DEFAULT now()
+);
+```
+
+Plus an `init_engagement_taxonomy(org_id uuid)` SQL function that inserts the 25 + 20 standard items.
+
+## Net effect on schema-v25 (S2.5)
+
+Adds three things to the previously scoped schema-v25:
+
+1. `project_owner_practitioner_id` + `business_sponsor_practitioner_id` columns on `initiatives` (Lock 5.2)
+2. `security_incidents` table (Lock 5.4)
+3. `business_capabilities`, `it_capabilities`, `strategic_pillars` tables + `init_engagement_taxonomy()` seeding function (Lock 5.6)
+
+Plus 2 new values in the `practitioner_clients.role` CHECK constraint (Lock 5.2).
 
 ## Anti-temptation rules carried forward (handoff §6)
 
