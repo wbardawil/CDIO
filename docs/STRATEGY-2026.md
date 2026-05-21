@@ -354,7 +354,7 @@ CEOs and Owners are searching urgently for: *"How do we implement AI faster in o
 | **3.5x AI ROI achievable when executed well, but only 23% achieve it** ([McKinsey 2025](https://www.codurance.com/publications/beyond-functionality-building-durable-moats-in-the-ai-era)) | The execution gap is enormous. The practitioner who closes it for SMBs wins. |
 | **Boards are demanding visibility, financial intelligence, ethical measurability** ([CIO 2026](https://www.cio.com/article/4113214/ai-hits-the-boardroom-what-directors-will-demand-from-cios-in-2026.html)) | Decision Packages, framework citations, and maturity progression charts are exactly the artifacts boards want. |
 | **SMBs bypassing MSPs for partners who deliver outcomes** ([Techaisle 2026](https://techaisle.com/blog/661-top-10-smb-mid-market-predictions-for-2026-and-beyond)) | The fractional CDIO is precisely the outcome-delivering partner SMBs want. AI-CDIO is the productized methodology. |
-| **Lovable / v0 / Replit Agent lower the SaaS-build bar** | Differentiation is methodology depth + brand authority + workflow lock-in, not "we built a CRUD app." |
+| **AI app generators lower the SaaS-build bar** | Differentiation is methodology depth + brand authority + workflow lock-in, not "we built a CRUD app." |
 | **Vertical AI consultants emerging** (Ema, Glean Agents) | 12-month window to claim "fractional executive OS" position before vertical AI consultants commoditize the space. |
 
 ---
