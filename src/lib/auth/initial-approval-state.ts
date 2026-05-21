@@ -1,7 +1,7 @@
 import type { PractitionerClientRole } from "./assert-owns-org";
 
 export interface InitialApprovalState {
-  approval_status: "draft" | "approved";
+  approval_status: "draft";
   submitted_by_practitioner_id: string;
   submitted_at: string | null;
   approved_by_practitioner_id: string | null;
@@ -12,34 +12,24 @@ export interface InitialApprovalState {
  * Computes the approval-state fields that a newly created artifact should
  * carry, based on the creator's role.
  *
- * - strategic_approver: auto-approved (the final decision authority's own
- *   work doesn't need self-approval). approved_by + approved_at stamped
- *   so the audit trail is complete. Handoff §4 records self-approval as
- *   a normal fact ("Wadi approved as strategic_approver after submitting
- *   as operator") — not blocked.
- * - all other roles: starts as a draft owned by the creator. The creator
- *   advances it to `pending` later via the submit endpoint.
+ * Every newly created artifact starts in 'draft', regardless of creator role.
+ * The creator advances it to 'pending' via submit and (if they're a
+ * strategic_approver) self-approves with an explicit approve call.
  *
- * In S1.5 (handoff §4 Year-1 simplification) only strategic_approver
- * auto-approves. technical_reviewer + financial_approver are advisory
- * until per-artifact routing lands in S2 / Phase B, at which point their
- * own drafts will still default to needing strategic_approver sign-off
- * (matches "single-approver-sufficient" Year-1 default).
+ * S2 substrate-fix change (2026-05-21): previously strategic_approver
+ * creations skipped straight to 'approved' here. Codex review X9 caught
+ * that the "approved = an explicit approve event happened" invariant the
+ * S2 substrate relies on can't hold if some approved artifacts have no
+ * approval_events row. With the change below, every approved artifact has
+ * a submitted event AND an approved event in the audit trail. The
+ * strategic_approver pays a two-click cost (Submit → Approve) instead of
+ * zero clicks for a clean Coach Mode diff input. Legacy auto-approved rows
+ * are forward-only — they stay as-is; only new creations follow the new rule.
  */
 export function initialApprovalStateForRole(
-  role: PractitionerClientRole,
+  _role: PractitionerClientRole,
   practitionerId: string,
 ): InitialApprovalState {
-  const now = new Date().toISOString();
-  if (role === "strategic_approver") {
-    return {
-      approval_status: "approved",
-      submitted_by_practitioner_id: practitionerId,
-      submitted_at: now,
-      approved_by_practitioner_id: practitionerId,
-      approved_at: now,
-    };
-  }
   return {
     approval_status: "draft",
     submitted_by_practitioner_id: practitionerId,

@@ -38,7 +38,7 @@ interface ArtifactRow {
   id: string;
   org_id: string;
   title: string;
-  approval_status: "draft" | "pending" | "approved" | "returned";
+  approval_status: "draft" | "pending" | "approved" | "returned" | "rejected";
   submitted_by_practitioner_id: string | null;
   submitted_at: string | null;
   approved_at: string | null;
@@ -91,10 +91,10 @@ export default async function InboxPage({ params }: PageProps) {
 
   const [initiativesRes, statusReportsRes, selectionsRes, auditsRes] =
     await Promise.all([
-      db.from("initiatives").select(select).eq("org_id", orgId).neq("approval_status", "approved"),
-      db.from("status_reports").select(select).eq("org_id", orgId).neq("approval_status", "approved"),
-      db.from("selections").select(select).eq("org_id", orgId).neq("approval_status", "approved"),
-      db.from("audits").select(select).eq("org_id", orgId).neq("approval_status", "approved"),
+      db.from("initiatives").select(select).eq("org_id", orgId).in("approval_status", ["draft", "pending", "returned"]),
+      db.from("status_reports").select(select).eq("org_id", orgId).in("approval_status", ["draft", "pending", "returned"]),
+      db.from("selections").select(select).eq("org_id", orgId).in("approval_status", ["draft", "pending", "returned"]),
+      db.from("audits").select(select).eq("org_id", orgId).in("approval_status", ["draft", "pending", "returned"]),
     ]);
 
   const merge = (

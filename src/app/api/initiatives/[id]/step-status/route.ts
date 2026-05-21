@@ -36,9 +36,9 @@ export async function PATCH(
 
   const { data: existing } = await db
     .from("initiatives")
-    .select("id, org_id, steps, status")
+    .select("id, org_id, steps, status, approval_status")
     .eq("id", id)
-    .single();
+    .maybeSingle();
 
   if (!existing) {
     return NextResponse.json({ error: "Initiative not found" }, { status: 404 });
@@ -49,6 +49,19 @@ export async function PATCH(
   // org-membership for.
   const ownership = await assertCanWrite(existing.org_id);
   if (!ownership.ok) return ownership.response;
+
+  // S2 mutation guard (codex X8): step-status mutates the artifact,
+  // so the immutability rule applies same as for general PATCH.
+  if (existing.approval_status !== "draft" && existing.approval_status !== "returned") {
+    return NextResponse.json(
+      {
+        error: "Cannot mutate artifact in this state",
+        details: `Initiative is '${existing.approval_status}'; step-status changes allowed only on draft or returned.`,
+        approval_status: existing.approval_status,
+      },
+      { status: 409 },
+    );
+  }
 
   const steps = (existing.steps as InitiativeStep[]) ?? [];
   const stepIndex = steps.findIndex((s) => s.id === input.step_id);
@@ -91,13 +104,23 @@ export async function PATCH(
     .from("initiatives")
     .update(update)
     .eq("id", id)
+    .in("approval_status", ["draft", "returned"])
     .select("*")
-    .single();
+    .maybeSingle();
 
-  if (error || !updated) {
+  if (error) {
     return NextResponse.json(
-      { error: "Failed to update step", details: error?.message },
+      { error: "Failed to update step", details: error.message },
       { status: 500 }
+    );
+  }
+  if (!updated) {
+    return NextResponse.json(
+      {
+        error: "Concurrent state change",
+        details: "Initiative state changed since you read it. Refresh and retry.",
+      },
+      { status: 409 },
     );
   }
 

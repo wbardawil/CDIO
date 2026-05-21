@@ -37,7 +37,7 @@ const APPROVE_ROLES: PractitionerClientRole[] = ["strategic_approver"];
  */
 export type ApprovableArtifactType = "initiative" | "status_report" | "selection" | "audit";
 
-const ARTIFACT_TABLE: Record<ApprovableArtifactType, string> = {
+export const ARTIFACT_TABLE: Record<ApprovableArtifactType, string> = {
   initiative: "initiatives",
   status_report: "status_reports",
   selection: "selections",
@@ -92,7 +92,7 @@ export type ArtifactAuthResult =
 export interface ApprovableArtifact {
   id: string;
   org_id: string;
-  approval_status: "draft" | "pending" | "approved" | "returned";
+  approval_status: "draft" | "pending" | "approved" | "returned" | "rejected";
   submitted_by_practitioner_id: string | null;
   submitted_at: string | null;
   approved_by_practitioner_id: string | null;
@@ -136,14 +136,41 @@ export async function assertCanActOnArtifact(
 
   const artifact = data as ApprovableArtifact;
 
-  // Ownership check uses the artifact's org. The ownership helper returns
-  // 403 if the caller has no role on that org — i.e. cross-org access
-  // attempts get 403 (the artifact exists, you just can't see it). 404 is
-  // reserved for "artifact does not exist".
-  const r = await assertCanWrite(artifact.org_id);
-  if (!r.ok) {
-    return { ok: false, practitionerId: null, role: null, artifact: null, response: r.response };
+  // Ownership check uses the artifact's org.
+  //
+  // codex P1 #8 fold-in + S2-impl codex review (2026-05-21): when the caller
+  // has NO role on the artifact's org (cross-org access), return 404 — not
+  // 403 — to close the existence-leak oracle. But DON'T mask 401
+  // (unauthenticated) or the role-failed 403 (legit viewer-cant-write).
+  // Strategy: two-step. First check membership via assertPractitionerOwnsOrg;
+  // a 401 stays a 401, a 403 from this layer becomes 404. Then check WRITE
+  // capability inline; a viewer failing this is a real 403.
+  const ownership = await assertPractitionerOwnsOrg(artifact.org_id);
+  if (!ownership.ok) {
+    const status = ownership.response.status;
+    return {
+      ok: false,
+      practitionerId: null,
+      role: null,
+      artifact: null,
+      response: status === 401
+        ? ownership.response
+        : NextResponse.json({ error: "Not found" }, { status: 404 }),
+    };
   }
+  // Inline WRITE role check (mirrors assertCanWrite's gate). Failure here
+  // means "you're in the org but your role doesn't permit writes" — a real
+  // 403, not the existence-leak case.
+  if (!WRITE_ROLES.includes(ownership.role)) {
+    return {
+      ok: false,
+      practitionerId: null,
+      role: null,
+      artifact: null,
+      response: NextResponse.json({ error: "Forbidden" }, { status: 403 }),
+    };
+  }
+  const r = ownership;
 
   // strategic_approver bypasses the author check (they're the final
   // decision authority and may act on any artifact in their org).

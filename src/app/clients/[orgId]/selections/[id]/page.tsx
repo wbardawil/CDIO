@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import { ensurePractitioner } from "@/lib/auth/ensure-practitioner";
 import { createServiceClient } from "@/lib/db/supabase";
 import { ArchivedBanner } from "@/components/archived-banner";
+import { ApprovalActions } from "@/components/approval-actions";
 import {
   type Selection,
   SELECTION_DOMAIN_LABEL,
@@ -46,7 +47,32 @@ export default async function SelectionDetailPage({
     .single();
   if (!selection) notFound();
 
-  const s = selection as Selection;
+  const s = selection as Selection & {
+    approval_status: "draft" | "pending" | "approved" | "returned" | "rejected";
+    submitted_by_practitioner_id: string | null;
+  };
+
+  const rawRole = (mapping.role as string) ?? "viewer";
+  const role = rawRole === "owner" ? "strategic_approver" : rawRole;
+  const isApprover = role === "strategic_approver";
+  const isAuthor = s.submitted_by_practitioner_id === practitioner.id;
+
+  // Latest 'returned' comment for inline display, mirroring the
+  // initiative detail page pattern.
+  let latestReturnComment: string | null = null;
+  if (s.approval_status === "returned") {
+    const { data: lastReturn } = await db
+      .from("approval_events")
+      .select("payload")
+      .eq("artifact_type", "selection")
+      .eq("artifact_id", s.id)
+      .eq("event_type", "returned")
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const payload = (lastReturn?.payload as { comment?: string } | null) ?? null;
+    latestReturnComment = payload?.comment ?? null;
+  }
 
   return (
     <div className="min-h-screen bg-paper">
@@ -80,6 +106,16 @@ export default async function SelectionDetailPage({
 
       <main className="max-w-5xl mx-auto px-6 py-8">
         {isArchived && <ArchivedBanner orgId={org.id} orgName={org.name} />}
+        <div className="mb-6">
+          <ApprovalActions
+            artifactType="selections"
+            artifactId={s.id}
+            approvalStatus={s.approval_status}
+            isOwner={isApprover}
+            isAuthor={isAuthor}
+            latestReturnComment={latestReturnComment}
+          />
+        </div>
         <div className="bg-raised rounded-xl border border-hair p-5 mb-6">
           <div className="flex items-start justify-between gap-3 mb-2">
             <div className="min-w-0">
