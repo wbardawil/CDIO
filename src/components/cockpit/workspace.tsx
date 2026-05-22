@@ -5,7 +5,6 @@ import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import {
   INITIATIVE_TYPE_LABELS,
-  STAGES,
   STAGE_LABELS,
   type Brief,
   type CDIOBrief,
@@ -18,43 +17,9 @@ import { FileDrop } from "./file-drop";
 import { ConstraintsPanel } from "./constraints-panel";
 import { BriefView } from "./brief-view";
 import { StageLens } from "./stage-lens";
+import { StageProgress } from "./stage-progress";
 import { ExtractionProgress } from "./extraction-progress";
 import { btnAmber, btnGhost, card, eyebrow } from "./styles";
-
-function StageSpine({
-  stage,
-  onPick,
-}: {
-  stage: Stage;
-  onPick: (s: Stage) => void;
-}) {
-  const currentIndex = STAGES.indexOf(stage);
-  return (
-    <nav aria-label="Initiative stages" className="flex flex-wrap gap-2">
-      {STAGES.map((s, i) => {
-        const state =
-          i < currentIndex ? "done" : i === currentIndex ? "current" : "ahead";
-        return (
-          <button
-            key={s}
-            type="button"
-            onClick={() => onPick(s)}
-            aria-current={state === "current" ? "step" : undefined}
-            className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-              state === "current"
-                ? "bg-evergreen text-white"
-                : state === "done"
-                  ? "bg-evergreen-soft text-evergreen-deep hover:bg-evergreen-soft/70"
-                  : "border border-hair text-faint hover:text-muted"
-            }`}
-          >
-            {STAGE_LABELS[s]}
-          </button>
-        );
-      })}
-    </nav>
-  );
-}
 
 export function Workspace({
   initiative,
@@ -142,8 +107,8 @@ export function Workspace({
       </header>
 
       <main className="mx-auto max-w-6xl px-6 py-8">
-        <StageSpine stage={stage} onPick={changeStage} />
-        <div className="mt-3">
+        <StageProgress stage={stage} onPick={changeStage} />
+        <div className="mt-4">
           <StageLens stage={stage} />
         </div>
 

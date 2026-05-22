@@ -25,10 +25,10 @@ const READINESS_STYLE = {
   thin: "border border-hair-strong bg-surface text-faint",
 } as const;
 
-const SEVERITY_STYLE: Record<Severity, string> = {
-  high: "bg-amber-soft text-amber-deep",
-  medium: "bg-surface text-muted",
-  low: "bg-surface text-faint",
+const SEVERITY_DOT: Record<Severity, string> = {
+  high: "bg-amber",
+  medium: "bg-hair-strong",
+  low: "bg-hair",
 };
 
 function Field({ value }: { value: BriefField }) {
@@ -43,7 +43,7 @@ function Field({ value }: { value: BriefField }) {
 }
 
 function SectionTitle({ children }: { children: React.ReactNode }) {
-  return <h2 className="text-xl text-ink">{children}</h2>;
+  return <h2 className="text-lg text-ink">{children}</h2>;
 }
 
 export function BriefView({
@@ -58,81 +58,40 @@ export function BriefView({
   const gaps = briefCompleteness(brief).filter((c) => !c.filled).length;
   const flags = checkConstraints(brief, constraints);
   const read = readiness(brief);
+  const next = brief.whatToDoNext;
 
   return (
-    <article className="space-y-10">
-      {/* The cold open — the one line, read first. */}
-      <div className="rounded-lg bg-evergreen-soft px-6 py-5">
-        <p className={eyebrow}>If you read nothing else</p>
-        <p className="mt-2 font-serif text-xl leading-snug text-evergreen-deep">
-          {brief.coldOpen}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center gap-3">
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
-            GATE_STYLE[brief.gate]
-          }`}
-        >
-          Next gate: {GATE_LABELS[brief.gate]}
-        </span>
-        <span
-          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${READINESS_STYLE[read]}`}
-        >
-          {READINESS_LABEL[read]}
-          {gaps > 0 ? ` · ${gaps} gap${gaps === 1 ? "" : "s"}` : ""}
-        </span>
-        {brief.gateReason && (
-          <span className="text-sm text-muted">{brief.gateReason}</span>
-        )}
-      </div>
-
-      {gaps > 0 && (
-        <p className="text-sm text-faint">
-          This brief is partial &mdash; {gaps}{" "}
-          {gaps === 1 ? "section needs" : "sections need"} more input. The gaps
-          are marked below.
-        </p>
-      )}
-
-      {/* 1 — Where it stands */}
-      <section className="space-y-4">
-        <SectionTitle>Where it stands</SectionTitle>
-        <div className="space-y-4">
-          <div>
-            <p className={eyebrow}>Business outcome</p>
-            <div className="mt-1.5">
-              <Field value={brief.whereItStands.businessOutcome} />
-            </div>
-          </div>
-          <div>
-            <p className={eyebrow}>Current state</p>
-            <div className="mt-1.5">
-              <Field value={brief.whereItStands.currentStateFacts} />
-            </div>
-          </div>
-          <div>
-            <p className={eyebrow}>Constraints</p>
-            <div className="mt-1.5">
-              <Field value={brief.whereItStands.constraints} />
-            </div>
-          </div>
-          <div>
-            <p className={eyebrow}>Requirements</p>
-            <div className="mt-1.5">
-              <Field value={brief.whereItStands.requirements} />
-            </div>
-          </div>
+    <article className="space-y-6">
+      {/* ── THE CALL — everything an executive needs, in one card ── */}
+      <section className="space-y-5 rounded-lg border border-hair bg-raised p-6">
+        <div>
+          <p className={eyebrow}>The call &mdash; if you read nothing else</p>
+          <p className="mt-2 font-serif text-2xl leading-snug text-ink">
+            {brief.coldOpen}
+          </p>
         </div>
-      </section>
 
-      {/* 2 — What we found */}
-      <section className="space-y-4">
-        <SectionTitle>What we found</SectionTitle>
+        <div className="flex flex-wrap items-center gap-2">
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${
+              GATE_STYLE[brief.gate]
+            }`}
+          >
+            Next gate: {GATE_LABELS[brief.gate]}
+          </span>
+          <span
+            className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${READINESS_STYLE[read]}`}
+          >
+            {READINESS_LABEL[read]}
+            {gaps > 0 ? ` · ${gaps} gap${gaps === 1 ? "" : "s"}` : ""}
+          </span>
+          {brief.gateReason && (
+            <span className="text-sm text-muted">{brief.gateReason}</span>
+          )}
+        </div>
 
         {flags.length > 0 && (
-          <div className="space-y-2 rounded-md border-l-2 border-brick bg-surface px-4 py-3">
+          <div className="space-y-1 rounded-md border-l-2 border-brick bg-surface px-4 py-3">
             <p className={eyebrow}>Against your non-negotiables</p>
             {flags.map((f, i) => (
               <p key={i} className="text-sm text-ink">
@@ -142,125 +101,161 @@ export function BriefView({
           </div>
         )}
 
-        {brief.whatWeFound.options.length === 0 &&
-        brief.whatWeFound.risks.length === 0 ? (
-          <p className="text-sm italic text-faint">
-            Nothing found yet &mdash; add vendor proposals and notes, then run
-            the brief again.
-          </p>
-        ) : (
-          <>
-            {brief.whatWeFound.options.length > 0 && (
-              <div className="space-y-3">
-                <p className={eyebrow}>Options</p>
-                {brief.whatWeFound.options.map((o, i) => (
-                  <div
-                    key={i}
-                    className="rounded-md border border-hair bg-surface p-4"
-                  >
-                    <div className="flex items-baseline justify-between gap-3">
-                      <h3 className="text-base font-semibold text-ink">
-                        {o.label}
-                      </h3>
-                      {o.cost && (
-                        <span className="shrink-0 text-sm text-muted">
-                          {o.cost}
-                        </span>
-                      )}
-                    </div>
-                    {o.summary && (
-                      <p className="mt-1 text-sm text-muted">{o.summary}</p>
-                    )}
-                    {o.risks.length > 0 && (
-                      <ul className="mt-2 space-y-1">
-                        {o.risks.map((r, j) => (
-                          <li key={j} className="text-sm text-muted">
-                            &middot; {r}
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-            {brief.whatWeFound.risks.length > 0 && (
-              <div className="space-y-2">
-                <p className={eyebrow}>Risks</p>
-                {brief.whatWeFound.risks.map((r, i) => (
-                  <div key={i} className="flex gap-3">
-                    <span
-                      className={`mt-0.5 h-fit shrink-0 rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide ${
-                        SEVERITY_STYLE[r.severity]
-                      }`}
-                    >
-                      {r.severity}
-                    </span>
-                    <p className="text-sm text-ink">
-                      <span className="font-medium">{r.risk}.</span>{" "}
-                      <span className="text-muted">{r.why}</span>
-                    </p>
-                  </div>
-                ))}
-              </div>
-            )}
-          </>
-        )}
-      </section>
-
-      {/* 3 — What is still unknown */}
-      <section className="space-y-4">
-        <SectionTitle>What is still unknown</SectionTitle>
-        {brief.stillUnknown.openQuestions.length === 0 ? (
-          <p className="text-sm italic text-faint">
-            No open questions surfaced.
-          </p>
-        ) : (
-          <ul className="space-y-3">
-            {brief.stillUnknown.openQuestions.map((q, i) => (
-              <li key={i}>
-                <p className="font-medium text-ink">{q.question}</p>
-                {q.whyItMatters && (
-                  <p className="mt-0.5 text-sm text-muted">{q.whyItMatters}</p>
-                )}
-              </li>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      {/* 4 — What to do next */}
-      <section className="space-y-4">
-        <SectionTitle>What to do next</SectionTitle>
-        <div>
-          <p className={eyebrow}>Recommended move</p>
-          <div className="mt-1.5">
-            <Field value={brief.whatToDoNext.recommendedMove} />
-          </div>
-        </div>
-        {brief.whatToDoNext.decisionRisks.filled && (
+        <div className="space-y-4 border-t border-hair pt-5">
           <div>
-            <p className={eyebrow}>Decision risk</p>
+            <p className={eyebrow}>Do next</p>
             <div className="mt-1.5">
-              <Field value={brief.whatToDoNext.decisionRisks} />
+              <Field value={next.recommendedMove} />
             </div>
           </div>
-        )}
-        {brief.whatToDoNext.questionsForNextRoom.length > 0 && (
-          <div>
-            <p className={eyebrow}>Questions to ask in the next room</p>
-            <ul className="mt-1.5 space-y-1.5">
-              {brief.whatToDoNext.questionsForNextRoom.map((q, i) => (
-                <li key={i} className="text-ink">
-                  &mdash; {q}
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+          {next.decisionRisks.filled && (
+            <div>
+              <p className={eyebrow}>Watch &mdash; decision risk</p>
+              <p className="mt-1.5 leading-relaxed text-ink">
+                {next.decisionRisks.text}
+              </p>
+            </div>
+          )}
+          {next.questionsForNextRoom.length > 0 && (
+            <div>
+              <p className={eyebrow}>Ask in the next room</p>
+              <ul className="mt-1.5 space-y-1.5">
+                {next.questionsForNextRoom.map((q, i) => (
+                  <li key={i} className="text-ink">
+                    &mdash; {q}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       </section>
 
-      <div className="border-t border-hair pt-6">
+      {/* ── The full brief — the context, one click away ── */}
+      <details className="group rounded-lg border border-hair bg-raised">
+        <summary className="cursor-pointer list-none px-5 py-3.5 text-sm font-medium text-ink transition-colors hover:bg-surface">
+          <span className="inline-block transition-transform group-open:rotate-90">
+            ▸
+          </span>{" "}
+          Show the full brief &mdash; where it stands, what we found, what is
+          unknown
+        </summary>
+
+        <div className="space-y-9 border-t border-hair px-6 py-6">
+          {/* Where it stands */}
+          <section className="space-y-4">
+            <SectionTitle>Where it stands</SectionTitle>
+            {(
+              [
+                ["Business outcome", brief.whereItStands.businessOutcome],
+                ["Current state", brief.whereItStands.currentStateFacts],
+                ["Constraints", brief.whereItStands.constraints],
+                ["Requirements", brief.whereItStands.requirements],
+              ] as const
+            ).map(([label, field]) => (
+              <div key={label}>
+                <p className={eyebrow}>{label}</p>
+                <div className="mt-1.5">
+                  <Field value={field} />
+                </div>
+              </div>
+            ))}
+          </section>
+
+          {/* What we found */}
+          <section className="space-y-4">
+            <SectionTitle>What we found</SectionTitle>
+            {brief.whatWeFound.options.length === 0 &&
+            brief.whatWeFound.risks.length === 0 ? (
+              <p className="text-sm italic text-faint">
+                Nothing found yet &mdash; add vendor proposals and notes, then
+                run the brief again.
+              </p>
+            ) : (
+              <>
+                {brief.whatWeFound.options.length > 0 && (
+                  <div className="space-y-3">
+                    <p className={eyebrow}>Options</p>
+                    {brief.whatWeFound.options.map((o, i) => (
+                      <div
+                        key={i}
+                        className="rounded-md border border-hair bg-surface p-4"
+                      >
+                        <div className="flex items-baseline justify-between gap-3">
+                          <h3 className="text-base font-semibold text-ink">
+                            {o.label}
+                          </h3>
+                          {o.cost && (
+                            <span className="shrink-0 text-sm text-muted">
+                              {o.cost}
+                            </span>
+                          )}
+                        </div>
+                        {o.summary && (
+                          <p className="mt-1 text-sm text-muted">{o.summary}</p>
+                        )}
+                        {o.risks.length > 0 && (
+                          <ul className="mt-2 space-y-1">
+                            {o.risks.map((r, j) => (
+                              <li key={j} className="text-sm text-muted">
+                                &middot; {r}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+                {brief.whatWeFound.risks.length > 0 && (
+                  <div className="space-y-2">
+                    <p className={eyebrow}>Risks</p>
+                    {brief.whatWeFound.risks.map((r, i) => (
+                      <div key={i} className="flex gap-2.5">
+                        <span
+                          className={`mt-1.5 h-2 w-2 shrink-0 rounded-full ${
+                            SEVERITY_DOT[r.severity]
+                          }`}
+                          title={`${r.severity} severity`}
+                        />
+                        <p className="text-sm text-ink">
+                          <span className="font-medium">{r.risk}.</span>{" "}
+                          <span className="text-muted">{r.why}</span>
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </>
+            )}
+          </section>
+
+          {/* What is still unknown */}
+          <section className="space-y-4">
+            <SectionTitle>What is still unknown</SectionTitle>
+            {brief.stillUnknown.openQuestions.length === 0 ? (
+              <p className="text-sm italic text-faint">
+                No open questions surfaced.
+              </p>
+            ) : (
+              <ul className="space-y-3">
+                {brief.stillUnknown.openQuestions.map((q, i) => (
+                  <li key={i}>
+                    <p className="font-medium text-ink">{q.question}</p>
+                    {q.whyItMatters && (
+                      <p className="mt-0.5 text-sm text-muted">
+                        {q.whyItMatters}
+                      </p>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      </details>
+
+      <div className="pt-1">
         <a
           href={`/api/cockpit/initiatives/${initiativeId}/export`}
           className={btnGhost}
