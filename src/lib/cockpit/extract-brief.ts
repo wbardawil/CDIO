@@ -141,9 +141,12 @@ function neutralizeMarkers(text: string): string {
 export async function extractBrief(input: ExtractInput): Promise<CDIOBrief> {
   const usable = input.documents.filter((d) => d.text.trim().length > 0);
   if (usable.length === 0) {
-    return emptyBrief(
-      "No readable material yet — drop in this initiative's documents and run the brief again."
-    );
+    return {
+      ...emptyBrief(
+        "No readable material yet — drop in this initiative's documents and run the brief again."
+      ),
+      generatedAtStage: input.stage,
+    };
   }
 
   const rubric = formatRubric(getRubric(input.stage, input.initiativeType));
@@ -245,7 +248,7 @@ Omit "missing" when "filled" is true. Use [] for empty lists. Do not wrap the JS
     throw new Error("Extraction returned malformed JSON");
   }
 
-  return coerceBrief(parsed);
+  return { ...coerceBrief(parsed), generatedAtStage: input.stage };
 }
 
 // ---- Coercion: defend against missing / malformed fields so the

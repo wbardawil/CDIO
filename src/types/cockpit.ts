@@ -33,6 +33,22 @@ export const STAGE_LABELS: Record<Stage, string> = {
   plan: "Plan",
 };
 
+/** One plain-English line per stage: what the cockpit checks the
+ *  initiative against here. Shown so the stage buttons mean
+ *  something — no module codes, no jargon. */
+export const STAGE_LENS: Record<Stage, string> = {
+  frame:
+    "At Frame, the cockpit checks the business outcome, the budget and timeline, and whether the goal is defined sharply enough to decide against.",
+  discover:
+    "At Discover, the cockpit checks the current-state facts, the data and systems picture, and what is still unknown about the real situation.",
+  decide:
+    "At Decide, the cockpit checks the approach against the strategy, the cost case, and whether the decision is being made a step too early.",
+  source:
+    "At Source & select, the cockpit checks the vendor options on integration, security, and contract terms against your non-negotiables.",
+  plan:
+    "At Plan, the cockpit checks the delivery roadmap, the team and change picture, and whether security and operations are covered.",
+};
+
 export type InitiativeType =
   | "crm"
   | "erp"
@@ -168,6 +184,13 @@ export interface CDIOBrief {
     decisionRisks: BriefField;
     questionsForNextRoom: string[];
   };
+
+  /** The lifecycle stage this brief was generated at. Set by the
+   *  extractor from its input — not by the model. Lets the UI nudge
+   *  "re-generate to see this through the <current stage> lens"
+   *  when the user has moved stages since. Optional: briefs created
+   *  before this field existed simply have no stage recorded. */
+  generatedAtStage?: Stage;
 }
 
 export interface Brief {
@@ -227,4 +250,26 @@ export function briefStatus(brief: CDIOBrief): "complete" | "partial" {
   return briefCompleteness(brief).every((e) => e.filled)
     ? "complete"
     : "partial";
+}
+
+// ---- Readiness — a plain three-level read of how complete the
+//      brief at the current stage is. Drives the stage indicator. ----
+
+export type Readiness = "ready" | "partial" | "thin";
+
+export const READINESS_LABEL: Record<Readiness, string> = {
+  ready: "Ready",
+  partial: "Partial",
+  thin: "Thin",
+};
+
+/** Ready = every section filled. Thin = most sections empty (the
+ *  input did not give the cockpit enough to work with). Partial =
+ *  in between. */
+export function readiness(brief: CDIOBrief): Readiness {
+  const entries = briefCompleteness(brief);
+  const filled = entries.filter((e) => e.filled).length;
+  if (filled === entries.length) return "ready";
+  if (filled <= entries.length / 2) return "thin";
+  return "partial";
 }

@@ -4,7 +4,12 @@ import type {
   Constraint,
   Severity,
 } from "@/types/cockpit";
-import { GATE_LABELS, briefCompleteness } from "@/types/cockpit";
+import {
+  GATE_LABELS,
+  READINESS_LABEL,
+  briefCompleteness,
+  readiness,
+} from "@/types/cockpit";
 import { checkConstraints } from "@/lib/cockpit/checks";
 import { btnGhost, eyebrow } from "./styles";
 
@@ -13,6 +18,12 @@ const GATE_STYLE: Record<string, string> = {
   clarify: "bg-amber-soft text-amber-deep",
   intervene: "bg-brick/10 text-brick",
 };
+
+const READINESS_STYLE = {
+  ready: "bg-evergreen-soft text-evergreen-deep",
+  partial: "bg-amber-soft text-amber-deep",
+  thin: "border border-hair-strong bg-surface text-faint",
+} as const;
 
 const SEVERITY_STYLE: Record<Severity, string> = {
   high: "bg-amber-soft text-amber-deep",
@@ -46,6 +57,7 @@ export function BriefView({
 }) {
   const gaps = briefCompleteness(brief).filter((c) => !c.filled).length;
   const flags = checkConstraints(brief, constraints);
+  const read = readiness(brief);
 
   return (
     <article className="space-y-10">
@@ -64,6 +76,12 @@ export function BriefView({
           }`}
         >
           Next gate: {GATE_LABELS[brief.gate]}
+        </span>
+        <span
+          className={`rounded-full px-3 py-1 text-xs font-semibold uppercase tracking-wide ${READINESS_STYLE[read]}`}
+        >
+          {READINESS_LABEL[read]}
+          {gaps > 0 ? ` · ${gaps} gap${gaps === 1 ? "" : "s"}` : ""}
         </span>
         {brief.gateReason && (
           <span className="text-sm text-muted">{brief.gateReason}</span>

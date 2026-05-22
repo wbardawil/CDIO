@@ -58,6 +58,7 @@ describe("extractBrief — happy path", () => {
     expect(brief.coldOpen).toContain("integration is proven");
     expect(brief.whatWeFound.options[0].label).toBe("Acme");
     expect(brief.whereItStands.constraints.filled).toBe(false);
+    expect(brief.generatedAtStage).toBe("source");
     expect(create).toHaveBeenCalledOnce();
   });
 });

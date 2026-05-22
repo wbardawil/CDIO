@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { briefCompleteness, briefStatus } from "./cockpit";
+import { briefCompleteness, briefStatus, readiness } from "./cockpit";
 import { makeBrief, unfilledField } from "../../tests/fixtures";
 
 describe("briefCompleteness", () => {
@@ -34,5 +34,27 @@ describe("briefStatus", () => {
     const brief = makeBrief();
     brief.whatToDoNext.recommendedMove = unfilledField("Need source material.");
     expect(briefStatus(brief)).toBe("partial");
+  });
+});
+
+describe("readiness", () => {
+  it("is 'ready' when every section is filled", () => {
+    expect(readiness(makeBrief())).toBe("ready");
+  });
+
+  it("is 'partial' when a couple of sections are unfilled", () => {
+    const brief = makeBrief();
+    brief.whereItStands.requirements = unfilledField("Add requirements.");
+    expect(readiness(brief)).toBe("partial");
+  });
+
+  it("is 'thin' when most sections are empty", () => {
+    const brief = makeBrief();
+    brief.whereItStands.businessOutcome = unfilledField("x");
+    brief.whereItStands.currentStateFacts = unfilledField("x");
+    brief.whereItStands.constraints = unfilledField("x");
+    brief.whereItStands.requirements = unfilledField("x");
+    brief.whatWeFound.options = [];
+    expect(readiness(brief)).toBe("thin");
   });
 });

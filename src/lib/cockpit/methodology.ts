@@ -26,7 +26,7 @@ import type { Stage, InitiativeType } from "@/types/cockpit";
 //   Plan     → delivery/DevOps, workforce/change, security, IT operations
 export const STAGE_MODULES: Record<Stage, number[]> = {
   frame: [1, 2, 10, 12],
-  discover: [3, 6, 11],
+  discover: [3, 6, 8, 11], // +8 Analytics — Discover was thin at 3 modules
   decide: [3, 4, 12, 2],
   source: [13, 7, 5, 12],
   plan: [14, 16, 5, 11],

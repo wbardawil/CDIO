@@ -17,6 +17,7 @@ import {
 import { FileDrop } from "./file-drop";
 import { ConstraintsPanel } from "./constraints-panel";
 import { BriefView } from "./brief-view";
+import { StageLens } from "./stage-lens";
 import { ExtractionProgress } from "./extraction-progress";
 import { btnAmber, btnGhost, card, eyebrow } from "./styles";
 
@@ -142,6 +143,9 @@ export function Workspace({
 
       <main className="mx-auto max-w-6xl px-6 py-8">
         <StageSpine stage={stage} onPick={changeStage} />
+        <div className="mt-3">
+          <StageLens stage={stage} />
+        </div>
 
         <div className="mt-8 grid gap-8 lg:grid-cols-3">
           {/* Left rail — context in, brief out */}
@@ -203,6 +207,18 @@ export function Workspace({
             ) : brief ? (
               <div>
                 <p className="mb-4 text-xs text-faint">Brief v{version}</p>
+                {brief.generatedAtStage &&
+                  brief.generatedAtStage !== stage && (
+                    <div className="mb-4 rounded-md border border-hair-strong bg-surface px-4 py-2.5 text-sm text-muted">
+                      This brief was built at the{" "}
+                      <span className="text-ink">
+                        {STAGE_LABELS[brief.generatedAtStage]}
+                      </span>{" "}
+                      stage. Re-generate it to see this initiative through the{" "}
+                      <span className="text-ink">{STAGE_LABELS[stage]}</span>{" "}
+                      lens.
+                    </div>
+                  )}
                 <BriefView
                   brief={brief}
                   initiativeId={initiative.id}
