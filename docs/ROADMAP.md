@@ -1,5 +1,7 @@
 # AI-CDIO: Build Roadmap
 
+> **⚡ 2026-05-21 pivot:** this Phase 1C-2.5 roadmap is now *destination* context. The current build order is the **CDIO Review Cockpit** plan — see the `CLAUDE.md` CURRENT DIRECTION banner and `C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md`.
+
 > **Companion strategy doc:** `docs/STRATEGY-2026.md` is the active strategic source of truth.
 > **Last refreshed:** 2026-05-13 (post-Phase-1C session — outcome reframe shipped + standards validation audit + Vendor Lifecycle Management flagged as candidate Year-1 named service line pending founder decision; see "2026-05-13 sprint re-baseline" section immediately below).
 >

@@ -1,5 +1,7 @@
 # TODOS
 
+> **⚡ 2026-05-21 pivot:** the project pivoted to the **CDIO Review Cockpit** (see the `CLAUDE.md` CURRENT DIRECTION banner). Most items below are *destination-product* TODOs, not current scope. Current TODOs = the cockpit plan's build order (`C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md`). Do not action an item below as live work without checking it against the cockpit plan first.
+
 Deferred work, captured with enough context to act cold. Created 2026-05-19 by
 the `/plan-eng-review` bank-wide methodology-validation workstream.
 

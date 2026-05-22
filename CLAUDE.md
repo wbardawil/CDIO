@@ -29,9 +29,17 @@ verbally for design input were wrongly written into UI placeholders, docs, and
 commit messages. They were scrubbed from the working tree; the standing rule
 exists so it never recurs.)
 
+## ⚡ CURRENT DIRECTION (2026-05-21) — read this before the sections below
+
+The project pivoted. **v1 is the CDIO Review Cockpit** — a deployed tool (Vercel + Supabase + Clerk) that turns an initiative's raw material (meeting notes, docs, vendor files, files read from file storage) into one structured CDIO Brief, with the 16-module methodology as a hidden checklist. Founder-operated, single user for now.
+
+**The current plan is `C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md` — read it first.** It is short and practical: what to build, the build order, how we know it worked.
+
+The Executive OS, the 16-module platform, the 90-Day Matrix, the personas, and the Phase 1C-2.5 roadmap in the sections below are the **destination** — shelved, not deleted. Read them as long-term context, not current scope. The 16-module / 124-question methodology (`src/lib/playbook/diagnostic-questions.ts`, `question-citations.ts`) is reused as the cockpit's hidden checklist.
+
 ## Read First
 
-Before doing ANY work in this repo, read these in order:
+**Primary reading is in the CURRENT DIRECTION banner above.** The docs below describe the *destination* product (the Executive OS) — read them for long-term context, not current v1 scope:
 
 1. `docs/STRATEGY-2026.md` — The contract: 4 outcome pillars, architectural laws, scope, process discipline. Refreshed 2026-05-07.
 2. `docs/SESSION_HANDOFF.md` — Where we are, what's next, Day 11 architectural decisions.
@@ -134,7 +142,13 @@ C:/Users/Dell/projects/CDIO/
 - **Rate limiting via Upstash Redis:** Day 5 (env vars pending).
 - **Methodology = defensibility bar, NOT verbatim (locked 2026-05-19):** the 128 diagnostic questions are being rebuilt so each maps to a specific named construct in a recognized authoritative source. This supersedes the `96dd36a`/`1127291` verbatim-from-playbook directive (sanctioned, reason: verbatim is only 30% defensible). Founder ratifies per module — never self-certify. Full decision in Current Sprint § "LOCKED DECISION (2026-05-19)".
 
-## Current Sprint (2026-05-19 — methodology bank REBUILT and SHIPPED on branch `claude/loving-tesla-b61c25`)
+## Current Sprint (2026-05-21) — build the CDIO Review Cockpit (v1)
+
+The current sprint is the **CDIO Review Cockpit** — see the CURRENT DIRECTION banner at the top of this file and the approved plan (`C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md`). Immediate next actions: the founder's PM autopsy interview + pre-cockpit time baseline, then `/plan-eng-review` on the cockpit architecture, then the build (extract → `CDIOBrief` type → `/cockpit` UI → `~/.cdio-cockpit/` store).
+
+### Prior sprint — methodology defensibility-bar rebuild (2026-05-19, shipped on `claude/loving-tesla-b61c25`)
+
+The methodology rebuild below is **complete and historical**. Its output — the 124-strong / 4-weak / 0-indefensible question bank — is **reused as the cockpit's hidden check-library** and survives the pivot. Detail retained for context:
 
 Per `docs/ROADMAP.md`. Phase 1A-1B complete. Phase 1C Days 8-12 complete (Module 5 deep + narrative + decision packages + outcomes-led strategy rewrite + module renames + AI leverage roadmap + Day 11 doc-lock + Day 12 Module 12 deep shipped at `f595bfc`).
 
@@ -200,6 +214,7 @@ gstack is installed at `~/.claude/skills/gstack/`. **Going forward, gstack skill
 
 ### Mandatory gates by scenario
 
+- **Before any non-trivial change (HARD GATE locked 2026-05-21):** plan mode — every non-trivial change starts in plan mode, produces an approved plan file, and exits via `ExitPlanMode` before implementation. Non-trivial = a new feature/screen/module, a schema change, an API-route change, an agent-prompt change, a change to a documented promise, or any change crossing >1 of backend/frontend/content/infra. Trivial (skip): typo fixes, copy edits, dependency bumps with no API impact. Reason: "building before planning" is the failure the 2026-05-21 cockpit replan exists to stop.
 - **Before any architecture commit:** `/plan-eng-review` — surface hidden assumptions, lock data flow + state machines + edge cases
 - **Before any scope change:** `/plan-ceo-review` — outcome-led / scope-expansion challenge in one command
 - **Before any privacy-sensitive feature:** `/cso` — OWASP + STRIDE security audit (Network Catalog Day 25 is non-negotiable)

@@ -2,6 +2,14 @@
 
 This is the entry point for a fresh Claude Code session. It tells you **where we are**, **what's next**, and the **context required to continue**.
 
+## ⚡ CURRENT HANDOFF (2026-05-21) — supersedes everything below
+
+The project pivoted. **v1 is the CDIO Review Cockpit** — a deployed tool (Vercel + Supabase + Clerk) that turns an initiative's raw material into a structured CDIO Brief. The Executive-OS product below is the shelved destination.
+
+- **Where we are:** the plan is written and reviewed — `C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md`. No cockpit code written yet.
+- **Next:** a quick architecture review (`/plan-eng-review`), then build the deployed cockpit. Founder homework in parallel — note the hours baseline, run the PM autopsy interview. Full detail is in the plan.
+- Everything below this banner is destination-product handoff history.
+
 ---
 
 ## ⛔ CLIENT CONFIDENTIALITY — ABSOLUTE RULE (read first, every session)

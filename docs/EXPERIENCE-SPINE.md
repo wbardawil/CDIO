@@ -1,5 +1,7 @@
 # AI-CDIO: The Experience Spine — v2
 
+> **⚡ 2026-05-21 pivot — SUPERSEDED:** the cockpit pivot replaced this spine's core design (the two-sided product, the `EngagementState` primitive, the Deliverable Builder). v1 is now the **CDIO Review Cockpit** — see the `CLAUDE.md` CURRENT DIRECTION banner and `C:/Users/Dell/.claude/plans/i-ve-done-it-wrong-serene-minsky.md`. This doc is destination-context only.
+
 > ⛔ Client-confidentiality rule applies (see `CLAUDE.md` top).
 > **v2 created 2026-05-19.** Supersedes v1 (`EXPERIENCE-SPINE-v1-ARCHIVED.md`).
 > v1 was written 2026-05-13 after Customer #0 reported being lost and
