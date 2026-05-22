@@ -2,7 +2,7 @@
 
 import { useId, useRef, useState } from "react";
 import type { DocumentMeta } from "@/types/cockpit";
-import { eyebrow } from "./styles";
+import { btnGhost, eyebrow, input } from "./styles";
 
 const ACCEPT = ".pdf,.docx,.xlsx,.txt,.md,.csv,.tsv,.vtt,.srt";
 
@@ -20,6 +20,12 @@ export function FileDrop({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [dragOver, setDragOver] = useState(false);
+
+  // Paste-text state.
+  const [showPaste, setShowPaste] = useState(false);
+  const [noteTitle, setNoteTitle] = useState("");
+  const [noteText, setNoteText] = useState("");
+  const [pasteBusy, setPasteBusy] = useState(false);
 
   async function upload(files: File[]) {
     if (files.length === 0 || busy) return;
@@ -43,6 +49,37 @@ export function FileDrop({
     }
     setBusy(false);
     if (inputRef.current) inputRef.current.value = "";
+  }
+
+  async function addNote() {
+    if (!noteText.trim() || pasteBusy) return;
+    setPasteBusy(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/cockpit/initiatives/${initiativeId}/notes`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            title: noteTitle.trim() || undefined,
+            text: noteText.trim(),
+          }),
+        }
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error ?? "Could not save the note.");
+      } else {
+        onDocuments([...documents, data.document as DocumentMeta]);
+        setNoteTitle("");
+        setNoteText("");
+        setShowPaste(false);
+      }
+    } catch {
+      setError("Could not save the note — try again.");
+    }
+    setPasteBusy(false);
   }
 
   return (
@@ -84,6 +121,57 @@ export function FileDrop({
           onChange={(e) => upload(Array.from(e.target.files ?? []))}
         />
       </label>
+
+      {/* Paste text — a plan, notes, an email — no file needed. */}
+      {!showPaste ? (
+        <button
+          type="button"
+          onClick={() => setShowPaste(true)}
+          className="mt-2 text-sm font-medium text-evergreen hover:text-evergreen-deep"
+        >
+          or paste text instead
+        </button>
+      ) : (
+        <div className="mt-3 space-y-2 rounded-md border border-hair bg-surface p-3">
+          <input
+            aria-label="Note title (optional)"
+            value={noteTitle}
+            onChange={(e) => setNoteTitle(e.target.value)}
+            placeholder="Title (optional) — e.g. Kickoff meeting notes"
+            maxLength={200}
+            className={input}
+          />
+          <textarea
+            aria-label="Paste your text"
+            value={noteText}
+            onChange={(e) => setNoteText(e.target.value)}
+            placeholder="Paste a plan, meeting notes, an email thread…"
+            rows={6}
+            className={`${input} resize-y`}
+          />
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              onClick={addNote}
+              disabled={pasteBusy || !noteText.trim()}
+              className={btnGhost}
+            >
+              {pasteBusy ? "Adding…" : "Add as note"}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setShowPaste(false);
+                setNoteTitle("");
+                setNoteText("");
+              }}
+              className="text-sm text-faint hover:text-muted"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
 
       {error && <p className="mt-2 text-sm text-brick">{error}</p>}
 
