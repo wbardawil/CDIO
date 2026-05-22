@@ -15,6 +15,7 @@ import { createServiceClient } from "@/lib/db/supabase";
 import type {
   Brief,
   CDIOBrief,
+  ChatMessage,
   Constraint,
   ConstraintKind,
   DocumentMeta,
@@ -308,4 +309,50 @@ export async function listBriefVersions(
     .order("version", { ascending: false });
   if (error) throw new Error(`listBriefVersions: ${error.message}`);
   return (data ?? []).map(toBrief);
+}
+
+// ---- Chat messages ----
+
+function toMessage(r: Row): ChatMessage {
+  return {
+    id: r.id as string,
+    initiativeId: r.initiative_id as string,
+    role: r.role as "user" | "assistant",
+    content: r.content as string,
+    createdAt: r.created_at as string,
+  };
+}
+
+export async function addMessage(
+  userId: string,
+  initiativeId: string,
+  role: "user" | "assistant",
+  content: string
+): Promise<ChatMessage> {
+  const { data, error } = await sb()
+    .from("messages")
+    .insert({
+      initiative_id: initiativeId,
+      owner_user_id: userId,
+      role,
+      content,
+    })
+    .select()
+    .single();
+  if (error) throw new Error(`addMessage: ${error.message}`);
+  return toMessage(data);
+}
+
+export async function listMessages(
+  userId: string,
+  initiativeId: string
+): Promise<ChatMessage[]> {
+  const { data, error } = await sb()
+    .from("messages")
+    .select()
+    .eq("owner_user_id", userId)
+    .eq("initiative_id", initiativeId)
+    .order("created_at", { ascending: true });
+  if (error) throw new Error(`listMessages: ${error.message}`);
+  return (data ?? []).map(toMessage);
 }

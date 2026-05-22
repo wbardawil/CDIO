@@ -5,6 +5,7 @@ import {
   getLatestBrief,
   listConstraints,
   listDocuments,
+  listMessages,
 } from "@/lib/cockpit/db";
 import { Workspace } from "@/components/cockpit/workspace";
 
@@ -26,10 +27,11 @@ export default async function InitiativePage({ params }: Props) {
   const initiative = await getInitiative(userId, id);
   if (!initiative) notFound();
 
-  const [documents, constraints, brief] = await Promise.all([
+  const [documents, constraints, brief, messages] = await Promise.all([
     listDocuments(userId, id),
     listConstraints(userId, id),
     getLatestBrief(userId, id),
+    listMessages(userId, id),
   ]);
 
   return (
@@ -38,6 +40,7 @@ export default async function InitiativePage({ params }: Props) {
       documents={documents}
       constraints={constraints}
       brief={brief}
+      messages={messages}
     />
   );
 }

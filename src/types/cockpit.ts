@@ -114,6 +114,16 @@ export interface DocumentMeta {
   createdAt: string;
 }
 
+// ---- Chat messages (the per-initiative assistant) ----
+
+export interface ChatMessage {
+  id: string;
+  initiativeId: string;
+  role: "user" | "assistant";
+  content: string;
+  createdAt: string;
+}
+
 // ---- The CDIO Brief ----
 
 export type Gate = "continue" | "clarify" | "intervene";

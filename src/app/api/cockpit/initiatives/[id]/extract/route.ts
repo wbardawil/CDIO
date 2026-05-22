@@ -5,6 +5,7 @@ import {
   getLatestBrief,
   insertBriefVersion,
   listConstraints,
+  listMessages,
 } from "@/lib/cockpit/db";
 import { extractBrief, friendlyExtractError } from "@/lib/cockpit/extract-brief";
 
@@ -22,14 +23,31 @@ export async function POST(_req: Request, { params }: Ctx) {
   if (!g.ok) return g.response;
 
   try {
-    const [documents, constraints, latest] = await Promise.all([
+    const [documents, constraints, latest, messages] = await Promise.all([
       getDocumentTexts(g.userId, id),
       listConstraints(g.userId, id),
       getLatestBrief(g.userId, id),
+      listMessages(g.userId, id),
     ]);
 
+    // What the user told the assistant is initiative material too —
+    // feed the conversation in as one more source.
+    const conversation = messages
+      .filter((m) => m.role === "user")
+      .map((m) => m.content)
+      .join("\n\n");
+    const sources = conversation.trim()
+      ? [
+          ...documents,
+          {
+            filename: "Notes from the conversation with the cockpit",
+            text: conversation,
+          },
+        ]
+      : documents;
+
     const brief = await extractBrief({
-      documents,
+      documents: sources,
       priorBrief: latest?.body ?? null,
       constraints,
       stage: g.initiative.stage,

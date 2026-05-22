@@ -8,6 +8,7 @@ import {
   STAGE_LABELS,
   type Brief,
   type CDIOBrief,
+  type ChatMessage,
   type Constraint,
   type DocumentMeta,
   type Initiative,
@@ -18,6 +19,7 @@ import { ConstraintsPanel } from "./constraints-panel";
 import { BriefView } from "./brief-view";
 import { StageLens } from "./stage-lens";
 import { StageProgress } from "./stage-progress";
+import { ChatPanel } from "./chat-panel";
 import { ExtractionProgress } from "./extraction-progress";
 import { btnAmber, btnGhost, card, eyebrow } from "./styles";
 
@@ -26,11 +28,13 @@ export function Workspace({
   documents: initialDocuments,
   constraints: initialConstraints,
   brief: initialBrief,
+  messages,
 }: {
   initiative: Initiative;
   documents: DocumentMeta[];
   constraints: Constraint[];
   brief: Brief | null;
+  messages: ChatMessage[];
 }) {
   const [stage, setStage] = useState<Stage>(initiative.stage);
   const [documents, setDocuments] = useState<DocumentMeta[]>(initialDocuments);
@@ -147,6 +151,12 @@ export function Workspace({
                   Add at least one readable document first.
                 </p>
               )}
+            </div>
+            <div className={`${card} p-5`}>
+              <ChatPanel
+                initiativeId={initiative.id}
+                initialMessages={messages}
+              />
             </div>
           </aside>
 
