@@ -11,9 +11,10 @@ import { extractBrief, friendlyExtractError } from "@/lib/cockpit/extract-brief"
 
 // The Claude extraction runs 20-40s. Vercel's default function
 // timeout sits below that; this lifts the ceiling so the request
-// is not cut off mid-extraction. (Clamped down to the plan's max
-// on Hobby; that still covers a 40s run.)
-export const maxDuration = 300;
+// is not cut off mid-extraction. 60s is the Vercel Hobby-plan
+// maximum and covers a 40s run with margin; raise it if the
+// project moves to a Pro plan.
+export const maxDuration = 60;
 
 type Ctx = { params: Promise<{ id: string }> };
 
