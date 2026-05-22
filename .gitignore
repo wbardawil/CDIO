@@ -44,11 +44,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 supabase/.temp/
-Updated upstream
 
 # clerk configuration (can include secrets)
 /.clerk/
 
-
-Stashed changes
 .gstack/

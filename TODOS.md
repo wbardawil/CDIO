@@ -179,3 +179,39 @@ deferred OUT of step 1 deliberately; capture so they are not lost.
 block step 1. Source of truth for step-1 scope is the locked plan in the
 review (P0 expanded data-surface gate → npm ci → Selection Engine distilled
 content → external doc-gen → content-layer safety + passive shadow log).
+
+---
+
+## Cockpit v1 — review deferred items (2026-05-22, `/review` on the cockpit build)
+
+Two findings from the Codex adversarial pass on the cockpit code. Both are
+real but low-risk for single-user v1, so deferred rather than blocking. The
+four higher-priority findings from the same pass were fixed in the build.
+
+### C1 (P2) — `replaceConstraints` is delete-then-insert without a transaction
+`src/lib/cockpit/db.ts` `replaceConstraints()` deletes all constraint rows
+then inserts the new set. If the insert fails after the delete, the PM's
+non-negotiables are lost; concurrent saves can interleave. **Why deferred:**
+v1 is single-user and constraints are low-stakes, re-enterable data; the
+failure window is small. **Fix when multi-user (build-order step 4):** move
+the replace into a Postgres RPC (`replace_constraints(initiative_id, owner,
+jsonb)`) so it is atomic, or switch to per-row add/remove.
+
+### C2 (P2) — no lock / idempotency on `POST /extract`
+`src/app/api/cockpit/initiatives/[id]/extract/route.ts` — parallel extraction
+requests each run a full Claude call, then race on `max(version)+1`; the
+`UNIQUE(initiative_id, version)` constraint rejects the loser *after* it has
+already spent an API call. **Why deferred:** the workspace UI disables the
+run button while extracting, so a single tab cannot double-fire; only
+cross-tab/multi-client triggers it, and v1 is single-user. **Fix when
+multi-user:** an advisory lock or an `extracting` flag on the initiative row
+checked before the Claude call.
+
+### C3 (P3) — parser inflation before the size cap
+`src/lib/cockpit/parse.ts` fully parses PDF/DOCX/XLSX before `clamp()` applies
+the text cap. A small compressed office file could inflate CPU/memory.
+**Why deferred:** Vercel's ~4.5 MB request-body edge limit bounds the input,
+and the oversized-file pre-check (`file.size`) now rejects large files before
+they are read. Residual risk is a <4.5 MB decompression bomb on a single-user
+app. **Fix with the cloud-storage integration:** presigned browser→storage
+upload that bypasses the function body, plus a parse timeout.

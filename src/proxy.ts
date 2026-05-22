@@ -1,19 +1,18 @@
+// Next 16 renamed the `middleware` file convention to `proxy`. Clerk v7.0.7
+// detects `src/proxy.ts` on Next 16 (see @clerk/nextjs middleware-location).
+//
+// Everything is auth-gated except the landing page, the Clerk sign-in/up
+// pages, and the legal pages. Cockpit routes and API also re-check auth()
+// server-side — proxy is the first gate, not the only one.
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 
-// Public routes: stakeholder token flow (clients don't have Clerk accounts),
-// anonymous discovery funnels (chat, scan), and Clerk's own pages.
-// /onboarding is NOT public — it creates a client owned by the signed-in
-// practitioner, so the practitioner must be authenticated first.
 const isPublicRoute = createRouteMatcher([
   "/",
-  "/scan(.*)",
-  "/chat(.*)",
-  "/assess/:token",
   "/sign-in(.*)",
   "/sign-up(.*)",
-  "/api/chat",
-  "/api/stakeholders/by-token/:token",
-  "/api/assessments",
+  "/privacy",
+  "/terms",
+  "/ai-disclaimer",
 ]);
 
 export default clerkMiddleware(async (auth, req) => {
@@ -24,7 +23,9 @@ export default clerkMiddleware(async (auth, req) => {
 
 export const config = {
   matcher: [
+    // Run on every route except Next internals and static assets.
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    // Always run on API routes.
     "/(api|trpc)(.*)",
   ],
 };
